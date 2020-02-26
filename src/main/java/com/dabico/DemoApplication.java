@@ -4,10 +4,11 @@ import okhttp3.Call;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import org.springframework.boot.*;
 import org.springframework.boot.autoconfigure.*;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
@@ -16,6 +17,7 @@ import java.io.IOException;
 @RestController
 public class DemoApplication {
 
+	OkHttpClient client = new OkHttpClient();
 	String clientID = "45d18c7f76867ce8772c";
 	String clientSecret = "023a91f1dc0745bd96c381dcdeef36557c20f1e1";
 
@@ -25,17 +27,22 @@ public class DemoApplication {
 
 	@GetMapping("/home")
 	String home() throws IOException {
-		OkHttpClient client = new OkHttpClient();
-
 		Request request = new Request.Builder()
 				.url("https://api.github.com/search/repositories?q=language:Java&sort=stars&order=desc")
 				.addHeader("Authorization",clientSecret)
 				.addHeader("Accept","application/vnd.github.v3+json")
 				.build();
-		
+
 		Call call = client.newCall(request);
 		Response response = call.execute();
-		return response.body() != null ? response.body().string() : "No results...";
+
+		String responseString = response.body() != null ? response.body().string() : "{}";
+		if (response.body() != null){
+			JsonObject bodyJson = JsonParser.parseString(responseString).getAsJsonObject();
+			return bodyJson.get("items").toString();
+		} else {
+			return "No Results";
+		}
 	}
 
 	public static void main(String[] args) {
