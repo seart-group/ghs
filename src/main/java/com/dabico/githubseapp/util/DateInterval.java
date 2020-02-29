@@ -32,7 +32,6 @@ public class DateInterval {
 
     public String getSearchURL(){
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("YYYY-MM-DD");
-        return "&created:>=" + simpleDateFormat.format(this.start)
-             + "&created:<"  + simpleDateFormat.format(this.end);
+        return "+created:" + simpleDateFormat.format(this.start) + ".."  + simpleDateFormat.format(this.end);
     }
 }
