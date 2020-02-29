@@ -15,19 +15,16 @@ import javax.persistence.Table;
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode
-@Table(name = "repo_languages")
+@Table(name = "repo_labels")
 @Entity
-public class RepositoryLanguage {
+public class GitRepoLabel {
     @Id
-    @Column(name = "repo_language_id")
+    @Column(name = "repo_label_id")
     Long id;
 
     @Column(name = "repo_id")
     Long repositoryId;
 
-    @Column(name = "repo_language")
-    String language;
-
-    @Column(name = "size_of_code")
-    Long sizeOfCode;
+    @Column(name = "repo_label")
+    String label;
 }

@@ -13,13 +13,13 @@ import java.util.Date;
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode
-@Table(name = "repository")
+@Table(name = "repo")
 @Entity
-public class Repository {
+public class GitRepo {
 
     @Id
     @GeneratedValue
-    @Column(name = "repository_id")
+    @Column(name = "id")
     Long id;
 
     @Column(name = "is_fork_project")
