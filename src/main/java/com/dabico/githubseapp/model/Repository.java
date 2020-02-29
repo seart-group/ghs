@@ -22,11 +22,17 @@ public class Repository {
     @Column(name = "repository_id")
     Long id;
 
+    @Column(name = "is_fork_project")
+    Boolean isFork;
+
     @Column(name = "commits")
     Long commits;
 
     @Column(name = "branches")
     Long branches;
+
+    @Column(name = "default_branch")
+    String defaultBranch;
 
     @Column(name = "releases")
     Long releases;
@@ -35,7 +41,7 @@ public class Repository {
     Long contributors;
 
     @Column(name = "license")
-    License license;
+    String license;
 
     @Column(name = "watchers")
     Long watchers;
@@ -50,7 +56,7 @@ public class Repository {
     Long size;
 
     @Column(name = "main_language", nullable = false)
-    ProgrammingLanguage mainLanguage;
+    String mainLanguage;
 
     @Column(name = "total_issues")
     Long totalIssues;
@@ -69,4 +75,10 @@ public class Repository {
 
     @Column(name = "last_commit_sha")
     String lastCommitSHA;
+
+    @Column(name = "has_wiki")
+    Boolean hasWiki;
+
+    @Column(name = "archived")
+    Boolean isArchived;
 }
