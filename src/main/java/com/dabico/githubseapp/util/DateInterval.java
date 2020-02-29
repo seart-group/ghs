@@ -6,7 +6,6 @@ import org.javatuples.Pair;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
-
 import static com.dabico.githubseapp.util.DateUtils.*;
 
 @Builder
