@@ -5,13 +5,6 @@ import java.util.Date;
 import static org.apache.commons.lang3.time.DateUtils.*;
 
 public class DateUtils {
-    public static Date setEndDay(Date date) {
-        date = setHours(date, 23);
-        date = setMinutes(date, 59);
-        date = setSeconds(date, 59);
-        date = setMilliseconds(date, 999);
-        return date;
-    }
 
     public static Date setInitDay(Date date) {
         date = setHours(date, 0);
@@ -19,6 +12,11 @@ public class DateUtils {
         date = setSeconds(date, 0);
         date = setMilliseconds(date, 0);
         return date;
+    }
+
+    public static Date setEndDay(Date date) {
+        addDays(date,1);
+        return setInitDay(date);
     }
 
     public static Date firstYearDay(int year) {
