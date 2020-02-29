@@ -4,7 +4,6 @@ import okhttp3.Call;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
-import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import org.springframework.boot.*;
@@ -18,8 +17,7 @@ import java.io.IOException;
 public class DemoApplication {
 
 	OkHttpClient client = new OkHttpClient();
-	String clientID = "45d18c7f76867ce8772c";
-	String clientSecret = "023a91f1dc0745bd96c381dcdeef36557c20f1e1";
+	String clientSecret = "56583668e32b73702785a85900975d1ceccf15d5";
 
 	@GetMapping("/")
 	void init(){
@@ -28,7 +26,7 @@ public class DemoApplication {
 	@GetMapping("/home")
 	String home() throws IOException {
 		Request request = new Request.Builder()
-				.url("https://api.github.com/search/repositories?q=language:Java&sort=stars&order=desc")
+				.url("https://api.github.com/search/repositories?q=language:Java&sort=stars&order=desc&per_page=100")
 				.addHeader("Authorization",clientSecret)
 				.addHeader("Accept","application/vnd.github.v3+json")
 				.build();
