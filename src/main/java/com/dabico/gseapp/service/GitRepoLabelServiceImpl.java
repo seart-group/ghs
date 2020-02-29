@@ -1,4 +1,4 @@
-package com.dabico.githubseapp.service;
+package com.dabico.gseapp.service;
 
 public class GitRepoLabelServiceImpl implements GitRepoLabelService {
 }

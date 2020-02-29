@@ -1,4 +1,4 @@
-package com.dabico.githubseapp.util;
+package com.dabico.gseapp.util;
 
 import java.util.Date;
 

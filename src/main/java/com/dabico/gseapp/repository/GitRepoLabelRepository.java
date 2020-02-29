@@ -1,6 +1,6 @@
-package com.dabico.githubseapp.repository;
+package com.dabico.gseapp.repository;
 
-import com.dabico.githubseapp.model.GitRepoLabel;
+import com.dabico.gseapp.model.GitRepoLabel;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface GitRepoLabelRepository extends JpaRepository<GitRepoLabel,Long> {

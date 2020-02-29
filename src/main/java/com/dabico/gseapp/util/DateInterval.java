@@ -1,4 +1,4 @@
-package com.dabico.githubseapp.util;
+package com.dabico.gseapp.util;
 
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -6,7 +6,7 @@ import org.javatuples.Pair;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import static com.dabico.githubseapp.util.DateUtils.*;
+import static com.dabico.gseapp.util.DateUtils.*;
 
 @Builder
 @Getter

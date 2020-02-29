@@ -1,6 +1,6 @@
-package com.dabico.githubseapp.job;
+package com.dabico.gseapp.job;
 
-import com.dabico.githubseapp.util.DateInterval;
+import com.dabico.gseapp.util.DateInterval;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
@@ -13,7 +13,7 @@ import org.springframework.stereotype.Service;
 import java.io.IOException;
 import java.util.*;
 
-import static com.dabico.githubseapp.util.DateUtils.*;
+import static com.dabico.gseapp.util.DateUtils.*;
 
 @Service
 public class CrawlProjectsJob {

@@ -1,4 +1,4 @@
-package com.dabico.githubseapp.model;
+package com.dabico.gseapp.model;
 
 import lombok.*;
 import lombok.experimental.FieldDefaults;
