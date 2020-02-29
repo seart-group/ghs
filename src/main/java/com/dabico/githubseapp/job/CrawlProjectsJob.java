@@ -10,6 +10,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
 import java.util.*;
 
 import static com.dabico.githubseapp.util.DateUtils.*;
@@ -32,10 +33,12 @@ public class CrawlProjectsJob {
     }
 
     private void retrieveRepos(DateInterval interval){
+        int page = 1;
         Request request = new Request.Builder()
                 .url("https://api.github.com/search/repositories?q=language:Java" +
                      interval.getSearchURL() +
-                     "&sort=stars&order=desc&page=1&per_page=100")
+                     "&page=" + page +
+                     "&per_page=100")
                 .addHeader("Authorization", clientSecret)
                 .addHeader("Accept", "application/vnd.github.v3+json")
                 .build();
@@ -44,11 +47,14 @@ public class CrawlProjectsJob {
         Response response;
         try {
             response = call.execute();
-            if (response.isSuccessful()){
-                String responseString = response.body().string();
-                JsonObject bodyJson = JsonParser.parseString(responseString).getAsJsonObject();
+            ResponseBody responseBody = response.body();
 
-                if (bodyJson.get("total_count").getAsInt() <= 1000){
+            if (response.isSuccessful() && responseBody != null){
+                String responseString = responseBody.string();
+                JsonObject bodyJson = JsonParser.parseString(responseString).getAsJsonObject();
+                int totalResults = bodyJson.get("total_count").getAsInt();
+
+                if (totalResults <= 1000){
                     JsonArray results = bodyJson.get("items").getAsJsonArray();
                     //store retrieved results
 
@@ -61,7 +67,7 @@ public class CrawlProjectsJob {
                     requestQueue.add(newIntervals.getValue1());
                 }
             }
-        } catch (Exception e) {
+        } catch (IOException e) {
             e.printStackTrace();
         }
     }
