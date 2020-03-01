@@ -24,7 +24,7 @@ public class CrawlProjectsJob {
     private GitRepoRepository gitRepoRepository;
 
     public void run(){
-        requestQueue.add(new DateInterval(firstYearDay(2008),setEndDay(new Date())));
+        requestQueue.add(new DateInterval(firstDayOfYear(2008),setEndDay(new Date())));
         do {
             DateInterval first = requestQueue.remove(0);
             retrieveRepos(first);
@@ -35,7 +35,7 @@ public class CrawlProjectsJob {
         int page = 1;
         Request request = new Request.Builder()
                 .url("https://api.github.com/search/repositories?q=language:Java" +
-                     interval.getSearchURL() +
+                     interval.toString() +
                      "+fork:true&page=" + page +
                      "&per_page=100")
                 .addHeader("Authorization", "56583668e32b73702785a85900975d1ceccf15d5")
