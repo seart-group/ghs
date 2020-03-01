@@ -30,8 +30,9 @@ public class DateInterval {
         return new Pair<>(firstInterval,secondInterval);
     }
 
-    public String getSearchURL(){
+    @Override
+    public String toString(){
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("YYYY-MM-DD");
-        return "+created:" + simpleDateFormat.format(this.start) + ".."  + simpleDateFormat.format(this.end);
+        return simpleDateFormat.format(this.start) + ".."  + simpleDateFormat.format(this.end);
     }
 }

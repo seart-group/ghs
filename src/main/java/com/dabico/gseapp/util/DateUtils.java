@@ -19,9 +19,8 @@ public class DateUtils {
         return setInitDay(date);
     }
 
-    public static Date firstYearDay(int year) {
+    public static Date firstDayOfYear(int year) {
         Date firstYearDate = new Date();
-
         firstYearDate = setYears(firstYearDate, year);
         firstYearDate = setMonths(firstYearDate, 0);
         firstYearDate = setDays(firstYearDate, 1);
@@ -29,14 +28,12 @@ public class DateUtils {
         return firstYearDate;
     }
 
-    public static Date lastYearDay(int year) {
+    public static Date lastDayOfYear(int year) {
         Date lastYearDay = new Date();
-
         lastYearDay = setYears(lastYearDay, year);
         lastYearDay = setMonths(lastYearDay, 11);
         lastYearDay = setDays(lastYearDay, 31);
         lastYearDay = setEndDay(lastYearDay);
-
         return lastYearDay;
     }
 }
