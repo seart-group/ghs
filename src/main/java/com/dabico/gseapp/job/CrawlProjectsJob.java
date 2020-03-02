@@ -36,7 +36,7 @@ public class CrawlProjectsJob {
         Set<String> minedLanguages = getLanguagesToMine();
         minedLanguages.forEach(language -> {
             List<DateInterval> requestQueue = new ArrayList<>();
-            requestQueue.add(new DateInterval(firstDayOfYear(2008),lastDayOfYear(now().getYear())));
+            requestQueue.add(new DateInterval(firstDayOfYear(2008),new Date()));
             do {
                 DateInterval first = requestQueue.remove(0);
                 retrieveRepos(first,language,requestQueue);
@@ -58,7 +58,7 @@ public class CrawlProjectsJob {
                 JsonObject bodyJson = parseString(responseBody.string()).getAsJsonObject();
                 int totalResults = bodyJson.get("total_count").getAsInt();
                 int totalPages = (int) Math.ceil(totalResults/100.0);
-
+                logger.info("Retrieved results: "+totalResults);
                 if (totalResults <= 1000){
                     JsonArray results = bodyJson.get("items").getAsJsonArray();
                     results.forEach(element -> {
