@@ -23,6 +23,8 @@ import static java.time.LocalDate.*;
 public class CrawlProjectsJob {
 
     static final Logger logger = LoggerFactory.getLogger(CrawlProjectsJob.class);
+    private List<DateInterval> requestQueue = new ArrayList<>();
+    private List<DateInterval> retryQueue = new ArrayList<>();
 
     private GitRepoRepository gitRepoRepository;
 
@@ -35,16 +37,15 @@ public class CrawlProjectsJob {
     public void run(){
         Set<String> minedLanguages = getLanguagesToMine();
         minedLanguages.forEach(language -> {
-            List<DateInterval> requestQueue = new ArrayList<>();
             requestQueue.add(new DateInterval(firstDayOfYear(2008),new Date()));
             do {
                 DateInterval first = requestQueue.remove(0);
-                retrieveRepos(first,language,requestQueue);
+                retrieveRepos(first,language);
             } while (!requestQueue.isEmpty());
         });
     }
 
-    private void retrieveRepos(DateInterval interval,String language,List<DateInterval> requestQueue){
+    private void retrieveRepos(DateInterval interval, String language){
         logger.info("Crawling: "+language.toUpperCase()+" "+interval);
 
         int page = 1;
@@ -81,33 +82,35 @@ public class CrawlProjectsJob {
                                 });
                                 responseBody.close();
                             } else if (response.code() == 403) {
-                                // request limit exceeded, retry later
+                                // request limit exceeded, preemptively terminate loop and retry later
                                 response.close();
-                                requestQueue.add(interval);
-                                // preemptively terminate loop
+                                retryQueue.add(interval);
                                 page = totalPages;
                             }
                             page++;
                         }
                     }
                 } else {
+                    //split search interval
                     Pair<DateInterval,DateInterval> newIntervals = interval.splitInterval();
                     if (newIntervals != null){
                         requestQueue.add(newIntervals.getValue0());
                         requestQueue.add(newIntervals.getValue1());
-                    } else {
-                        response.close();
                     }
+                    response.close();
                 }
             } else if (response.code() == 403) {
                 // request limit exceeded, retry later
                 response.close();
-                requestQueue.add(interval);
+                retryQueue.add(interval);
             }
-        } catch (IOException e) {
-            // Something went wrong when reading the response
-            requestQueue.add(interval);
+        } catch (IOException | InterruptedException e) {
+            // Something went wrong when reading the response or thread was interrupted
+            retryQueue.add(interval);
             e.printStackTrace();
+        } finally {
+            logger.info(requestQueue.toString());
+            logger.info(retryQueue.toString());
         }
     }
 
