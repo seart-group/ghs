@@ -9,6 +9,7 @@ import java.io.IOException;
 @NoArgsConstructor
 public class GitHubApiService extends HTTPService {
 
+    //TODO configure application.properties access
     private static final String accessToken = "56583668e32b73702785a85900975d1ceccf15d5";
 
     public Response gitHubSearchRepositories(String language, DateInterval interval, Integer page) throws IOException {

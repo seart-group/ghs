@@ -117,6 +117,7 @@ public class CrawlProjectsJob {
     }
 
     private Set<String> getLanguagesToMine(){
+        //TODO configure access of git.toMine instead of this
         Set<String> languages = new HashSet<>();
         languages.add("Java");
 //        languages.add("Kotlin");

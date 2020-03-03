@@ -1,0 +1,12 @@
+{
+  "properties": [
+    {
+      "name": "git.accessToken",
+      "type": "java.lang.String"
+    },
+    {
+      "name": "git.toMine",
+      "type": "java.lang.String",
+      "description": "Description for git.toMine."
+    }
+  ] }
