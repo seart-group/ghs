@@ -53,6 +53,8 @@ public class CrawlProjectsJob {
 
         try {
             Response response = gitHubApiService.gitHubSearchRepositories(language,interval,page);
+            //TODO Find a better way to slow down the requests
+            Thread.sleep(7500);
             ResponseBody responseBody = response.body();
 
             if (response.isSuccessful() && responseBody != null){
