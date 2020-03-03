@@ -9,7 +9,7 @@ public class GitRepoConverter {
         String repositoryURL = json.get("html_url").getAsString();
         //TODO Pass Response objects to some kind of respective parser
         GitHubPageCrawlerService crawlerService = new GitHubPageCrawlerService(repositoryURL);
-        //TODO Configure builder
+        //TODO Pass parser results to builder
         return GitRepo.builder()
                       .isFork(json.get("fork").getAsBoolean())
                       //commits - main project page

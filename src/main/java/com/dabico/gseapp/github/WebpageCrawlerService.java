@@ -13,9 +13,9 @@ import java.io.IOException;
 public class WebpageCrawlerService extends HTTPService {
     public Response crawlPage(String pageURL){
         Request request = new Request.Builder()
-                .url(pageURL)
-                .addHeader("Accept","text/html")
-                .build();
+                                     .url(pageURL)
+                                     .addHeader("Accept","text/html")
+                                     .build();
         Call call = client.newCall(request);
         try {
             return call.execute();
