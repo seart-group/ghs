@@ -11,6 +11,7 @@ public class GitRepoConverter {
         GitHubPageCrawlerService crawlerService = new GitHubPageCrawlerService(repositoryURL);
         //TODO Pass parser results to builder
         return GitRepo.builder()
+                      .name(json.get("full_name").getAsString())
                       .isFork(json.get("fork").getAsBoolean())
                       //commits - main project page
                       //branches - main project page

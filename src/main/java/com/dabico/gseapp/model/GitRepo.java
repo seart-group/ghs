@@ -22,6 +22,9 @@ public class GitRepo {
     @Column(name = "id")
     Long id;
 
+    @Column(name = "name")
+    String name;
+
     @Column(name = "is_fork_project")
     Boolean isFork;
 
