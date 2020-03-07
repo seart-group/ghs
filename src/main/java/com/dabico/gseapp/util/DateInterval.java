@@ -7,45 +7,26 @@ import org.javatuples.Pair;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import static com.dabico.gseapp.util.DateUtils.*;
-import static org.apache.commons.lang3.time.DateUtils.*;
-
-@Builder
 @Getter
 @Setter
-@NoArgsConstructor
-@FieldDefaults(level = AccessLevel.PRIVATE)
-public class DateInterval {
+@FieldDefaults(level = AccessLevel.PROTECTED)
+public class DateInterval extends Interval<Date> {
 
-    Date start;
-    Date end;
-
-    public DateInterval(Date start, Date end){
-        this.start = setInitDay(start);
-        this.end   = setInitDay(end);
-    }
+    public DateInterval(Date start, Date end) { super(start,end); }
 
     public Pair<DateInterval,DateInterval> splitInterval(){
-        if (isSameDay(this.start,this.end)){
-            return null;
+        if (start.equals(end)){
+            return new Pair<>(new DateInterval(start, end), null);
         }
-        Date median = setInitDay(new Date((start.getTime() + end.getTime())/2));
+
+        Date median = new Date((start.getTime() + end.getTime())/2);
         DateInterval firstInterval  = new DateInterval(start,median);
         DateInterval secondInterval = new DateInterval(median,end);
         return new Pair<>(firstInterval,secondInterval);
     }
 
-    @Override
     public String toString(){
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
-        return simpleDateFormat.format(this.start) + ".."  + simpleDateFormat.format(this.end);
-    }
-
-    @Override
-    public boolean equals(Object obj){
-        return (obj == this) ||
-               ((obj instanceof DateInterval) &&
-                (this.start == ((DateInterval) obj).start) &&
-                (this.end == ((DateInterval) obj).end));
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+        return dateFormat.format(start) + ".."  + dateFormat.format(end);
     }
 }
