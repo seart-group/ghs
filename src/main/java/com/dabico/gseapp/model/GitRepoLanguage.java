@@ -3,10 +3,8 @@ package com.dabico.gseapp.model;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
+import java.util.Date;
 
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Getter
@@ -30,4 +28,11 @@ public class GitRepoLanguage {
 
     @Column(name = "size_of_code")
     Long sizeOfCode;
+
+    @Column(name = "crawled")
+    Date crawled;
+
+    @PreUpdate
+    @PrePersist
+    private void onPersistAndUpdate() { crawled = new Date(); }
 }

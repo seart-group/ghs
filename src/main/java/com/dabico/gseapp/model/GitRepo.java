@@ -81,4 +81,11 @@ public class GitRepo {
 
     @Column(name = "archived")
     Boolean isArchived;
+
+    @Column(name = "crawled")
+    Date crawled;
+
+    @PreUpdate
+    @PrePersist
+    private void onPersistAndUpdate() { crawled = new Date(); }
 }

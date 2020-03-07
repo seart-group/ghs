@@ -3,10 +3,8 @@ package com.dabico.gseapp.model;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
+import java.util.Date;
 
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Getter
@@ -27,4 +25,11 @@ public class GitRepoLabel {
 
     @Column(name = "repo_label")
     String label;
+
+    @Column(name = "crawled")
+    Date crawled;
+
+    @PreUpdate
+    @PrePersist
+    private void onPersistAndUpdate() { crawled = new Date(); }
 }
