@@ -53,6 +53,13 @@ create table repo_language
 create index repo_language_index_repo_id
     on repo_language (repo_id);
 
+create table access_token
+(
+    id bigint auto_increment
+        primary key,
+    token varchar(40) null
+);
+
 CREATE TABLE `hibernate_sequence` (
   `next_val` bigint(20) DEFAULT NULL
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
