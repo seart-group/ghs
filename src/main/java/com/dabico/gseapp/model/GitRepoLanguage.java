@@ -13,7 +13,7 @@ import java.util.Date;
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode
-@Table(name = "repo_languages")
+@Table(name = "repo_language")
 @Entity
 public class GitRepoLanguage {
     @Id
@@ -23,7 +23,7 @@ public class GitRepoLanguage {
     @Column(name = "repo_id")
     Long repositoryId;
 
-    @Column(name = "repo_language")
+    @Column(name = "repo_language_name")
     String language;
 
     @Column(name = "size_of_code")

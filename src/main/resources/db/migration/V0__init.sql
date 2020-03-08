@@ -30,22 +30,22 @@ create table repo
         unique (name)
 );
 
-create table repo_labels
+create table repo_label
 (
     repo_label_id bigint not null,
     repo_id bigint not null,
-    repo_label varchar(255) null,
+    repo_label_name varchar(255) null,
     primary key (repo_label_id, repo_id)
 );
 
 create index repo_labels_index_repo_id
     on repo_labels (repo_id);
 
-create table repo_languages
+create table repo_language
 (
     repo_language_id bigint not null,
     repo_id bigint not null,
-    repo_language varchar(255) null,
+    repo_language_name varchar(255) null,
     size_of_code bigint not null,
     primary key (repo_language_id, repo_id)
 );

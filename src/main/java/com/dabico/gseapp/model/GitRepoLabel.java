@@ -13,7 +13,7 @@ import java.util.Date;
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode
-@Table(name = "repo_labels")
+@Table(name = "repo_label")
 @Entity
 public class GitRepoLabel {
     @Id
@@ -23,7 +23,7 @@ public class GitRepoLabel {
     @Column(name = "repo_id")
     Long repositoryId;
 
-    @Column(name = "repo_label")
+    @Column(name = "repo_label_name")
     String label;
 
     @Column(name = "crawled")
