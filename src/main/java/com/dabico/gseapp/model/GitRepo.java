@@ -58,7 +58,7 @@ public class GitRepo {
     @Column(name = "size")
     Long size;
 
-    @Column(name = "main_language", nullable = false)
+    @Column(name = "main_language")
     String mainLanguage;
 
     @Column(name = "total_issues")
