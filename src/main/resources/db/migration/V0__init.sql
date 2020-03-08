@@ -38,8 +38,8 @@ create table repo_label
     primary key (repo_label_id, repo_id)
 );
 
-create index repo_labels_index_repo_id
-    on repo_labels (repo_id);
+create index repo_label_index_repo_id
+    on repo_label (repo_id);
 
 create table repo_language
 (
@@ -50,8 +50,8 @@ create table repo_language
     primary key (repo_language_id, repo_id)
 );
 
-create index repo_languages_index_repo_id
-    on repo_languages (repo_id);
+create index repo_language_index_repo_id
+    on repo_language (repo_id);
 
 CREATE TABLE `hibernate_sequence` (
   `next_val` bigint(20) DEFAULT NULL
