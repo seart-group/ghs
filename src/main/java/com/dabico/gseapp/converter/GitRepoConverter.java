@@ -2,14 +2,16 @@ package com.dabico.gseapp.converter;
 
 import com.dabico.gseapp.github.GitHubPageCrawlerService;
 import com.dabico.gseapp.model.GitRepo;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
 public class GitRepoConverter {
     public static GitRepo jsonToGitRepo(JsonObject json){
-        String repositoryURL = json.get("html_url").getAsString();
+        //String repositoryURL = json.get("html_url").getAsString();
         //TODO Pass Response objects to some kind of respective parser
-        GitHubPageCrawlerService crawlerService = new GitHubPageCrawlerService(repositoryURL);
+        //GitHubPageCrawlerService crawlerService = new GitHubPageCrawlerService(repositoryURL);
         //TODO Pass parser results to builder
+        JsonElement license = json.get("license");
         return GitRepo.builder()
                       .name(json.get("full_name").getAsString())
                       .isFork(json.get("fork").getAsBoolean())
@@ -18,7 +20,7 @@ public class GitRepoConverter {
                       .defaultBranch(json.get("default_branch").getAsString())
                       //releases - main project page
                       //contributors - main project page
-                      .license(json.get("license").getAsJsonObject().get("name").getAsString())
+                      .license((license.isJsonNull()) ? null : license.getAsJsonObject().get("name").getAsString())
                       //watchers - main project page
                       .stargazers(json.get("stargazers_count").getAsLong())
                       .forks(json.get("forks_count").getAsLong())
