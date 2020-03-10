@@ -65,7 +65,7 @@ public class CrawlProjectsJob {
         logger.info("Token: " + this.currentToken);
         int page = 1;
         GitHubApiService gitHubApiService = new GitHubApiService();
-        if (!gitHubApiService.isTokenLimitExceeded(currentToken)){
+        if (gitHubApiService.isTokenLimitExceeded(currentToken)){
             currentToken = getNewToken();
         }
         Response response = gitHubApiService.searchRepositories(language,interval,page,currentToken);
@@ -88,7 +88,7 @@ public class CrawlProjectsJob {
                 if (totalPages > 1){
                     page++;
                     while (page <= totalPages){
-                        if (!gitHubApiService.isTokenLimitExceeded(currentToken)){
+                        if (gitHubApiService.isTokenLimitExceeded(currentToken)){
                             currentToken = getNewToken();
                         }
                         response = gitHubApiService.searchRepositories(language,interval,page,currentToken);

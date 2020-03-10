@@ -39,7 +39,6 @@ public class GitHubApiService extends HTTPService {
 
         Call call = client.newCall(request);
         Response response = call.execute();
-        Thread.sleep(500);
         ResponseBody responseBody = response.body();
         if (response.isSuccessful() && responseBody != null){
             JsonObject bodyJson = parseString(responseBody.string()).getAsJsonObject();
@@ -47,7 +46,7 @@ public class GitHubApiService extends HTTPService {
             JsonObject resources = bodyJson.get("resources").getAsJsonObject();
             JsonObject search = resources.get("search").getAsJsonObject();
             int remaining = search.get("remaining").getAsInt();
-            return remaining > 0;
+            return remaining <= 0;
         } else {
             throw new RuntimeException();
         }
