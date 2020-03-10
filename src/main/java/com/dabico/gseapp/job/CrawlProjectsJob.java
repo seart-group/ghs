@@ -80,10 +80,10 @@ public class CrawlProjectsJob {
                 JsonArray results = bodyJson.get("items").getAsJsonArray();
                 response.close();
                 logger.info("Adding: "+results.size()+" results");
-                results.forEach(element -> {
+                for (JsonElement element : results){
                     JsonObject repository = element.getAsJsonObject();
                     gitRepoRepository.save(jsonToGitRepo(repository));
-                });
+                }
 
                 if (totalPages > 1){
                     page++;
@@ -98,10 +98,10 @@ public class CrawlProjectsJob {
                             response.close();
                             results = bodyJson.get("items").getAsJsonArray();
                             logger.info("Adding: "+results.size()+" results");
-                            results.forEach(element -> {
+                            for (JsonElement element : results){
                                 JsonObject repository = element.getAsJsonObject();
                                 gitRepoRepository.save(jsonToGitRepo(repository));
-                            });
+                            }
                             page++;
                         }
                         response.close();
