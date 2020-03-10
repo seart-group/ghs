@@ -22,6 +22,10 @@ public class JobScheduler {
 
     @Scheduled(fixedRateString = "31556952000")
     public void run(){
-        crawlProjectsJob.run();
+        try {
+            crawlProjectsJob.run();
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
     }
 }
