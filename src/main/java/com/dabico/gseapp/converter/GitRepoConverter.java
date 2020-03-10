@@ -5,11 +5,13 @@ import com.dabico.gseapp.model.GitRepo;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
+import java.io.IOException;
+
 public class GitRepoConverter {
-    public static GitRepo jsonToGitRepo(JsonObject json){
-        //String repositoryURL = json.get("html_url").getAsString();
-        //TODO Pass Response objects to some kind of respective parser
-        //GitHubPageCrawlerService crawlerService = new GitHubPageCrawlerService(repositoryURL);
+    public static GitRepo jsonToGitRepo(JsonObject json) throws IOException {
+        String repositoryURL = json.get("html_url").getAsString();
+        GitHubPageCrawlerService crawlerService = new GitHubPageCrawlerService(repositoryURL);
+        crawlerService.mine();
         //TODO Pass parser results to builder
         JsonElement license = json.get("license");
         return GitRepo.builder()
