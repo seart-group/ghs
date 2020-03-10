@@ -16,7 +16,7 @@ public class DateInterval extends Interval<Date> {
 
     public Pair<DateInterval,DateInterval> splitInterval(){
         if (start.equals(end)){
-            return new Pair<>(new DateInterval(start, end), null);
+            return null;
         }
 
         Date median = new Date((start.getTime() + end.getTime())/2);

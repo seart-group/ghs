@@ -13,7 +13,7 @@ public class IntInterval extends Interval<Integer> {
 
     public Pair<IntInterval,IntInterval> splitInterval(){
         if (start.equals(end)){
-            return new Pair<>(new IntInterval(start, end), null);
+            return null;
         }
 
         Integer median = (start + end)/2;
@@ -22,7 +22,5 @@ public class IntInterval extends Interval<Integer> {
         return new Pair<>(firstInterval,secondInterval);
     }
 
-    public String toString(){
-        return this.start + ".." + this.end;
-    }
+    public String toString(){ return this.start + ".." + this.end; }
 }
