@@ -23,7 +23,7 @@ public class GitHubApiService {
     public Response searchRepositories(String language,
                                        DateInterval interval,
                                        Integer page,
-                                       String accessToken) throws IOException {
+                                       String accessToken) throws IOException, InterruptedException {
         Request request = new Request.Builder()
                 .url("https://api.github.com/search/repositories?q=" +
                      "language:" + language +
@@ -37,7 +37,9 @@ public class GitHubApiService {
                 .build();
 
         Call call = client.newCall(request);
-        return call.execute();
+        Response response =  call.execute();
+        Thread.sleep(1000);
+        return response;
     }
 
     public boolean isTokenLimitExceeded(String accessToken) throws Exception {

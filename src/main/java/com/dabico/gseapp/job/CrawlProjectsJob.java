@@ -128,12 +128,7 @@ public class CrawlProjectsJob {
         //accessTokenRepository.findAll().forEach(accessToken -> {
         //    accessTokens.add(accessToken.getToken());
         //});
-        accessTokens.add("56583668e32b73702785a85900975d1ceccf15d5");
-        accessTokens.add("0557bad020621a34dc656090cc7264e0d670afc4");
-        accessTokens.add("86014a86020b35508acdac9b3f6f1245c0918549");
-        accessTokens.add("adf94f57383244eb31aaaadc1d93815a62782973");
-        accessTokens.add("147c98e95b18242d670b579a66b0f7dc01796274");
-        accessTokens.add("17dcaae29a93ea23062860195181ba9ec8393c61");
+        accessTokens.add("faa5d7ae42793a29c360572fd519d5438d41962b");
     }
 
     private String getNewToken(){
