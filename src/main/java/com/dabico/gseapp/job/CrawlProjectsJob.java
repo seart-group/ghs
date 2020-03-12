@@ -1,21 +1,15 @@
 package com.dabico.gseapp.job;
 
 import com.dabico.gseapp.github.GitHubApiService;
-import com.dabico.gseapp.repository.AccessTokenRepository;
-import com.dabico.gseapp.repository.GitRepoRepository;
-import com.dabico.gseapp.repository.SupportedLanguageRepository;
+import com.dabico.gseapp.repository.*;
 import com.dabico.gseapp.util.DateInterval;
 import com.google.gson.*;
-import lombok.Getter;
-import lombok.Setter;
 import okhttp3.*;
 import org.javatuples.Pair;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.slf4j.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.io.IOException;
 import java.util.*;
 
 import static com.dabico.gseapp.util.DateUtils.*;
@@ -60,7 +54,7 @@ public class CrawlProjectsJob {
         }
     }
 
-    private void retrieveRepos(DateInterval interval, String language) throws Exception{
+    private void retrieveRepos(DateInterval interval, String language) throws Exception {
         logger.info("Crawling: "+language.toUpperCase()+" "+interval);
         logger.info("Token: " + this.currentToken);
         int page = 1;
