@@ -2,15 +2,24 @@ package com.dabico.gseapp.github;
 
 import com.dabico.gseapp.util.DateInterval;
 import com.google.gson.JsonObject;
-import lombok.NoArgsConstructor;
 import okhttp3.*;
 
 import java.io.IOException;
+import java.util.concurrent.TimeUnit;
 
 import static com.google.gson.JsonParser.parseString;
 
-@NoArgsConstructor
-public class GitHubApiService extends HTTPService {
+public class GitHubApiService {
+    private OkHttpClient client;
+
+    public GitHubApiService(){
+        this.client = new OkHttpClient.Builder()
+                .connectTimeout(1, TimeUnit.MINUTES)
+                .writeTimeout(1, TimeUnit.MINUTES)
+                .readTimeout(1, TimeUnit.MINUTES)
+                .build();
+    }
+
     public Response searchRepositories(String language,
                                        DateInterval interval,
                                        Integer page,
@@ -23,7 +32,7 @@ public class GitHubApiService extends HTTPService {
                      "+is:public" +
                      "&page=" + page +
                      "&per_page=100")
-                .addHeader("Authorization", accessToken)
+                .addHeader("Authorization", "token " + accessToken)
                 .addHeader("Accept", "application/vnd.github.v3+json")
                 .build();
 
@@ -34,7 +43,7 @@ public class GitHubApiService extends HTTPService {
     public boolean isTokenLimitExceeded(String accessToken) throws Exception {
         Request request = new Request.Builder()
                 .url("https://api.github.com/rate_limit")
-                .addHeader("Authorization", accessToken)
+                .addHeader("Authorization", "token " + accessToken)
                 .build();
 
         Call call = client.newCall(request);
@@ -48,6 +57,8 @@ public class GitHubApiService extends HTTPService {
             int remaining = search.get("remaining").getAsInt();
             return remaining <= 0;
         } else {
+            //TODO Replace with a custom exception
+            //or something like, "no connection exception"
             throw new RuntimeException();
         }
     }

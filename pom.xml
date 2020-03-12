@@ -5,7 +5,7 @@
 
 	<groupId>com.example</groupId>
 	<artifactId>GSEArtifact</artifactId>
-	<version>0.0.5-SNAPSHOT</version>
+	<version>0.0.6-SNAPSHOT</version>
 	<packaging>jar</packaging>
 
 	<name>GitHub Search Engine</name>
@@ -97,6 +97,11 @@
 		<dependency>
 			<groupId>org.flywaydb</groupId>
 			<artifactId>flyway-core</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.jsoup</groupId>
+			<artifactId>jsoup</artifactId>
+			<version>1.12.2</version>
 		</dependency>
 	</dependencies>
 
