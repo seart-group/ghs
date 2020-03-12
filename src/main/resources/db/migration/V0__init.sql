@@ -21,7 +21,7 @@ create table repo
     total_issues bigint null,
     open_issues bigint null,
     total_pull_requests bigint null,
-    opened_pull_requests bigint null,
+    open_pull_requests bigint null,
     last_commit datetime null,
     last_commit_sha varchar(40) null,
     has_wiki bit null,

@@ -30,7 +30,7 @@ public class GitRepoConverter {
                       .totalIssues(crawlerService.getTotalIssues())
                       .openIssues(crawlerService.getOpenIssues())
                       .totalPullRequests(crawlerService.getTotalPullRequests())
-                      .openedPullRequests(crawlerService.getOpenPullRequests())
+                      .openPullRequests(crawlerService.getOpenPullRequests())
                       .lastCommit(crawlerService.getLastCommit())
                       .lastCommitSHA(crawlerService.getLastCommitSHA())
                       .hasWiki(json.get("has_wiki").getAsBoolean())

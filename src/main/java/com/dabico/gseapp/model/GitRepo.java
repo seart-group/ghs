@@ -70,8 +70,8 @@ public class GitRepo {
     @Column(name = "total_pull_requests")
     Long totalPullRequests;
 
-    @Column(name = "opened_pull_requests")
-    Long openedPullRequests;
+    @Column(name = "open_pull_requests")
+    Long openPullRequests;
 
     @Column(name = "last_commit")
     Date lastCommit;
