@@ -9,7 +9,16 @@ import org.javatuples.Pair;
 @FieldDefaults(level = AccessLevel.PROTECTED)
 public class IntInterval extends Interval<Integer> {
 
-    public IntInterval(Integer start, Integer end) { super(start,end); }
+    public IntInterval(Integer start, Integer end){ super(start,end); }
+
+    public IntInterval(String interval){
+        super();
+        String[] tokens = interval.split("\\.\\.");
+        String startString = tokens[0];
+        String endString = tokens[1];
+        this.start = Integer.parseInt(startString);
+        this.end = Integer.parseInt(endString);
+    }
 
     public Pair<IntInterval,IntInterval> splitInterval(){
         if (start.equals(end)){

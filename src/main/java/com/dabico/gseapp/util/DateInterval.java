@@ -4,6 +4,7 @@ import lombok.*;
 import lombok.experimental.FieldDefaults;
 import org.javatuples.Pair;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -12,7 +13,19 @@ import java.util.Date;
 @FieldDefaults(level = AccessLevel.PROTECTED)
 public class DateInterval extends Interval<Date> {
 
-    public DateInterval(Date start, Date end) { super(start,end); }
+    public DateInterval(Date start, Date end){ super(start,end); }
+
+    public DateInterval(String interval){
+        super();
+        String[] tokens = interval.split("\\.\\.");
+        String startString = tokens[0];
+        String endString = tokens[1];
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+        try {
+            this.start = dateFormat.parse(startString);
+            this.end = dateFormat.parse(endString);
+        } catch (ParseException ignore){}
+    }
 
     public Pair<DateInterval,DateInterval> splitInterval(){
         if (start.equals(end)){

@@ -6,6 +6,7 @@ import org.javatuples.Pair;
 
 @Getter
 @Setter
+@NoArgsConstructor
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PROTECTED)
 public abstract class Interval<T> {
