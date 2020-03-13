@@ -1,5 +1,6 @@
 package com.dabico.gseapp.model;
 
+import com.dabico.gseapp.github.Endpoints;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
@@ -91,4 +92,16 @@ public class GitRepo {
     @PreUpdate
     @PrePersist
     private void onPersistAndUpdate() { crawled = new Date(); }
+
+    public String generateRepoURL(){
+        return Endpoints.REPOS.getUrl() + "/" + name;
+    }
+
+    public String generateLabelsURL(){
+        return generateRepoURL() + "/labels";
+    }
+
+    public String generateLanguagesURL(){
+        return generateRepoURL() + "/languages";
+    }
 }
