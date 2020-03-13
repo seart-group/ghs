@@ -7,12 +7,15 @@ import com.google.gson.JsonObject;
 
 import java.io.IOException;
 
+import static com.dabico.gseapp.util.DateUtils.fromGitDateString;
+
 public class GitRepoConverter {
     public static GitRepo jsonToGitRepo(JsonObject json) throws IOException {
         String repositoryURL = json.get("html_url").getAsString();
         GitHubPageCrawlerService crawlerService = new GitHubPageCrawlerService(repositoryURL);
         crawlerService.mine();
         JsonElement license = json.get("license");
+        JsonElement homepage = json.get("homepage");
         return GitRepo.builder()
                       .name(json.get("full_name").getAsString())
                       .isFork(json.get("fork").getAsBoolean())
@@ -26,6 +29,10 @@ public class GitRepoConverter {
                       .stargazers(crawlerService.getStars())
                       .forks(json.get("forks_count").getAsLong())
                       .size(json.get("size").getAsLong())
+                      .createdAt(fromGitDateString(json.get("created_at").getAsString()))
+                      .pushedAt(fromGitDateString(json.get("pushed_at").getAsString()))
+                      .updatedAt(fromGitDateString(json.get("updated_at").getAsString()))
+                      .homepage(homepage.isJsonNull() ? null : homepage.getAsString())
                       .mainLanguage(json.get("language").getAsString())
                       .totalIssues(crawlerService.getTotalIssues())
                       .openIssues(crawlerService.getOpenIssues())

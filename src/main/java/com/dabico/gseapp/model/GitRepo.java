@@ -59,6 +59,18 @@ public class GitRepo {
     @Column(name = "size")
     Long size;
 
+    @Column(name = "created_at")
+    Date createdAt;
+
+    @Column(name = "pushed_at")
+    Date pushedAt;
+
+    @Column(name = "updated_at")
+    Date updatedAt;
+
+    @Column(name = "homepage")
+    String homepage;
+
     @Column(name = "main_language")
     String mainLanguage;
 
