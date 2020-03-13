@@ -1,5 +1,6 @@
 package com.dabico.gseapp.github;
 
+import com.dabico.gseapp.util.DateUtils;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -11,11 +12,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import static java.lang.Long.parseLong;
+import static com.dabico.gseapp.util.DateUtils.fromGitDateString;
 
 @Getter
 @RequiredArgsConstructor
@@ -82,10 +82,7 @@ public class GitHubPageCrawlerService {
         String link = button_a.get(0).attr("href");
         document = Jsoup.connect(Endpoints.DEFAULT.getUrl()+"/"+link).get();
         String date_time = document.getElementsByTag("relative-time").attr("datetime");
-        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
-        try {
-            lastCommit = dateFormat.parse(date_time);
-        } catch (ParseException ignored){}
+        lastCommit = fromGitDateString(date_time);
         lastCommitSHA = document.getElementsByClass("sha user-select-contain").get(0).childNode(0).toString();
     }
 
