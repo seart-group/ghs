@@ -62,7 +62,7 @@ public class CrawlProjectsJob {
         if (gitHubApiService.isTokenLimitExceeded(currentToken)){
             currentToken = getNewToken();
         }
-        Response response = gitHubApiService.searchRepositories(language,interval,page,currentToken);
+        Response response = gitHubApiService.searchRepositories(language,interval,page,currentToken,false);
         ResponseBody responseBody = response.body();
 
         if (response.isSuccessful() && responseBody != null){
@@ -85,7 +85,7 @@ public class CrawlProjectsJob {
                         if (gitHubApiService.isTokenLimitExceeded(currentToken)){
                             currentToken = getNewToken();
                         }
-                        response = gitHubApiService.searchRepositories(language,interval,page,currentToken);
+                        response = gitHubApiService.searchRepositories(language,interval,page,currentToken,false);
                         responseBody = response.body();
                         if (response.isSuccessful() && responseBody != null){
                             bodyJson = parseString(responseBody.string()).getAsJsonObject();

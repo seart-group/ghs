@@ -52,7 +52,6 @@ public class GitHubPageCrawlerService {
         branches = parseLong(normalizeNumberString(summary_ul.get(0).childNode(3).childNode(1).childNode(3).childNode(0).toString()));
         releases = parseLong(normalizeNumberString(summary_ul.get(0).childNode(7).childNode(1).childNode(3).childNode(0).toString()));
         //TODO fetching contributors can sometimes be unpredictable as they might not load on time
-        //using OkHttp3 does not fix this
         //contributors = parseLong(normalizeNumberString(summary_ul.get(0).childNode(9).childNode(1).childNode(3).childNode(0).toString()));
         Elements pagehead_ul = document.getElementsByClass("pagehead-actions flex-shrink-0 ");
         watchers = parseLong(normalizeNumberString(pagehead_ul.get(0).childNode(3).childNode(3).attr("aria-label").split(" ")[0]));
@@ -81,7 +80,7 @@ public class GitHubPageCrawlerService {
         Document document = Jsoup.connect(repoURL + "/commits").get();
         Elements button_a = document.getElementsByClass("sha btn btn-outline BtnGroup-item");
         String link = button_a.get(0).attr("href");
-        document = Jsoup.connect("https://github.com/"+link).get();
+        document = Jsoup.connect(Endpoints.DEFAULT.getUrl()+"/"+link).get();
         String date_time = document.getElementsByTag("relative-time").attr("datetime");
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
         try {
