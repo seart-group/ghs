@@ -8,7 +8,7 @@ import com.google.gson.JsonObject;
 import java.io.IOException;
 
 public class GitRepoConverter {
-    public static GitRepo jsonToGitRepo(JsonObject json) throws Exception {
+    public static GitRepo jsonToGitRepo(JsonObject json) throws IOException {
         String repositoryURL = json.get("html_url").getAsString();
         GitHubPageCrawlerService crawlerService = new GitHubPageCrawlerService(repositoryURL);
         crawlerService.mine();
