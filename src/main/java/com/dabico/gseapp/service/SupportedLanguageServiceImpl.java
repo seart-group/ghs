@@ -14,7 +14,7 @@ public class SupportedLanguageServiceImpl implements SupportedLanguageService {
     SupportedLanguageRepository supportedLanguageRepository;
 
     @Override
-    public SupportedLanguage save(SupportedLanguage sl){
+    public SupportedLanguage create(SupportedLanguage sl){
         return supportedLanguageRepository.save(sl);
     }
 
