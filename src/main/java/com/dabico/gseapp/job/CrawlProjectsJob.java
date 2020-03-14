@@ -2,7 +2,7 @@ package com.dabico.gseapp.job;
 
 import com.dabico.gseapp.github.GitHubApiService;
 import com.dabico.gseapp.repository.*;
-import com.dabico.gseapp.util.DateInterval;
+import com.dabico.gseapp.util.interval.DateInterval;
 import com.google.gson.*;
 import okhttp3.*;
 import org.javatuples.Pair;
@@ -12,7 +12,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.*;
 
-import static com.dabico.gseapp.util.DateUtils.*;
 import static com.dabico.gseapp.converter.GitRepoConverter.*;
 import static com.google.gson.JsonParser.*;
 

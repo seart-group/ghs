@@ -1,4 +1,4 @@
-package com.dabico.gseapp.util;
+package com.dabico.gseapp.util.interval;
 
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -21,10 +21,7 @@ public class IntInterval extends Interval<Integer> {
     }
 
     public Pair<IntInterval,IntInterval> splitInterval(){
-        if (start.equals(end)){
-            return null;
-        }
-
+        if (start.equals(end)){ return null; }
         Integer median = (start + end)/2;
         IntInterval firstInterval  = new IntInterval(start,median);
         IntInterval secondInterval = new IntInterval(median,end);

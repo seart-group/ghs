@@ -1,4 +1,4 @@
-package com.dabico.gseapp.util;
+package com.dabico.gseapp.util.interval;
 
 import lombok.*;
 import lombok.experimental.FieldDefaults;

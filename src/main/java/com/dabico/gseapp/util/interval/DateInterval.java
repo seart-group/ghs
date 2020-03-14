@@ -1,4 +1,4 @@
-package com.dabico.gseapp.util;
+package com.dabico.gseapp.util.interval;
 
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -28,10 +28,7 @@ public class DateInterval extends Interval<Date> {
     }
 
     public Pair<DateInterval,DateInterval> splitInterval(){
-        if (start.equals(end)){
-            return null;
-        }
-
+        if (start.equals(end)){ return null; }
         Date median = new Date((start.getTime() + end.getTime())/2);
         DateInterval firstInterval  = new DateInterval(start,median);
         DateInterval secondInterval = new DateInterval(median,end);
