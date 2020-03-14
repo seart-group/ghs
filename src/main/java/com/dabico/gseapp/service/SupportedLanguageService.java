@@ -1,8 +1,8 @@
 package com.dabico.gseapp.service;
 
-import com.dabico.gseapp.model.SupportedLanguage;
+import com.dabico.gseapp.dto.SupportedLanguageDto;
 
 public interface SupportedLanguageService {
-    SupportedLanguage create(SupportedLanguage sl);
-    void delete(SupportedLanguage sl);
+    void createOrUpdate(SupportedLanguageDto sldto);
+    void delete(Long id);
 }

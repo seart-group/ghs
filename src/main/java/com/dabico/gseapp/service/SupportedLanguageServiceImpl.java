@@ -1,5 +1,6 @@
 package com.dabico.gseapp.service;
 
+import com.dabico.gseapp.dto.SupportedLanguageDto;
 import com.dabico.gseapp.model.SupportedLanguage;
 import com.dabico.gseapp.repository.SupportedLanguageRepository;
 import lombok.AccessLevel;
@@ -14,12 +15,15 @@ public class SupportedLanguageServiceImpl implements SupportedLanguageService {
     SupportedLanguageRepository supportedLanguageRepository;
 
     @Override
-    public SupportedLanguage create(SupportedLanguage sl){
-        return supportedLanguageRepository.save(sl);
+    public void createOrUpdate(SupportedLanguageDto sldto){
+        SupportedLanguage sl = SupportedLanguage.builder().build();
+        if (sldto.getId() != null){
+            sl = supportedLanguageRepository.findById(sldto.getId()).get();
+        }
+        sl.setLanguage(sldto.getLanguage());
+        supportedLanguageRepository.save(sl);
     }
 
     @Override
-    public void delete(SupportedLanguage sl){
-        supportedLanguageRepository.delete(sl);
-    }
+    public void delete(Long id){ supportedLanguageRepository.deleteById(id); }
 }

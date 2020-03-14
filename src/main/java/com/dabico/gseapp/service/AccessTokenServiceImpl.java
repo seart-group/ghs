@@ -1,5 +1,6 @@
 package com.dabico.gseapp.service;
 
+import com.dabico.gseapp.dto.AccessTokenDto;
 import com.dabico.gseapp.model.AccessToken;
 import com.dabico.gseapp.repository.AccessTokenRepository;
 import lombok.AccessLevel;
@@ -14,12 +15,15 @@ public class AccessTokenServiceImpl implements AccessTokenService {
     AccessTokenRepository accessTokenRepository;
 
     @Override
-    public AccessToken create(AccessToken at){
-        return accessTokenRepository.save(at);
+    public void createOrUpdate(AccessTokenDto atdto){
+        AccessToken at = AccessToken.builder().build();
+        if (atdto.getId() != null){
+            at = accessTokenRepository.findById(atdto.getId()).get();
+        }
+        at.setToken(atdto.getToken());
+        accessTokenRepository.save(at);
     }
 
     @Override
-    public void delete(AccessToken at){
-        accessTokenRepository.delete(at);
-    }
+    public void delete(Long id){ accessTokenRepository.deleteById(id); }
 }

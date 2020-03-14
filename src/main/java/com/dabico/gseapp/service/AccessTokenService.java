@@ -1,8 +1,8 @@
 package com.dabico.gseapp.service;
 
-import com.dabico.gseapp.model.AccessToken;
+import com.dabico.gseapp.dto.AccessTokenDto;
 
 public interface AccessTokenService {
-    AccessToken create(AccessToken at);
-    void delete(AccessToken at);
+    void createOrUpdate(AccessTokenDto atdto);
+    void delete(Long id);
 }
