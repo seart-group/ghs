@@ -116,19 +116,15 @@ public class CrawlProjectsJob {
     }
 
     private void getLanguagesToMine(){
-        //TODO Fix issue with flyway not initialising supported_language table properly
-        //supportedLanguageRepository.findAll().forEach(language -> {
-        //    languages.add(language.getLanguage());
-        //});
-        languages.add("Java");
+        supportedLanguageRepository.findAll().forEach(language -> {
+            languages.add(language.getLanguage());
+        });
     }
 
     private void getAccessTokens(){
-        //TODO Fix issue with flyway not initialising access_token table properly
-        //accessTokenRepository.findAll().forEach(accessToken -> {
-        //    accessTokens.add(accessToken.getToken());
-        //});
-        accessTokens.add("faa5d7ae42793a29c360572fd519d5438d41962b");
+        accessTokenRepository.findAll().forEach(accessToken -> {
+            accessTokens.add(accessToken.getToken());
+        });
     }
 
     private String getNewToken(){
