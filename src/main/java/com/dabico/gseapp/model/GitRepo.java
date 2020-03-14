@@ -105,15 +105,9 @@ public class GitRepo {
     @PrePersist
     private void onPersistAndUpdate() { crawled = new Date(); }
 
-    public String generateRepoURL(){
-        return Endpoints.REPOS.getUrl() + "/" + name;
-    }
+    public String generateRepoURL(){ return Endpoints.REPOS.getUrl() + "/" + name; }
 
-    public String generateLabelsURL(){
-        return generateRepoURL() + "/labels";
-    }
+    public String generateLabelsURL(){ return generateRepoURL() + "/labels"; }
 
-    public String generateLanguagesURL(){
-        return generateRepoURL() + "/languages";
-    }
+    public String generateLanguagesURL(){ return generateRepoURL() + "/languages"; }
 }
