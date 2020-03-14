@@ -115,15 +115,11 @@ public class CrawlProjectsJob {
     }
 
     private void getLanguagesToMine(){
-        supportedLanguageRepository.findAll().forEach(language -> {
-            languages.add(language.getLanguage());
-        });
+        supportedLanguageRepository.findAll().forEach(language -> languages.add(language.getLanguage()));
     }
 
     private void getAccessTokens(){
-        accessTokenRepository.findAll().forEach(accessToken -> {
-            accessTokens.add(accessToken.getToken());
-        });
+        accessTokenRepository.findAll().forEach(accessToken -> accessTokens.add(accessToken.getToken()));
     }
 
     private String getNewToken(){
