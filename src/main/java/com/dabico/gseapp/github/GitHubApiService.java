@@ -1,6 +1,6 @@
 package com.dabico.gseapp.github;
 
-import com.dabico.gseapp.util.DateInterval;
+import com.dabico.gseapp.util.interval.DateInterval;
 import com.google.gson.JsonObject;
 import okhttp3.*;
 
