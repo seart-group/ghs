@@ -12,8 +12,6 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
 public class GitRepoController {
     GitRepoService gitRepoService;
-    GitRepoLabelService gitRepoLabelService;
-    GitRepoLanguageService gitRepoLanguageService;
     AccessTokenService accessTokenService;
     SupportedLanguageService supportedLanguageService;
 }
