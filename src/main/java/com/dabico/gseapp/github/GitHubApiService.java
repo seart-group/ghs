@@ -34,14 +34,15 @@ public class GitHubApiService {
 
         Call call = client.newCall(request);
         Response response =  call.execute();
+        //TODO Remove guards when done
         Thread.sleep(1000);
         return response;
     }
 
-    public boolean isTokenLimitExceeded(String accessToken) throws IOException {
+    public boolean isTokenLimitExceeded(String token) throws IOException {
         Request request = new Request.Builder()
                 .url(Endpoints.LIMIT.getUrl())
-                .addHeader("Authorization", "token " + accessToken)
+                .addHeader("Authorization", "token " + token)
                 .build();
 
         Call call = client.newCall(request);
@@ -59,4 +60,36 @@ public class GitHubApiService {
             throw new RuntimeException();
         }
     }
+
+    public Response searchRepoLabels(String name, String token) throws IOException, InterruptedException {
+        Request request = new Request.Builder()
+                .url(generateLabelsURL(name))
+                .addHeader("Authorization", "token " + token)
+                .build();
+
+        Call call = client.newCall(request);
+        Response response =  call.execute();
+        //TODO Remove guards when done
+        Thread.sleep(1000);
+        return response;
+    }
+
+    public Response searchRepoLanguages(String name, String token) throws IOException, InterruptedException {
+        Request request = new Request.Builder()
+                .url(generateLanguagesURL(name))
+                .addHeader("Authorization", "token " + token)
+                .build();
+
+        Call call = client.newCall(request);
+        Response response =  call.execute();
+        //TODO Remove guards when done
+        Thread.sleep(1000);
+        return response;
+    }
+
+    private String generateRepoURL(String name){ return Endpoints.REPOS.getUrl() + "/" + name; }
+
+    private String generateLabelsURL(String name){ return generateRepoURL(name) + "/labels"; }
+
+    private String generateLanguagesURL(String name){ return generateRepoURL(name) + "/languages"; }
 }
