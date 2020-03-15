@@ -5,6 +5,6 @@ import com.dabico.gseapp.dto.SupportedLanguageDtoList;
 
 public interface SupportedLanguageService {
     SupportedLanguageDtoList getAll();
-    void createOrUpdate(SupportedLanguageDto sldto);
+    void createOrUpdate(SupportedLanguageDto dto);
     void delete(Long id);
 }

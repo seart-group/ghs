@@ -5,6 +5,6 @@ import com.dabico.gseapp.dto.AccessTokenDtoList;
 
 public interface AccessTokenService {
     AccessTokenDtoList getAll();
-    void createOrUpdate(AccessTokenDto atdto);
+    void createOrUpdate(AccessTokenDto dto);
     void delete(Long id);
 }
