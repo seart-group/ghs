@@ -2,6 +2,9 @@ package com.dabico.gseapp.job;
 
 import com.dabico.gseapp.converter.GitRepoConverter;
 import com.dabico.gseapp.github.GitHubApiService;
+import com.dabico.gseapp.model.GitRepo;
+import com.dabico.gseapp.model.GitRepoLabel;
+import com.dabico.gseapp.model.GitRepoLanguage;
 import com.dabico.gseapp.repository.*;
 import com.dabico.gseapp.util.interval.DateInterval;
 import com.google.gson.*;
@@ -13,6 +16,7 @@ import org.slf4j.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
 import java.util.*;
 
 import static com.google.gson.JsonParser.*;
@@ -90,8 +94,11 @@ public class CrawlProjectsJob {
                 response.close();
                 logger.info("Adding: "+results.size()+" results");
                 for (JsonElement element : results){
-                    JsonObject repository = element.getAsJsonObject();
-                    gitRepoRepository.save(gitRepoConverter.jsonToGitRepo(repository));
+                    JsonObject repoJson = element.getAsJsonObject();
+                    GitRepo repo = gitRepoConverter.jsonToGitRepo(repoJson);
+                    gitRepoRepository.save(repo);
+                    retrieveRepoLabels(repo);
+                    retrieveRepoLanguages(repo);
                 }
 
                 if (totalPages > 1){
@@ -108,8 +115,11 @@ public class CrawlProjectsJob {
                             results = bodyJson.get("items").getAsJsonArray();
                             logger.info("Adding: "+results.size()+" results");
                             for (JsonElement element : results){
-                                JsonObject repository = element.getAsJsonObject();
-                                gitRepoRepository.save(gitRepoConverter.jsonToGitRepo(repository));
+                                JsonObject repoJson = element.getAsJsonObject();
+                                GitRepo repo = gitRepoConverter.jsonToGitRepo(repoJson);
+                                gitRepoRepository.save(repo);
+                                retrieveRepoLabels(repo);
+                                retrieveRepoLanguages(repo);
                             }
                             page++;
                         }
@@ -128,6 +138,41 @@ public class CrawlProjectsJob {
         }
         response.close();
         logger.info(requestQueue.toString());
+    }
+
+    private void retrieveRepoLabels(GitRepo repo) throws Exception {
+        Response response = gitHubApiService.searchRepoLabels(repo.getName(),currentToken);
+        ResponseBody responseBody = response.body();
+        if (response.isSuccessful() && responseBody != null){
+            JsonArray results = parseString(responseBody.string()).getAsJsonArray();
+            results.forEach(result -> {
+                JsonObject resultJson = result.getAsJsonObject();
+                GitRepoLabel label = GitRepoLabel.builder()
+                                                 .repositoryId(repo.getId())
+                                                 .label(resultJson.get("name").getAsString())
+                                                 .build();
+                gitRepoLabelRepository.save(label);
+            });
+        }
+        response.close();
+    }
+
+    private void retrieveRepoLanguages(GitRepo repo) throws Exception {
+        Response response = gitHubApiService.searchRepoLanguages(repo.getName(),currentToken);
+        ResponseBody responseBody = response.body();
+        if (response.isSuccessful() && responseBody != null){
+            JsonObject result = parseString(responseBody.string()).getAsJsonObject();
+            Set<String> keySet = result.keySet();
+            keySet.forEach(key -> {
+                GitRepoLanguage language = GitRepoLanguage.builder()
+                                                          .repositoryId(repo.getId())
+                                                          .language(key)
+                                                          .sizeOfCode(result.get(key).getAsLong())
+                                                          .build();
+                gitRepoLanguageRepository.save(language);
+            });
+        }
+        response.close();
     }
 
     private void getLanguagesToMine(){
