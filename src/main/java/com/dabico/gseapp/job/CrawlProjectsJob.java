@@ -5,6 +5,8 @@ import com.dabico.gseapp.github.GitHubApiService;
 import com.dabico.gseapp.repository.*;
 import com.dabico.gseapp.util.interval.DateInterval;
 import com.google.gson.*;
+import lombok.AccessLevel;
+import lombok.experimental.FieldDefaults;
 import okhttp3.*;
 import org.javatuples.Pair;
 import org.slf4j.*;
@@ -16,32 +18,43 @@ import java.util.*;
 import static com.google.gson.JsonParser.*;
 
 @Service
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class CrawlProjectsJob {
 
     static final Logger logger = LoggerFactory.getLogger(CrawlProjectsJob.class);
 
-    private List<DateInterval> requestQueue = new ArrayList<>();
-    private List<String> accessTokens = new ArrayList<>();
-    private List<String> languages = new ArrayList<>();
+    List<DateInterval> requestQueue = new ArrayList<>();
+    List<String> accessTokens = new ArrayList<>();
+    List<String> languages = new ArrayList<>();
 
-    private int tokenOrdinal = -1;
-    private String currentToken;
+    int tokenOrdinal = -1;
+    String currentToken;
 
-    private GitRepoRepository gitRepoRepository;
-    private AccessTokenRepository accessTokenRepository;
-    private SupportedLanguageRepository supportedLanguageRepository;
+    GitRepoRepository gitRepoRepository;
+    GitRepoLabelRepository gitRepoLabelRepository;
+    GitRepoLanguageRepository gitRepoLanguageRepository;
+    AccessTokenRepository accessTokenRepository;
+    SupportedLanguageRepository supportedLanguageRepository;
 
-    private GitRepoConverter gitRepoConverter;
+    GitRepoConverter gitRepoConverter;
+
+    GitHubApiService gitHubApiService;
 
     @Autowired
     public CrawlProjectsJob(GitRepoRepository gitRepoRepository,
                             AccessTokenRepository accessTokenRepository,
                             SupportedLanguageRepository supportedLanguageRepository,
-                            GitRepoConverter gitRepoConverter){
+                            GitRepoLabelRepository gitRepoLabelRepository,
+                            GitRepoLanguageRepository gitRepoLanguageRepository,
+                            GitRepoConverter gitRepoConverter,
+                            GitHubApiService gitHubApiService){
         this.gitRepoRepository = gitRepoRepository;
         this.accessTokenRepository = accessTokenRepository;
         this.supportedLanguageRepository = supportedLanguageRepository;
+        this.gitRepoLabelRepository = gitRepoLabelRepository;
+        this.gitRepoLanguageRepository = gitRepoLanguageRepository;
         this.gitRepoConverter = gitRepoConverter;
+        this.gitHubApiService = gitHubApiService;
         getLanguagesToMine();
         getAccessTokens();
         this.currentToken = getNewToken();
@@ -61,7 +74,6 @@ public class CrawlProjectsJob {
         logger.info("Crawling: "+language.toUpperCase()+" "+interval);
         logger.info("Token: " + this.currentToken);
         int page = 1;
-        GitHubApiService gitHubApiService = new GitHubApiService();
         if (gitHubApiService.isTokenLimitExceeded(currentToken)){
             currentToken = getNewToken();
         }

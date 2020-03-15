@@ -2,16 +2,23 @@ package com.dabico.gseapp.github;
 
 import com.dabico.gseapp.util.interval.DateInterval;
 import com.google.gson.JsonObject;
+import lombok.AccessLevel;
+import lombok.experimental.FieldDefaults;
 import okhttp3.*;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
 import static com.google.gson.JsonParser.parseString;
 
+@Service
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class GitHubApiService {
-    private OkHttpClient client;
+    OkHttpClient client;
 
+    @Autowired
     public GitHubApiService(){
         this.client = new OkHttpClient.Builder()
                 .connectTimeout(1, TimeUnit.MINUTES)
