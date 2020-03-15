@@ -69,8 +69,9 @@ public class GitHubApiService {
     }
 
     public Response searchRepoLabels(String name, String token) throws IOException, InterruptedException {
+        //TODO Adjust scalability for more than 100 labels used THEORETICALLY SHOULD NOT HAPPEN
         Request request = new Request.Builder()
-                .url(generateLabelsURL(name))
+                .url(generateLabelsURL(name) + "?page=1&per_page=100")
                 .addHeader("Authorization", "token " + token)
                 .build();
 
@@ -82,8 +83,9 @@ public class GitHubApiService {
     }
 
     public Response searchRepoLanguages(String name, String token) throws IOException, InterruptedException {
+        //TODO Adjust scalability for more than 100 languages used THEORETICALLY SHOULD NOT HAPPEN
         Request request = new Request.Builder()
-                .url(generateLanguagesURL(name))
+                .url(generateLanguagesURL(name) + "?page=1&per_page=100")
                 .addHeader("Authorization", "token " + token)
                 .build();
 
