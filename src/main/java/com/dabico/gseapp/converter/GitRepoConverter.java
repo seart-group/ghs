@@ -1,5 +1,6 @@
 package com.dabico.gseapp.converter;
 
+import com.dabico.gseapp.dto.GitRepoDto;
 import com.dabico.gseapp.github.GitHubPageCrawlerService;
 import com.dabico.gseapp.model.GitRepo;
 import com.google.gson.JsonElement;
@@ -9,6 +10,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import static com.dabico.gseapp.util.DateUtils.fromGitDateString;
 
@@ -48,5 +51,40 @@ public class GitRepoConverter {
                       .hasWiki(json.get("has_wiki").getAsBoolean())
                       .isArchived(json.get("archived").getAsBoolean())
                       .build();
+    }
+
+    public List<GitRepoDto> fromGitRepoListToGitRepoDtoList(List<GitRepo> repos){
+        return repos.stream().map(this::fromGitRepoToGitRepoDto).collect(Collectors.toList());
+    }
+
+    public GitRepoDto fromGitRepoToGitRepoDto(GitRepo repo){
+        return GitRepoDto.builder()
+                .id(repo.getId())
+                .name(repo.getName())
+                .isFork(repo.getIsFork())
+                .commits(repo.getCommits())
+                .branches(repo.getBranches())
+                .defaultBranch(repo.getDefaultBranch())
+                .releases(repo.getReleases())
+                .contributors(repo.getContributors())
+                .license(repo.getLicense())
+                .watchers(repo.getWatchers())
+                .stargazers(repo.getStargazers())
+                .forks(repo.getForks())
+                .size(repo.getSize())
+                .createdAt(repo.getCreatedAt())
+                .pushedAt(repo.getPushedAt())
+                .updatedAt(repo.getUpdatedAt())
+                .homepage(repo.getHomepage())
+                .mainLanguage(repo.getMainLanguage())
+                .totalIssues(repo.getTotalIssues())
+                .openIssues(repo.getOpenIssues())
+                .totalPullRequests(repo.getTotalPullRequests())
+                .openPullRequests(repo.getOpenPullRequests())
+                .lastCommit(repo.getLastCommit())
+                .lastCommitSHA(repo.getLastCommitSHA())
+                .hasWiki(repo.getHasWiki())
+                .isArchived(repo.getIsArchived())
+                .build();
     }
 }
