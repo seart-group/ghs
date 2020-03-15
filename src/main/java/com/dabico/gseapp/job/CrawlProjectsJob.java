@@ -1,5 +1,6 @@
 package com.dabico.gseapp.job;
 
+import com.dabico.gseapp.converter.GitRepoConverter;
 import com.dabico.gseapp.github.GitHubApiService;
 import com.dabico.gseapp.repository.*;
 import com.dabico.gseapp.util.interval.DateInterval;
@@ -12,7 +13,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.*;
 
-import static com.dabico.gseapp.converter.GitRepoConverter.*;
 import static com.google.gson.JsonParser.*;
 
 @Service
@@ -31,13 +31,17 @@ public class CrawlProjectsJob {
     private AccessTokenRepository accessTokenRepository;
     private SupportedLanguageRepository supportedLanguageRepository;
 
+    private GitRepoConverter gitRepoConverter;
+
     @Autowired
     public CrawlProjectsJob(GitRepoRepository gitRepoRepository,
                             AccessTokenRepository accessTokenRepository,
-                            SupportedLanguageRepository supportedLanguageRepository){
+                            SupportedLanguageRepository supportedLanguageRepository,
+                            GitRepoConverter gitRepoConverter){
         this.gitRepoRepository = gitRepoRepository;
         this.accessTokenRepository = accessTokenRepository;
         this.supportedLanguageRepository = supportedLanguageRepository;
+        this.gitRepoConverter = gitRepoConverter;
         getLanguagesToMine();
         getAccessTokens();
         this.currentToken = getNewToken();
@@ -75,7 +79,7 @@ public class CrawlProjectsJob {
                 logger.info("Adding: "+results.size()+" results");
                 for (JsonElement element : results){
                     JsonObject repository = element.getAsJsonObject();
-                    gitRepoRepository.save(jsonToGitRepo(repository));
+                    gitRepoRepository.save(gitRepoConverter.jsonToGitRepo(repository));
                 }
 
                 if (totalPages > 1){
@@ -93,7 +97,7 @@ public class CrawlProjectsJob {
                             logger.info("Adding: "+results.size()+" results");
                             for (JsonElement element : results){
                                 JsonObject repository = element.getAsJsonObject();
-                                gitRepoRepository.save(jsonToGitRepo(repository));
+                                gitRepoRepository.save(gitRepoConverter.jsonToGitRepo(repository));
                             }
                             page++;
                         }

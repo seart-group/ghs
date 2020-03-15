@@ -4,13 +4,18 @@ import com.dabico.gseapp.github.GitHubPageCrawlerService;
 import com.dabico.gseapp.model.GitRepo;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 
 import static com.dabico.gseapp.util.DateUtils.fromGitDateString;
 
+@Service
+@RequiredArgsConstructor(onConstructor_ = @Autowired)
 public class GitRepoConverter {
-    public static GitRepo jsonToGitRepo(JsonObject json) throws IOException {
+    public GitRepo jsonToGitRepo(JsonObject json) throws IOException {
         String repositoryURL = json.get("html_url").getAsString();
         GitHubPageCrawlerService crawlerService = new GitHubPageCrawlerService(repositoryURL);
         crawlerService.mine();
