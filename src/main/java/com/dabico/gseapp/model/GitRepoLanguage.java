@@ -17,6 +17,7 @@ import java.util.Date;
 @Entity
 public class GitRepoLanguage {
     @Id
+    @GeneratedValue
     @Column(name = "repo_language_id")
     Long id;
 

@@ -17,6 +17,7 @@ import java.util.Date;
 @Entity
 public class GitRepoLabel {
     @Id
+    @GeneratedValue
     @Column(name = "repo_label_id")
     Long id;
 
