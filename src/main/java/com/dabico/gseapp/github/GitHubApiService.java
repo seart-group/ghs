@@ -30,31 +30,20 @@ public class GitHubApiService {
     public Response searchRepositories(String language,
                                        DateInterval interval,
                                        Integer page,
-                                       String accessToken,
+                                       String token,
                                        Boolean update) throws IOException, InterruptedException {
-        Request request = new Request.Builder()
-                .url(Endpoints.SEARCH_REPOS.getUrl() + "?q=language:" + language + (update ? "+updated:" : "+created:")
-                     + interval + "+fork:true+is:public&page=" + page + "&per_page=100")
-                .addHeader("Authorization", "token " + accessToken)
-                .addHeader("Accept", "application/vnd.github.v3+json")
-                .build();
-
-        Call call = client.newCall(request);
-        Response response =  call.execute();
+        Response response = makeAPICall(Endpoints.SEARCH_REPOS.getUrl() +
+                                                "?q=language:" + language +
+                                                (update ? "+updated:" : "+created:") + interval +
+                                                "+fork:true+is:public&page=" + page +
+                                                "&per_page=100", token);
         //TODO Remove guards when done
         Thread.sleep(1000);
         return response;
     }
 
     public boolean isTokenLimitExceeded(String token) throws IOException {
-        Request request = new Request.Builder()
-                .url(Endpoints.LIMIT.getUrl())
-                .addHeader("Authorization", "token " + token)
-                .addHeader("Accept", "application/vnd.github.v3+json")
-                .build();
-
-        Call call = client.newCall(request);
-        Response response = call.execute();
+        Response response = makeAPICall(Endpoints.LIMIT.getUrl(),token);
         ResponseBody responseBody = response.body();
         if (response.isSuccessful() && responseBody != null){
             JsonObject bodyJson = parseString(responseBody.string()).getAsJsonObject();
@@ -71,14 +60,7 @@ public class GitHubApiService {
 
     public Response searchRepoLabels(String name, String token) throws IOException, InterruptedException {
         //TODO Adjust scalability for more than 100 labels used THEORETICALLY SHOULD NOT HAPPEN
-        Request request = new Request.Builder()
-                .url(generateLabelsURL(name) + "?page=1&per_page=100")
-                .addHeader("Authorization", "token " + token)
-                .addHeader("Accept", "application/vnd.github.v3+json")
-                .build();
-
-        Call call = client.newCall(request);
-        Response response =  call.execute();
+        Response response = makeAPICall(generateLabelsURL(name) + "?page=1&per_page=100",token);
         //TODO Remove guards when done
         Thread.sleep(1000);
         return response;
@@ -86,17 +68,22 @@ public class GitHubApiService {
 
     public Response searchRepoLanguages(String name, String token) throws IOException, InterruptedException {
         //TODO Adjust scalability for more than 100 languages used THEORETICALLY SHOULD NOT HAPPEN
-        Request request = new Request.Builder()
-                .url(generateLanguagesURL(name) + "?page=1&per_page=100")
-                .addHeader("Authorization", "token " + token)
-                .addHeader("Accept", "application/vnd.github.v3+json")
-                .build();
-
-        Call call = client.newCall(request);
-        Response response =  call.execute();
+        Response response = makeAPICall(generateLanguagesURL(name) + "?page=1&per_page=100",token);
         //TODO Remove guards when done
         Thread.sleep(1000);
         return response;
+    }
+
+    private Response makeAPICall(String reqURL, String token) throws IOException {
+        return client.newCall(generateRequest(reqURL,token)).execute();
+    }
+
+    private Request generateRequest(String reqURL, String token){
+        return new Request.Builder()
+                          .url(reqURL)
+                          .addHeader("Authorization", "token " + token)
+                          .addHeader("Accept", "application/vnd.github.v3+json")
+                          .build();
     }
 
     private String generateRepoURL(String name){ return Endpoints.REPOS.getUrl() + "/" + name; }
