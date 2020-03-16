@@ -50,6 +50,7 @@ public class GitHubApiService {
         Request request = new Request.Builder()
                 .url(Endpoints.LIMIT.getUrl())
                 .addHeader("Authorization", "token " + token)
+                .addHeader("Accept", "application/vnd.github.v3+json")
                 .build();
 
         Call call = client.newCall(request);
@@ -73,6 +74,7 @@ public class GitHubApiService {
         Request request = new Request.Builder()
                 .url(generateLabelsURL(name) + "?page=1&per_page=100")
                 .addHeader("Authorization", "token " + token)
+                .addHeader("Accept", "application/vnd.github.v3+json")
                 .build();
 
         Call call = client.newCall(request);
@@ -87,6 +89,7 @@ public class GitHubApiService {
         Request request = new Request.Builder()
                 .url(generateLanguagesURL(name) + "?page=1&per_page=100")
                 .addHeader("Authorization", "token " + token)
+                .addHeader("Accept", "application/vnd.github.v3+json")
                 .build();
 
         Call call = client.newCall(request);
