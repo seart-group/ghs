@@ -78,9 +78,7 @@ public class CrawlProjectsJob {
         logger.info("Crawling: "+language.toUpperCase()+" "+interval);
         logger.info("Token: " + this.currentToken);
         int page = 1;
-        if (gitHubApiService.isTokenLimitExceeded(currentToken)){
-            currentToken = getNewToken();
-        }
+        replaceTokenIfExpired();
         Response response = gitHubApiService.searchRepositories(language,interval,page,currentToken,false);
         ResponseBody responseBody = response.body();
 
@@ -92,35 +90,19 @@ public class CrawlProjectsJob {
             if (totalResults <= 1000){
                 JsonArray results = bodyJson.get("items").getAsJsonArray();
                 response.close();
-                logger.info("Adding: "+results.size()+" results");
-                for (JsonElement element : results){
-                    JsonObject repoJson = element.getAsJsonObject();
-                    GitRepo repo = gitRepoConverter.jsonToGitRepo(repoJson);
-                    gitRepoRepository.save(repo);
-                    retrieveRepoLabels(repo);
-                    retrieveRepoLanguages(repo);
-                }
+                saveRetrievedRepos(results);
 
                 if (totalPages > 1){
                     page++;
                     while (page <= totalPages){
-                        if (gitHubApiService.isTokenLimitExceeded(currentToken)){
-                            currentToken = getNewToken();
-                        }
+                        replaceTokenIfExpired();
                         response = gitHubApiService.searchRepositories(language,interval,page,currentToken,false);
                         responseBody = response.body();
                         if (response.isSuccessful() && responseBody != null){
                             bodyJson = parseString(responseBody.string()).getAsJsonObject();
                             response.close();
                             results = bodyJson.get("items").getAsJsonArray();
-                            logger.info("Adding: "+results.size()+" results");
-                            for (JsonElement element : results){
-                                JsonObject repoJson = element.getAsJsonObject();
-                                GitRepo repo = gitRepoConverter.jsonToGitRepo(repoJson);
-                                gitRepoRepository.save(repo);
-                                retrieveRepoLabels(repo);
-                                retrieveRepoLanguages(repo);
-                            }
+                            saveRetrievedRepos(results);
                             page++;
                         }
                         response.close();
@@ -138,6 +120,17 @@ public class CrawlProjectsJob {
         }
         response.close();
         logger.info(requestQueue.toString());
+    }
+
+    private void saveRetrievedRepos(JsonArray results) throws Exception {
+        logger.info("Adding: "+results.size()+" results");
+        for (JsonElement element : results){
+            JsonObject repoJson = element.getAsJsonObject();
+            GitRepo repo = gitRepoConverter.jsonToGitRepo(repoJson);
+            gitRepoRepository.save(repo);
+            retrieveRepoLabels(repo);
+            retrieveRepoLanguages(repo);
+        }
     }
 
     private void retrieveRepoLabels(GitRepo repo) throws Exception {
@@ -181,6 +174,12 @@ public class CrawlProjectsJob {
 
     private void getAccessTokens(){
         accessTokenRepository.findAll().forEach(accessToken -> accessTokens.add(accessToken.getToken()));
+    }
+
+    private void replaceTokenIfExpired() throws Exception {
+        if (gitHubApiService.isTokenLimitExceeded(currentToken)){
+            currentToken = getNewToken();
+        }
     }
 
     private String getNewToken(){
