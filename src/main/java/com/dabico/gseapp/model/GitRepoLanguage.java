@@ -21,8 +21,8 @@ public class GitRepoLanguage {
     @Column(name = "repo_language_id")
     Long id;
 
-    @ManyToOne
-    GitRepo repo;
+    @Column(name = "repo_id")
+    Long repositoryId;
 
     @Column(name = "repo_language_name")
     String language;

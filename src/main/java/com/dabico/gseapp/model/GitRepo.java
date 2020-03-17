@@ -1,10 +1,11 @@
 package com.dabico.gseapp.model;
 
+import com.dabico.gseapp.github.Endpoints;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 import javax.persistence.*;
-import java.util.*;
+import java.util.Date;
 
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Getter
@@ -99,14 +100,6 @@ public class GitRepo {
 
     @Column(name = "crawled")
     Date crawled;
-
-    @Builder.Default
-    @OneToMany(mappedBy="repo", cascade=CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
-    Set<GitRepoLabel> labels = new HashSet<>();
-
-    @Builder.Default
-    @OneToMany(mappedBy="repo", cascade=CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
-    Set<GitRepoLanguage> languages = new HashSet<>();
 
     @PreUpdate
     @PrePersist

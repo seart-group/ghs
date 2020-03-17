@@ -21,8 +21,8 @@ public class GitRepoLabel {
     @Column(name = "repo_label_id")
     Long id;
 
-    @ManyToOne
-    GitRepo repo;
+    @Column(name = "repo_id")
+    Long repositoryId;
 
     @Column(name = "repo_label_name")
     String label;
