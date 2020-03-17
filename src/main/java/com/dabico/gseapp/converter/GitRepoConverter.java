@@ -1,8 +1,12 @@
 package com.dabico.gseapp.converter;
 
 import com.dabico.gseapp.dto.GitRepoDto;
+import com.dabico.gseapp.dto.GitRepoLabelDto;
+import com.dabico.gseapp.dto.GitRepoLanguageDto;
 import com.dabico.gseapp.github.GitHubPageCrawlerService;
 import com.dabico.gseapp.model.GitRepo;
+import com.dabico.gseapp.model.GitRepoLabel;
+import com.dabico.gseapp.model.GitRepoLanguage;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import lombok.RequiredArgsConstructor;
@@ -86,5 +90,13 @@ public class GitRepoConverter {
                 .hasWiki(repo.getHasWiki())
                 .isArchived(repo.getIsArchived())
                 .build();
+    }
+
+    public GitRepoLabel fromGitRepoLabelDtoToGitRepoLabel(GitRepoLabelDto dto){
+        return GitRepoLabel.builder().id(dto.getId()).label(dto.getLabel()).build();
+    }
+
+    public GitRepoLanguage fromGitRepoLanguageDtoToGitRepoLanguage(GitRepoLanguageDto dto){
+        return GitRepoLanguage.builder().id(dto.getId()).language(dto.getLanguage()).sizeOfCode(dto.getSizeOfCode()).build();
     }
 }
