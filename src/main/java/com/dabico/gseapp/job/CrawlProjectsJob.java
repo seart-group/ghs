@@ -16,6 +16,7 @@ import org.slf4j.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
 import java.util.*;
 
 import static com.google.gson.JsonParser.*;
@@ -140,7 +141,7 @@ public class CrawlProjectsJob {
             results.forEach(result -> {
                 JsonObject resultJson = result.getAsJsonObject();
                 GitRepoLabel label = GitRepoLabel.builder()
-                                                 .repo(repo)
+                                                 .repositoryId(repo.getId())
                                                  .label(resultJson.get("name").getAsString())
                                                  .build();
                 gitRepoLabelRepository.save(label);
@@ -157,7 +158,7 @@ public class CrawlProjectsJob {
             Set<String> keySet = result.keySet();
             keySet.forEach(key -> {
                 GitRepoLanguage language = GitRepoLanguage.builder()
-                                                          .repo(repo)
+                                                          .repositoryId(repo.getId())
                                                           .language(key)
                                                           .sizeOfCode(result.get(key).getAsLong())
                                                           .build();
