@@ -37,7 +37,7 @@ public class GitRepoDto {
     Boolean hasWiki;
     Boolean isArchived;
     @Builder.Default
-    Set<String> languages = new HashSet<>();
+    Set<GitRepoLanguageDto> languages = new HashSet<>();
     @Builder.Default
-    Set<String> labels = new HashSet<>();
+    Set<GitRepoLabelDto> labels = new HashSet<>();
 }
