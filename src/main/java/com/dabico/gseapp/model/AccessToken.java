@@ -22,7 +22,7 @@ public class AccessToken {
     @Column(name = "id")
     Long id;
 
-    @Column(name = "token")
+    @Column(name = "value")
     String value;
 
     @Column(name = "added")
