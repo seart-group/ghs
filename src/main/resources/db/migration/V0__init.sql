@@ -64,7 +64,7 @@ create table access_token
 (
     id bigint auto_increment
         primary key,
-    token varchar(40) null,
+    value varchar(40) null,
     added datetime null,
     constraint unique_token
         unique (token)

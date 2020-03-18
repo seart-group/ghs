@@ -23,7 +23,7 @@ public class AccessToken {
     Long id;
 
     @Column(name = "token")
-    String token;
+    String value;
 
     @Column(name = "added")
     Date added;

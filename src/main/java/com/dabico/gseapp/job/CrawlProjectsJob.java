@@ -172,7 +172,7 @@ public class CrawlProjectsJob {
     }
 
     private void getAccessTokens(){
-        accessTokenRepository.findAll().forEach(accessToken -> accessTokens.add(accessToken.getToken()));
+        accessTokenRepository.findAll().forEach(accessToken -> accessTokens.add(accessToken.getValue()));
     }
 
     private void replaceTokenIfExpired() throws Exception {

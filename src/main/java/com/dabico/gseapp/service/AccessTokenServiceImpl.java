@@ -32,7 +32,7 @@ public class AccessTokenServiceImpl implements AccessTokenService {
     public void create(AccessToken token){
         Optional<AccessToken> opt = accessTokenRepository.findById(token.getId());
         if (opt.isPresent()){
-            accessTokenRepository.save(AccessToken.builder().token(token.getToken()).build());
+            accessTokenRepository.save(AccessToken.builder().value(token.getValue()).build());
         }
     }
 
