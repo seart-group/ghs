@@ -14,8 +14,7 @@ import lombok.experimental.FieldDefaults;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.Set;
-import java.util.stream.Collectors;
+import java.util.Optional;
 
 @Service
 @FieldDefaults(level = AccessLevel.PRIVATE)
@@ -32,42 +31,38 @@ public class GitRepoServiceImpl implements GitRepoService {
     }
 
     @Override
-    public void createOrUpdate(GitRepoDto dto){
-        GitRepo repo = GitRepo.builder().build();
-        if (dto.getId() != null){
-            repo = gitRepoRepository.findById(dto.getId()).orElse(null);
+    public void createOrUpdateRepo(GitRepo repo){
+        Optional<GitRepo> opt = gitRepoRepository.findGitRepoByName(repo.getName());
+        if (opt.isPresent()){
+            GitRepo existing = opt.get();
+            existing.setIsFork(repo.getIsFork());
+            existing.setCommits(repo.getCommits());
+            existing.setBranches(repo.getBranches());
+            existing.setDefaultBranch(repo.getDefaultBranch());
+            existing.setReleases(repo.getReleases());
+            existing.setContributors(repo.getContributors());
+            existing.setLicense(repo.getLicense());
+            existing.setWatchers(repo.getWatchers());
+            existing.setStargazers(repo.getStargazers());
+            existing.setForks(repo.getForks());
+            existing.setSize(repo.getSize());
+            existing.setCreatedAt(repo.getCreatedAt());
+            existing.setPushedAt(repo.getPushedAt());
+            existing.setUpdatedAt(repo.getUpdatedAt());
+            existing.setHomepage(repo.getHomepage());
+            existing.setMainLanguage(repo.getMainLanguage());
+            existing.setOpenIssues(repo.getOpenIssues());
+            existing.setTotalIssues(repo.getTotalIssues());
+            existing.setOpenPullRequests(repo.getOpenPullRequests());
+            existing.setTotalPullRequests(repo.getTotalPullRequests());
+            existing.setLastCommit(repo.getLastCommit());
+            existing.setLastCommitSHA(repo.getLastCommitSHA());
+            existing.setHasWiki(repo.getHasWiki());
+            existing.setIsArchived(repo.getIsArchived());
+            gitRepoRepository.save(existing);
+        } else {
+            gitRepoRepository.save(repo);
         }
-        Set<GitRepoLabel> labels = dto.getLabels().stream().map(gitRepoConverter::fromGitRepoLabelDtoToGitRepoLabel).collect(Collectors.toSet());
-        Set<GitRepoLanguage> languages = dto.getLanguages().stream().map(gitRepoConverter::fromGitRepoLanguageDtoToGitRepoLanguage).collect(Collectors.toSet());
-
-        repo.setName(dto.getName());
-        repo.setIsFork(dto.getIsFork());
-        repo.setCommits(dto.getCommits());
-        repo.setBranches(dto.getBranches());
-        repo.setDefaultBranch(dto.getDefaultBranch());
-        repo.setReleases(dto.getReleases());
-        repo.setContributors(dto.getContributors());
-        repo.setLicense(dto.getLicense());
-        repo.setWatchers(dto.getWatchers());
-        repo.setStargazers(dto.getStargazers());
-        repo.setForks(dto.getForks());
-        repo.setSize(dto.getSize());
-        repo.setCreatedAt(dto.getCreatedAt());
-        repo.setPushedAt(dto.getPushedAt());
-        repo.setUpdatedAt(dto.getUpdatedAt());
-        repo.setHomepage(dto.getHomepage());
-        repo.setMainLanguage(dto.getMainLanguage());
-        repo.setOpenIssues(dto.getOpenIssues());
-        repo.setTotalIssues(dto.getTotalIssues());
-        repo.setOpenPullRequests(dto.getOpenPullRequests());
-        repo.setTotalPullRequests(dto.getTotalPullRequests());
-        repo.setLastCommit(dto.getLastCommit());
-        repo.setLastCommitSHA(dto.getLastCommitSHA());
-        repo.setHasWiki(dto.getHasWiki());
-        repo.setIsArchived(dto.getIsArchived());
-        repo.setLabels(labels);
-        repo.setLanguages(languages);
-        gitRepoRepository.save(repo);
     }
 
     @Override
