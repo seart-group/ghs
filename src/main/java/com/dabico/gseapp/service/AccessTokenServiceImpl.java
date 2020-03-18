@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @FieldDefaults(level = AccessLevel.PRIVATE)
@@ -28,13 +29,11 @@ public class AccessTokenServiceImpl implements AccessTokenService {
     }
 
     @Override
-    public void createOrUpdate(AccessTokenDto dto){
-        AccessToken token = AccessToken.builder().build();
-        if (dto.getId() != null){
-            token = accessTokenRepository.findById(dto.getId()).orElse(null);
+    public void create(AccessToken token){
+        Optional<AccessToken> opt = accessTokenRepository.findById(token.getId());
+        if (opt.isPresent()){
+            accessTokenRepository.save(AccessToken.builder().token(token.getToken()).build());
         }
-        token.setToken(dto.getToken());
-        accessTokenRepository.save(token);
     }
 
     @Override
