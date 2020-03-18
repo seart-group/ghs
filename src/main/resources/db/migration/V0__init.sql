@@ -74,10 +74,10 @@ create table supported_language
 (
     id bigint auto_increment
         primary key,
-    language varchar(64) null,
+    name varchar(64) null,
     added datetime null,
     constraint unique_language
-        unique (language)
+        unique (name)
 );
 
 CREATE TABLE `hibernate_sequence` (

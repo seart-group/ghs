@@ -22,8 +22,8 @@ public class SupportedLanguage {
     @Column(name = "id")
     Long id;
 
-    @Column(name = "language")
-    String language;
+    @Column(name = "name")
+    String name;
 
     @Column(name = "added")
     Date added;

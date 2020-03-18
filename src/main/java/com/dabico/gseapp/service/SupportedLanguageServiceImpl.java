@@ -32,7 +32,7 @@ public class SupportedLanguageServiceImpl implements SupportedLanguageService {
     public void create(SupportedLanguage language){
         Optional<SupportedLanguage> opt = supportedLanguageRepository.findById(language.getId());
         if (opt.isEmpty()){
-            supportedLanguageRepository.save(SupportedLanguage.builder().language(language.getLanguage()).build());
+            supportedLanguageRepository.save(SupportedLanguage.builder().name(language.getName()).build());
         }
     }
 
