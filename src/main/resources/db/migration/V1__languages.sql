@@ -1,7 +1,7 @@
-INSERT INTO supported_language (language) VALUES ('Java');
---INSERT INTO supported_language (language) VALUES ('Kotlin');
---INSERT INTO supported_language (language) VALUES ('C');
---INSERT INTO supported_language (language) VALUES ('CPP');
---INSERT INTO supported_language (language) VALUES ('Python');
---INSERT INTO supported_language (language) VALUES ('Javascript');
---INSERT INTO supported_language (language) VALUES ('Typescript');
+INSERT INTO supported_language (name) VALUES ('Java');
+--INSERT INTO supported_language (name) VALUES ('Kotlin');
+--INSERT INTO supported_language (name) VALUES ('C');
+--INSERT INTO supported_language (name) VALUES ('CPP');
+--INSERT INTO supported_language (name) VALUES ('Python');
+--INSERT INTO supported_language (name) VALUES ('Javascript');
+--INSERT INTO supported_language (name) VALUES ('Typescript');
