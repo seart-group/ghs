@@ -26,10 +26,12 @@ public class GitRepoServiceImpl implements GitRepoService {
     GitRepoLanguageRepository gitRepoLanguageRepository;
     GitRepoConverter gitRepoConverter;
 
+    @Override
     public GitRepoDto getById(Long id){
         return gitRepoConverter.fromGitRepoToGitRepoDto(gitRepoRepository.getOne(id));
     }
 
+    @Override
     public void createOrUpdate(GitRepoDto dto){
         GitRepo repo = GitRepo.builder().build();
         if (dto.getId() != null){
@@ -68,5 +70,6 @@ public class GitRepoServiceImpl implements GitRepoService {
         gitRepoRepository.save(repo);
     }
 
+    @Override
     public void delete(Long id){ gitRepoRepository.deleteById(id); }
 }
