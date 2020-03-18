@@ -67,7 +67,7 @@ create table access_token
     value varchar(40) null,
     added datetime null,
     constraint unique_token
-        unique (token)
+        unique (value)
 );
 
 create table supported_language
