@@ -6,7 +6,7 @@ import com.dabico.gseapp.dto.SupportedLanguageDtoList;
 import com.dabico.gseapp.model.SupportedLanguage;
 import com.dabico.gseapp.repository.SupportedLanguageRepository;
 import lombok.AccessLevel;
-import lombok.RequiredArgsConstructor;
+import lombok.AllArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -15,7 +15,7 @@ import java.util.List;
 
 @Service
 @FieldDefaults(level = AccessLevel.PRIVATE)
-@RequiredArgsConstructor(onConstructor_ = @Autowired)
+@AllArgsConstructor(onConstructor_ = @Autowired)
 public class SupportedLanguageServiceImpl implements SupportedLanguageService {
     SupportedLanguageRepository supportedLanguageRepository;
     SupportedLanguageConverter supportedLanguageConverter;

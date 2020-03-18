@@ -9,7 +9,7 @@ import com.dabico.gseapp.repository.GitRepoLabelRepository;
 import com.dabico.gseapp.repository.GitRepoLanguageRepository;
 import com.dabico.gseapp.repository.GitRepoRepository;
 import lombok.AccessLevel;
-import lombok.RequiredArgsConstructor;
+import lombok.AllArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -19,7 +19,7 @@ import java.util.stream.Collectors;
 
 @Service
 @FieldDefaults(level = AccessLevel.PRIVATE)
-@RequiredArgsConstructor(onConstructor_ = @Autowired)
+@AllArgsConstructor(onConstructor_ = @Autowired)
 public class GitRepoServiceImpl implements GitRepoService {
     GitRepoRepository gitRepoRepository;
     GitRepoLabelRepository gitRepoLabelRepository;
