@@ -12,7 +12,7 @@ import java.util.Date;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@EqualsAndHashCode
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @Table(name = "access_token")
 @Entity
 public class AccessToken {
@@ -22,6 +22,7 @@ public class AccessToken {
     @Column(name = "id")
     Long id;
 
+    @EqualsAndHashCode.Include
     @Column(name = "value")
     String value;
 

@@ -12,7 +12,7 @@ import java.util.Date;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@EqualsAndHashCode
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @Table(name = "supported_language")
 @Entity
 public class SupportedLanguage {
@@ -22,6 +22,7 @@ public class SupportedLanguage {
     @Column(name = "id")
     Long id;
 
+    @EqualsAndHashCode.Include
     @Column(name = "name")
     String name;
 

@@ -12,7 +12,7 @@ import java.util.*;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@EqualsAndHashCode
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @Table(name = "repo")
 @Entity
 public class GitRepo {
@@ -23,6 +23,7 @@ public class GitRepo {
     Long id;
 
     @Column(name = "name")
+    @EqualsAndHashCode.Include
     String name;
 
     @Column(name = "is_fork_project")
