@@ -7,5 +7,5 @@ import lombok.*;
 @Builder
 public class AccessTokenDto {
     Long id;
-    String token;
+    String value;
 }

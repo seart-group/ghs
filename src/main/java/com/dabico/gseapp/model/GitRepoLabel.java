@@ -12,7 +12,7 @@ import java.util.Date;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@EqualsAndHashCode
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @Table(name = "repo_label")
 @Entity
 public class GitRepoLabel {
@@ -21,9 +21,11 @@ public class GitRepoLabel {
     @Column(name = "repo_label_id")
     Long id;
 
+    @EqualsAndHashCode.Include
     @ManyToOne
     GitRepo repo;
 
+    @EqualsAndHashCode.Include
     @Column(name = "repo_label_name")
     String label;
 

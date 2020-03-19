@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @FieldDefaults(level = AccessLevel.PRIVATE)
@@ -28,13 +29,11 @@ public class SupportedLanguageServiceImpl implements SupportedLanguageService {
     }
 
     @Override
-    public void createOrUpdate(SupportedLanguageDto dto){
-        SupportedLanguage language = SupportedLanguage.builder().build();
-        if (dto.getId() != null){
-            language = supportedLanguageRepository.findById(dto.getId()).orElse(null);
+    public void create(SupportedLanguage language){
+        Optional<SupportedLanguage> opt = supportedLanguageRepository.findByName(language.getName());
+        if (opt.isEmpty()){
+            supportedLanguageRepository.save(language);
         }
-        language.setLanguage(dto.getLanguage());
-        supportedLanguageRepository.save(language);
     }
 
     @Override

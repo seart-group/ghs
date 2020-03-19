@@ -12,7 +12,7 @@ import java.util.Date;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@EqualsAndHashCode
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @Table(name = "repo_language")
 @Entity
 public class GitRepoLanguage {
@@ -21,9 +21,11 @@ public class GitRepoLanguage {
     @Column(name = "repo_language_id")
     Long id;
 
+    @EqualsAndHashCode.Include
     @ManyToOne
     GitRepo repo;
 
+    @EqualsAndHashCode.Include
     @Column(name = "repo_language_name")
     String language;
 

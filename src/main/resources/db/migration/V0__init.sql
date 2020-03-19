@@ -64,20 +64,20 @@ create table access_token
 (
     id bigint auto_increment
         primary key,
-    token varchar(40) null,
+    value varchar(40) null,
     added datetime null,
     constraint unique_token
-        unique (token)
+        unique (value)
 );
 
 create table supported_language
 (
     id bigint auto_increment
         primary key,
-    language varchar(64) null,
+    name varchar(64) null,
     added datetime null,
     constraint unique_language
-        unique (language)
+        unique (name)
 );
 
 CREATE TABLE `hibernate_sequence` (

@@ -20,6 +20,6 @@ public class SupportedLanguageConverter {
     }
 
     public SupportedLanguageDto fromLanguageToLanguageDto(SupportedLanguage lang){
-        return SupportedLanguageDto.builder().id(lang.getId()).language(lang.getLanguage()).build();
+        return SupportedLanguageDto.builder().id(lang.getId()).language(lang.getName()).build();
     }
 }

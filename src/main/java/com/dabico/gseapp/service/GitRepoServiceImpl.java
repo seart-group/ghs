@@ -2,6 +2,8 @@ package com.dabico.gseapp.service;
 
 import com.dabico.gseapp.converter.GitRepoConverter;
 import com.dabico.gseapp.dto.GitRepoDto;
+import com.dabico.gseapp.dto.GitRepoLabelDtoList;
+import com.dabico.gseapp.dto.GitRepoLanguageDtoList;
 import com.dabico.gseapp.model.GitRepo;
 import com.dabico.gseapp.model.GitRepoLabel;
 import com.dabico.gseapp.model.GitRepoLanguage;
@@ -14,8 +16,8 @@ import lombok.experimental.FieldDefaults;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.Set;
-import java.util.stream.Collectors;
+import java.util.List;
+import java.util.Optional;
 
 @Service
 @FieldDefaults(level = AccessLevel.PRIVATE)
@@ -27,47 +29,73 @@ public class GitRepoServiceImpl implements GitRepoService {
     GitRepoConverter gitRepoConverter;
 
     @Override
-    public GitRepoDto getById(Long id){
-        return gitRepoConverter.fromGitRepoToGitRepoDto(gitRepoRepository.getOne(id));
+    public GitRepoDto getRepoById(Long id){
+        return gitRepoConverter.repoToRepoDto(gitRepoRepository.getOne(id));
+    }
+
+    public GitRepoLabelDtoList getRepoLabels(Long repoId){
+        List<GitRepoLabel> labels = gitRepoLabelRepository.findRepoLabels(repoId);
+        return GitRepoLabelDtoList.builder().items(gitRepoConverter.labelListToLabelDtoList(labels)).build();
+    }
+
+    public GitRepoLanguageDtoList getRepoLanguages(Long repoId){
+        List<GitRepoLanguage> languages = gitRepoLanguageRepository.findRepoLanguages(repoId);
+        return GitRepoLanguageDtoList.builder().items(gitRepoConverter.languageListToLanguageDtoList(languages)).build();
     }
 
     @Override
-    public void createOrUpdate(GitRepoDto dto){
-        GitRepo repo = GitRepo.builder().build();
-        if (dto.getId() != null){
-            repo = gitRepoRepository.findById(dto.getId()).orElse(null);
+    public GitRepo createOrUpdateRepo(GitRepo repo){
+        Optional<GitRepo> opt = gitRepoRepository.findGitRepoByName(repo.getName());
+        if (opt.isPresent()){
+            GitRepo existing = opt.get();
+            existing.setIsFork(repo.getIsFork());
+            existing.setCommits(repo.getCommits());
+            existing.setBranches(repo.getBranches());
+            existing.setDefaultBranch(repo.getDefaultBranch());
+            existing.setReleases(repo.getReleases());
+            existing.setContributors(repo.getContributors());
+            existing.setLicense(repo.getLicense());
+            existing.setWatchers(repo.getWatchers());
+            existing.setStargazers(repo.getStargazers());
+            existing.setForks(repo.getForks());
+            existing.setSize(repo.getSize());
+            existing.setCreatedAt(repo.getCreatedAt());
+            existing.setPushedAt(repo.getPushedAt());
+            existing.setUpdatedAt(repo.getUpdatedAt());
+            existing.setHomepage(repo.getHomepage());
+            existing.setMainLanguage(repo.getMainLanguage());
+            existing.setOpenIssues(repo.getOpenIssues());
+            existing.setTotalIssues(repo.getTotalIssues());
+            existing.setOpenPullRequests(repo.getOpenPullRequests());
+            existing.setTotalPullRequests(repo.getTotalPullRequests());
+            existing.setLastCommit(repo.getLastCommit());
+            existing.setLastCommitSHA(repo.getLastCommitSHA());
+            existing.setHasWiki(repo.getHasWiki());
+            existing.setIsArchived(repo.getIsArchived());
+            return gitRepoRepository.save(existing);
+        } else {
+            return gitRepoRepository.save(repo);
         }
-        Set<GitRepoLabel> labels = dto.getLabels().stream().map(gitRepoConverter::fromGitRepoLabelDtoToGitRepoLabel).collect(Collectors.toSet());
-        Set<GitRepoLanguage> languages = dto.getLanguages().stream().map(gitRepoConverter::fromGitRepoLanguageDtoToGitRepoLanguage).collect(Collectors.toSet());
+    }
 
-        repo.setName(dto.getName());
-        repo.setIsFork(dto.getIsFork());
-        repo.setCommits(dto.getCommits());
-        repo.setBranches(dto.getBranches());
-        repo.setDefaultBranch(dto.getDefaultBranch());
-        repo.setReleases(dto.getReleases());
-        repo.setContributors(dto.getContributors());
-        repo.setLicense(dto.getLicense());
-        repo.setWatchers(dto.getWatchers());
-        repo.setStargazers(dto.getStargazers());
-        repo.setForks(dto.getForks());
-        repo.setSize(dto.getSize());
-        repo.setCreatedAt(dto.getCreatedAt());
-        repo.setPushedAt(dto.getPushedAt());
-        repo.setUpdatedAt(dto.getUpdatedAt());
-        repo.setHomepage(dto.getHomepage());
-        repo.setMainLanguage(dto.getMainLanguage());
-        repo.setOpenIssues(dto.getOpenIssues());
-        repo.setTotalIssues(dto.getTotalIssues());
-        repo.setOpenPullRequests(dto.getOpenPullRequests());
-        repo.setTotalPullRequests(dto.getTotalPullRequests());
-        repo.setLastCommit(dto.getLastCommit());
-        repo.setLastCommitSHA(dto.getLastCommitSHA());
-        repo.setHasWiki(dto.getHasWiki());
-        repo.setIsArchived(dto.getIsArchived());
-        repo.setLabels(labels);
-        repo.setLanguages(languages);
-        gitRepoRepository.save(repo);
+    public GitRepoLabel createOrUpdateLabel(GitRepoLabel label){
+        List<GitRepoLabel> existing = gitRepoLabelRepository.findRepoLabels(label.getRepo().getId());
+        int index = existing.indexOf(label);
+        if (index < 0){
+            return gitRepoLabelRepository.save(label);
+        } else {
+            return gitRepoLabelRepository.save(existing.get(index));
+        }
+    }
+
+    public GitRepoLanguage createOrUpdateLanguage(GitRepoLanguage language){
+        List<GitRepoLanguage> existing = gitRepoLanguageRepository.findRepoLanguages(language.getRepo().getId());
+        int index = existing.indexOf(language);
+        if (index < 0){
+            return gitRepoLanguageRepository.save(language);
+        } else {
+            return gitRepoLanguageRepository.save(existing.get(index));
+        }
     }
 
     @Override

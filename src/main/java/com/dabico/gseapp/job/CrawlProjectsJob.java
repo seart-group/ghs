@@ -6,6 +6,7 @@ import com.dabico.gseapp.model.GitRepo;
 import com.dabico.gseapp.model.GitRepoLabel;
 import com.dabico.gseapp.model.GitRepoLanguage;
 import com.dabico.gseapp.repository.*;
+import com.dabico.gseapp.service.GitRepoService;
 import com.dabico.gseapp.util.interval.DateInterval;
 import com.google.gson.*;
 import lombok.AccessLevel;
@@ -33,7 +34,6 @@ public class CrawlProjectsJob {
     int tokenOrdinal = -1;
     String currentToken;
 
-    GitRepoRepository gitRepoRepository;
     GitRepoLabelRepository gitRepoLabelRepository;
     GitRepoLanguageRepository gitRepoLanguageRepository;
     AccessTokenRepository accessTokenRepository;
@@ -42,22 +42,23 @@ public class CrawlProjectsJob {
     GitRepoConverter gitRepoConverter;
 
     GitHubApiService gitHubApiService;
+    GitRepoService gitRepoService;
 
     @Autowired
-    public CrawlProjectsJob(GitRepoRepository gitRepoRepository,
-                            AccessTokenRepository accessTokenRepository,
+    public CrawlProjectsJob(AccessTokenRepository accessTokenRepository,
                             SupportedLanguageRepository supportedLanguageRepository,
                             GitRepoLabelRepository gitRepoLabelRepository,
                             GitRepoLanguageRepository gitRepoLanguageRepository,
                             GitRepoConverter gitRepoConverter,
-                            GitHubApiService gitHubApiService){
-        this.gitRepoRepository = gitRepoRepository;
+                            GitHubApiService gitHubApiService,
+                            GitRepoService gitRepoService){
         this.accessTokenRepository = accessTokenRepository;
         this.supportedLanguageRepository = supportedLanguageRepository;
         this.gitRepoLabelRepository = gitRepoLabelRepository;
         this.gitRepoLanguageRepository = gitRepoLanguageRepository;
         this.gitRepoConverter = gitRepoConverter;
         this.gitHubApiService = gitHubApiService;
+        this.gitRepoService = gitRepoService;
         getLanguagesToMine();
         getAccessTokens();
         this.currentToken = getNewToken();
@@ -126,7 +127,8 @@ public class CrawlProjectsJob {
         for (JsonElement element : results){
             JsonObject repoJson = element.getAsJsonObject();
             GitRepo repo = gitRepoConverter.jsonToGitRepo(repoJson);
-            gitRepoRepository.save(repo);
+            //TODO the service should return the object saved!
+            repo = gitRepoService.createOrUpdateRepo(repo);
             retrieveRepoLabels(repo);
             retrieveRepoLanguages(repo);
         }
@@ -137,14 +139,12 @@ public class CrawlProjectsJob {
         ResponseBody responseBody = response.body();
         if (response.isSuccessful() && responseBody != null){
             JsonArray results = parseString(responseBody.string()).getAsJsonArray();
-            results.forEach(result -> {
-                JsonObject resultJson = result.getAsJsonObject();
-                GitRepoLabel label = GitRepoLabel.builder()
-                                                 .repo(repo)
-                                                 .label(resultJson.get("name").getAsString())
-                                                 .build();
-                gitRepoLabelRepository.save(label);
-            });
+            results.forEach(result ->
+                    gitRepoService.createOrUpdateLabel(GitRepoLabel.builder()
+                            .repo(repo)
+                            .label(result.getAsJsonObject().get("name").getAsString())
+                            .build())
+            );
         }
         response.close();
     }
@@ -155,24 +155,23 @@ public class CrawlProjectsJob {
         if (response.isSuccessful() && responseBody != null){
             JsonObject result = parseString(responseBody.string()).getAsJsonObject();
             Set<String> keySet = result.keySet();
-            keySet.forEach(key -> {
-                GitRepoLanguage language = GitRepoLanguage.builder()
-                                                          .repo(repo)
-                                                          .language(key)
-                                                          .sizeOfCode(result.get(key).getAsLong())
-                                                          .build();
-                gitRepoLanguageRepository.save(language);
-            });
+            keySet.forEach(key ->
+                    gitRepoService.createOrUpdateLanguage(GitRepoLanguage.builder()
+                            .repo(repo)
+                            .language(key)
+                            .sizeOfCode(result.get(key).getAsLong())
+                            .build())
+            );
         }
         response.close();
     }
 
     private void getLanguagesToMine(){
-        supportedLanguageRepository.findAll().forEach(language -> languages.add(language.getLanguage()));
+        supportedLanguageRepository.findAll().forEach(language -> languages.add(language.getName()));
     }
 
     private void getAccessTokens(){
-        accessTokenRepository.findAll().forEach(accessToken -> accessTokens.add(accessToken.getToken()));
+        accessTokenRepository.findAll().forEach(accessToken -> accessTokens.add(accessToken.getValue()));
     }
 
     private void replaceTokenIfExpired() throws Exception {
