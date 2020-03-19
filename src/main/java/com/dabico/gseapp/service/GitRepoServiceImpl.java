@@ -78,23 +78,23 @@ public class GitRepoServiceImpl implements GitRepoService {
         }
     }
 
-    public GitRepoLabel createOrUpdateLabel(GitRepoLabel label){
+    public void createOrUpdateLabel(GitRepoLabel label){
         List<GitRepoLabel> existing = gitRepoLabelRepository.findRepoLabels(label.getRepo().getId());
         int index = existing.indexOf(label);
         if (index < 0){
-            return gitRepoLabelRepository.save(label);
+            gitRepoLabelRepository.save(label);
         } else {
-            return gitRepoLabelRepository.save(existing.get(index));
+            gitRepoLabelRepository.save(existing.get(index));
         }
     }
 
-    public GitRepoLanguage createOrUpdateLanguage(GitRepoLanguage language){
+    public void createOrUpdateLanguage(GitRepoLanguage language){
         List<GitRepoLanguage> existing = gitRepoLanguageRepository.findRepoLanguages(language.getRepo().getId());
         int index = existing.indexOf(language);
         if (index < 0){
-            return gitRepoLanguageRepository.save(language);
+            gitRepoLanguageRepository.save(language);
         } else {
-            return gitRepoLanguageRepository.save(existing.get(index));
+            gitRepoLanguageRepository.save(existing.get(index));
         }
     }
 

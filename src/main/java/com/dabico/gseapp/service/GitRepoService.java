@@ -8,7 +8,7 @@ import com.dabico.gseapp.model.GitRepoLanguage;
 public interface GitRepoService {
     GitRepoDto getRepoById(Long id);
     GitRepo createOrUpdateRepo(GitRepo repo);
-    GitRepoLabel createOrUpdateLabel(GitRepoLabel label);
-    GitRepoLanguage createOrUpdateLanguage(GitRepoLanguage language);
+    void createOrUpdateLabel(GitRepoLabel label);
+    void createOrUpdateLanguage(GitRepoLanguage language);
     void delete(Long id);
 }
