@@ -30,9 +30,9 @@ public class SupportedLanguageServiceImpl implements SupportedLanguageService {
 
     @Override
     public void create(SupportedLanguage language){
-        Optional<SupportedLanguage> opt = supportedLanguageRepository.findById(language.getId());
+        Optional<SupportedLanguage> opt = supportedLanguageRepository.findByName(language.getName());
         if (opt.isEmpty()){
-            supportedLanguageRepository.save(SupportedLanguage.builder().name(language.getName()).build());
+            supportedLanguageRepository.save(language);
         }
     }
 

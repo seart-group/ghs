@@ -30,9 +30,9 @@ public class AccessTokenServiceImpl implements AccessTokenService {
 
     @Override
     public void create(AccessToken token){
-        Optional<AccessToken> opt = accessTokenRepository.findById(token.getId());
-        if (opt.isPresent()){
-            accessTokenRepository.save(AccessToken.builder().value(token.getValue()).build());
+        Optional<AccessToken> opt = accessTokenRepository.findByValue(token.getValue());
+        if (opt.isEmpty()){
+            accessTokenRepository.save(token);
         }
     }
 
