@@ -57,11 +57,19 @@ public class GitRepoConverter {
                       .build();
     }
 
-    public List<GitRepoDto> fromGitRepoListToGitRepoDtoList(List<GitRepo> repos){
-        return repos.stream().map(this::fromGitRepoToGitRepoDto).collect(Collectors.toList());
+    public List<GitRepoDto> repoListToRepoDtoList(List<GitRepo> repos){
+        return repos.stream().map(this::repoToRepoDto).collect(Collectors.toList());
     }
 
-    public GitRepoDto fromGitRepoToGitRepoDto(GitRepo repo){
+    public List<GitRepoLabelDto> labelListToLabelDtoList(List<GitRepoLabel> labels){
+        return labels.stream().map(this::labelToLabelDto).collect(Collectors.toList());
+    }
+
+    public List<GitRepoLanguageDto> languageListToLanguageDtoList(List<GitRepoLanguage> languages){
+        return languages.stream().map(this::languageToLanguageDto).collect(Collectors.toList());
+    }
+
+    public GitRepoDto repoToRepoDto(GitRepo repo){
         return GitRepoDto.builder()
                 .id(repo.getId())
                 .name(repo.getName())
@@ -92,11 +100,20 @@ public class GitRepoConverter {
                 .build();
     }
 
-    public GitRepoLabel fromGitRepoLabelDtoToGitRepoLabel(GitRepoLabelDto dto){
-        return GitRepoLabel.builder().id(dto.getId()).label(dto.getLabel()).build();
+    public GitRepoLabelDto labelToLabelDto(GitRepoLabel label){
+        return GitRepoLabelDto.builder()
+                              .id(label.getId())
+                              .repoId(label.getRepo().getId())
+                              .label(label.getLabel())
+                              .build();
     }
 
-    public GitRepoLanguage fromGitRepoLanguageDtoToGitRepoLanguage(GitRepoLanguageDto dto){
-        return GitRepoLanguage.builder().id(dto.getId()).language(dto.getLanguage()).sizeOfCode(dto.getSizeOfCode()).build();
+    public GitRepoLanguageDto languageToLanguageDto(GitRepoLanguage language){
+        return GitRepoLanguageDto.builder()
+                                 .id(language.getId())
+                                 .repoId(language.getRepo().getId())
+                                 .language(language.getLanguage())
+                                 .sizeOfCode(language.getSizeOfCode())
+                                 .build();
     }
 }

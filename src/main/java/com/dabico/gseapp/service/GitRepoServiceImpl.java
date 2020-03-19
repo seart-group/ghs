@@ -2,6 +2,8 @@ package com.dabico.gseapp.service;
 
 import com.dabico.gseapp.converter.GitRepoConverter;
 import com.dabico.gseapp.dto.GitRepoDto;
+import com.dabico.gseapp.dto.GitRepoLabelDtoList;
+import com.dabico.gseapp.dto.GitRepoLanguageDtoList;
 import com.dabico.gseapp.model.GitRepo;
 import com.dabico.gseapp.model.GitRepoLabel;
 import com.dabico.gseapp.model.GitRepoLanguage;
@@ -14,6 +16,7 @@ import lombok.experimental.FieldDefaults;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -26,8 +29,18 @@ public class GitRepoServiceImpl implements GitRepoService {
     GitRepoConverter gitRepoConverter;
 
     @Override
-    public GitRepoDto getById(Long id){
-        return gitRepoConverter.fromGitRepoToGitRepoDto(gitRepoRepository.getOne(id));
+    public GitRepoDto getRepoById(Long id){
+        return gitRepoConverter.repoToRepoDto(gitRepoRepository.getOne(id));
+    }
+
+    public GitRepoLabelDtoList getRepoLabels(Long repoId){
+        List<GitRepoLabel> labels = gitRepoLabelRepository.findRepoLabels(repoId);
+        return GitRepoLabelDtoList.builder().items(gitRepoConverter.labelListToLabelDtoList(labels)).build();
+    }
+
+    public GitRepoLanguageDtoList getRepoLanguages(Long repoId){
+        List<GitRepoLanguage> languages = gitRepoLanguageRepository.findRepoLanguages(repoId);
+        return GitRepoLanguageDtoList.builder().items(gitRepoConverter.languageListToLanguageDtoList(languages)).build();
     }
 
     @Override

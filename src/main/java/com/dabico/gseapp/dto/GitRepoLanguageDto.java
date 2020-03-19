@@ -7,6 +7,7 @@ import lombok.*;
 @Builder
 public class GitRepoLanguageDto {
     Long id;
+    Long repoId;
     String language;
     Long sizeOfCode;
 }
