@@ -127,7 +127,8 @@ public class CrawlProjectsJob {
         for (JsonElement element : results){
             JsonObject repoJson = element.getAsJsonObject();
             GitRepo repo = gitRepoConverter.jsonToGitRepo(repoJson);
-            gitRepoService.createOrUpdateRepo(repo);
+            //TODO the service should return the object saved!
+            repo = gitRepoService.createOrUpdateRepo(repo);
             retrieveRepoLabels(repo);
             retrieveRepoLanguages(repo);
         }
@@ -138,10 +139,12 @@ public class CrawlProjectsJob {
         ResponseBody responseBody = response.body();
         if (response.isSuccessful() && responseBody != null){
             JsonArray results = parseString(responseBody.string()).getAsJsonArray();
-            results.forEach(result -> gitRepoLabelRepository.save(GitRepoLabel.builder()
-                                                            .repo(repo)
-                                                            .label(result.getAsJsonObject().get("name").getAsString())
-                                                            .build()));
+            results.forEach(result ->
+                    gitRepoService.createOrUpdateLabel(GitRepoLabel.builder()
+                            .repo(repo)
+                            .label(result.getAsJsonObject().get("name").getAsString())
+                            .build())
+            );
         }
         response.close();
     }
@@ -152,11 +155,13 @@ public class CrawlProjectsJob {
         if (response.isSuccessful() && responseBody != null){
             JsonObject result = parseString(responseBody.string()).getAsJsonObject();
             Set<String> keySet = result.keySet();
-            keySet.forEach(key -> gitRepoLanguageRepository.save(GitRepoLanguage.builder()
-                                                           .repo(repo)
-                                                           .language(key)
-                                                           .sizeOfCode(result.get(key).getAsLong())
-                                                           .build()));
+            keySet.forEach(key ->
+                    gitRepoService.createOrUpdateLanguage(GitRepoLanguage.builder()
+                            .repo(repo)
+                            .language(key)
+                            .sizeOfCode(result.get(key).getAsLong())
+                            .build())
+            );
         }
         response.close();
     }

@@ -44,7 +44,7 @@ public class GitRepoServiceImpl implements GitRepoService {
     }
 
     @Override
-    public void createOrUpdateRepo(GitRepo repo){
+    public GitRepo createOrUpdateRepo(GitRepo repo){
         Optional<GitRepo> opt = gitRepoRepository.findGitRepoByName(repo.getName());
         if (opt.isPresent()){
             GitRepo existing = opt.get();
@@ -72,29 +72,29 @@ public class GitRepoServiceImpl implements GitRepoService {
             existing.setLastCommitSHA(repo.getLastCommitSHA());
             existing.setHasWiki(repo.getHasWiki());
             existing.setIsArchived(repo.getIsArchived());
-            gitRepoRepository.save(existing);
+            return gitRepoRepository.save(existing);
         } else {
-            gitRepoRepository.save(repo);
+            return gitRepoRepository.save(repo);
         }
     }
 
-    public void createOrUpdateRepoLabel(GitRepoLabel label){
+    public GitRepoLabel createOrUpdateLabel(GitRepoLabel label){
         List<GitRepoLabel> existing = gitRepoLabelRepository.findRepoLabels(label.getRepo().getId());
         int index = existing.indexOf(label);
         if (index < 0){
-            gitRepoLabelRepository.save(label);
+            return gitRepoLabelRepository.save(label);
         } else {
-            gitRepoLabelRepository.save(existing.get(index));
+            return gitRepoLabelRepository.save(existing.get(index));
         }
     }
 
-    public void createOrUpdateRepoLanguage(GitRepoLanguage language){
+    public GitRepoLanguage createOrUpdateLanguage(GitRepoLanguage language){
         List<GitRepoLanguage> existing = gitRepoLanguageRepository.findRepoLanguages(language.getRepo().getId());
         int index = existing.indexOf(language);
         if (index < 0){
-            gitRepoLanguageRepository.save(language);
+            return gitRepoLanguageRepository.save(language);
         } else {
-            gitRepoLanguageRepository.save(existing.get(index));
+            return gitRepoLanguageRepository.save(existing.get(index));
         }
     }
 
