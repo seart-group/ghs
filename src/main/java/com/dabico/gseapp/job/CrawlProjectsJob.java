@@ -34,8 +34,6 @@ public class CrawlProjectsJob {
     int tokenOrdinal = -1;
     String currentToken;
 
-    GitRepoLabelRepository gitRepoLabelRepository;
-    GitRepoLanguageRepository gitRepoLanguageRepository;
     AccessTokenRepository accessTokenRepository;
     SupportedLanguageRepository supportedLanguageRepository;
 
@@ -47,15 +45,11 @@ public class CrawlProjectsJob {
     @Autowired
     public CrawlProjectsJob(AccessTokenRepository accessTokenRepository,
                             SupportedLanguageRepository supportedLanguageRepository,
-                            GitRepoLabelRepository gitRepoLabelRepository,
-                            GitRepoLanguageRepository gitRepoLanguageRepository,
                             GitRepoConverter gitRepoConverter,
                             GitHubApiService gitHubApiService,
                             GitRepoService gitRepoService){
         this.accessTokenRepository = accessTokenRepository;
         this.supportedLanguageRepository = supportedLanguageRepository;
-        this.gitRepoLabelRepository = gitRepoLabelRepository;
-        this.gitRepoLanguageRepository = gitRepoLanguageRepository;
         this.gitRepoConverter = gitRepoConverter;
         this.gitHubApiService = gitHubApiService;
         this.gitRepoService = gitRepoService;
