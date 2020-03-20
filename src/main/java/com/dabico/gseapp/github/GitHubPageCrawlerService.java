@@ -57,7 +57,7 @@ public class GitHubPageCrawlerService {
     }
 
     private void mineProjectPage() throws IOException {
-        Document document   = Jsoup.connect(repoURL).get();
+        Document document   = Jsoup.connect(repoURL).userAgent("Mozilla").get();
         Elements summary_ul = document.getElementsByClass("numbers-summary");
         commits  = parseLong(normalizeNumberString(summary_ul.get(0).childNode(1).childNode(1).childNode(3).childNode(0).toString()));
         branches = parseLong(normalizeNumberString(summary_ul.get(0).childNode(3).childNode(1).childNode(3).childNode(0).toString()));
@@ -74,7 +74,7 @@ public class GitHubPageCrawlerService {
     }
 
     private void mineIssuesPage() throws IOException {
-        Document document  = Jsoup.connect(repoURL + "/issues").get();
+        Document document  = Jsoup.connect(repoURL + "/issues").userAgent("Mozilla").get();
         Elements table_div = document.getElementsByClass("table-list-header-toggle states flex-auto pl-0");
         long open   = parseLong(normalizeNumberString(table_div.get(0).childNode(1).childNode(2).toString().trim().split(" ")[0]));
         long closed = parseLong(normalizeNumberString(table_div.get(0).childNode(3).childNode(2).toString().trim().split(" ")[0]));
@@ -83,7 +83,7 @@ public class GitHubPageCrawlerService {
     }
 
     private void minePullsPage() throws IOException {
-        Document document  = Jsoup.connect(repoURL + "/pulls").get();
+        Document document  = Jsoup.connect(repoURL + "/pulls").userAgent("Mozilla").get();
         Elements table_div = document.getElementsByClass("table-list-header-toggle states flex-auto pl-0");
         long open   = parseLong(normalizeNumberString(table_div.get(0).childNode(1).childNode(2).toString().trim().split(" ")[0]));
         long closed = parseLong(normalizeNumberString(table_div.get(0).childNode(3).childNode(2).toString().trim().split(" ")[0]));
@@ -92,7 +92,7 @@ public class GitHubPageCrawlerService {
     }
 
     private void mineCommitsPage() throws IOException {
-        Document document = Jsoup.connect(repoURL + "/commits").get();
+        Document document = Jsoup.connect(repoURL + "/commits").userAgent("Mozilla").get();
         Elements button_a = document.getElementsByClass("sha btn btn-outline BtnGroup-item");
         String link = button_a.get(0).attr("href");
         document = Jsoup.connect(Endpoints.DEFAULT.getUrl()+"/"+link).get();
