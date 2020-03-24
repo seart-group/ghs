@@ -66,6 +66,7 @@ public class CrawlProjectsJob {
                 retrieveRepos(first,language);
             } while (!requestQueue.isEmpty());
         }
+        gitRepoConverter.quitDriver();
     }
 
     private void retrieveRepos(DateInterval interval, String language) throws Exception {
@@ -113,7 +114,12 @@ public class CrawlProjectsJob {
             }
         }
         response.close();
-        logger.info(requestQueue.toString());
+        if ((!requestQueue.isEmpty())) {
+            logger.info("Next Crawl Intervals:");
+            logger.info(requestQueue.toString());
+        } else {
+            logger.info("Crawl Complete!");
+        }
     }
 
     private void saveRetrievedRepos(JsonArray results) throws Exception {
@@ -121,7 +127,6 @@ public class CrawlProjectsJob {
         for (JsonElement element : results){
             JsonObject repoJson = element.getAsJsonObject();
             GitRepo repo = gitRepoConverter.jsonToGitRepo(repoJson);
-            //TODO the service should return the object saved!
             repo = gitRepoService.createOrUpdateRepo(repo);
             retrieveRepoLabels(repo);
             retrieveRepoLanguages(repo);

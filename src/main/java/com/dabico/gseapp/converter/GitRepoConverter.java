@@ -9,22 +9,61 @@ import com.dabico.gseapp.model.GitRepoLabel;
 import com.dabico.gseapp.model.GitRepoLanguage;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import lombok.RequiredArgsConstructor;
+import lombok.AccessLevel;
+import lombok.experimental.FieldDefaults;
+import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.chrome.ChromeDriverService;
+import org.openqa.selenium.chrome.ChromeOptions;
+import org.openqa.selenium.remote.DesiredCapabilities;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.io.File;
 import java.io.IOException;
+import java.net.URL;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import static com.dabico.gseapp.util.DateUtils.fromGitDateString;
 
 @Service
-@RequiredArgsConstructor(onConstructor_ = @Autowired)
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class GitRepoConverter {
+
+    ChromeDriver driver;
+
+    @Autowired
+    public GitRepoConverter(){
+        ClassLoader classLoader = getClass().getClassLoader();
+        URL url = classLoader.getResource("chromedriver");
+        String driverFile = Objects.requireNonNull(url).getFile();
+        System.setProperty("webdriver.chrome.driver", driverFile);
+        System.setProperty("webdriver.chrome.silentOutput", "true");
+        DesiredCapabilities capabilities = new DesiredCapabilities();
+        ChromeDriverService service = new ChromeDriverService.Builder()
+                .usingDriverExecutable(new File(driverFile))
+                .build();
+        ChromeOptions options = new ChromeOptions();
+        options.addArguments("--no-sandbox");
+        options.addArguments("--headless");
+        options.setExperimentalOption("useAutomationExtension", false);
+        options.addArguments("start-maximized");
+        options.addArguments("disable-infobars");
+        options.addArguments("--disable-extensions");
+        options.addArguments("--disable-dev-shm-usage");
+        capabilities.setCapability(ChromeOptions.CAPABILITY,options);
+        this.driver = new ChromeDriver(service,options);
+    }
+
+    public void quitDriver(){
+        this.driver.close();
+        this.driver.quit();
+    }
+
     public GitRepo jsonToGitRepo(JsonObject json) throws IOException {
         String repositoryURL = json.get("html_url").getAsString();
-        GitHubPageCrawlerService crawlerService = new GitHubPageCrawlerService(repositoryURL);
+        GitHubPageCrawlerService crawlerService = new GitHubPageCrawlerService(repositoryURL,driver);
         crawlerService.mine();
         JsonElement license = json.get("license");
         JsonElement homepage = json.get("homepage");
