@@ -30,10 +30,9 @@ public class GitHubPageCrawlerService {
     static String branchesReg     = "#js-repo-pjax-container > div > div > div > ul > li:nth-child(2) > a > span";
     static String releasesReg     = "#js-repo-pjax-container > div > div > div > ul > li:nth-child(4) > a > span";
     static String contributorsReg = "#js-repo-pjax-container > div > div > div > ul > li:nth-child(5) > a > span";
+    static String contributorsAlt = "#js-repo-pjax-container > div.container-lg.clearfix.new-discussion-timeline.px-3 > div > div.overall-summary.border-bottom-0.mb-0.rounded-bottom-0 > ul > li:nth-child(5) > a > span";
     static String watchersReg     = "#js-repo-pjax-container > div > div > ul > li:nth-child(1) > a:nth-child(2)";
     static String watchersAlt     = "#js-repo-pjax-container > div > div > ul > li:nth-child(2) > a:nth-child(2)";
-    static String starsReg        = "#js-repo-pjax-container > div > div > ul > li:nth-child(3) > a:nth-child(2)";
-    static String starsAlt        = "#js-repo-pjax-container > div > div > ul > li:nth-child(3) > div > form > a";
     static String openReg         = "#js-issues-toolbar > div > div > div > a:nth-child(1)";
     static String closedReg       = "#js-issues-toolbar > div > div > div > a:nth-child(2)";
     static String commitLinkReg   = "#js-repo-pjax-container > div > div > div > ol:nth-child(2) > li > div > div > a";
@@ -47,7 +46,6 @@ public class GitHubPageCrawlerService {
     long releases = 0;
     long contributors = 0;
     long watchers = 0;
-    long stars = 0;
     long totalIssues = 0;
     long openIssues = 0;
     long totalPullRequests = 0;
@@ -80,8 +78,6 @@ public class GitHubPageCrawlerService {
         } catch (NullPointerException ex){
             watchers = parseLong(normalizeNumberString(document.select(watchersAlt).first().attr("aria-label").split(" ")[0]));
         }
-
-        stars = mineStarsWithSelenium(repoURL);
     }
 
     private void mineIssuesPage() throws IOException {
@@ -111,15 +107,14 @@ public class GitHubPageCrawlerService {
     private long mineContributorsSelenium(String repoURL) {
         WebDriverWait wait = new WebDriverWait(driver,5);
         driver.get(repoURL);
-        wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector(contributorsReg)));
-        return Long.parseLong(normalizeNumberString(driver.findElementByCssSelector(contributorsReg).getText()));
-    }
+        try {
+            wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector(contributorsReg)));
+            return Long.parseLong(normalizeNumberString(driver.findElementByCssSelector(contributorsReg).getText()));
+        } catch (NoClassDefFoundError ex){
+            wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector(contributorsAlt)));
+            return Long.parseLong(normalizeNumberString(driver.findElementByCssSelector(contributorsAlt).getText()));
+        }
 
-    private long mineStarsWithSelenium(String repoURL) {
-        WebDriverWait wait = new WebDriverWait(driver,5);
-        driver.get(repoURL);
-        wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector(starsReg)));
-        return Long.parseLong(normalizeNumberString(driver.findElementByCssSelector(starsReg).getAttribute("aria-label").split(" ")[0]));
     }
 
     private String normalizeNumberString(String input){ return input.trim().replaceAll(",",""); }

@@ -77,7 +77,7 @@ public class GitRepoConverter {
                       .contributors(crawlerService.getContributors())
                       .license((license.isJsonNull()) ? null : license.getAsJsonObject().get("name").getAsString())
                       .watchers(crawlerService.getWatchers())
-                      .stargazers(crawlerService.getStars())
+                      .stargazers(json.get("stargazers_count").getAsLong())
                       .forks(json.get("forks_count").getAsLong())
                       .size(json.get("size").getAsLong())
                       .createdAt(fromGitDateString(json.get("created_at").getAsString()))

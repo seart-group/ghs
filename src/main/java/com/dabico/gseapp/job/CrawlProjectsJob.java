@@ -59,7 +59,7 @@ public class CrawlProjectsJob {
     }
 
     public void run() throws Exception {
-        for(String language : languages){
+        for (String language : languages){
             requestQueue.add(new DateInterval("2008-01-01T00:00:00..2009-01-01T00:00:00"));
             do {
                 DateInterval first = requestQueue.remove(0);
