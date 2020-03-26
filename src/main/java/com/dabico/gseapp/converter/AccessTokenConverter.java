@@ -22,4 +22,8 @@ public class AccessTokenConverter {
     public AccessTokenDto fromTokenToTokenDto(AccessToken token){
         return AccessTokenDto.builder().id(token.getId()).value(token.getValue()).build();
     }
+
+    public AccessToken fromTokenDtoToToken(AccessTokenDto dto){
+        return AccessToken.builder().id(dto.getId()).value(dto.getValue()).build();
+    }
 }

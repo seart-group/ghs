@@ -29,11 +29,12 @@ public class AccessTokenServiceImpl implements AccessTokenService {
     }
 
     @Override
-    public void create(AccessToken token){
+    public AccessTokenDto create(AccessToken token){
         Optional<AccessToken> opt = accessTokenRepository.findByValue(token.getValue());
         if (opt.isEmpty()){
-            accessTokenRepository.save(token);
+            return accessTokenConverter.fromTokenToTokenDto(accessTokenRepository.save(token));
         }
+        return null;
     }
 
     @Override
