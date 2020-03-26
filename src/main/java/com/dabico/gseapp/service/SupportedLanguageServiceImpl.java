@@ -29,11 +29,12 @@ public class SupportedLanguageServiceImpl implements SupportedLanguageService {
     }
 
     @Override
-    public void create(SupportedLanguage language){
+    public SupportedLanguageDto create(SupportedLanguage language){
         Optional<SupportedLanguage> opt = supportedLanguageRepository.findByName(language.getName());
         if (opt.isEmpty()){
-            supportedLanguageRepository.save(language);
+            return supportedLanguageConverter.fromLanguageToLanguageDto(supportedLanguageRepository.save(language));
         }
+        return null;
     }
 
     @Override
