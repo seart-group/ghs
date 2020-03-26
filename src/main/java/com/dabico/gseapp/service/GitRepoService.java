@@ -10,5 +10,4 @@ public interface GitRepoService {
     GitRepo createOrUpdateRepo(GitRepo repo);
     void createOrUpdateLabel(GitRepoLabel label);
     void createOrUpdateLanguage(GitRepoLanguage language);
-    void delete(Long id);
 }

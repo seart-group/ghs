@@ -1,9 +1,7 @@
 package com.dabico.gseapp.service;
 
 import com.dabico.gseapp.converter.GitRepoConverter;
-import com.dabico.gseapp.dto.GitRepoDto;
-import com.dabico.gseapp.dto.GitRepoLabelDtoList;
-import com.dabico.gseapp.dto.GitRepoLanguageDtoList;
+import com.dabico.gseapp.dto.*;
 import com.dabico.gseapp.model.GitRepo;
 import com.dabico.gseapp.model.GitRepoLabel;
 import com.dabico.gseapp.model.GitRepoLanguage;
@@ -16,6 +14,7 @@ import lombok.experimental.FieldDefaults;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 
@@ -29,18 +28,14 @@ public class GitRepoServiceImpl implements GitRepoService {
     GitRepoConverter gitRepoConverter;
 
     @Override
-    public GitRepoDto getRepoById(Long id){
-        return gitRepoConverter.repoToRepoDto(gitRepoRepository.getOne(id));
-    }
-
-    public GitRepoLabelDtoList getRepoLabels(Long repoId){
+    public GitRepoDto getRepoById(Long repoId){
+        GitRepo repo = gitRepoRepository.getOne(repoId);
         List<GitRepoLabel> labels = gitRepoLabelRepository.findRepoLabels(repoId);
-        return GitRepoLabelDtoList.builder().items(gitRepoConverter.labelListToLabelDtoList(labels)).build();
-    }
-
-    public GitRepoLanguageDtoList getRepoLanguages(Long repoId){
         List<GitRepoLanguage> languages = gitRepoLanguageRepository.findRepoLanguages(repoId);
-        return GitRepoLanguageDtoList.builder().items(gitRepoConverter.languageListToLanguageDtoList(languages)).build();
+        GitRepoDto repoDto = gitRepoConverter.repoToRepoDto(repo);
+        repoDto.setLabels(new HashSet<>(gitRepoConverter.labelListToLabelDtoList(labels)));
+        repoDto.setLanguages(new HashSet<>(gitRepoConverter.languageListToLanguageDtoList(languages)));
+        return repoDto;
     }
 
     @Override
@@ -97,7 +92,4 @@ public class GitRepoServiceImpl implements GitRepoService {
             gitRepoLanguageRepository.save(existing.get(index));
         }
     }
-
-    @Override
-    public void delete(Long id){ gitRepoRepository.deleteById(id); }
 }
