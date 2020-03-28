@@ -58,9 +58,9 @@ public class CrawlProjectsJob {
         this.currentToken = getNewToken();
     }
 
-    public void run() throws Exception {
+    public void run(String intervalStr) throws Exception {
         for (String language : languages){
-            requestQueue.add(new DateInterval("2008-01-01T00:00:00..2009-01-01T00:00:00"));
+            requestQueue.add(new DateInterval(intervalStr));
             do {
                 DateInterval first = requestQueue.remove(0);
                 retrieveRepos(first,language);
