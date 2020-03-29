@@ -4,7 +4,6 @@ import com.dabico.gseapp.converter.AccessTokenConverter;
 import com.dabico.gseapp.converter.SupportedLanguageConverter;
 import com.dabico.gseapp.dto.AccessTokenDto;
 import com.dabico.gseapp.dto.SupportedLanguageDto;
-import com.dabico.gseapp.model.AccessToken;
 import com.dabico.gseapp.service.AccessTokenService;
 import com.dabico.gseapp.service.SupportedLanguageService;
 import lombok.AccessLevel;
@@ -30,6 +29,11 @@ public class AdminController {
     SupportedLanguageService supportedLanguageService;
     SupportedLanguageConverter supportedLanguageConverter;
 
+    @GetMapping("/t")
+    public ResponseEntity<?> getTokens(){
+        return ResponseEntity.ok(accessTokenService.getAll());
+    }
+
     @PostMapping("/t")
     public ResponseEntity<?> addToken(@RequestBody AccessTokenDto token){
         AccessTokenDto created = accessTokenService.create(accessTokenConverter.fromTokenDtoToToken(token));
@@ -49,6 +53,11 @@ public class AdminController {
             logger.error(ex.getMessage());
             return ResponseEntity.notFound().build();
         }
+    }
+
+    @GetMapping("/l")
+    public ResponseEntity<?> getLanguages(){
+        return ResponseEntity.ok(supportedLanguageService.getAll());
     }
 
     @PostMapping("/l")
