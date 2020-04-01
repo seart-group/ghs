@@ -58,23 +58,41 @@ public class CrawlProjectsJob {
         this.currentToken = getNewToken();
     }
 
-    public void run(String intervalStr) throws Exception {
-        for (String language : languages){
-            requestQueue.add(new DateInterval(intervalStr));
-            do {
-                DateInterval first = requestQueue.remove(0);
-                retrieveRepos(first,language);
-            } while (!requestQueue.isEmpty());
+    public void run(DateInterval createInterval, DateInterval updateInterval) throws Exception {
+        if (createInterval != null){
+            create(createInterval);
         }
-        gitRepoConverter.quitDriver();
+        if (updateInterval != null){
+            update(updateInterval);
+        }
     }
 
-    private void retrieveRepos(DateInterval interval, String language) throws Exception {
+    private void create(DateInterval interval) throws Exception {
+        for (String language : languages){
+            requestQueue.add(interval);
+            do {
+                DateInterval first = requestQueue.remove(0);
+                retrieveRepos(first,language,false);
+            } while (!requestQueue.isEmpty());
+        }
+    }
+
+    private void update(DateInterval interval) throws Exception {
+        for (String language : languages){
+            requestQueue.add(interval);
+            do {
+                DateInterval first = requestQueue.remove(0);
+                retrieveRepos(first,language,true);
+            } while (!requestQueue.isEmpty());
+        }
+    }
+
+    private void retrieveRepos(DateInterval interval, String language, Boolean update) throws Exception {
         logger.info("Crawling: "+language.toUpperCase()+" "+interval);
         logger.info("Token: " + this.currentToken);
         int page = 1;
         replaceTokenIfExpired();
-        Response response = gitHubApiService.searchRepositories(language,interval,page,currentToken,false);
+        Response response = gitHubApiService.searchRepositories(language,interval,page,currentToken,update);
         ResponseBody responseBody = response.body();
 
         if (response.isSuccessful() && responseBody != null){
@@ -91,7 +109,7 @@ public class CrawlProjectsJob {
                     page++;
                     while (page <= totalPages){
                         replaceTokenIfExpired();
-                        response = gitHubApiService.searchRepositories(language,interval,page,currentToken,false);
+                        response = gitHubApiService.searchRepositories(language,interval,page,currentToken,update);
                         responseBody = response.body();
                         if (response.isSuccessful() && responseBody != null){
                             bodyJson = parseString(responseBody.string()).getAsJsonObject();

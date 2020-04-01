@@ -30,7 +30,7 @@ public class JobScheduler {
     @Scheduled(fixedRateString = "${app.crawl.scheduling}")
     public void run(){
         try {
-            crawlProjectsJob.run(interval);
+            crawlProjectsJob.run(applicationPropertyService.getInterval(),null);
         } catch (Exception ex) {
             ex.printStackTrace();
         }
