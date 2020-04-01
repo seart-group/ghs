@@ -31,7 +31,7 @@ public class CrawlProjectsJob {
     List<String> accessTokens = new ArrayList<>();
     List<String> languages = new ArrayList<>();
 
-    int tokenOrdinal = -1;
+    int tokenOrdinal;
     String currentToken;
 
     AccessTokenRepository accessTokenRepository;
@@ -53,12 +53,10 @@ public class CrawlProjectsJob {
         this.gitRepoConverter = gitRepoConverter;
         this.gitHubApiService = gitHubApiService;
         this.gitRepoService = gitRepoService;
-        getLanguagesToMine();
-        getAccessTokens();
-        this.currentToken = getNewToken();
     }
 
     public void run(DateInterval createInterval, DateInterval updateInterval) throws Exception {
+        refresh();
         if (createInterval != null){
             create(createInterval);
         }
@@ -122,7 +120,6 @@ public class CrawlProjectsJob {
                     }
                 }
             } else {
-                //split search interval
                 Pair<DateInterval,DateInterval> newIntervals = interval.splitInterval();
                 if (newIntervals != null){
                     requestQueue.add(newIntervals.getValue0());
@@ -181,6 +178,13 @@ public class CrawlProjectsJob {
             );
         }
         response.close();
+    }
+
+    private void refresh(){
+        getLanguagesToMine();
+        getAccessTokens();
+        this.tokenOrdinal = -1;
+        this.currentToken = getNewToken();
     }
 
     private void getLanguagesToMine(){
