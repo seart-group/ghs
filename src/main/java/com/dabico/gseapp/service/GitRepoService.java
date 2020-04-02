@@ -5,9 +5,11 @@ import com.dabico.gseapp.model.GitRepo;
 import com.dabico.gseapp.model.GitRepoLabel;
 import com.dabico.gseapp.model.GitRepoLanguage;
 
+import java.util.List;
+
 public interface GitRepoService {
     GitRepoDto getRepoById(Long id);
     GitRepo createOrUpdateRepo(GitRepo repo);
-    void createOrUpdateLabel(GitRepoLabel label);
-    void createOrUpdateLanguage(GitRepoLanguage language);
+    void createUpdateLabels(GitRepo repo, List<GitRepoLabel> labels);
+    void createUpdateLanguages(GitRepo repo, List<GitRepoLanguage> languages);
 }

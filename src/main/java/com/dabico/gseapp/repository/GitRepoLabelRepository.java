@@ -1,5 +1,6 @@
 package com.dabico.gseapp.repository;
 
+import com.dabico.gseapp.model.GitRepo;
 import com.dabico.gseapp.model.GitRepoLabel;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -10,4 +11,5 @@ import java.util.List;
 public interface GitRepoLabelRepository extends JpaRepository<GitRepoLabel,Long> {
     @Query("select l from GitRepoLabel l left join GitRepo r on l.repo.id = r.id where l.repo.id = (:id)")
     List<GitRepoLabel> findRepoLabels(@Param("id") Long id);
+    void deleteAllByRepo(GitRepo repo);
 }

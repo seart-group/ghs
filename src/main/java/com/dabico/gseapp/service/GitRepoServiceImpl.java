@@ -13,6 +13,7 @@ import lombok.AllArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.HashSet;
 import java.util.List;
@@ -73,23 +74,15 @@ public class GitRepoServiceImpl implements GitRepoService {
         }
     }
 
-    public void createOrUpdateLabel(GitRepoLabel label){
-        List<GitRepoLabel> existing = gitRepoLabelRepository.findRepoLabels(label.getRepo().getId());
-        int index = existing.indexOf(label);
-        if (index < 0){
-            gitRepoLabelRepository.save(label);
-        } else {
-            gitRepoLabelRepository.save(existing.get(index));
-        }
+    @Transactional
+    public void createUpdateLabels(GitRepo repo, List<GitRepoLabel> labels){
+        gitRepoLabelRepository.deleteAllByRepo(repo);
+        labels.forEach(label -> gitRepoLabelRepository.save(label));
     }
 
-    public void createOrUpdateLanguage(GitRepoLanguage language){
-        List<GitRepoLanguage> existing = gitRepoLanguageRepository.findRepoLanguages(language.getRepo().getId());
-        int index = existing.indexOf(language);
-        if (index < 0){
-            gitRepoLanguageRepository.save(language);
-        } else {
-            gitRepoLanguageRepository.save(existing.get(index));
-        }
+    @Transactional
+    public void createUpdateLanguages(GitRepo repo, List<GitRepoLanguage> languages){
+        gitRepoLanguageRepository.deleteAllByRepo(repo);
+        languages.forEach(language -> gitRepoLanguageRepository.save(language));
     }
 }
