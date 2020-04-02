@@ -6,6 +6,7 @@ import com.dabico.gseapp.model.GitRepo;
 import com.dabico.gseapp.model.GitRepoLabel;
 import com.dabico.gseapp.model.GitRepoLanguage;
 import com.dabico.gseapp.repository.*;
+import com.dabico.gseapp.service.CrawlJobService;
 import com.dabico.gseapp.service.GitRepoService;
 import com.dabico.gseapp.util.interval.DateInterval;
 import com.google.gson.*;
@@ -41,18 +42,21 @@ public class CrawlProjectsJob {
 
     GitHubApiService gitHubApiService;
     GitRepoService gitRepoService;
+    CrawlJobService crawlJobService;
 
     @Autowired
     public CrawlProjectsJob(AccessTokenRepository accessTokenRepository,
                             SupportedLanguageRepository supportedLanguageRepository,
                             GitRepoConverter gitRepoConverter,
                             GitHubApiService gitHubApiService,
-                            GitRepoService gitRepoService){
+                            GitRepoService gitRepoService,
+                            CrawlJobService crawlJobService){
         this.accessTokenRepository = accessTokenRepository;
         this.supportedLanguageRepository = supportedLanguageRepository;
         this.gitRepoConverter = gitRepoConverter;
         this.gitHubApiService = gitHubApiService;
         this.gitRepoService = gitRepoService;
+        this.crawlJobService = crawlJobService;
     }
 
     public void run(DateInterval createInterval, DateInterval updateInterval) throws Exception {
@@ -119,6 +123,7 @@ public class CrawlProjectsJob {
                         response.close();
                     }
                 }
+                crawlJobService.updateCrawlDateForLanguage(language);
             } else {
                 Pair<DateInterval,DateInterval> newIntervals = interval.splitInterval();
                 if (newIntervals != null){
