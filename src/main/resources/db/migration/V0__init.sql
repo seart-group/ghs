@@ -89,7 +89,7 @@ create table crawl_job
 );
 
 create index crawl_job_index_language_id
-    on repo_language (language_id);
+    on crawl_job (language_id);
 
 CREATE TABLE `hibernate_sequence` (
   `next_val` bigint(20) DEFAULT NULL
