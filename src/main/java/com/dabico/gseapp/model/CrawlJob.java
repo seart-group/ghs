@@ -25,7 +25,7 @@ public class CrawlJob {
     @Column(name = "crawled")
     Date crawled;
 
-    @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "language_id", referencedColumnName = "id")
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "language_id")
     SupportedLanguage language;
 }
