@@ -20,11 +20,13 @@ public class CrawlJobServiceImpl implements CrawlJobService {
     CrawlJobRepository crawlJobRepository;
     SupportedLanguageRepository supportedLanguageRepository;
 
-    public Date getCrawledDateByLanguage(String language){
+    @Override
+    public Date getCrawlDateByLanguage(String language){
         Optional<CrawlJob> crawlJob = crawlJobRepository.findCrawledJobByLanguage(language);
         return crawlJob.map(CrawlJob::getCrawled).orElse(null);
     }
 
+    @Override
     public void updateCrawlDateForLanguage(String language){
         SupportedLanguage supportedLanguage = supportedLanguageRepository.findByName(language).get();
         Optional<CrawlJob> crawlJobOpt = crawlJobRepository.findByLanguage(supportedLanguage);
