@@ -61,16 +61,14 @@ public class GitHubApiService {
     public Response searchRepoLabels(String name, String token) throws IOException, InterruptedException {
         //TODO Adjust scalability for more than 100 labels used THEORETICALLY SHOULD NOT HAPPEN
         Response response = makeAPICall(generateLabelsURL(name) + "?page=1&per_page=100",token);
-        //TODO Remove guards when done
-        Thread.sleep(1000);
+        Thread.sleep(2000);
         return response;
     }
 
     public Response searchRepoLanguages(String name, String token) throws IOException, InterruptedException {
         //TODO Adjust scalability for more than 100 languages used THEORETICALLY SHOULD NOT HAPPEN
         Response response = makeAPICall(generateLanguagesURL(name) + "?page=1&per_page=100",token);
-        //TODO Remove guards when done
-        Thread.sleep(1000);
+        Thread.sleep(2000);
         return response;
     }
 
