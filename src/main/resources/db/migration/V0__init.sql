@@ -80,17 +80,6 @@ create table supported_language
         unique (name)
 );
 
-create table crawl_job
-(
-    crawl_id bigint not null,
-    crawled datetime null,
-    language_id bigint not null,
-    primary key (crawl_id, language_id)
-);
-
-create index crawl_job_index_language_id
-    on repo_language (language_id);
-
 CREATE TABLE `hibernate_sequence` (
   `next_val` bigint(20) DEFAULT NULL
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
