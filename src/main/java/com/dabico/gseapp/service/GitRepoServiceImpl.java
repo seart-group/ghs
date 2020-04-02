@@ -78,13 +78,13 @@ public class GitRepoServiceImpl implements GitRepoService {
     @Transactional
     public void createUpdateLabels(GitRepo repo, List<GitRepoLabel> labels){
         gitRepoLabelRepository.deleteAllByRepo(repo);
-        labels.forEach(label -> gitRepoLabelRepository.save(label));
+        gitRepoLabelRepository.saveAll(labels);
     }
 
     @Override
     @Transactional
     public void createUpdateLanguages(GitRepo repo, List<GitRepoLanguage> languages){
         gitRepoLanguageRepository.deleteAllByRepo(repo);
-        languages.forEach(language -> gitRepoLanguageRepository.save(language));
+        gitRepoLanguageRepository.saveAll(languages);
     }
 }
