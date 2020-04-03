@@ -30,7 +30,7 @@ public class JobScheduler {
     public void run(){
         try {
             applicationPropertyService.setNextCrawl(new Date());
-            crawlProjectsJob.run(applicationPropertyService.getInterval(),null);
+            crawlProjectsJob.run();
         } catch (Exception ex) {
             ex.printStackTrace();
         }

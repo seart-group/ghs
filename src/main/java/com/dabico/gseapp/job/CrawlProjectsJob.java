@@ -6,6 +6,7 @@ import com.dabico.gseapp.model.GitRepo;
 import com.dabico.gseapp.model.GitRepoLabel;
 import com.dabico.gseapp.model.GitRepoLanguage;
 import com.dabico.gseapp.repository.*;
+import com.dabico.gseapp.service.ApplicationPropertyService;
 import com.dabico.gseapp.service.CrawlJobService;
 import com.dabico.gseapp.service.GitRepoService;
 import com.dabico.gseapp.util.interval.DateInterval;
@@ -43,6 +44,7 @@ public class CrawlProjectsJob {
     GitHubApiService gitHubApiService;
     GitRepoService gitRepoService;
     CrawlJobService crawlJobService;
+    ApplicationPropertyService applicationPropertyService;
 
     @Autowired
     public CrawlProjectsJob(AccessTokenRepository accessTokenRepository,
@@ -50,43 +52,47 @@ public class CrawlProjectsJob {
                             GitRepoConverter gitRepoConverter,
                             GitHubApiService gitHubApiService,
                             GitRepoService gitRepoService,
-                            CrawlJobService crawlJobService){
+                            CrawlJobService crawlJobService,
+                            ApplicationPropertyService applicationPropertyService){
         this.accessTokenRepository = accessTokenRepository;
         this.supportedLanguageRepository = supportedLanguageRepository;
         this.gitRepoConverter = gitRepoConverter;
         this.gitHubApiService = gitHubApiService;
         this.gitRepoService = gitRepoService;
         this.crawlJobService = crawlJobService;
+        this.applicationPropertyService = applicationPropertyService;
     }
 
-    public void run(DateInterval createInterval, DateInterval updateInterval) throws Exception {
+    public void run() throws Exception {
         refresh();
-        if (createInterval != null){
-            create(createInterval);
-        }
-        if (updateInterval != null){
-            update(updateInterval);
+        for (String language : languages){
+            Date limit = crawlJobService.getCrawlDateByLanguage(language);
+            DateInterval interval;
+            if (limit != null){
+                interval = new DateInterval(limit,new Date());
+                create(interval,language);
+                update(interval,language);
+            } else {
+                interval = new DateInterval(applicationPropertyService.getStartDate(),new Date());
+                create(interval,language);
+            }
         }
     }
 
-    private void create(DateInterval interval) throws Exception {
-        for (String language : languages){
-            requestQueue.add(interval);
-            do {
-                DateInterval first = requestQueue.remove(0);
-                retrieveRepos(first,language,false);
-            } while (!requestQueue.isEmpty());
-        }
+    private void create(DateInterval interval, String language) throws Exception {
+        crawl(interval,language,false);
     }
 
-    private void update(DateInterval interval) throws Exception {
-        for (String language : languages){
-            requestQueue.add(interval);
-            do {
-                DateInterval first = requestQueue.remove(0);
-                retrieveRepos(first,language,true);
-            } while (!requestQueue.isEmpty());
-        }
+    private void update(DateInterval interval, String language) throws Exception {
+        crawl(interval,language,true);
+    }
+
+    private void crawl(DateInterval interval, String language, Boolean mode) throws Exception {
+        requestQueue.add(interval);
+        do {
+            DateInterval first = requestQueue.remove(0);
+            retrieveRepos(first,language,mode);
+        } while (!requestQueue.isEmpty());
     }
 
     private void retrieveRepos(DateInterval interval, String language, Boolean update) throws Exception {

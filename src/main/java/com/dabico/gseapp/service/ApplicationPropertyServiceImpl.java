@@ -26,7 +26,7 @@ public class ApplicationPropertyServiceImpl implements ApplicationPropertyServic
     Long scheduling;
 
     @Setter
-    DateInterval interval = new DateInterval(PropertiesExtractor.getCrawlInterval());
+    Date startDate = PropertiesExtractor.getStartDate();
 
     Date nextCrawl = new Date();
 
