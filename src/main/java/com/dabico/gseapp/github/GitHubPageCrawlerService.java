@@ -27,6 +27,7 @@ public class GitHubPageCrawlerService {
     static final Logger logger = LoggerFactory.getLogger(GitHubPageCrawlerService.class);
 
     static String commitsReg      = "#js-repo-pjax-container > div > div > div > ul > li:nth-child(1) > a > span";
+    static String commitsAlt      = "#js-repo-pjax-container > div.container-lg.clearfix.new-discussion-timeline.px-3 > div > div.overall-summary.border-bottom-0.mb-0.rounded-bottom-0 > ul > li.commits > a > span";
     static String branchesReg     = "#js-repo-pjax-container > div > div > div > ul > li:nth-child(2) > a > span";
     static String releasesReg     = "#js-repo-pjax-container > div > div > div > ul > li:nth-child(4) > a > span";
     static String contributorsReg = "#js-repo-pjax-container > div > div > div > ul > li:nth-child(5) > a > span";
@@ -68,7 +69,7 @@ public class GitHubPageCrawlerService {
         try {
             commits  = parseLong(normalizeNumberString(document.select(commitsReg).first().html()));
         } catch (NullPointerException ignored) {
-            commits  = -1;
+            commits  = mineCommitsSelenium();
         }
 
         branches = parseLong(normalizeNumberString(document.select(branchesReg).first().html()));
@@ -109,6 +110,17 @@ public class GitHubPageCrawlerService {
         document = Jsoup.connect(Endpoints.DEFAULT.getUrl()+"/"+link).userAgent("Mozilla").followRedirects(false).get();
         lastCommit = fromGitDateString(document.select(commitDateReg).first().attr("datetime"));
         lastCommitSHA = document.select(commitSHAReg).first().text();
+    }
+
+    private long mineCommitsSelenium() {
+        driver.get(repoURL);
+        try {
+            wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector(commitsReg)));
+            return Long.parseLong(normalizeNumberString(driver.findElementByCssSelector(commitsReg).getText()));
+        } catch (NoClassDefFoundError ex){
+            wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector(commitsAlt)));
+            return Long.parseLong(normalizeNumberString(driver.findElementByCssSelector(commitsAlt).getText()));
+        }
     }
 
     private long mineContributorsSelenium() {
