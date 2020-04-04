@@ -108,7 +108,7 @@ public class CrawlProjectsJob {
             int totalResults = bodyJson.get("total_count").getAsInt();
             int totalPages = (int) Math.ceil(totalResults/100.0);
             logger.info("Retrieved results: "+totalResults);
-            if (totalResults <= 1000){
+            if (totalResults > 0 && totalResults <= 1000){
                 JsonArray results = bodyJson.get("items").getAsJsonArray();
                 response.close();
                 saveRetrievedRepos(results,language);
