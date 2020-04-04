@@ -129,7 +129,7 @@ public class CrawlProjectsJob {
                         response.close();
                     }
                 }
-                crawlJobService.updateCrawlDateForLanguage(language);
+                crawlJobService.updateCrawlDateForLanguage(language,interval.getEnd());
             } else {
                 Pair<DateInterval,DateInterval> newIntervals = interval.splitInterval();
                 if (newIntervals != null){
