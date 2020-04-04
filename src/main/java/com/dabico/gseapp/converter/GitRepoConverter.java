@@ -11,10 +11,13 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
+import org.jsoup.HttpStatusException;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeDriverService;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.remote.DesiredCapabilities;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -30,6 +33,7 @@ import static com.dabico.gseapp.util.DateUtils.fromGitDateString;
 @Service
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class GitRepoConverter {
+    static final Logger logger = LoggerFactory.getLogger(GitRepoConverter.class);
 
     ChromeDriver driver;
 
@@ -61,10 +65,15 @@ public class GitRepoConverter {
         this.driver.quit();
     }
 
-    public GitRepo jsonToGitRepo(JsonObject json) throws IOException {
+    public GitRepo jsonToGitRepo(JsonObject json,String language) throws IOException {
         String repositoryURL = json.get("html_url").getAsString();
         GitHubPageCrawlerService crawlerService = new GitHubPageCrawlerService(repositoryURL,driver);
-        crawlerService.mine();
+        try {
+            crawlerService.mine();
+        } catch (HttpStatusException ex) {
+            logger.error(ex.getMessage());
+            return null;
+        }
         JsonElement license = json.get("license");
         JsonElement homepage = json.get("homepage");
         return GitRepo.builder()
@@ -84,7 +93,7 @@ public class GitRepoConverter {
                       .pushedAt(fromGitDateString(json.get("pushed_at").getAsString()))
                       .updatedAt(fromGitDateString(json.get("updated_at").getAsString()))
                       .homepage(homepage.isJsonNull() ? null : homepage.getAsString())
-                      .mainLanguage(json.get("language").getAsString())
+                      .mainLanguage(language)
                       .totalIssues(crawlerService.getTotalIssues())
                       .openIssues(crawlerService.getOpenIssues())
                       .totalPullRequests(crawlerService.getTotalPullRequests())

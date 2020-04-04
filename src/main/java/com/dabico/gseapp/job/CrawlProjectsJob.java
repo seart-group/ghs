@@ -111,7 +111,7 @@ public class CrawlProjectsJob {
             if (totalResults <= 1000){
                 JsonArray results = bodyJson.get("items").getAsJsonArray();
                 response.close();
-                saveRetrievedRepos(results);
+                saveRetrievedRepos(results,language);
 
                 if (totalPages > 1){
                     page++;
@@ -123,7 +123,7 @@ public class CrawlProjectsJob {
                             bodyJson = parseString(responseBody.string()).getAsJsonObject();
                             response.close();
                             results = bodyJson.get("items").getAsJsonArray();
-                            saveRetrievedRepos(results);
+                            saveRetrievedRepos(results,language);
                             page++;
                         }
                         response.close();
@@ -148,14 +148,16 @@ public class CrawlProjectsJob {
         }
     }
 
-    private void saveRetrievedRepos(JsonArray results) throws Exception {
+    private void saveRetrievedRepos(JsonArray results, String language) throws Exception {
         logger.info("Adding: "+results.size()+" results");
         for (JsonElement element : results){
             JsonObject repoJson = element.getAsJsonObject();
-            GitRepo repo = gitRepoConverter.jsonToGitRepo(repoJson);
-            repo = gitRepoService.createOrUpdateRepo(repo);
-            retrieveRepoLabels(repo);
-            retrieveRepoLanguages(repo);
+            GitRepo repo = gitRepoConverter.jsonToGitRepo(repoJson,language);
+            if (repo != null){
+                repo = gitRepoService.createOrUpdateRepo(repo);
+                retrieveRepoLabels(repo);
+                retrieveRepoLanguages(repo);
+            }
         }
     }
 
