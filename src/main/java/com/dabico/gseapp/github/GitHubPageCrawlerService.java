@@ -41,6 +41,7 @@ public class GitHubPageCrawlerService {
 
     final String repoURL;
     final ChromeDriver driver;
+    WebDriverWait wait;
     long commits = 0;
     long branches = 0;
     long releases = 0;
@@ -54,6 +55,7 @@ public class GitHubPageCrawlerService {
     String lastCommitSHA = null;
 
     public void mine() throws IOException {
+        this.wait = new WebDriverWait(driver,5);
         logger.info("Mining data for: " + repoURL);
         mineProjectPage();
         mineIssuesPage();
@@ -63,14 +65,19 @@ public class GitHubPageCrawlerService {
 
     private void mineProjectPage() throws IOException {
         Document document = Jsoup.connect(repoURL).userAgent("Mozilla").followRedirects(false).get();
-        commits  = parseLong(normalizeNumberString(document.select(commitsReg).first().html()));
+        try {
+            commits  = parseLong(normalizeNumberString(document.select(commitsReg).first().html()));
+        } catch (NullPointerException ignored) {
+            commits  = -1;
+        }
+
         branches = parseLong(normalizeNumberString(document.select(branchesReg).first().html()));
         releases = parseLong(normalizeNumberString(document.select(releasesReg).first().html()));
 
         try {
             contributors = parseLong(normalizeNumberString(document.select(contributorsReg).first().html()));
         } catch (NullPointerException ex){
-            contributors = mineContributorsSelenium(repoURL);
+            contributors = mineContributorsSelenium();
         }
 
         try {
@@ -104,8 +111,7 @@ public class GitHubPageCrawlerService {
         lastCommitSHA = document.select(commitSHAReg).first().text();
     }
 
-    private long mineContributorsSelenium(String repoURL) {
-        WebDriverWait wait = new WebDriverWait(driver,5);
+    private long mineContributorsSelenium() {
         driver.get(repoURL);
         try {
             wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector(contributorsReg)));
@@ -114,7 +120,6 @@ public class GitHubPageCrawlerService {
             wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector(contributorsAlt)));
             return Long.parseLong(normalizeNumberString(driver.findElementByCssSelector(contributorsAlt).getText()));
         }
-
     }
 
     private String normalizeNumberString(String input){ return input.trim().replaceAll(",",""); }
