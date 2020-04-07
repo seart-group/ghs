@@ -25,7 +25,7 @@ public class CrawlJob {
     @Column(name = "crawled")
     Date crawled;
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "language_id")
     SupportedLanguage language;
 }
