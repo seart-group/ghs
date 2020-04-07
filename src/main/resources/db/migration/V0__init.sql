@@ -17,20 +17,20 @@ create table repo
     stargazers bigint null,
     forks bigint null,
     size bigint null,
-    created_at datetime null,
-    pushed_at datetime null,
-    updated_at datetime null,
+    created_at timestamp null,
+    pushed_at timestamp null,
+    updated_at timestamp null,
     homepage varchar(2048) null,
     main_language varchar(64) null,
     total_issues bigint null,
     open_issues bigint null,
     total_pull_requests bigint null,
     open_pull_requests bigint null,
-    last_commit datetime null,
+    last_commit timestamp null,
     last_commit_sha varchar(40) null,
     has_wiki bit null,
     archived bit null,
-    crawled datetime null,
+    crawled timestamp null,
     constraint unique_repo_name
         unique (name)
 );
@@ -40,7 +40,7 @@ create table repo_label
     repo_label_id bigint not null,
     repo_id bigint not null,
     repo_label_name varchar(60) null,
-    crawled datetime null,
+    crawled timestamp null,
     primary key (repo_label_id, repo_id)
 );
 
@@ -53,7 +53,7 @@ create table repo_language
     repo_id bigint not null,
     repo_language_name varchar(64) null,
     size_of_code bigint not null,
-    crawled datetime null,
+    crawled timestamp null,
     primary key (repo_language_id, repo_id)
 );
 
@@ -65,7 +65,7 @@ create table access_token
     id bigint auto_increment
         primary key,
     value varchar(40) null,
-    added datetime null,
+    added timestamp null,
     constraint unique_token
         unique (value)
 );
@@ -75,7 +75,7 @@ create table supported_language
     id bigint auto_increment
         primary key,
     name varchar(64) null,
-    added datetime null,
+    added timestamp null,
     constraint unique_language
         unique (name)
 );
