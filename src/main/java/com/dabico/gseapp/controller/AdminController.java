@@ -5,6 +5,8 @@ import com.dabico.gseapp.converter.SupportedLanguageConverter;
 import com.dabico.gseapp.dto.AccessTokenDto;
 import com.dabico.gseapp.dto.SupportedLanguageDto;
 import com.dabico.gseapp.service.AccessTokenService;
+import com.dabico.gseapp.service.ApplicationPropertyService;
+import com.dabico.gseapp.service.CrawlJobService;
 import com.dabico.gseapp.service.SupportedLanguageService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -28,6 +30,8 @@ public class AdminController {
     AccessTokenConverter accessTokenConverter;
     SupportedLanguageService supportedLanguageService;
     SupportedLanguageConverter supportedLanguageConverter;
+    CrawlJobService crawlJobService;
+    ApplicationPropertyService applicationPropertyService;
 
     @GetMapping("/t")
     public ResponseEntity<?> getTokens(){
@@ -79,5 +83,10 @@ public class AdminController {
             logger.error(ex.getMessage());
             return ResponseEntity.notFound().build();
         }
+    }
+
+    @GetMapping("/j")
+    public ResponseEntity<?> getCompletedJobs(){
+        return ResponseEntity.ok(crawlJobService.getCompletedJobs());
     }
 }
