@@ -10,4 +10,6 @@ import java.util.List;
 public interface GitRepoLanguageRepository extends JpaRepository<GitRepoLanguage,Long> {
     @Query("select l from GitRepoLanguage l left join GitRepo r on l.repo.id = r.id where l.repo.id = (:id)")
     List<GitRepoLanguage> findRepoLanguages(@Param("id") Long id);
+    @Query("select distinct l.language from GitRepoLanguage l where l is not null")
+    List<String> findAllLanguages();
 }

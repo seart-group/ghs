@@ -32,4 +32,14 @@ public class GitRepoController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
     }
+
+    @GetMapping("/r/labels")
+    public ResponseEntity<?> getAllLabels(){
+        return ResponseEntity.ok(gitRepoService.getAllLabels());
+    }
+
+    @GetMapping("/r/languages")
+    public ResponseEntity<?> getAllLanguages(){
+        return ResponseEntity.ok(gitRepoService.getAllLanguages());
+    }
 }

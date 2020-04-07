@@ -74,6 +74,16 @@ public class GitRepoServiceImpl implements GitRepoService {
     }
 
     @Override
+    public StringList getAllLabels(){
+        return StringList.builder().items(gitRepoLabelRepository.findAllLabels()).build();
+    }
+
+    @Override
+    public StringList getAllLanguages(){
+        return StringList.builder().items(gitRepoLanguageRepository.findAllLanguages()).build();
+    }
+
+    @Override
     public void createOrUpdateLabel(GitRepoLabel label){
         List<GitRepoLabel> existing = gitRepoLabelRepository.findRepoLabels(label.getRepo().getId());
         int index = existing.indexOf(label);
