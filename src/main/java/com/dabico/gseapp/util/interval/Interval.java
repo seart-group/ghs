@@ -6,7 +6,6 @@ import org.javatuples.Pair;
 
 @Getter
 @Setter
-@NoArgsConstructor
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PROTECTED)
 public abstract class Interval<T> {
@@ -25,5 +24,17 @@ public abstract class Interval<T> {
               ((o instanceof Interval) &&
                (start.equals(((Interval<?>) o).start)) &&
                  (end.equals(((Interval<?>) o).end)));
+    }
+
+    public boolean isBound(){
+        return (start != null && end != null);
+    }
+
+    public boolean isLowerBound(){
+        return (start != null && end == null);
+    }
+
+    public boolean isUpperBound(){
+        return (start == null && end != null);
     }
 }
