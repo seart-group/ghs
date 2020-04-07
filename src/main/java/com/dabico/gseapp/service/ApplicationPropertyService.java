@@ -9,6 +9,4 @@ public interface ApplicationPropertyService {
     void setScheduling(Long value);
     Date getStartDate();
     void setStartDate(Date value);
-    Date getNextCrawl();
-    void setNextCrawl(Date value);
 }
