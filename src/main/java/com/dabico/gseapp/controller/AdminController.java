@@ -89,4 +89,15 @@ public class AdminController {
     public ResponseEntity<?> getCompletedJobs(){
         return ResponseEntity.ok(crawlJobService.getCompletedJobs());
     }
+
+    @GetMapping("/s")
+    public ResponseEntity<?> getSchedulingRate(){
+        return ResponseEntity.ok(applicationPropertyService.getScheduling());
+    }
+
+    @PutMapping("/s")
+    public ResponseEntity<?> setSchedulingRate(@RequestBody Long rate){
+        applicationPropertyService.setScheduling(rate);
+        return ResponseEntity.ok().build();
+    }
 }
