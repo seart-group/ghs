@@ -73,6 +73,7 @@ public class GitRepoServiceImpl implements GitRepoService {
         }
     }
 
+    @Override
     public void createOrUpdateLabel(GitRepoLabel label){
         List<GitRepoLabel> existing = gitRepoLabelRepository.findRepoLabels(label.getRepo().getId());
         int index = existing.indexOf(label);
@@ -83,6 +84,7 @@ public class GitRepoServiceImpl implements GitRepoService {
         }
     }
 
+    @Override
     public void createOrUpdateLanguage(GitRepoLanguage language){
         List<GitRepoLanguage> existing = gitRepoLanguageRepository.findRepoLanguages(language.getRepo().getId());
         int index = existing.indexOf(language);
