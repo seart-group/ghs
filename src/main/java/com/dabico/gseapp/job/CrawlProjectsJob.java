@@ -112,7 +112,7 @@ public class CrawlProjectsJob {
             int totalResults = bodyJson.get("total_count").getAsInt();
             int totalPages = (int) Math.ceil(totalResults/100.0);
             logger.info("Retrieved results: "+totalResults);
-            if (totalResults > 0 && totalResults <= 1000){
+            if (totalResults <= 1000){
                 JsonArray results = bodyJson.get("items").getAsJsonArray();
                 response.close();
                 saveRetrievedRepos(results,language);
@@ -144,7 +144,7 @@ public class CrawlProjectsJob {
             }
         }
         response.close();
-        if ((!requestQueue.isEmpty())) {
+        if (!requestQueue.isEmpty()) {
             logger.info("Next Crawl Intervals:");
             logger.info(requestQueue.toString());
         }
