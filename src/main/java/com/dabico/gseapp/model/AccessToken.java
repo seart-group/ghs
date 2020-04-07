@@ -28,8 +28,4 @@ public class AccessToken {
 
     @Column(name = "added")
     Date added;
-
-    @PreUpdate
-    @PrePersist
-    private void onPersistAndUpdate() { added = new Date(); }
 }
