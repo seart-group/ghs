@@ -80,11 +80,17 @@ public class CrawlProjectsJob {
     }
 
     private void create(DateInterval interval, String language) throws Exception {
+        logger.info("Created: "+language.toUpperCase()+" "+interval);
+        logger.info("Token: " + this.currentToken);
         crawl(interval,language,false);
+        logger.info("Create Complete!");
     }
 
     private void update(DateInterval interval, String language) throws Exception {
+        logger.info("Updated: "+language.toUpperCase()+" "+interval);
+        logger.info("Token: " + this.currentToken);
         crawl(interval,language,true);
+        logger.info("Update Complete!");
     }
 
     private void crawl(DateInterval interval, String language, Boolean mode) throws Exception {
@@ -96,8 +102,6 @@ public class CrawlProjectsJob {
     }
 
     private void retrieveRepos(DateInterval interval, String language, Boolean update) throws Exception {
-        logger.info("Crawling: "+language.toUpperCase()+" "+interval);
-        logger.info("Token: " + this.currentToken);
         int page = 1;
         replaceTokenIfExpired();
         Response response = gitHubApiService.searchRepositories(language,interval,page,currentToken,update);
@@ -143,8 +147,6 @@ public class CrawlProjectsJob {
         if ((!requestQueue.isEmpty())) {
             logger.info("Next Crawl Intervals:");
             logger.info(requestQueue.toString());
-        } else {
-            logger.info("Crawl Complete!");
         }
     }
 
