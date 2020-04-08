@@ -155,10 +155,10 @@ public class GitRepoRepositoryImpl implements GitRepoRepositoryCustom {
         if (watchers.isLowerBound()){
             qb.where("r.watchers >= (:lower)",Operator.AND);
             parameters.put("lower",watchers.getStart());
-        } else if (stars.isUpperBound()){
+        } else if (watchers.isUpperBound()){
             qb.where("r.watchers <= (:upper)",Operator.AND);
             parameters.put("upper",watchers.getEnd());
-        } else if (stars.isBound()){
+        } else if (watchers.isBound()){
             qb.where("r.watchers between (:lower) and (:upper)",Operator.AND);
             parameters.put("lower",watchers.getStart());
             parameters.put("upper",watchers.getEnd());
@@ -167,10 +167,10 @@ public class GitRepoRepositoryImpl implements GitRepoRepositoryCustom {
         if (forks.isLowerBound()){
             qb.where("r.forks >= (:lower)",Operator.AND);
             parameters.put("lower",forks.getStart());
-        } else if (stars.isUpperBound()){
+        } else if (forks.isUpperBound()){
             qb.where("r.forks <= (:upper)",Operator.AND);
             parameters.put("upper",forks.getEnd());
-        } else if (stars.isBound()){
+        } else if (forks.isBound()){
             qb.where("r.forks between (:lower) and (:upper)",Operator.AND);
             parameters.put("lower",forks.getStart());
             parameters.put("upper",forks.getEnd());
@@ -179,10 +179,10 @@ public class GitRepoRepositoryImpl implements GitRepoRepositoryCustom {
         if (created.isLowerBound()){
             qb.where("date(r.created_at) >= (:lower)",Operator.AND);
             parameters.put("lower",created.getStart());
-        } else if (stars.isUpperBound()){
+        } else if (created.isUpperBound()){
             qb.where("date(r.createdAt) <= (:upper)",Operator.AND);
             parameters.put("upper",created.getEnd());
-        } else if (stars.isBound()){
+        } else if (created.isBound()){
             qb.where("date(r.createdAt) between (:lower) and (:upper)",Operator.AND);
             parameters.put("lower",created.getStart());
             parameters.put("upper",created.getEnd());
@@ -191,10 +191,10 @@ public class GitRepoRepositoryImpl implements GitRepoRepositoryCustom {
         if (committed.isLowerBound()){
             qb.where("date(r.pushedAt) >= (:lower)",Operator.AND);
             parameters.put("lower",committed.getStart());
-        } else if (stars.isUpperBound()){
+        } else if (committed.isUpperBound()){
             qb.where("date(r.pushedAt) <= (:upper)",Operator.AND);
             parameters.put("upper",committed.getEnd());
-        } else if (stars.isBound()){
+        } else if (committed.isBound()){
             qb.where("date(r.pushedAt) between (:lower) and (:upper)",Operator.AND);
             parameters.put("lower",committed.getStart());
             parameters.put("upper",committed.getEnd());
