@@ -1,5 +1,6 @@
 package com.dabico.gseapp.service;
 
+import com.dabico.gseapp.controller.GitRepoController;
 import com.dabico.gseapp.converter.GitRepoConverter;
 import com.dabico.gseapp.dto.*;
 import com.dabico.gseapp.model.GitRepo;
@@ -8,21 +9,33 @@ import com.dabico.gseapp.model.GitRepoLanguage;
 import com.dabico.gseapp.repository.GitRepoLabelRepository;
 import com.dabico.gseapp.repository.GitRepoLanguageRepository;
 import com.dabico.gseapp.repository.GitRepoRepository;
+import com.dabico.gseapp.repository.GitRepoRepositoryCustom;
+import com.dabico.gseapp.util.interval.DateInterval;
+import com.dabico.gseapp.util.interval.LongInterval;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.hateoas.mvc.ControllerLinkBuilder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.RequestParam;
 
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+
+import static org.springframework.hateoas.mvc.ControllerLinkBuilder.*;
 
 @Service
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @AllArgsConstructor(onConstructor_ = @Autowired)
 public class GitRepoServiceImpl implements GitRepoService {
     GitRepoRepository gitRepoRepository;
+    GitRepoRepositoryCustom gitRepoRepositoryCustom;
     GitRepoLabelRepository gitRepoLabelRepository;
     GitRepoLanguageRepository gitRepoLanguageRepository;
     GitRepoConverter gitRepoConverter;
@@ -36,6 +49,50 @@ public class GitRepoServiceImpl implements GitRepoService {
         repoDto.setLabels(new HashSet<>(gitRepoConverter.labelListToLabelDtoList(labels)));
         repoDto.setLanguages(new HashSet<>(gitRepoConverter.languageListToLanguageDtoList(languages)));
         return repoDto;
+    }
+
+    @Override
+    public GitRepoDtoListPaginated advancedSearch(String name, Boolean nameEquals,String language, String license, String label,
+                                                  Long commitsMin, Long commitsMax, Long contributorsMin, Long contributorsMax,
+                                                  Long issuesMin, Long issuesMax, Long pullsMin, Long pullsMax, Long branchesMin,
+                                                  Long branchesMax, Long releasesMin, Long releasesMax, Long starsMin,
+                                                  Long starsMax, Long watchersMin, Long watchersMax, Long forksMin,
+                                                  Long forksMax, Date createdMin, Date createdMax, Date committedMin,
+                                                  Date committedMax, Boolean excludeForks,  Boolean onlyForks, Boolean hasIssues,
+                                                  Boolean hasPulls, Boolean hasWiki, Boolean hasLicense, Integer page,
+                                                  Integer pageSize){
+        Pageable pageable = PageRequest.of(page, pageSize, Sort.Direction.ASC, "name");
+        LongInterval commits      = new LongInterval(commitsMin,commitsMax);
+        LongInterval contributors = new LongInterval(contributorsMin,contributorsMax);
+        LongInterval issues       = new LongInterval(issuesMin,issuesMax);
+        LongInterval pulls        = new LongInterval(pullsMin,pullsMax);
+        LongInterval branches     = new LongInterval(branchesMin,branchesMax);
+        LongInterval releases     = new LongInterval(releasesMin,releasesMax);
+        LongInterval stars        = new LongInterval(starsMin,starsMax);
+        LongInterval watchers     = new LongInterval(watchersMin,watchersMax);
+        LongInterval forks        = new LongInterval(forksMin,forksMax);
+        DateInterval created      = new DateInterval(createdMin,createdMax);
+        DateInterval committed    = new DateInterval(committedMin,committedMax);
+        List<GitRepo> repos = gitRepoRepositoryCustom.advancedSearch(name, nameEquals, language, license, label, commits,
+                                                                     contributors, issues, pulls, branches, releases,
+                                                                     stars, watchers,forks,created,committed,excludeForks,
+                                                                     onlyForks,hasIssues,hasPulls,hasWiki,hasLicense, pageable);
+        List<GitRepoDto> repoDtos = gitRepoConverter.repoListToRepoDtoList(repos);
+        GitRepoDtoList repoDtoList = GitRepoDtoList.builder().items(repoDtos).build();
+        GitRepoDtoListPaginated repoDtoListPaginated = GitRepoDtoListPaginated.builder().build();
+        repoDtoListPaginated.setResults(repoDtoList);
+        repoDtoListPaginated.setTotalItems(repos.size());
+        if (pageSize == repos.size()){
+            String next = linkTo(methodOn(GitRepoController.class)
+                    .searchRepos(name, nameEquals, language, license, label, commitsMin, commitsMax, contributorsMin, contributorsMax,
+                                 issuesMin, issuesMax, pullsMin, pullsMax, branchesMin, branchesMax, releasesMin, releasesMax,
+                                 starsMin, starsMax, watchersMin, watchersMax, forksMin, forksMax, createdMin, createdMax,
+                                 committedMin, committedMax, excludeForks, onlyForks, hasIssues, hasPulls, hasWiki, hasLicense,
+                                 ++page, pageSize))
+                    .toUriComponentsBuilder().scheme("http").build().toUriString();
+            repoDtoListPaginated.setNext(next);
+        }
+        return repoDtoListPaginated;
     }
 
     @Override
