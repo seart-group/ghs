@@ -4,10 +4,7 @@ import com.dabico.gseapp.converter.AccessTokenConverter;
 import com.dabico.gseapp.converter.SupportedLanguageConverter;
 import com.dabico.gseapp.dto.AccessTokenDto;
 import com.dabico.gseapp.dto.SupportedLanguageDto;
-import com.dabico.gseapp.service.AccessTokenService;
-import com.dabico.gseapp.service.ApplicationPropertyService;
-import com.dabico.gseapp.service.CrawlJobService;
-import com.dabico.gseapp.service.SupportedLanguageService;
+import com.dabico.gseapp.service.*;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -32,6 +29,7 @@ public class AdminController {
     SupportedLanguageConverter supportedLanguageConverter;
     CrawlJobService crawlJobService;
     ApplicationPropertyService applicationPropertyService;
+    GitRepoService gitRepoService;
 
     @GetMapping("/t")
     public ResponseEntity<?> getTokens(){
@@ -72,6 +70,11 @@ public class AdminController {
         } else {
             return ResponseEntity.noContent().build();
         }
+    }
+
+    @GetMapping("/l/stats")
+    public ResponseEntity<?> getLanguageStatistics(){
+        return ResponseEntity.ok(gitRepoService.getLanguageStatistics());
     }
 
     @DeleteMapping("/l/{langId}")

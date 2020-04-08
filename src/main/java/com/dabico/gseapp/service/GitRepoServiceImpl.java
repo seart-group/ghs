@@ -21,10 +21,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
-import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 import static org.springframework.hateoas.mvc.ControllerLinkBuilder.*;
 
@@ -136,6 +133,21 @@ public class GitRepoServiceImpl implements GitRepoService {
     @Override
     public StringList getAllLanguages(){
         return StringList.builder().items(gitRepoLanguageRepository.findAllLanguages()).build();
+    }
+
+    @Override
+    public LanguageSizeDtoList getLanguageStatistics(){
+        List<Object[]> languages = gitRepoLanguageRepository.getLanguageStatistics();
+        LanguageSizeDtoList stats = LanguageSizeDtoList.builder().build();
+        List<LanguageSizeDto> sizeDtos = new ArrayList<>();
+        for (Object[] language : languages){
+            LanguageSizeDto dto = LanguageSizeDto.builder().build();
+            dto.setLanguage((String) language[0]);
+            dto.setSize((Long) language[1]);
+            sizeDtos.add(dto);
+        }
+        stats.setItems(sizeDtos);
+        return stats;
     }
 
     @Override

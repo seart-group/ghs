@@ -12,4 +12,6 @@ public interface GitRepoLanguageRepository extends JpaRepository<GitRepoLanguage
     List<GitRepoLanguage> findRepoLanguages(@Param("id") Long id);
     @Query("select distinct l.language from GitRepoLanguage l where l is not null")
     List<String> findAllLanguages();
+    @Query("select distinct l.language,sum(l.sizeOfCode) from GitRepoLanguage l group by l.language order by sum(l.sizeOfCode) desc")
+    List<Object[]> getLanguageStatistics();
 }
