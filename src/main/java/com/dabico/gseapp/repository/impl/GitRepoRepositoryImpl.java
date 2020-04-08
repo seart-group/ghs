@@ -75,8 +75,7 @@ public class GitRepoRepositoryImpl implements GitRepoRepositoryCustom {
             qb.where("r.commits <= (:upper)",Operator.AND);
             parameters.put("upper",commits.getEnd());
         } else if (commits.isBound()){
-            qb.where("r.commits >= (:lower)",Operator.AND);
-            qb.where("r.commits <= (:upper)",Operator.AND);
+            qb.where("r.commits between (:lower) and (:upper)",Operator.AND);
             parameters.put("lower",commits.getStart());
             parameters.put("upper",commits.getEnd());
         }
@@ -88,8 +87,7 @@ public class GitRepoRepositoryImpl implements GitRepoRepositoryCustom {
             qb.where("r.contributors <= (:upper)",Operator.AND);
             parameters.put("upper",contributors.getEnd());
         } else if (contributors.isBound()){
-            qb.where("r.contributors >= (:lower)",Operator.AND);
-            qb.where("r.contributors <= (:upper)",Operator.AND);
+            qb.where("r.contributors between (:lower) and (:upper)",Operator.AND);
             parameters.put("lower",contributors.getStart());
             parameters.put("upper",contributors.getEnd());
         }
@@ -101,8 +99,7 @@ public class GitRepoRepositoryImpl implements GitRepoRepositoryCustom {
             qb.where("r.total_issues <= (:upper)",Operator.AND);
             parameters.put("upper",issues.getEnd());
         } else if (issues.isBound()){
-            qb.where("r.total_issues >= (:lower)",Operator.AND);
-            qb.where("r.total_issues <= (:upper)",Operator.AND);
+            qb.where("r.total_issues between (:lower) and (:upper)",Operator.AND);
             parameters.put("lower",issues.getStart());
             parameters.put("upper",issues.getEnd());
         }
@@ -114,8 +111,7 @@ public class GitRepoRepositoryImpl implements GitRepoRepositoryCustom {
             qb.where("r.open_pull_requests <= (:upper)",Operator.AND);
             parameters.put("upper",pulls.getEnd());
         } else if (pulls.isBound()){
-            qb.where("r.open_pull_requests >= (:lower)",Operator.AND);
-            qb.where("r.open_pull_requests <= (:upper)",Operator.AND);
+            qb.where("r.open_pull_requests between (:lower) and (:upper)",Operator.AND);
             parameters.put("lower",pulls.getStart());
             parameters.put("upper",pulls.getEnd());
         }
@@ -127,8 +123,7 @@ public class GitRepoRepositoryImpl implements GitRepoRepositoryCustom {
             qb.where("r.branches <= (:upper)",Operator.AND);
             parameters.put("upper",branches.getEnd());
         } else if (branches.isBound()){
-            qb.where("r.branches >= (:lower)",Operator.AND);
-            qb.where("r.branches <= (:upper)",Operator.AND);
+            qb.where("r.branches between (:lower) and (:upper)",Operator.AND);
             parameters.put("lower",branches.getStart());
             parameters.put("upper",branches.getEnd());
         }
@@ -140,8 +135,7 @@ public class GitRepoRepositoryImpl implements GitRepoRepositoryCustom {
             qb.where("r.releases <= (:upper)",Operator.AND);
             parameters.put("upper",releases.getEnd());
         } else if (releases.isBound()){
-            qb.where("r.releases >= (:lower)",Operator.AND);
-            qb.where("r.releases <= (:upper)",Operator.AND);
+            qb.where("r.releases between (:lower) and (:upper)",Operator.AND);
             parameters.put("lower",releases.getStart());
             parameters.put("upper",releases.getEnd());
         }
@@ -153,8 +147,7 @@ public class GitRepoRepositoryImpl implements GitRepoRepositoryCustom {
             qb.where("r.stargazers <= (:upper)",Operator.AND);
             parameters.put("upper",stars.getEnd());
         } else if (stars.isBound()){
-            qb.where("r.stargazers >= (:lower)",Operator.AND);
-            qb.where("r.stargazers <= (:upper)",Operator.AND);
+            qb.where("r.stargazers between (:lower) and (:upper)",Operator.AND);
             parameters.put("lower",stars.getStart());
             parameters.put("upper",stars.getEnd());
         }
@@ -166,8 +159,7 @@ public class GitRepoRepositoryImpl implements GitRepoRepositoryCustom {
             qb.where("r.watchers <= (:upper)",Operator.AND);
             parameters.put("upper",watchers.getEnd());
         } else if (stars.isBound()){
-            qb.where("r.watchers >= (:lower)",Operator.AND);
-            qb.where("r.watchers <= (:upper)",Operator.AND);
+            qb.where("r.watchers between (:lower) and (:upper)",Operator.AND);
             parameters.put("lower",watchers.getStart());
             parameters.put("upper",watchers.getEnd());
         }
@@ -179,8 +171,7 @@ public class GitRepoRepositoryImpl implements GitRepoRepositoryCustom {
             qb.where("r.forks <= (:upper)",Operator.AND);
             parameters.put("upper",forks.getEnd());
         } else if (stars.isBound()){
-            qb.where("r.forks >= (:lower)",Operator.AND);
-            qb.where("r.forks <= (:upper)",Operator.AND);
+            qb.where("r.forks between (:lower) and (:upper)",Operator.AND);
             parameters.put("lower",forks.getStart());
             parameters.put("upper",forks.getEnd());
         }
