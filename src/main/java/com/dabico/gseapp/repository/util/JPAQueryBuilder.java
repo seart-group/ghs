@@ -1,18 +1,13 @@
 package com.dabico.gseapp.repository.util;
 
-import lombok.Builder;
-import lombok.NoArgsConstructor;
-
-@Builder
-@NoArgsConstructor
 public class JPAQueryBuilder {
-    private StringBuilder select;
-    private StringBuilder from;
-    private StringBuilder join;
-    private StringBuilder where;
-    private StringBuilder groupBy;
-    private StringBuilder having;
-    private StringBuilder orderBy;
+    private StringBuilder select  = new StringBuilder();
+    private StringBuilder from    = new StringBuilder();
+    private StringBuilder join    = new StringBuilder();
+    private StringBuilder where   = new StringBuilder();
+    private StringBuilder groupBy = new StringBuilder();
+    private StringBuilder having  = new StringBuilder();
+    private StringBuilder orderBy = new StringBuilder();
 
     public String build(){
         return select.toString() +
