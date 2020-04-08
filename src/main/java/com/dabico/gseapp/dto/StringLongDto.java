@@ -5,7 +5,7 @@ import lombok.*;
 @Getter
 @Setter
 @Builder
-public class LanguageSizeDto {
+public class StringLongDto {
     String language;
     Long size;
 }

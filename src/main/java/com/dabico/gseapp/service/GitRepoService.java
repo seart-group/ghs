@@ -2,7 +2,7 @@ package com.dabico.gseapp.service;
 
 import com.dabico.gseapp.dto.GitRepoDto;
 import com.dabico.gseapp.dto.GitRepoDtoListPaginated;
-import com.dabico.gseapp.dto.LanguageSizeDtoList;
+import com.dabico.gseapp.dto.StringLongDtoList;
 import com.dabico.gseapp.dto.StringList;
 import com.dabico.gseapp.model.GitRepo;
 import com.dabico.gseapp.model.GitRepoLabel;
@@ -26,5 +26,5 @@ public interface GitRepoService {
     void createOrUpdateLanguage(GitRepoLanguage language);
     StringList getAllLabels();
     StringList getAllLanguages();
-    LanguageSizeDtoList getLanguageStatistics();
+    StringLongDtoList getLanguageStatistics();
 }

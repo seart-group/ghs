@@ -8,7 +8,7 @@ import java.util.List;
 @Getter
 @Setter
 @Builder
-public class LanguageSizeDtoList {
+public class StringLongDtoList {
     @Builder.Default
-    List<LanguageSizeDto> items = new ArrayList<>();
+    List<StringLongDto> items = new ArrayList<>();
 }
