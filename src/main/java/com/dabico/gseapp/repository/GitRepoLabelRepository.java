@@ -1,5 +1,6 @@
 package com.dabico.gseapp.repository;
 
+import com.dabico.gseapp.model.GitRepo;
 import com.dabico.gseapp.model.GitRepoLabel;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -12,4 +13,5 @@ public interface GitRepoLabelRepository extends JpaRepository<GitRepoLabel,Long>
     List<GitRepoLabel> findRepoLabels(@Param("id") Long id);
     @Query("select distinct l.label from GitRepoLabel l where l is not null")
     List<String> findAllLabels();
+    void deleteAllByRepo(GitRepo repo);
 }

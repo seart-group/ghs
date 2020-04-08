@@ -164,34 +164,37 @@ public class CrawlProjectsJob {
     }
 
     private void retrieveRepoLabels(GitRepo repo) throws Exception {
+        List<GitRepoLabel> repo_labels = new ArrayList<>();
         Response response = gitHubApiService.searchRepoLabels(repo.getName(),currentToken);
         ResponseBody responseBody = response.body();
         if (response.isSuccessful() && responseBody != null){
             JsonArray results = parseString(responseBody.string()).getAsJsonArray();
             results.forEach(result ->
-                    gitRepoService.createOrUpdateLabel(GitRepoLabel.builder()
-                            .repo(repo)
-                            .label(result.getAsJsonObject().get("name").getAsString())
-                            .build())
+                    repo_labels.add(GitRepoLabel.builder()
+                                                .repo(repo)
+                                                .label(result.getAsJsonObject().get("name").getAsString())
+                                                .build())
             );
         }
+        gitRepoService.createUpdateLabels(repo,repo_labels);
         response.close();
     }
 
     private void retrieveRepoLanguages(GitRepo repo) throws Exception {
+        List<GitRepoLanguage> repo_languages = new ArrayList<>();
         Response response = gitHubApiService.searchRepoLanguages(repo.getName(),currentToken);
         ResponseBody responseBody = response.body();
         if (response.isSuccessful() && responseBody != null){
             JsonObject result = parseString(responseBody.string()).getAsJsonObject();
-            Set<String> keySet = result.keySet();
-            keySet.forEach(key ->
-                    gitRepoService.createOrUpdateLanguage(GitRepoLanguage.builder()
-                            .repo(repo)
-                            .language(key)
-                            .sizeOfCode(result.get(key).getAsLong())
-                            .build())
+            Set<String> keySet = result .keySet();
+            keySet.forEach(key -> repo_languages.add(GitRepoLanguage.builder()
+                                                                    .repo(repo)
+                                                                    .language(key)
+                                                                    .sizeOfCode(result.get(key).getAsLong())
+                                                                    .build())
             );
         }
+        gitRepoService.createUpdateLanguages(repo,repo_languages);
         response.close();
     }
 

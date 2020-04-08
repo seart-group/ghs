@@ -9,6 +9,7 @@ import com.dabico.gseapp.model.GitRepoLabel;
 import com.dabico.gseapp.model.GitRepoLanguage;
 
 import java.util.Date;
+import java.util.List;
 
 public interface GitRepoService {
     GitRepoDto getRepoById(Long id);
@@ -22,10 +23,10 @@ public interface GitRepoService {
                                            Boolean hasPulls, Boolean hasWiki, Boolean hasLicense, Integer page,
                                            Integer pageSize);
     GitRepo createOrUpdateRepo(GitRepo repo);
-    void createOrUpdateLabel(GitRepoLabel label);
-    void createOrUpdateLanguage(GitRepoLanguage language);
     StringList getAllLabels();
     StringList getAllLanguages();
     StringLongDtoList getLanguageStatistics();
     StringLongDtoList getRepoStatistics();
+    void createUpdateLabels(GitRepo repo, List<GitRepoLabel> labels);
+    void createUpdateLanguages(GitRepo repo, List<GitRepoLanguage> languages);
 }

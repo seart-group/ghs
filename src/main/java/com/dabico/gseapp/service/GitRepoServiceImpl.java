@@ -20,6 +20,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 
@@ -162,24 +163,16 @@ public class GitRepoServiceImpl implements GitRepoService {
     }
 
     @Override
-    public void createOrUpdateLabel(GitRepoLabel label){
-        List<GitRepoLabel> existing = gitRepoLabelRepository.findRepoLabels(label.getRepo().getId());
-        int index = existing.indexOf(label);
-        if (index < 0){
-            gitRepoLabelRepository.save(label);
-        } else {
-            gitRepoLabelRepository.save(existing.get(index));
-        }
+    @Transactional
+    public void createUpdateLabels(GitRepo repo, List<GitRepoLabel> labels){
+        gitRepoLabelRepository.deleteAllByRepo(repo);
+        gitRepoLabelRepository.saveAll(labels);
     }
 
     @Override
-    public void createOrUpdateLanguage(GitRepoLanguage language){
-        List<GitRepoLanguage> existing = gitRepoLanguageRepository.findRepoLanguages(language.getRepo().getId());
-        int index = existing.indexOf(language);
-        if (index < 0){
-            gitRepoLanguageRepository.save(language);
-        } else {
-            gitRepoLanguageRepository.save(existing.get(index));
-        }
+    @Transactional
+    public void createUpdateLanguages(GitRepo repo, List<GitRepoLanguage> languages){
+        gitRepoLanguageRepository.deleteAllByRepo(repo);
+        gitRepoLanguageRepository.saveAll(languages);
     }
 }

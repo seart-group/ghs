@@ -1,5 +1,6 @@
 package com.dabico.gseapp.repository;
 
+import com.dabico.gseapp.model.GitRepo;
 import com.dabico.gseapp.model.GitRepoLanguage;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -14,4 +15,5 @@ public interface GitRepoLanguageRepository extends JpaRepository<GitRepoLanguage
     List<String> findAllLanguages();
     @Query("select distinct l.language,sum(l.sizeOfCode) from GitRepoLanguage l group by l.language order by sum(l.sizeOfCode) desc")
     List<Object[]> getLanguageStatistics();
+    void deleteAllByRepo(GitRepo repo);
 }
