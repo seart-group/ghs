@@ -6,6 +6,8 @@ import com.dabico.gseapp.model.GitRepo;
 import com.dabico.gseapp.model.GitRepoLabel;
 import com.dabico.gseapp.model.GitRepoLanguage;
 import com.dabico.gseapp.repository.*;
+import com.dabico.gseapp.service.ApplicationPropertyService;
+import com.dabico.gseapp.service.CrawlJobService;
 import com.dabico.gseapp.service.GitRepoService;
 import com.dabico.gseapp.util.interval.DateInterval;
 import com.google.gson.*;
@@ -41,53 +43,65 @@ public class CrawlProjectsJob {
 
     GitHubApiService gitHubApiService;
     GitRepoService gitRepoService;
+    CrawlJobService crawlJobService;
+    ApplicationPropertyService applicationPropertyService;
 
     @Autowired
     public CrawlProjectsJob(AccessTokenRepository accessTokenRepository,
                             SupportedLanguageRepository supportedLanguageRepository,
                             GitRepoConverter gitRepoConverter,
                             GitHubApiService gitHubApiService,
-                            GitRepoService gitRepoService){
+                            GitRepoService gitRepoService,
+                            CrawlJobService crawlJobService,
+                            ApplicationPropertyService applicationPropertyService){
         this.accessTokenRepository = accessTokenRepository;
         this.supportedLanguageRepository = supportedLanguageRepository;
         this.gitRepoConverter = gitRepoConverter;
         this.gitHubApiService = gitHubApiService;
         this.gitRepoService = gitRepoService;
+        this.crawlJobService = crawlJobService;
+        this.applicationPropertyService = applicationPropertyService;
     }
 
-    public void run(DateInterval createInterval, DateInterval updateInterval) throws Exception {
+    public void run() throws Exception {
         refresh();
-        if (createInterval != null){
-            create(createInterval);
-        }
-        if (updateInterval != null){
-            update(updateInterval);
+        for (String language : languages){
+            Date limit = crawlJobService.getCrawlDateByLanguage(language);
+            DateInterval interval;
+            if (limit != null){
+                interval = new DateInterval(limit,new Date());
+                create(interval,language);
+                update(interval,language);
+            } else {
+                interval = new DateInterval(applicationPropertyService.getStartDate(),new Date());
+                create(interval,language);
+            }
         }
     }
 
-    private void create(DateInterval interval) throws Exception {
-        for (String language : languages){
-            requestQueue.add(interval);
-            do {
-                DateInterval first = requestQueue.remove(0);
-                retrieveRepos(first,language,false);
-            } while (!requestQueue.isEmpty());
-        }
+    private void create(DateInterval interval, String language) throws Exception {
+        logger.info("Created: "+language.toUpperCase()+" "+interval);
+        logger.info("Token: " + this.currentToken);
+        crawl(interval,language,false);
+        logger.info("Create Complete!");
     }
 
-    private void update(DateInterval interval) throws Exception {
-        for (String language : languages){
-            requestQueue.add(interval);
-            do {
-                DateInterval first = requestQueue.remove(0);
-                retrieveRepos(first,language,true);
-            } while (!requestQueue.isEmpty());
-        }
+    private void update(DateInterval interval, String language) throws Exception {
+        logger.info("Updated: "+language.toUpperCase()+" "+interval);
+        logger.info("Token: " + this.currentToken);
+        crawl(interval,language,true);
+        logger.info("Update Complete!");
+    }
+
+    private void crawl(DateInterval interval, String language, Boolean mode) throws Exception {
+        requestQueue.add(interval);
+        do {
+            DateInterval first = requestQueue.remove(0);
+            retrieveRepos(first,language,mode);
+        } while (!requestQueue.isEmpty());
     }
 
     private void retrieveRepos(DateInterval interval, String language, Boolean update) throws Exception {
-        logger.info("Crawling: "+language.toUpperCase()+" "+interval);
-        logger.info("Token: " + this.currentToken);
         int page = 1;
         replaceTokenIfExpired();
         Response response = gitHubApiService.searchRepositories(language,interval,page,currentToken,update);
@@ -101,7 +115,7 @@ public class CrawlProjectsJob {
             if (totalResults <= 1000){
                 JsonArray results = bodyJson.get("items").getAsJsonArray();
                 response.close();
-                saveRetrievedRepos(results);
+                saveRetrievedRepos(results,language);
 
                 if (totalPages > 1){
                     page++;
@@ -113,12 +127,13 @@ public class CrawlProjectsJob {
                             bodyJson = parseString(responseBody.string()).getAsJsonObject();
                             response.close();
                             results = bodyJson.get("items").getAsJsonArray();
-                            saveRetrievedRepos(results);
+                            saveRetrievedRepos(results,language);
                             page++;
                         }
                         response.close();
                     }
                 }
+                crawlJobService.updateCrawlDateForLanguage(language,interval.getEnd());
             } else {
                 Pair<DateInterval,DateInterval> newIntervals = interval.splitInterval();
                 if (newIntervals != null){
@@ -129,22 +144,22 @@ public class CrawlProjectsJob {
             }
         }
         response.close();
-        if ((!requestQueue.isEmpty())) {
+        if (!requestQueue.isEmpty()) {
             logger.info("Next Crawl Intervals:");
             logger.info(requestQueue.toString());
-        } else {
-            logger.info("Crawl Complete!");
         }
     }
 
-    private void saveRetrievedRepos(JsonArray results) throws Exception {
+    private void saveRetrievedRepos(JsonArray results, String language) throws Exception {
         logger.info("Adding: "+results.size()+" results");
         for (JsonElement element : results){
             JsonObject repoJson = element.getAsJsonObject();
-            GitRepo repo = gitRepoConverter.jsonToGitRepo(repoJson);
-            repo = gitRepoService.createOrUpdateRepo(repo);
-            retrieveRepoLabels(repo);
-            retrieveRepoLanguages(repo);
+            GitRepo repo = gitRepoConverter.jsonToGitRepo(repoJson,language);
+            if (repo != null){
+                repo = gitRepoService.createOrUpdateRepo(repo);
+                retrieveRepoLabels(repo);
+                retrieveRepoLanguages(repo);
+            }
         }
     }
 

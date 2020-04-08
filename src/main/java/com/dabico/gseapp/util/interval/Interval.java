@@ -26,4 +26,16 @@ public abstract class Interval<T> {
                (start.equals(((Interval<?>) o).start)) &&
                  (end.equals(((Interval<?>) o).end)));
     }
+
+    public boolean isBound(){
+        return (start != null && end != null);
+    }
+
+    public boolean isLowerBound(){
+        return (start != null && end == null);
+    }
+
+    public boolean isUpperBound(){
+        return (start == null && end != null);
+    }
 }

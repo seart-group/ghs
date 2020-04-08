@@ -8,7 +8,7 @@ import java.util.List;
 @Getter
 @Setter
 @Builder
-public class GitRepoDtoList {
+public class CrawlJobDtoList {
     @Builder.Default
-    List<GitRepoDto> items = new ArrayList<>();
+    List<CrawlJobDto> items = new ArrayList<>();
 }

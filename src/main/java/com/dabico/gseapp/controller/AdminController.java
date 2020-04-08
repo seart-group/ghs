@@ -4,8 +4,7 @@ import com.dabico.gseapp.converter.AccessTokenConverter;
 import com.dabico.gseapp.converter.SupportedLanguageConverter;
 import com.dabico.gseapp.dto.AccessTokenDto;
 import com.dabico.gseapp.dto.SupportedLanguageDto;
-import com.dabico.gseapp.service.AccessTokenService;
-import com.dabico.gseapp.service.SupportedLanguageService;
+import com.dabico.gseapp.service.*;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -28,6 +27,9 @@ public class AdminController {
     AccessTokenConverter accessTokenConverter;
     SupportedLanguageService supportedLanguageService;
     SupportedLanguageConverter supportedLanguageConverter;
+    CrawlJobService crawlJobService;
+    ApplicationPropertyService applicationPropertyService;
+    GitRepoService gitRepoService;
 
     @GetMapping("/t")
     public ResponseEntity<?> getTokens(){
@@ -70,6 +72,16 @@ public class AdminController {
         }
     }
 
+    @GetMapping("/l/stats")
+    public ResponseEntity<?> getLanguageStatistics(){
+        return ResponseEntity.ok(gitRepoService.getLanguageStatistics());
+    }
+
+    @GetMapping("/r/stats")
+    public ResponseEntity<?> getRepoStatistics(){
+        return ResponseEntity.ok(gitRepoService.getRepoStatistics());
+    }
+
     @DeleteMapping("/l/{langId}")
     public ResponseEntity<?> deleteLanguage(@PathVariable(value = "langId") Long langId){
         try {
@@ -79,5 +91,21 @@ public class AdminController {
             logger.error(ex.getMessage());
             return ResponseEntity.notFound().build();
         }
+    }
+
+    @GetMapping("/j")
+    public ResponseEntity<?> getCompletedJobs(){
+        return ResponseEntity.ok(crawlJobService.getCompletedJobs());
+    }
+
+    @GetMapping("/s")
+    public ResponseEntity<?> getSchedulingRate(){
+        return ResponseEntity.ok(applicationPropertyService.getScheduling());
+    }
+
+    @PutMapping("/s")
+    public ResponseEntity<?> setSchedulingRate(@RequestBody Long rate){
+        applicationPropertyService.setScheduling(rate);
+        return ResponseEntity.ok().build();
     }
 }

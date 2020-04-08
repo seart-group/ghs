@@ -27,6 +27,7 @@ public class GitHubPageCrawlerService {
     static final Logger logger = LoggerFactory.getLogger(GitHubPageCrawlerService.class);
 
     static String commitsReg      = "#js-repo-pjax-container > div > div > div > ul > li:nth-child(1) > a > span";
+    static String commitsAlt      = "#js-repo-pjax-container > div.container-lg.clearfix.new-discussion-timeline.px-3 > div > div.overall-summary.border-bottom-0.mb-0.rounded-bottom-0 > ul > li.commits > a > span";
     static String branchesReg     = "#js-repo-pjax-container > div > div > div > ul > li:nth-child(2) > a > span";
     static String releasesReg     = "#js-repo-pjax-container > div > div > div > ul > li:nth-child(4) > a > span";
     static String contributorsReg = "#js-repo-pjax-container > div > div > div > ul > li:nth-child(5) > a > span";
@@ -41,6 +42,7 @@ public class GitHubPageCrawlerService {
 
     final String repoURL;
     final ChromeDriver driver;
+    WebDriverWait wait;
     long commits = 0;
     long branches = 0;
     long releases = 0;
@@ -54,6 +56,7 @@ public class GitHubPageCrawlerService {
     String lastCommitSHA = null;
 
     public void mine() throws IOException {
+        this.wait = new WebDriverWait(driver,5);
         logger.info("Mining data for: " + repoURL);
         mineProjectPage();
         mineIssuesPage();
@@ -63,14 +66,19 @@ public class GitHubPageCrawlerService {
 
     private void mineProjectPage() throws IOException {
         Document document = Jsoup.connect(repoURL).userAgent("Mozilla").followRedirects(false).get();
-        commits  = parseLong(normalizeNumberString(document.select(commitsReg).first().html()));
+        try {
+            commits  = parseLong(normalizeNumberString(document.select(commitsReg).first().html()));
+        } catch (NullPointerException ignored) {
+            commits  = mineCommitsSelenium();
+        }
+
         branches = parseLong(normalizeNumberString(document.select(branchesReg).first().html()));
         releases = parseLong(normalizeNumberString(document.select(releasesReg).first().html()));
 
         try {
             contributors = parseLong(normalizeNumberString(document.select(contributorsReg).first().html()));
         } catch (NullPointerException ex){
-            contributors = mineContributorsSelenium(repoURL);
+            contributors = mineContributorsSelenium();
         }
 
         try {
@@ -104,8 +112,18 @@ public class GitHubPageCrawlerService {
         lastCommitSHA = document.select(commitSHAReg).first().text();
     }
 
-    private long mineContributorsSelenium(String repoURL) {
-        WebDriverWait wait = new WebDriverWait(driver,5);
+    private long mineCommitsSelenium() {
+        driver.get(repoURL);
+        try {
+            wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector(commitsReg)));
+            return Long.parseLong(normalizeNumberString(driver.findElementByCssSelector(commitsReg).getText()));
+        } catch (NoClassDefFoundError ex){
+            wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector(commitsAlt)));
+            return Long.parseLong(normalizeNumberString(driver.findElementByCssSelector(commitsAlt).getText()));
+        }
+    }
+
+    private long mineContributorsSelenium() {
         driver.get(repoURL);
         try {
             wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector(contributorsReg)));
@@ -114,7 +132,6 @@ public class GitHubPageCrawlerService {
             wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector(contributorsAlt)));
             return Long.parseLong(normalizeNumberString(driver.findElementByCssSelector(contributorsAlt).getText()));
         }
-
     }
 
     private String normalizeNumberString(String input){ return input.trim().replaceAll(",",""); }

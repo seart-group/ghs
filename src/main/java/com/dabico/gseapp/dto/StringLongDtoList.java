@@ -8,7 +8,7 @@ import java.util.List;
 @Getter
 @Setter
 @Builder
-public class GitRepoDtoList {
+public class StringLongDtoList {
     @Builder.Default
-    List<GitRepoDto> items = new ArrayList<>();
+    List<StringLongDto> items = new ArrayList<>();
 }

@@ -5,6 +5,9 @@ import org.slf4j.LoggerFactory;
 
 import java.io.FileInputStream;
 import java.net.URL;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Objects;
 import java.util.Properties;
 
@@ -23,7 +26,11 @@ public class PropertiesExtractor {
         }
     }
 
-    public static String getCrawlInterval(){
-        return properties.getProperty("app.crawl.interval");
+    public static Date getStartDate(){
+        try {
+            return new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss").parse(properties.getProperty("app.crawl.startdate"));
+        } catch (ParseException ex) {
+            return null;
+        }
     }
 }
