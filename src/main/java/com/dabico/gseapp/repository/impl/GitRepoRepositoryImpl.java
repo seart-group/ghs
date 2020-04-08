@@ -54,18 +54,18 @@ public class GitRepoRepositoryImpl implements GitRepoRepositoryCustom {
         }
 
         if (StringUtils.isNoneBlank(language)){
-            qb.where("r.main_language = (:language)", Operator.AND);
+            qb.where("r.mainLanguage = (:language)", Operator.AND);
             parameters.put("language", language);
         }
 
         if (StringUtils.isNoneBlank(license)){
-            qb.where("r.license = (:repoLicense)", Operator.AND);
-            parameters.put("repoLicense", license);
+            qb.where("r.license = (:license)", Operator.AND);
+            parameters.put("license", license);
         }
 
         if (StringUtils.isNoneBlank(label)){
-            qb.where("rl.repo_label_name = (:repoLabel)", Operator.AND);
-            parameters.put("repoLabel",label);
+            qb.where("rl.label = (:label)", Operator.AND);
+            parameters.put("label",label);
         }
 
         if (commits.isLowerBound()){
@@ -93,25 +93,25 @@ public class GitRepoRepositoryImpl implements GitRepoRepositoryCustom {
         }
 
         if (issues.isLowerBound()){
-            qb.where("r.total_issues >= (:lower)",Operator.AND);
+            qb.where("r.totalIssues >= (:lower)",Operator.AND);
             parameters.put("lower",issues.getStart());
         } else if (issues.isUpperBound()){
-            qb.where("r.total_issues <= (:upper)",Operator.AND);
+            qb.where("r.totalIssues <= (:upper)",Operator.AND);
             parameters.put("upper",issues.getEnd());
         } else if (issues.isBound()){
-            qb.where("r.total_issues between (:lower) and (:upper)",Operator.AND);
+            qb.where("r.totalIssues between (:lower) and (:upper)",Operator.AND);
             parameters.put("lower",issues.getStart());
             parameters.put("upper",issues.getEnd());
         }
 
         if (pulls.isLowerBound()){
-            qb.where("r.open_pull_requests >= (:lower)",Operator.AND);
+            qb.where("r.totalPullRequests >= (:lower)",Operator.AND);
             parameters.put("lower",pulls.getStart());
         } else if (pulls.isUpperBound()){
-            qb.where("r.open_pull_requests <= (:upper)",Operator.AND);
+            qb.where("r.totalPullRequests <= (:upper)",Operator.AND);
             parameters.put("upper",pulls.getEnd());
         } else if (pulls.isBound()){
-            qb.where("r.open_pull_requests between (:lower) and (:upper)",Operator.AND);
+            qb.where("r.totalPullRequests between (:lower) and (:upper)",Operator.AND);
             parameters.put("lower",pulls.getStart());
             parameters.put("upper",pulls.getEnd());
         }
@@ -180,22 +180,22 @@ public class GitRepoRepositoryImpl implements GitRepoRepositoryCustom {
             qb.where("date(r.created_at) >= (:lower)",Operator.AND);
             parameters.put("lower",created.getStart());
         } else if (stars.isUpperBound()){
-            qb.where("date(r.created_at) <= (:upper)",Operator.AND);
+            qb.where("date(r.createdAt) <= (:upper)",Operator.AND);
             parameters.put("upper",created.getEnd());
         } else if (stars.isBound()){
-            qb.where("date(r.created_at) between (:lower) and (:upper)",Operator.AND);
+            qb.where("date(r.createdAt) between (:lower) and (:upper)",Operator.AND);
             parameters.put("lower",created.getStart());
             parameters.put("upper",created.getEnd());
         }
 
         if (committed.isLowerBound()){
-            qb.where("date(r.pushed_at) >= (:lower)",Operator.AND);
+            qb.where("date(r.pushedAt) >= (:lower)",Operator.AND);
             parameters.put("lower",committed.getStart());
         } else if (stars.isUpperBound()){
-            qb.where("date(r.pushed_at) <= (:upper)",Operator.AND);
+            qb.where("date(r.pushedAt) <= (:upper)",Operator.AND);
             parameters.put("upper",committed.getEnd());
         } else if (stars.isBound()){
-            qb.where("date(r.pushed_at) between (:lower) and (:upper)",Operator.AND);
+            qb.where("date(r.pushedAt) between (:lower) and (:upper)",Operator.AND);
             parameters.put("lower",committed.getStart());
             parameters.put("upper",committed.getEnd());
         }
@@ -209,15 +209,15 @@ public class GitRepoRepositoryImpl implements GitRepoRepositoryCustom {
         }
 
         if (hasIssues){
-            qb.where("r.open_issues > 0",Operator.AND);
+            qb.where("r.openIssues > 0",Operator.AND);
         }
 
         if (hasPulls){
-            qb.where("r.open_pull_requests > 0",Operator.AND);
+            qb.where("r.openPullRequests > 0",Operator.AND);
         }
 
         if (hasWiki){
-            qb.where("r.has_wiki = true",Operator.AND);
+            qb.where("r.hasWiki is true",Operator.AND);
         }
 
         if (hasLicense){
