@@ -77,6 +77,11 @@ public class AdminController {
         return ResponseEntity.ok(gitRepoService.getLanguageStatistics());
     }
 
+    @GetMapping("/r/stats")
+    public ResponseEntity<?> getRepoStatistics(){
+        return ResponseEntity.ok(gitRepoService.getRepoStatistics());
+    }
+
     @DeleteMapping("/l/{langId}")
     public ResponseEntity<?> deleteLanguage(@PathVariable(value = "langId") Long langId){
         try {

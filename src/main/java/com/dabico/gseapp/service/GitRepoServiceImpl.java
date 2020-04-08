@@ -139,14 +139,25 @@ public class GitRepoServiceImpl implements GitRepoService {
     public StringLongDtoList getLanguageStatistics(){
         List<Object[]> languages = gitRepoLanguageRepository.getLanguageStatistics();
         StringLongDtoList stats = StringLongDtoList.builder().build();
-        List<StringLongDto> sizeDtos = new ArrayList<>();
         for (Object[] language : languages){
             StringLongDto dto = StringLongDto.builder().build();
             dto.setLanguage((String) language[0]);
             dto.setSize((Long) language[1]);
-            sizeDtos.add(dto);
+            stats.getItems().add(dto);
         }
-        stats.setItems(sizeDtos);
+        return stats;
+    }
+
+    @Override
+    public StringLongDtoList getRepoStatistics(){
+        List<Object[]> languages = gitRepoRepository.getLanguageStatistics();
+        StringLongDtoList stats = StringLongDtoList.builder().build();
+        for (Object[] language : languages){
+            StringLongDto dto = StringLongDto.builder().build();
+            dto.setLanguage((String) language[0]);
+            dto.setSize((Long) language[1]);
+            stats.getItems().add(dto);
+        }
         return stats;
     }
 

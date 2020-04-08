@@ -27,4 +27,5 @@ public interface GitRepoService {
     StringList getAllLabels();
     StringList getAllLanguages();
     StringLongDtoList getLanguageStatistics();
+    StringLongDtoList getRepoStatistics();
 }
