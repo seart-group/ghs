@@ -8,6 +8,7 @@ import lombok.experimental.FieldDefaults;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -51,10 +52,10 @@ public class GitRepoController {
             @RequestParam(required = false) Long watchersMax,
             @RequestParam(required = false) Long forksMin,
             @RequestParam(required = false) Long forksMax,
-            @RequestParam(required = false) Date createdMin,
-            @RequestParam(required = false) Date createdMax,
-            @RequestParam(required = false) Date committedMin,
-            @RequestParam(required = false) Date committedMax,
+            @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Date createdMin,
+            @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Date createdMax,
+            @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Date committedMin,
+            @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Date committedMax,
             @RequestParam(required = false, defaultValue = "false") Boolean excludeForks,
             @RequestParam(required = false, defaultValue = "false") Boolean onlyForks,
             @RequestParam(required = false, defaultValue = "false") Boolean hasIssues,
