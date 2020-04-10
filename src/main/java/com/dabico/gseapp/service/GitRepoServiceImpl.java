@@ -136,7 +136,7 @@ public class GitRepoServiceImpl implements GitRepoService {
     }
 
     @Override
-    public StringLongDtoList getLanguageStatistics(){
+    public StringLongDtoList getAllLanguageStatistics(){
         List<Object[]> languages = gitRepoLanguageRepository.getLanguageStatistics();
         StringLongDtoList stats = StringLongDtoList.builder().build();
         for (Object[] language : languages){
@@ -149,7 +149,7 @@ public class GitRepoServiceImpl implements GitRepoService {
     }
 
     @Override
-    public StringLongDtoList getRepoStatistics(){
+    public StringLongDtoList getMainLanguageStatistics(){
         List<Object[]> languages = gitRepoRepository.getLanguageStatistics();
         StringLongDtoList stats = StringLongDtoList.builder().build();
         for (Object[] language : languages){

@@ -74,12 +74,12 @@ public class AdminController {
 
     @GetMapping("/l/stats")
     public ResponseEntity<?> getLanguageStatistics(){
-        return ResponseEntity.ok(gitRepoService.getLanguageStatistics());
+        return ResponseEntity.ok(gitRepoService.getAllLanguageStatistics());
     }
 
     @GetMapping("/r/stats")
     public ResponseEntity<?> getRepoStatistics(){
-        return ResponseEntity.ok(gitRepoService.getRepoStatistics());
+        return ResponseEntity.ok(gitRepoService.getMainLanguageStatistics());
     }
 
     @DeleteMapping("/l/{langId}")

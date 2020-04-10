@@ -25,8 +25,8 @@ public interface GitRepoService {
     GitRepo createOrUpdateRepo(GitRepo repo);
     StringList getAllLabels();
     StringList getAllLanguages();
-    StringLongDtoList getLanguageStatistics();
-    StringLongDtoList getRepoStatistics();
+    StringLongDtoList getAllLanguageStatistics();
+    StringLongDtoList getMainLanguageStatistics();
     void createUpdateLabels(GitRepo repo, List<GitRepoLabel> labels);
     void createUpdateLanguages(GitRepo repo, List<GitRepoLanguage> languages);
 }
