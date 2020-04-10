@@ -74,9 +74,8 @@ public class GitRepoServiceImpl implements GitRepoService {
                                                                      stars, watchers,forks,created,committed,excludeForks,
                                                                      onlyForks,hasIssues,hasPulls,hasWiki,hasLicense, pageable);
         List<GitRepoDto> repoDtos = gitRepoConverter.repoListToRepoDtoList(repos);
-        GitRepoDtoList repoDtoList = GitRepoDtoList.builder().items(repoDtos).build();
         GitRepoDtoListPaginated repoDtoListPaginated = GitRepoDtoListPaginated.builder().build();
-        repoDtoListPaginated.setResults(repoDtoList);
+        repoDtoListPaginated.setItems(repoDtos);
         repoDtoListPaginated.setTotalItems(repos.size());
         if (pageSize == repos.size()){
             String next = linkTo(methodOn(GitRepoController.class)
