@@ -139,12 +139,7 @@ public class GitRepoServiceImpl implements GitRepoService {
     public StringLongDtoList getAllLanguageStatistics(){
         List<Object[]> languages = gitRepoLanguageRepository.getLanguageStatistics();
         StringLongDtoList stats = StringLongDtoList.builder().build();
-        for (Object[] language : languages){
-            StringLongDto dto = StringLongDto.builder().build();
-            dto.setLanguage((String) language[0]);
-            dto.setSize((Long) language[1]);
-            stats.getItems().add(dto);
-        }
+        languages.forEach(language -> stats.getItems().add(new StringLongDto((String) language[0],(Long) language[1])));
         return stats;
     }
 
@@ -152,12 +147,7 @@ public class GitRepoServiceImpl implements GitRepoService {
     public StringLongDtoList getMainLanguageStatistics(){
         List<Object[]> languages = gitRepoRepository.getLanguageStatistics();
         StringLongDtoList stats = StringLongDtoList.builder().build();
-        for (Object[] language : languages){
-            StringLongDto dto = StringLongDto.builder().build();
-            dto.setLanguage((String) language[0]);
-            dto.setSize((Long) language[1]);
-            stats.getItems().add(dto);
-        }
+        languages.forEach(language -> stats.getItems().add(new StringLongDto((String) language[0],(Long) language[1])));
         return stats;
     }
 
