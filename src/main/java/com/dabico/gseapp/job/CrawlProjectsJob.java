@@ -65,15 +65,16 @@ public class CrawlProjectsJob {
 
     public void run() throws Exception {
         refresh();
+        Date startDate = new Date();
         for (String language : languages){
             Date limit = crawlJobService.getCrawlDateByLanguage(language);
             DateInterval interval;
             if (limit != null){
-                interval = new DateInterval(limit,new Date());
+                interval = new DateInterval(limit,startDate);
                 create(interval,language);
                 update(interval,language);
             } else {
-                interval = new DateInterval(applicationPropertyService.getStartDate(),new Date());
+                interval = new DateInterval(applicationPropertyService.getStartDate(),startDate);
                 create(interval,language);
             }
         }
