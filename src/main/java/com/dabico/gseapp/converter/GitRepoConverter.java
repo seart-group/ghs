@@ -16,6 +16,7 @@ import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeDriverService;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.remote.DesiredCapabilities;
+import org.openqa.selenium.support.ui.WebDriverWait;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -67,7 +68,7 @@ public class GitRepoConverter {
 
     public GitRepo jsonToGitRepo(JsonObject json,String language) throws IOException {
         String repositoryURL = json.get("html_url").getAsString();
-        GitHubPageCrawlerService crawlerService = new GitHubPageCrawlerService(repositoryURL,driver);
+        GitHubPageCrawlerService crawlerService = new GitHubPageCrawlerService(repositoryURL,driver,new WebDriverWait(driver,5));
         try {
             crawlerService.mine();
         } catch (HttpStatusException ex) {

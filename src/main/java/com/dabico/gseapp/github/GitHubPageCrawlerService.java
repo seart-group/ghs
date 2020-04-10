@@ -42,7 +42,7 @@ public class GitHubPageCrawlerService {
 
     final String repoURL;
     final ChromeDriver driver;
-    WebDriverWait wait;
+    final WebDriverWait wait;
     long commits = 0;
     long branches = 0;
     long releases = 0;
@@ -56,7 +56,6 @@ public class GitHubPageCrawlerService {
     String lastCommitSHA = null;
 
     public void mine() throws IOException {
-        this.wait = new WebDriverWait(driver,5);
         logger.info("Mining data for: " + repoURL);
         mineProjectPage();
         mineIssuesPage();
