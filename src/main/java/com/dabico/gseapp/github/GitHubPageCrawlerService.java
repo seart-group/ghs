@@ -26,19 +26,23 @@ import static com.dabico.gseapp.util.DateUtils.fromGitDateString;
 public class GitHubPageCrawlerService {
     static final Logger logger = LoggerFactory.getLogger(GitHubPageCrawlerService.class);
 
-    static String commitsReg      = "#js-repo-pjax-container > div > div > div > ul > li:nth-child(1) > a > span";
-    static String commitsAlt      = "#js-repo-pjax-container > div.container-lg.clearfix.new-discussion-timeline.px-3 > div > div.overall-summary.border-bottom-0.mb-0.rounded-bottom-0 > ul > li.commits > a > span";
-    static String branchesReg     = "#js-repo-pjax-container > div > div > div > ul > li:nth-child(2) > a > span";
-    static String releasesReg     = "#js-repo-pjax-container > div > div > div > ul > li:nth-child(4) > a > span";
-    static String contributorsReg = "#js-repo-pjax-container > div > div > div > ul > li:nth-child(5) > a > span";
-    static String contributorsAlt = "#js-repo-pjax-container > div.container-lg.clearfix.new-discussion-timeline.px-3 > div > div.overall-summary.border-bottom-0.mb-0.rounded-bottom-0 > ul > li:nth-child(5) > a > span";
-    static String watchersReg     = "#js-repo-pjax-container > div > div > ul > li:nth-child(1) > a:nth-child(2)";
-    static String watchersAlt     = "#js-repo-pjax-container > div > div > ul > li:nth-child(2) > a:nth-child(2)";
-    static String openReg         = "#js-issues-toolbar > div > div > div > a:nth-child(1)";
-    static String closedReg       = "#js-issues-toolbar > div > div > div > a:nth-child(2)";
-    static String commitLinkReg   = "#js-repo-pjax-container > div > div > div > ol:nth-child(2) > li > div > div > a";
-    static String commitDateReg   = "#js-repo-pjax-container > div > div > div > div > div > relative-time";
-    static String commitSHAReg    = "#js-repo-pjax-container > div > div > div > div > div > span:nth-child(2) > span";
+    static String commitsReg          = "#js-repo-pjax-container > div > div > div > ul > li:nth-child(1) > a > span";
+    static String commitsAlt          = "#js-repo-pjax-container > div.container-lg.clearfix.new-discussion-timeline.px-3 > div > div.overall-summary.border-bottom-0.mb-0.rounded-bottom-0 > ul > li.commits > a > span";
+    static String branchesReg         = "#js-repo-pjax-container > div > div > div > ul > li:nth-child(2) > a > span";
+    static String branchesAlt         = "#js-repo-pjax-container > div.container-lg.clearfix.new-discussion-timeline.px-3 > div > div.overall-summary.border-bottom-0.mb-0.rounded-bottom-0 > ul > li:nth-child(2) > a > span";
+    static String releasesReg         = "#js-repo-pjax-container > div > div > div > ul > li:nth-child(4) > a > span";
+    static String releasesAlt         = "#js-repo-pjax-container > div.container-lg.clearfix.new-discussion-timeline.px-3 > div > div.overall-summary.border-bottom-0.mb-0.rounded-bottom-0 > ul > li:nth-child(4) > a > span";
+    static String contributorsReg     = "#js-repo-pjax-container > div > div > div > ul > li:nth-child(5) > a > span";
+    static String contributorsAlt     = "#js-repo-pjax-container > div.container-lg.clearfix.new-discussion-timeline.px-3 > div > div.overall-summary.border-bottom-0.mb-0.rounded-bottom-0 > ul > li:nth-child(5) > a > span";
+    static String watchersReg         = "#js-repo-pjax-container > div > div > ul > li:nth-child(1) > a:nth-child(2)";
+    static String watchersAlt         = "#js-repo-pjax-container > div > div > ul > li:nth-child(2) > a:nth-child(2)";
+    static String watchersSeleniumReg = "#js-repo-pjax-container > div.pagehead.repohead.hx_repohead.readability-menu.bg-gray-light.pb-0.pt-3 > div > ul > li:nth-child(1) > a:nth-child(2)";
+    static String watchersSeleniumAlt = "#js-repo-pjax-container > div.pagehead.repohead.hx_repohead.readability-menu.bg-gray-light.pb-0.pt-3 > div > ul > li:nth-child(2) > a:nth-child(2)";
+    static String openReg             = "#js-issues-toolbar > div > div > div > a:nth-child(1)";
+    static String closedReg           = "#js-issues-toolbar > div > div > div > a:nth-child(2)";
+    static String commitLinkReg       = "#js-repo-pjax-container > div > div > div > ol:nth-child(2) > li > div > div > a";
+    static String commitDateReg       = "#js-repo-pjax-container > div > div > div > div > div > relative-time";
+    static String commitSHAReg        = "#js-repo-pjax-container > div > div > div > div > div > span:nth-child(2) > span";
 
     final String repoURL;
     final ChromeDriver driver;
@@ -71,8 +75,17 @@ public class GitHubPageCrawlerService {
             commits  = mineCommitsSelenium();
         }
 
-        branches = parseLong(normalizeNumberString(document.select(branchesReg).first().html()));
-        releases = parseLong(normalizeNumberString(document.select(releasesReg).first().html()));
+        try {
+            branches = parseLong(normalizeNumberString(document.select(branchesReg).first().html()));
+        } catch (NullPointerException ex){
+            branches = mineBranchesSelenium();
+        }
+
+        try {
+            releases = parseLong(normalizeNumberString(document.select(releasesReg).first().html()));
+        } catch (NullPointerException ex){
+            releases = mineReleasesSelenium();
+        }
 
         try {
             contributors = parseLong(normalizeNumberString(document.select(contributorsReg).first().html()));
@@ -82,8 +95,12 @@ public class GitHubPageCrawlerService {
 
         try {
             watchers = parseLong(normalizeNumberString(document.select(watchersReg).first().attr("aria-label").split(" ")[0]));
-        } catch (NullPointerException ex){
-            watchers = parseLong(normalizeNumberString(document.select(watchersAlt).first().attr("aria-label").split(" ")[0]));
+        } catch (NullPointerException ex1){
+            try {
+                watchers = parseLong(normalizeNumberString(document.select(watchersAlt).first().attr("aria-label").split(" ")[0]));
+            } catch (NullPointerException ex2){
+                watchers = mineWatchersSelenium();
+            }
         }
     }
 
@@ -130,6 +147,39 @@ public class GitHubPageCrawlerService {
         } catch (NoClassDefFoundError ex){
             wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector(contributorsAlt)));
             return Long.parseLong(normalizeNumberString(driver.findElementByCssSelector(contributorsAlt).getText()));
+        }
+    }
+
+    private long mineBranchesSelenium(){
+        driver.get(repoURL);
+        try {
+            wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector(branchesReg)));
+            return Long.parseLong(normalizeNumberString(driver.findElementByCssSelector(branchesReg).getText()));
+        } catch (NoClassDefFoundError ex){
+            wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector(branchesAlt)));
+            return Long.parseLong(normalizeNumberString(driver.findElementByCssSelector(branchesAlt).getText()));
+        }
+    }
+
+    private long mineReleasesSelenium(){
+        driver.get(repoURL);
+        try {
+            wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector(releasesReg)));
+            return Long.parseLong(normalizeNumberString(driver.findElementByCssSelector(releasesReg).getText()));
+        } catch (NoClassDefFoundError ex){
+            wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector(releasesAlt)));
+            return Long.parseLong(normalizeNumberString(driver.findElementByCssSelector(releasesAlt).getText()));
+        }
+    }
+
+    private long mineWatchersSelenium(){
+        driver.get(repoURL);
+        try {
+            wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector(watchersSeleniumReg)));
+            return Long.parseLong(normalizeNumberString(driver.findElementByCssSelector(watchersSeleniumReg).getAttribute("aria-label").split(" ")[0]));
+        } catch (NoClassDefFoundError ex){
+            wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector(watchersSeleniumAlt)));
+            return Long.parseLong(normalizeNumberString(driver.findElementByCssSelector(watchersSeleniumAlt).getAttribute("aria-label").split(" ")[0]));
         }
     }
 
