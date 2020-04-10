@@ -11,19 +11,17 @@ import org.springframework.stereotype.Service;
 import java.util.Date;
 
 @Getter
+@Setter
 @Service
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class ApplicationPropertyServiceImpl implements ApplicationPropertyService {
     private static PropertiesExtractor propertiesExtractor = new PropertiesExtractor();
 
-    @Setter
     @Value(value = "${app.crawl.enabled}")
     Boolean enabled;
 
-    @Setter
     @Value(value = "${app.crawl.scheduling}")
     Long scheduling;
 
-    @Setter
     Date startDate = PropertiesExtractor.getStartDate();
 }
