@@ -34,7 +34,7 @@ public class GitHubApiService {
                                        Boolean update) throws IOException, InterruptedException {
         Response response = makeAPICall(Endpoints.SEARCH_REPOS.getUrl() +
                                                 "?q=language:" + language +
-                                                (update ? "+updated:" : "+created:") + interval +
+                                                (update ? "+pushed:" : "+created:") + interval +
                                                 "+fork:true+is:public&page=" + page +
                                                 "&per_page=100", token);
         //TODO Remove guards when done
