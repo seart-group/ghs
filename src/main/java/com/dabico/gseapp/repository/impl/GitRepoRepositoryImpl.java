@@ -47,6 +47,23 @@ public class GitRepoRepositoryImpl implements GitRepoRepositoryCustom {
         return query.getResultList();
     }
 
+    public List<GitRepo> advancedSearch(String name, Boolean nameEquals, String language, String license, String label,
+                                        LongInterval commits, LongInterval contributors, LongInterval issues,
+                                        LongInterval pulls, LongInterval branches, LongInterval releases,
+                                        LongInterval stars, LongInterval watchers, LongInterval forks,
+                                        DateInterval created, DateInterval committed, Boolean excludeForks,
+                                        Boolean onlyForks, Boolean hasIssues, Boolean hasPulls, Boolean hasWiki,
+                                        Boolean hasLicense)
+    {
+        TypedQuery<GitRepo> query = constructQuery(name,nameEquals,language,license,label,commits,contributors,issues,
+                                                   pulls,branches,releases,stars,watchers,forks,created,committed,
+                                                   excludeForks,onlyForks,hasIssues,hasPulls,hasWiki,hasLicense);
+        Map<String,Object> parameters = constructParams(name,nameEquals,language,license,label,commits,contributors,issues,
+                                                        pulls,branches,releases,stars,watchers,forks,created,committed);
+        parameters.keySet().forEach(k -> query.setParameter(k, parameters.get(k)));
+        return query.getResultList();
+    }
+
     private TypedQuery<GitRepo> constructQuery(String name, Boolean nameEquals, String language, String license,
                                                String label, LongInterval commits, LongInterval contributors,
                                                LongInterval issues, LongInterval pulls, LongInterval branches,

@@ -9,8 +9,9 @@ import java.util.List;
 @Setter
 @Builder
 public class GitRepoDtoListPaginated {
+    String next;
+    String download;
+    int totalItems;
     @Builder.Default
     List<GitRepoDto> items = new ArrayList<>();
-    int totalItems;
-    String next;
 }

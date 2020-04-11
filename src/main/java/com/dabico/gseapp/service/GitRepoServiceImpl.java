@@ -12,6 +12,7 @@ import com.dabico.gseapp.repository.GitRepoRepository;
 import com.dabico.gseapp.repository.GitRepoRepositoryCustom;
 import com.dabico.gseapp.util.interval.DateInterval;
 import com.dabico.gseapp.util.interval.LongInterval;
+import com.opencsv.CSVWriter;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -22,6 +23,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.io.*;
 import java.util.*;
 
 import static org.springframework.hateoas.mvc.ControllerLinkBuilder.*;
@@ -69,10 +71,10 @@ public class GitRepoServiceImpl implements GitRepoService {
         LongInterval forks        = new LongInterval(forksMin,forksMax);
         DateInterval created      = new DateInterval(createdMin,createdMax);
         DateInterval committed    = new DateInterval(committedMin,committedMax);
-        List<GitRepo> repos = gitRepoRepositoryCustom.advancedSearch(name, nameEquals, language, license, label, commits,
-                                                                     contributors, issues, pulls, branches, releases,
-                                                                     stars, watchers,forks,created,committed,excludeForks,
-                                                                     onlyForks,hasIssues,hasPulls,hasWiki,hasLicense, pageable);
+        List<GitRepo> repos = gitRepoRepositoryCustom.advancedSearch(name,nameEquals,language,license,label,commits,
+                                                                     contributors,issues,pulls,branches,releases,
+                                                                     stars,watchers,forks,created,committed,excludeForks,
+                                                                     onlyForks,hasIssues,hasPulls,hasWiki,hasLicense,pageable);
         List<GitRepoDto> repoDtos = gitRepoConverter.repoListToRepoDtoList(repos);
         for (GitRepoDto repoDto : repoDtos){
             List<GitRepoLabel> labels = gitRepoLabelRepository.findRepoLabels(repoDto.getId());
@@ -93,7 +95,48 @@ public class GitRepoServiceImpl implements GitRepoService {
                     .toUriComponentsBuilder().scheme("http").build().toUriString();
             repoDtoListPaginated.setNext(next);
         }
+        String download = linkTo(methodOn(GitRepoController.class)
+                .downloadRepos(name,nameEquals,language,license,label,commitsMin,commitsMax,contributorsMin,
+                               contributorsMax,issuesMin,issuesMax,pullsMin,pullsMax,branchesMin,branchesMax,releasesMin,
+                               releasesMax,starsMin,starsMax,watchersMin,watchersMax,forksMin,forksMax,createdMin,
+                               createdMax,committedMin,committedMax,excludeForks,onlyForks,hasIssues,hasPulls,hasWiki,
+                               hasLicense))
+                .toUriComponentsBuilder().scheme("http").build().toUriString();
+        repoDtoListPaginated.setDownload(download);
         return repoDtoListPaginated;
+    }
+
+    @Override
+    public File download(String name, Boolean nameEquals,String language, String license, String label, Long commitsMin,
+                           Long commitsMax, Long contributorsMin, Long contributorsMax, Long issuesMin, Long issuesMax,
+                           Long pullsMin, Long pullsMax, Long branchesMin, Long branchesMax, Long releasesMin,
+                           Long releasesMax, Long starsMin, Long starsMax, Long watchersMin, Long watchersMax,
+                           Long forksMin, Long forksMax, Date createdMin, Date createdMax, Date committedMin,
+                           Date committedMax, Boolean excludeForks,  Boolean onlyForks, Boolean hasIssues,
+                           Boolean hasPulls, Boolean hasWiki, Boolean hasLicense){
+        LongInterval commits      = new LongInterval(commitsMin,commitsMax);
+        LongInterval contributors = new LongInterval(contributorsMin,contributorsMax);
+        LongInterval issues       = new LongInterval(issuesMin,issuesMax);
+        LongInterval pulls        = new LongInterval(pullsMin,pullsMax);
+        LongInterval branches     = new LongInterval(branchesMin,branchesMax);
+        LongInterval releases     = new LongInterval(releasesMin,releasesMax);
+        LongInterval stars        = new LongInterval(starsMin,starsMax);
+        LongInterval watchers     = new LongInterval(watchersMin,watchersMax);
+        LongInterval forks        = new LongInterval(forksMin,forksMax);
+        DateInterval created      = new DateInterval(createdMin,createdMax);
+        DateInterval committed    = new DateInterval(committedMin,committedMax);
+        List<GitRepo> repos = gitRepoRepositoryCustom.advancedSearch(name,nameEquals,language,license,label,commits,
+                                                                     contributors,issues,pulls,branches,releases,stars,
+                                                                     watchers,forks,created,committed,excludeForks,
+                                                                     onlyForks,hasIssues,hasPulls,hasWiki,hasLicense);
+        File csv = new File("src/main/resources/csv/results.csv");
+        try {
+            CSVWriter writer = new CSVWriter(new FileWriter(csv.getAbsolutePath()));
+            List<String[]> rows = gitRepoConverter.repoListToCSVRowList(repos);
+            writer.writeAll(rows);
+            writer.close();
+        } catch (IOException ignored){}
+        return csv;
     }
 
     @Override

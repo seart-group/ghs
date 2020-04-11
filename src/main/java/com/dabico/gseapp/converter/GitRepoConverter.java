@@ -110,6 +110,17 @@ public class GitRepoConverter {
         return repos.stream().map(this::repoToRepoDto).collect(Collectors.toList());
     }
 
+    public List<String[]> repoListToCSVRowList(List<GitRepo> repos){
+        List<String[]> results = repos.stream().map(this::repoToCSVRow).collect(Collectors.toList());
+        String[] header = new String[]{"id","name","fork project","commits","branches","default branch","releases",
+                                       "contributors","license","watchers","stargazers","forks","size","created",
+                                       "pushed","updated","homepage","main language","total issues","open issues",
+                                       "total pull requests","open pull requests","last commit","last commit SHA",
+                                       "has wiki","is archived"};
+        results.add(0, header);
+        return results;
+    }
+
     public List<GitRepoLabelDto> labelListToLabelDtoList(List<GitRepoLabel> labels){
         return labels.stream().map(this::labelToLabelDto).collect(Collectors.toList());
     }
@@ -147,6 +158,37 @@ public class GitRepoConverter {
                 .hasWiki(repo.getHasWiki())
                 .isArchived(repo.getIsArchived())
                 .build();
+    }
+
+    public String[] repoToCSVRow(GitRepo repo){
+        String[] attributes = new String[26];
+        attributes[0]  = repo.getId().toString();
+        attributes[1]  = repo.getName();
+        attributes[2]  = repo.getIsFork().toString();
+        attributes[3]  = repo.getCommits().toString();
+        attributes[4]  = repo.getBranches().toString();
+        attributes[5]  = repo.getDefaultBranch();
+        attributes[6]  = repo.getReleases().toString();
+        attributes[7]  = repo.getContributors().toString();
+        attributes[8]  = repo.getLicense();
+        attributes[9]  = repo.getWatchers().toString();
+        attributes[10] = repo.getStargazers().toString();
+        attributes[11] = repo.getForks().toString();
+        attributes[12] = repo.getSize().toString();
+        attributes[13] = repo.getCreatedAt().toString();
+        attributes[14] = repo.getPushedAt().toString();
+        attributes[15] = repo.getUpdatedAt().toString();
+        attributes[16] = repo.getHomepage();
+        attributes[17] = repo.getMainLanguage();
+        attributes[18] = repo.getTotalIssues().toString();
+        attributes[19] = repo.getOpenIssues().toString();
+        attributes[20] = repo.getTotalPullRequests().toString();
+        attributes[21] = repo.getOpenPullRequests().toString();
+        attributes[22] = repo.getLastCommit().toString();
+        attributes[23] = repo.getLastCommitSHA();
+        attributes[24] = repo.getHasWiki().toString();
+        attributes[25] = repo.getIsArchived().toString();
+        return attributes;
     }
 
     public GitRepoLabelDto labelToLabelDto(GitRepoLabel label){
