@@ -74,6 +74,12 @@ public class GitRepoServiceImpl implements GitRepoService {
                                                                      stars, watchers,forks,created,committed,excludeForks,
                                                                      onlyForks,hasIssues,hasPulls,hasWiki,hasLicense, pageable);
         List<GitRepoDto> repoDtos = gitRepoConverter.repoListToRepoDtoList(repos);
+        for (GitRepoDto repoDto : repoDtos){
+            List<GitRepoLabel> labels = gitRepoLabelRepository.findRepoLabels(repoDto.getId());
+            List<GitRepoLanguage> languages = gitRepoLanguageRepository.findRepoLanguages(repoDto.getId());
+            repoDto.setLabels(new HashSet<>(gitRepoConverter.labelListToLabelDtoList(labels)));
+            repoDto.setLanguages(new HashSet<>(gitRepoConverter.languageListToLanguageDtoList(languages)));
+        }
         GitRepoDtoListPaginated repoDtoListPaginated = GitRepoDtoListPaginated.builder().build();
         repoDtoListPaginated.setItems(repoDtos);
         repoDtoListPaginated.setTotalItems(repos.size());
