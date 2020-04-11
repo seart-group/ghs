@@ -34,170 +34,139 @@ public class GitRepoRepositoryImpl implements GitRepoRepositoryCustom {
                                         LongInterval stars, LongInterval watchers, LongInterval forks,
                                         DateInterval created, DateInterval committed, Boolean excludeForks,
                                         Boolean onlyForks, Boolean hasIssues, Boolean hasPulls, Boolean hasWiki,
-                                        Boolean hasLicense, Pageable pageable){
+                                        Boolean hasLicense, Pageable pageable)
+    {
+        TypedQuery<GitRepo> query = constructQuery(name,nameEquals,language,license,label,commits,contributors,issues,
+                                                   pulls,branches,releases,stars,watchers,forks,created,committed,
+                                                   excludeForks,onlyForks,hasIssues,hasPulls,hasWiki,hasLicense);
+        Map<String,Object> parameters = constructParams(name,nameEquals,language,license,label,commits,contributors,issues,
+                                                        pulls,branches,releases,stars,watchers,forks,created,committed);
+        query.setFirstResult(pageable.getPageSize() * pageable.getPageNumber());
+        query.setMaxResults(pageable.getPageSize());
+        parameters.keySet().forEach(k -> query.setParameter(k, parameters.get(k)));
+        return query.getResultList();
+    }
+
+    private TypedQuery<GitRepo> constructQuery(String name, Boolean nameEquals, String language, String license,
+                                               String label, LongInterval commits, LongInterval contributors,
+                                               LongInterval issues, LongInterval pulls, LongInterval branches,
+                                               LongInterval releases, LongInterval stars, LongInterval watchers,
+                                               LongInterval forks, DateInterval created, DateInterval committed,
+                                               Boolean excludeForks, Boolean onlyForks, Boolean hasIssues,
+                                               Boolean hasPulls, Boolean hasWiki, Boolean hasLicense)
+    {
         JPAQueryBuilder qb = new JPAQueryBuilder();
         qb.select("r",true);
         qb.from("GitRepo", "r");
         qb.join("GitRepoLabel", "rl", "r.id = rl.repo.id" , Join.LEFT);
         qb.orderBy("r.name");
 
-        Map<String,Object> parameters = new HashMap<>();
-
         if (StringUtils.isNotBlank(name)){
             if (nameEquals){
                 qb.where("r.name = (:name)", Operator.AND);
-                parameters.put("name", name);
             } else {
                 qb.where("lower(r.name) like lower(:name)", Operator.AND);
-                parameters.put("name", "%"+name+"%");
             }
         }
 
         if (StringUtils.isNoneBlank(language)){
             qb.where("r.mainLanguage = (:language)", Operator.AND);
-            parameters.put("language", language);
         }
 
         if (StringUtils.isNoneBlank(license)){
             qb.where("r.license = (:license)", Operator.AND);
-            parameters.put("license", license);
         }
 
         if (StringUtils.isNoneBlank(label)){
             qb.where("rl.label = (:label)", Operator.AND);
-            parameters.put("label",label);
         }
 
         if (commits.isLowerBound()){
-            qb.where("r.commits >= (:lower)",Operator.AND);
-            parameters.put("lower",commits.getStart());
+            qb.where("r.commits >= (:commitsMin)",Operator.AND);
         } else if (commits.isUpperBound()){
-            qb.where("r.commits <= (:upper)",Operator.AND);
-            parameters.put("upper",commits.getEnd());
+            qb.where("r.commits <= (:commitsMax)",Operator.AND);
         } else if (commits.isBound()){
-            qb.where("r.commits between (:lower) and (:upper)",Operator.AND);
-            parameters.put("lower",commits.getStart());
-            parameters.put("upper",commits.getEnd());
+            qb.where("r.commits between (:commitsMin) and (:commitsMax)",Operator.AND);
         }
 
         if (contributors.isLowerBound()){
-            qb.where("r.contributors >= (:lower)",Operator.AND);
-            parameters.put("lower",contributors.getStart());
+            qb.where("r.contributors >= (:contributorsMin)",Operator.AND);
         } else if (contributors.isUpperBound()){
-            qb.where("r.contributors <= (:upper)",Operator.AND);
-            parameters.put("upper",contributors.getEnd());
+            qb.where("r.contributors <= (:contributorsMax)",Operator.AND);
         } else if (contributors.isBound()){
-            qb.where("r.contributors between (:lower) and (:upper)",Operator.AND);
-            parameters.put("lower",contributors.getStart());
-            parameters.put("upper",contributors.getEnd());
+            qb.where("r.contributors between (:contributorsMin) and (:contributorsMax)",Operator.AND);
         }
 
         if (issues.isLowerBound()){
-            qb.where("r.totalIssues >= (:lower)",Operator.AND);
-            parameters.put("lower",issues.getStart());
+            qb.where("r.totalIssues >= (:issuesMin)",Operator.AND);
         } else if (issues.isUpperBound()){
-            qb.where("r.totalIssues <= (:upper)",Operator.AND);
-            parameters.put("upper",issues.getEnd());
+            qb.where("r.totalIssues <= (:issuesMax)",Operator.AND);
         } else if (issues.isBound()){
-            qb.where("r.totalIssues between (:lower) and (:upper)",Operator.AND);
-            parameters.put("lower",issues.getStart());
-            parameters.put("upper",issues.getEnd());
+            qb.where("r.totalIssues between (:issuesMin) and (:issuesMax)",Operator.AND);
         }
 
         if (pulls.isLowerBound()){
-            qb.where("r.totalPullRequests >= (:lower)",Operator.AND);
-            parameters.put("lower",pulls.getStart());
+            qb.where("r.totalPullRequests >= (:pullsMin)",Operator.AND);
         } else if (pulls.isUpperBound()){
-            qb.where("r.totalPullRequests <= (:upper)",Operator.AND);
-            parameters.put("upper",pulls.getEnd());
+            qb.where("r.totalPullRequests <= (:pullsMax)",Operator.AND);
         } else if (pulls.isBound()){
-            qb.where("r.totalPullRequests between (:lower) and (:upper)",Operator.AND);
-            parameters.put("lower",pulls.getStart());
-            parameters.put("upper",pulls.getEnd());
+            qb.where("r.totalPullRequests between (:pullsMin) and (:pullsMax)",Operator.AND);
         }
 
         if (branches.isLowerBound()){
-            qb.where("r.branches >= (:lower)",Operator.AND);
-            parameters.put("lower",branches.getStart());
+            qb.where("r.branches >= (:branchesMin)",Operator.AND);
         } else if (branches.isUpperBound()){
-            qb.where("r.branches <= (:upper)",Operator.AND);
-            parameters.put("upper",branches.getEnd());
+            qb.where("r.branches <= (:branchesMax)",Operator.AND);
         } else if (branches.isBound()){
-            qb.where("r.branches between (:lower) and (:upper)",Operator.AND);
-            parameters.put("lower",branches.getStart());
-            parameters.put("upper",branches.getEnd());
+            qb.where("r.branches between (:branchesMin) and (:branchesMax)",Operator.AND);
         }
 
         if (releases.isLowerBound()){
-            qb.where("r.releases >= (:lower)",Operator.AND);
-            parameters.put("lower",releases.getStart());
+            qb.where("r.releases >= (:releasesMin)",Operator.AND);
         } else if (releases.isUpperBound()){
-            qb.where("r.releases <= (:upper)",Operator.AND);
-            parameters.put("upper",releases.getEnd());
+            qb.where("r.releases <= (:releasesMax)",Operator.AND);
         } else if (releases.isBound()){
-            qb.where("r.releases between (:lower) and (:upper)",Operator.AND);
-            parameters.put("lower",releases.getStart());
-            parameters.put("upper",releases.getEnd());
+            qb.where("r.releases between (:releasesMin) and (:releasesMax)",Operator.AND);
         }
 
         if (stars.isLowerBound()){
-            qb.where("r.stargazers >= (:lower)",Operator.AND);
-            parameters.put("lower",stars.getStart());
+            qb.where("r.stargazers >= (:starsMin)",Operator.AND);
         } else if (stars.isUpperBound()){
-            qb.where("r.stargazers <= (:upper)",Operator.AND);
-            parameters.put("upper",stars.getEnd());
+            qb.where("r.stargazers <= (:starsMax)",Operator.AND);
         } else if (stars.isBound()){
-            qb.where("r.stargazers between (:lower) and (:upper)",Operator.AND);
-            parameters.put("lower",stars.getStart());
-            parameters.put("upper",stars.getEnd());
+            qb.where("r.stargazers between (:starsMin) and (:starsMax)",Operator.AND);
         }
 
         if (watchers.isLowerBound()){
-            qb.where("r.watchers >= (:lower)",Operator.AND);
-            parameters.put("lower",watchers.getStart());
+            qb.where("r.watchers >= (:watchersMin)",Operator.AND);
         } else if (watchers.isUpperBound()){
-            qb.where("r.watchers <= (:upper)",Operator.AND);
-            parameters.put("upper",watchers.getEnd());
+            qb.where("r.watchers <= (:watchersMax)",Operator.AND);
         } else if (watchers.isBound()){
-            qb.where("r.watchers between (:lower) and (:upper)",Operator.AND);
-            parameters.put("lower",watchers.getStart());
-            parameters.put("upper",watchers.getEnd());
+            qb.where("r.watchers between (:watchersMin) and (:watchersMax)",Operator.AND);
         }
 
         if (forks.isLowerBound()){
-            qb.where("r.forks >= (:lower)",Operator.AND);
-            parameters.put("lower",forks.getStart());
+            qb.where("r.forks >= (:forksMin)",Operator.AND);
         } else if (forks.isUpperBound()){
-            qb.where("r.forks <= (:upper)",Operator.AND);
-            parameters.put("upper",forks.getEnd());
+            qb.where("r.forks <= (:forksMax)",Operator.AND);
         } else if (forks.isBound()){
-            qb.where("r.forks between (:lower) and (:upper)",Operator.AND);
-            parameters.put("lower",forks.getStart());
-            parameters.put("upper",forks.getEnd());
+            qb.where("r.forks between (:forksMin) and (:forksMax)",Operator.AND);
         }
 
         if (created.isLowerBound()){
-            qb.where("date(r.created_at) >= (:lower)",Operator.AND);
-            parameters.put("lower",created.getStart());
+            qb.where("date(r.created_at) >= (:createdMin)",Operator.AND);
         } else if (created.isUpperBound()){
-            qb.where("date(r.createdAt) <= (:upper)",Operator.AND);
-            parameters.put("upper",created.getEnd());
+            qb.where("date(r.createdAt) <= (:createdMax)",Operator.AND);
         } else if (created.isBound()){
-            qb.where("date(r.createdAt) between (:lower) and (:upper)",Operator.AND);
-            parameters.put("lower",created.getStart());
-            parameters.put("upper",created.getEnd());
+            qb.where("date(r.createdAt) between (:createdMin) and (:createdMax)",Operator.AND);
         }
 
         if (committed.isLowerBound()){
-            qb.where("date(r.pushedAt) >= (:lower)",Operator.AND);
-            parameters.put("lower",committed.getStart());
+            qb.where("date(r.pushedAt) >= (:pushedMin)",Operator.AND);
         } else if (committed.isUpperBound()){
-            qb.where("date(r.pushedAt) <= (:upper)",Operator.AND);
-            parameters.put("upper",committed.getEnd());
+            qb.where("date(r.pushedAt) <= (:pushedMax)",Operator.AND);
         } else if (committed.isBound()){
-            qb.where("date(r.pushedAt) between (:lower) and (:upper)",Operator.AND);
-            parameters.put("lower",committed.getStart());
-            parameters.put("upper",committed.getEnd());
+            qb.where("date(r.pushedAt) between (:pushedMin) and (:pushedMax)",Operator.AND);
         }
 
         if (excludeForks){
@@ -224,10 +193,136 @@ public class GitRepoRepositoryImpl implements GitRepoRepositoryCustom {
             qb.where("r.license is not null",Operator.AND);
         }
 
-        TypedQuery<GitRepo> query = entityManager.createQuery(qb.build(), GitRepo.class);
-        query.setFirstResult(pageable.getPageSize() * pageable.getPageNumber());
-        query.setMaxResults(pageable.getPageSize());
-        parameters.keySet().forEach(k -> query.setParameter(k, parameters.get(k)));
-        return query.getResultList();
+        return entityManager.createQuery(qb.build(), GitRepo.class);
+    }
+
+    private Map<String,Object> constructParams(String name, Boolean nameEquals, String language, String license,
+                                               String label, LongInterval commits, LongInterval contributors,
+                                               LongInterval issues, LongInterval pulls, LongInterval branches,
+                                               LongInterval releases, LongInterval stars, LongInterval watchers,
+                                               LongInterval forks, DateInterval created, DateInterval committed)
+    {
+        Map<String,Object> parameters = new HashMap<>();
+
+        if (StringUtils.isNotBlank(name)){
+            if (nameEquals){
+                parameters.put("name", name);
+            } else {
+                parameters.put("name", "%"+name+"%");
+            }
+        }
+
+        if (StringUtils.isNotBlank(language)){
+            parameters.put("language", language);
+        }
+
+        if (StringUtils.isNotBlank(license)){
+            parameters.put("license", license);
+        }
+
+        if (StringUtils.isNotBlank(label)){
+            parameters.put("label",label);
+        }
+
+        if (commits.isLowerBound()){
+            parameters.put("commitsMin",commits.getStart());
+        } else if (commits.isUpperBound()){
+            parameters.put("commitsMax",commits.getEnd());
+        } else if (commits.isBound()){
+            parameters.put("commitsMin",commits.getStart());
+            parameters.put("commitsMax",commits.getEnd());
+        }
+
+        if (contributors.isLowerBound()){
+            parameters.put("contributorsMin",contributors.getStart());
+        } else if (contributors.isUpperBound()){
+            parameters.put("contributorsMax",contributors.getEnd());
+        } else if (contributors.isBound()){
+            parameters.put("contributorsMin",contributors.getStart());
+            parameters.put("contributorsMax",contributors.getEnd());
+        }
+
+        if (issues.isLowerBound()){
+            parameters.put("issuesMin",issues.getStart());
+        } else if (issues.isUpperBound()){
+            parameters.put("issuesMax",issues.getEnd());
+        } else if (issues.isBound()){
+            parameters.put("issuesMin",issues.getStart());
+            parameters.put("issuesMax",issues.getEnd());
+        }
+
+        if (pulls.isLowerBound()){
+            parameters.put("pullsMin",pulls.getStart());
+        } else if (pulls.isUpperBound()){
+            parameters.put("pullsMax",pulls.getEnd());
+        } else if (pulls.isBound()){
+            parameters.put("pullsMin",pulls.getStart());
+            parameters.put("pullsMax",pulls.getEnd());
+        }
+
+        if (branches.isLowerBound()){
+            parameters.put("branchesMin",branches.getStart());
+        } else if (branches.isUpperBound()){
+            parameters.put("branchesMax",branches.getEnd());
+        } else if (branches.isBound()){
+            parameters.put("branchesMin",branches.getStart());
+            parameters.put("branchesMax",branches.getEnd());
+        }
+
+        if (releases.isLowerBound()){
+            parameters.put("releasesMin",releases.getStart());
+        } else if (releases.isUpperBound()){
+            parameters.put("releasesMax",releases.getEnd());
+        } else if (releases.isBound()){
+            parameters.put("releasesMin",releases.getStart());
+            parameters.put("releasesMax",releases.getEnd());
+        }
+
+        if (stars.isLowerBound()){
+            parameters.put("starsMin",stars.getStart());
+        } else if (stars.isUpperBound()){
+            parameters.put("starsMax",stars.getEnd());
+        } else if (stars.isBound()){
+            parameters.put("starsMin",stars.getStart());
+            parameters.put("starsMax",stars.getEnd());
+        }
+
+        if (watchers.isLowerBound()){
+            parameters.put("watchersMin",watchers.getStart());
+        } else if (watchers.isUpperBound()){
+            parameters.put("watchersMax",watchers.getEnd());
+        } else if (watchers.isBound()){
+            parameters.put("watchersMin",watchers.getStart());
+            parameters.put("watchersMax",watchers.getEnd());
+        }
+
+        if (forks.isLowerBound()){
+            parameters.put("forksMin",forks.getStart());
+        } else if (forks.isUpperBound()){
+            parameters.put("forksMax",forks.getEnd());
+        } else if (forks.isBound()){
+            parameters.put("forksMin",forks.getStart());
+            parameters.put("forksMax",forks.getEnd());
+        }
+
+        if (created.isLowerBound()){
+            parameters.put("createdMin",created.getStart());
+        } else if (created.isUpperBound()){
+            parameters.put("createdMax",created.getEnd());
+        } else if (created.isBound()){
+            parameters.put("createdMin",created.getStart());
+            parameters.put("createdMax",created.getEnd());
+        }
+
+        if (committed.isLowerBound()){
+            parameters.put("pushedMin",committed.getStart());
+        } else if (committed.isUpperBound()){
+            parameters.put("pushedMax",committed.getEnd());
+        } else if (committed.isBound()){
+            parameters.put("pushedMin",committed.getStart());
+            parameters.put("pushedMax",committed.getEnd());
+        }
+
+        return parameters;
     }
 }
