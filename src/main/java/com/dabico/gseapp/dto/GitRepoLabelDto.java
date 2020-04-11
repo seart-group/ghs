@@ -7,6 +7,5 @@ import lombok.*;
 @Builder
 public class GitRepoLabelDto {
     Long id;
-    Long repoId;
     String label;
 }

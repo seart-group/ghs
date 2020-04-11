@@ -152,7 +152,6 @@ public class GitRepoConverter {
     public GitRepoLabelDto labelToLabelDto(GitRepoLabel label){
         return GitRepoLabelDto.builder()
                               .id(label.getId())
-                              .repoId(label.getRepo().getId())
                               .label(label.getLabel())
                               .build();
     }
@@ -160,7 +159,6 @@ public class GitRepoConverter {
     public GitRepoLanguageDto languageToLanguageDto(GitRepoLanguage language){
         return GitRepoLanguageDto.builder()
                                  .id(language.getId())
-                                 .repoId(language.getRepo().getId())
                                  .language(language.getLanguage())
                                  .sizeOfCode(language.getSizeOfCode())
                                  .build();
