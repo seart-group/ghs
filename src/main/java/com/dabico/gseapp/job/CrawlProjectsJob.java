@@ -64,7 +64,7 @@ public class CrawlProjectsJob {
     }
 
     public void run() throws Exception {
-        refresh();
+        reset();
         Date startDate = new Date();
         for (String language : languages){
             Date limit = crawlJobService.getCrawlDateByLanguage(language);
@@ -199,7 +199,7 @@ public class CrawlProjectsJob {
         response.close();
     }
 
-    private void refresh(){
+    private void reset(){
         getLanguagesToMine();
         getAccessTokens();
         this.tokenOrdinal = -1;
