@@ -128,58 +128,39 @@ public class GitHubPageCrawlerService {
         lastCommitSHA = document.select(commitSHAReg).first().text();
     }
 
-    private long mineCommitsSelenium() {
+    private long mineCommitsSelenium() { return mineWithSelenium(commitsReg,commitsAlt); }
+
+    private long mineContributorsSelenium() { return mineWithSelenium(contributorsReg,contributorsAlt); }
+
+    private long mineBranchesSelenium(){ return mineWithSelenium(branchesReg,branchesAlt); }
+
+    private long mineReleasesSelenium(){ return mineWithSelenium(releasesReg,releasesAlt); }
+
+    private long mineWithSelenium(String elementReg, String elementAlt){
         driver.get(repoURL);
         try {
-            wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector(commitsReg)));
-            return Long.parseLong(normalizeNumberString(driver.findElementByCssSelector(commitsReg).getText()));
+            wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector(elementReg)));
+            wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector(elementReg)));
+            return Long.parseLong(normalizeNumberString(driver.findElementByCssSelector(elementReg).getText()));
         } catch (NoClassDefFoundError ex){
-            wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector(commitsAlt)));
-            return Long.parseLong(normalizeNumberString(driver.findElementByCssSelector(commitsAlt).getText()));
+            wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector(elementAlt)));
+            wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector(elementAlt)));
+            return Long.parseLong(normalizeNumberString(driver.findElementByCssSelector(elementAlt).getText()));
         }
     }
 
-    private long mineContributorsSelenium() {
-        driver.get(repoURL);
-        try {
-            wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector(contributorsReg)));
-            return Long.parseLong(normalizeNumberString(driver.findElementByCssSelector(contributorsReg).getText()));
-        } catch (NoClassDefFoundError ex){
-            wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector(contributorsAlt)));
-            return Long.parseLong(normalizeNumberString(driver.findElementByCssSelector(contributorsAlt).getText()));
-        }
-    }
+    private long mineWatchersSelenium(){ return mineWithSeleniumAlt(watchersSeleniumReg,watchersSeleniumAlt); }
 
-    private long mineBranchesSelenium(){
+    private long mineWithSeleniumAlt(String elementReg, String elementAlt){
         driver.get(repoURL);
         try {
-            wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector(branchesReg)));
-            return Long.parseLong(normalizeNumberString(driver.findElementByCssSelector(branchesReg).getText()));
+            wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector(elementReg)));
+            wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector(elementReg)));
+            return Long.parseLong(normalizeNumberString(driver.findElementByCssSelector(elementReg).getAttribute("aria-label").split(" ")[0]));
         } catch (NoClassDefFoundError ex){
-            wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector(branchesAlt)));
-            return Long.parseLong(normalizeNumberString(driver.findElementByCssSelector(branchesAlt).getText()));
-        }
-    }
-
-    private long mineReleasesSelenium(){
-        driver.get(repoURL);
-        try {
-            wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector(releasesReg)));
-            return Long.parseLong(normalizeNumberString(driver.findElementByCssSelector(releasesReg).getText()));
-        } catch (NoClassDefFoundError ex){
-            wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector(releasesAlt)));
-            return Long.parseLong(normalizeNumberString(driver.findElementByCssSelector(releasesAlt).getText()));
-        }
-    }
-
-    private long mineWatchersSelenium(){
-        driver.get(repoURL);
-        try {
-            wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector(watchersSeleniumReg)));
-            return Long.parseLong(normalizeNumberString(driver.findElementByCssSelector(watchersSeleniumReg).getAttribute("aria-label").split(" ")[0]));
-        } catch (NoClassDefFoundError ex){
-            wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector(watchersSeleniumAlt)));
-            return Long.parseLong(normalizeNumberString(driver.findElementByCssSelector(watchersSeleniumAlt).getAttribute("aria-label").split(" ")[0]));
+            wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector(elementAlt)));
+            wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector(elementAlt)));
+            return Long.parseLong(normalizeNumberString(driver.findElementByCssSelector(elementAlt).getAttribute("aria-label").split(" ")[0]));
         }
     }
 
