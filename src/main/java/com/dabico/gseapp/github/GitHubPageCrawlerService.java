@@ -91,6 +91,8 @@ public class GitHubPageCrawlerService {
             contributors = parseLong(normalizeNumberString(document.select(contributorsReg).first().html()));
         } catch (NullPointerException ex){
             contributors = mineContributorsSelenium();
+        } catch (NumberFormatException ex){
+            contributors = Long.MAX_VALUE;
         }
 
         try {
@@ -139,7 +141,16 @@ public class GitHubPageCrawlerService {
 
     private long mineCommitsSelenium() { return mineWithSelenium(commitsReg,commitsAlt); }
 
-    private long mineContributorsSelenium() { return mineWithSelenium(contributorsReg,contributorsAlt); }
+    private long mineContributorsSelenium() {
+        try {
+            return mineWithSelenium(contributorsReg,contributorsAlt);
+        } catch (NumberFormatException ex){
+            if (normalizeNumberString(driver.findElementByCssSelector(contributorsAlt).getText()).equals("∞")){
+                return Long.MAX_VALUE;
+            }
+            return 0;
+        }
+    }
 
     private long mineBranchesSelenium(){ return mineWithSelenium(branchesReg,branchesAlt); }
 
