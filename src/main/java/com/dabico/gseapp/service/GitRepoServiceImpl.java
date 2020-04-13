@@ -95,14 +95,16 @@ public class GitRepoServiceImpl implements GitRepoService {
                     .toUriComponentsBuilder().scheme("http").build().toUriString();
             repoDtoListPaginated.setNext(next);
         }
-        String download = linkTo(methodOn(GitRepoController.class)
-                .downloadRepos(name,nameEquals,language,license,label,commitsMin,commitsMax,contributorsMin,
-                               contributorsMax,issuesMin,issuesMax,pullsMin,pullsMax,branchesMin,branchesMax,releasesMin,
-                               releasesMax,starsMin,starsMax,watchersMin,watchersMax,forksMin,forksMax,createdMin,
-                               createdMax,committedMin,committedMax,excludeForks,onlyForks,hasIssues,hasPulls,hasWiki,
-                               hasLicense))
-                .toUriComponentsBuilder().scheme("http").build().toUriString();
-        repoDtoListPaginated.setDownload(download);
+        if (repoDtos.size() > 0){
+            String download = linkTo(methodOn(GitRepoController.class)
+                    .downloadRepos(name,nameEquals,language,license,label,commitsMin,commitsMax,contributorsMin,
+                            contributorsMax,issuesMin,issuesMax,pullsMin,pullsMax,branchesMin,branchesMax,releasesMin,
+                            releasesMax,starsMin,starsMax,watchersMin,watchersMax,forksMin,forksMax,createdMin,
+                            createdMax,committedMin,committedMax,excludeForks,onlyForks,hasIssues,hasPulls,hasWiki,
+                            hasLicense))
+                    .toUriComponentsBuilder().scheme("http").build().toUriString();
+            repoDtoListPaginated.setDownload(download);
+        }
         return repoDtoListPaginated;
     }
 
