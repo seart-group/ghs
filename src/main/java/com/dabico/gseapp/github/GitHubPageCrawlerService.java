@@ -120,12 +120,21 @@ public class GitHubPageCrawlerService {
         } catch (NullPointerException ignored) {}
     }
 
-    private void mineCommitsPage() throws IOException {
+    private void mineCommitsPage() throws IOException { mineCommitsPage(0); }
+
+    private void mineCommitsPage(int attempt) throws IOException {
         Document document = Jsoup.connect(repoURL + "/commits").userAgent("Mozilla").followRedirects(false).get();
-        String link = document.select(commitLinkReg).first().attr("href");
-        document = Jsoup.connect(Endpoints.DEFAULT.getUrl()+"/"+link).userAgent("Mozilla").followRedirects(false).get();
-        lastCommit = fromGitDateString(document.select(commitDateReg).first().attr("datetime"));
-        lastCommitSHA = document.select(commitSHAReg).first().text();
+        try {
+            String link = document.select(commitLinkReg).first().attr("href");
+            document = Jsoup.connect(Endpoints.DEFAULT.getUrl()+"/"+link).userAgent("Mozilla").followRedirects(false).get();
+            lastCommit = fromGitDateString(document.select(commitDateReg).first().attr("datetime"));
+            lastCommitSHA = document.select(commitSHAReg).first().text();
+        } catch (NullPointerException ignored) {
+            logger.error("Mining Commits Page Failed... Retrying");
+            if (attempt < 3){
+                mineCommitsPage(++attempt);
+            }
+        }
     }
 
     private long mineCommitsSelenium() { return mineWithSelenium(commitsReg,commitsAlt); }
