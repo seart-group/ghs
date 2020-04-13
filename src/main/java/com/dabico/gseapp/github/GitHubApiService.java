@@ -21,17 +21,15 @@ public class GitHubApiService {
     @Autowired
     public GitHubApiService(){
         this.client = new OkHttpClient.Builder()
-                .connectTimeout(1, TimeUnit.MINUTES)
-                .writeTimeout(1, TimeUnit.MINUTES)
-                .readTimeout(1, TimeUnit.MINUTES)
-                .build();
+                                      .connectTimeout(1, TimeUnit.MINUTES)
+                                      .writeTimeout(1, TimeUnit.MINUTES)
+                                      .readTimeout(1, TimeUnit.MINUTES)
+                                      .build();
     }
 
-    public Response searchRepositories(String language,
-                                       DateInterval interval,
-                                       Integer page,
-                                       String token,
-                                       Boolean update) throws IOException, InterruptedException {
+    public Response searchRepositories(String language, DateInterval interval, Integer page,
+                                       String token, Boolean update) throws IOException, InterruptedException
+    {
         Response response = makeAPICall(Endpoints.SEARCH_REPOS.getUrl() +
                                                 "?q=language:" + language +
                                                 (update ? "+pushed:" : "+created:") + interval +
