@@ -3,6 +3,7 @@ package com.dabico.gseapp.util;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.TimeZone;
 
 import static org.apache.commons.lang3.time.DateUtils.*;
 
@@ -40,6 +41,7 @@ public class DateUtils {
 
     public static Date fromGitDateString(String date){
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
+        dateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
         try {
             return dateFormat.parse(date);
         } catch (ParseException ex){
