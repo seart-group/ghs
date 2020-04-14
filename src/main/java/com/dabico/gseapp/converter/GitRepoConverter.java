@@ -25,6 +25,7 @@ import org.springframework.stereotype.Service;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
+import java.time.Duration;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -68,7 +69,8 @@ public class GitRepoConverter {
 
     public GitRepo jsonToGitRepo(JsonObject json,String language) throws IOException {
         String repositoryURL = json.get("html_url").getAsString();
-        GitHubPageCrawlerService crawlerService = new GitHubPageCrawlerService(repositoryURL,driver,new WebDriverWait(driver,5));
+        WebDriverWait webDriverWait = new WebDriverWait(driver, Duration.ofSeconds(10));
+        GitHubPageCrawlerService crawlerService = new GitHubPageCrawlerService(repositoryURL,driver,webDriverWait);
         try {
             crawlerService.mine();
         } catch (HttpStatusException ex) {
