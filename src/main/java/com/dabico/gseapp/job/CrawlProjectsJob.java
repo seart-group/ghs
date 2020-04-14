@@ -19,6 +19,8 @@ import org.slf4j.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.Duration;
+import java.time.Instant;
 import java.util.*;
 
 import static com.google.gson.JsonParser.*;
@@ -65,11 +67,12 @@ public class CrawlProjectsJob {
 
     public void run() throws Exception {
         reset();
-        Date startDate = new Date();
+        Date startDate = Date.from(Instant.now().minus(Duration.ofHours(2)));
         for (String language : languages){
             Date limit = crawlJobService.getCrawlDateByLanguage(language);
             DateInterval interval;
             if (limit != null){
+                assert limit.before(startDate);
                 interval = new DateInterval(limit,startDate);
                 create(interval,language);
                 update(interval,language);
