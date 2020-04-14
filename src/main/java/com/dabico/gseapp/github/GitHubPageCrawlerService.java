@@ -40,9 +40,8 @@ public class GitHubPageCrawlerService {
     static String watchersSeleniumAlt = "#js-repo-pjax-container > div.pagehead.repohead.hx_repohead.readability-menu.bg-gray-light.pb-0.pt-3 > div > ul > li:nth-child(2) > a:nth-child(2)";
     static String openReg             = "#js-issues-toolbar > div > div > div > a:nth-child(1)";
     static String closedReg           = "#js-issues-toolbar > div > div > div > a:nth-child(2)";
-    static String commitLinkReg       = "#js-repo-pjax-container > div > div > div > ol:nth-child(2) > li > div > div > a";
-    static String commitDateReg       = "#js-repo-pjax-container > div > div > div > div > div > relative-time";
-    static String commitSHAReg        = "#js-repo-pjax-container > div > div > div > div > div > span:nth-child(2) > span";
+    static String commitDateReg       = "#js-repo-pjax-container > div > div > div > ol:nth-child(2) > li > div > div:nth-child(2) > div:nth-child(2) > relative-time";
+    static String commitSHAReg        = "#js-repo-pjax-container > div > div > div > ol > li > div > div > clipboard-copy";
 
     final String repoURL;
     final ChromeDriver driver;
@@ -122,21 +121,12 @@ public class GitHubPageCrawlerService {
         } catch (NullPointerException ignored) {}
     }
 
-    private void mineCommitsPage() throws IOException { mineCommitsPage(0); }
-
-    private void mineCommitsPage(int attempt) throws IOException {
+    private void mineCommitsPage() throws IOException {
         Document document = Jsoup.connect(repoURL + "/commits").userAgent("Mozilla").followRedirects(false).get();
         try {
-            String link = document.select(commitLinkReg).first().attr("href");
-            document = Jsoup.connect(Endpoints.DEFAULT.getUrl()+"/"+link).userAgent("Mozilla").followRedirects(false).get();
             lastCommit = fromGitDateString(document.select(commitDateReg).first().attr("datetime"));
-            lastCommitSHA = document.select(commitSHAReg).first().text();
-        } catch (NullPointerException ignored) {
-            logger.error("Mining Commits Page Failed... Retrying");
-            if (attempt < 3){
-                mineCommitsPage(++attempt);
-            }
-        }
+            lastCommitSHA = document.select(commitSHAReg).attr("value");
+        } catch (NullPointerException ignored) {}
     }
 
     private long mineCommitsSelenium() { return mineWithSelenium(commitsReg,commitsAlt); }
