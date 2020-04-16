@@ -4,6 +4,8 @@
         <!-- Required meta tags -->
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+        <meta name="description" content="GitHub Search Engine App, USI 2020 Bachelor Project">
+        <meta name="author" content="Ozren Dabić">
 
         <!-- Bootstrap CSS -->
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
@@ -36,11 +38,16 @@
         <div id="page-content">
             <div class="container-fluid text-center">
                 <div class="row justify-content-center">
-                    <form class="w-75 bg-llgray border">
+                    <form class="bg-llgray border w-75">
+                        <div class="pt-3 pl-3 pr-3 row text-left">
+                            <div class="col-12">
+                                <p class="rowlabel">General</p>
+                            </div>
+                        </div>
                         <div class="p-3 row">
                             <div class="col-6">
                                 <div class="input-group">
-                                    <input type="text" class="form-control rounded-0 bg-lgray border-secondary border-left-0 border-top-0 border-right-0">
+                                    <input type="text" name="name" class="form-control rounded-0 bg-lgray border-secondary border-left-0 border-top-0 border-right-0" placeholder="Repository name">
                                     <div class="input-group-append">
                                         <button type="button" id="match" name="nameEquals" value="false" class="btn btn-outline-secondary rounded-0 border-left-0 border-top-0 border-right-0 bg-lgray" data-toggle="dropdown">
                                             Matching <i class="fa fa-angle-down fa-lg"></i>
@@ -53,7 +60,7 @@
                                 </div>
                             </div>
                             <div class="col-2">
-                                <button type="button" name="language" value="" class="w-100 btn btn-outline-secondary rounded-0 border-left-0 border-top-0 border-right-0 bg-lgray" data-toggle="dropdown">
+                                <button type="button" name="language" value="" class="w-100 btn btn-outline-secondary rounded-0 border-left-0 border-top-0 border-right-0 bg-lgray d-flex align-items-center justify-content-between" data-toggle="dropdown">
                                     Language <i class="fa fa-angle-down fa-lg"></i>
                                 </button>
                                 <div class="dropdown-menu">
@@ -68,63 +75,365 @@
                                 </div>
                             </div>
                             <div class="col-2">
-                                <button type="button" name="license" value="" class="w-100 btn btn-outline-secondary rounded-0 border-left-0 border-top-0 border-right-0 bg-lgray" data-toggle="dropdown">
+                                <button type="button" name="license" value="" class="w-100 btn btn-outline-secondary rounded-0 border-left-0 border-top-0 border-right-0 bg-lgray d-flex align-items-center justify-content-between" data-toggle="dropdown">
                                     License <i class="fa fa-angle-down fa-lg"></i>
                                 </button>
-                                <div class="dropdown-menu">
+                                <div class="dropdown-menu pre-scrollable">
                                     <a class="dropdown-item">None</a>
+                                    <a class="dropdown-item">Academic Free License</a>
+                                    <a class="dropdown-item">Apache License</a>
+                                    <a class="dropdown-item">Artistic License</a>
+                                    <a class="dropdown-item">Boost Software License</a>
+                                    <a class="dropdown-item">BSD License</a>
+                                    <a class="dropdown-item">Creative Commons</a>
+                                    <a class="dropdown-item">Do What The F*ck You Want To Public License</a>
+                                    <a class="dropdown-item">GNU General Public License</a>
+                                    <a class="dropdown-item">GNU Lesser General Public License</a>
+                                    <a class="dropdown-item">ISC</a>
+                                    <a class="dropdown-item">LaTeX Project Public License</a>
+                                    <a class="dropdown-item">Microsoft Public License</a>
                                     <a class="dropdown-item">MIT</a>
-                                    <a class="dropdown-item">Apache</a>
-                                    <a class="dropdown-item">GNU</a>
+                                    <a class="dropdown-item">Mozilla Public License</a>
+                                    <a class="dropdown-item">Open Software License</a>
+                                    <a class="dropdown-item">PostgreSQL License</a>
+                                    <a class="dropdown-item">SIL Open Font License</a>
+                                    <a class="dropdown-item">University of Illinois/NCSA Open Source License</a>
+                                    <a class="dropdown-item">The Unlicense</a>
+                                    <a class="dropdown-item">zLib License</a>
                                     <a class="dropdown-item">Other</a>
                                 </div>
                             </div>
                             <div class="col-2">
-                                <button type="button" name="label" value="" class="w-100 btn btn-outline-secondary rounded-0 border-left-0 border-top-0 border-right-0 bg-lgray" data-toggle="dropdown">
+                                <button type="button" name="label" value="" class="w-100 btn btn-outline-secondary rounded-0 border-left-0 border-top-0 border-right-0 bg-lgray d-flex align-items-center justify-content-between" data-toggle="dropdown">
                                     Label <i class="fa fa-angle-down fa-lg"></i>
                                 </button>
-                                <div class="dropdown-menu">
+                                <div class="dropdown-menu pre-scrollable">
                                     <a class="dropdown-item">None</a>
                                     <a class="dropdown-item">Bug</a>
                                     <a class="dropdown-item">Documentation</a>
+                                    <a class="dropdown-item">Duplicate</a>
                                     <a class="dropdown-item">Enhancement</a>
                                     <a class="dropdown-item">Good First Issue</a>
+                                    <a class="dropdown-item">Help Wanted</a>
+                                    <a class="dropdown-item">Invalid</a>
+                                    <a class="dropdown-item">Question</a>
+                                    <a class="dropdown-item">Won't Fix</a>
                                 </div>
                             </div>
                         </div>
-                        <div class="p-3 row">
+                        <div class="pt-3 pl-3 pr-3 row text-left">
+                            <div class="col-8">
+                                <p class="rowlabel">History and Activity</p>
+                            </div>
+                            <div class="col-4">
+                                <p class="rowlabel">Date-based Filters</p>
+                            </div>
+                        </div>
+                        <div class="pt-3 pl-3 pr-3 row text-left">
+                            <div class="col-4">
+                                <p class="rowsublabel">Number of commits</p>
+                            </div>
+                            <div class="col-4">
+                                <p class="rowsublabel">Number of contributors</p>
+                            </div>
+                            <div class="col-4">
+                                <p class="rowsublabel">Created at</p>
+                            </div>
+                        </div>
+                        <div class="pl-3 pr-3 pb-3 pt-1 row">
                             <div class="col-2">
                                 <div class="input-group">
-                                    <input type="text" id="minCommits" name="quantity" class="form-control input-number bg-lgray border-secondary border-left-0 border-top-0 border-right-0 rounded-0" value="0" min="0" max="9223372036854775807">
-                                    <span class="input-group-btn">
-                                        <button type="button" class="quantity-right-plus btn btn-number btn-outline-secondary rounded-0 border-left-0 border-top-0 border-right-0 bg-lgray" data-type="plus" data-field="" onclick="increment('minCommits')">
-                                            <span class="fa fa-plus"></span>
-                                        </button>
+                                    <input type="text" id="commitsMin" name="commitsMin" class="form-control input-number bg-lgray border-secondary border-left-0 border-top-0 border-right-0 rounded-0" value="" min="0" max="9223372036854775807" placeholder="min">
+                                    <span class="input-group-btn input-group-btn-vertical">
+                                        <button class="btn btn-number btn-outline-secondary bg-lgray rounded-0 border-0" type="button" onclick="increment('commitsMin')"><i class="fa fa-angle-up"></i></button>
+                                        <button class="btn btn-number btn-outline-secondary bg-lgray border-secondary border-left-0 border-top-0 border-right-0 rounded-0" type="button" onclick="decrement('commitsMin')"><i class="fa fa-angle-down"></i></button>
                                     </span>
+                                </div>
+                            </div>
+                            <div class="col-2">
+                                <div class="input-group">
+                                    <input type="text" id="commitsMax" name="commitsMax" class="form-control input-number bg-lgray border-secondary border-left-0 border-top-0 border-right-0 rounded-0" value="" min="0" max="9007199254740991" placeholder="max">
+                                    <span class="input-group-btn input-group-btn-vertical">
+                                        <button class="btn btn-number btn-outline-secondary bg-lgray rounded-0 border-0" type="button" onclick="increment('commitsMax')"><i class="fa fa-angle-up"></i></button>
+                                        <button class="btn btn-number btn-outline-secondary bg-lgray border-secondary border-left-0 border-top-0 border-right-0 rounded-0" type="button" onclick="decrement('commitsMax')"><i class="fa fa-angle-down"></i></button>
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="col-2">
+                                <div class="input-group">
+                                    <input type="text" id="contributorsMin" name="contributorsMin" class="form-control input-number bg-lgray border-secondary border-left-0 border-top-0 border-right-0 rounded-0" value="" min="0" max="9223372036854775807" placeholder="min">
+                                    <span class="input-group-btn input-group-btn-vertical">
+                                        <button class="btn btn-number btn-outline-secondary bg-lgray rounded-0 border-0" type="button" onclick="increment('contributorsMin')"><i class="fa fa-angle-up"></i></button>
+                                        <button class="btn btn-number btn-outline-secondary bg-lgray border-secondary border-left-0 border-top-0 border-right-0 rounded-0" type="button" onclick="decrement('contributorsMin')"><i class="fa fa-angle-down"></i></button>
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="col-2">
+                                <div class="input-group">
+                                    <input type="text" id="contributorsMax" name="contributorsMax" class="form-control input-number bg-lgray border-secondary border-left-0 border-top-0 border-right-0 rounded-0" value="" min="0" max="9223372036854775807" placeholder="max">
+                                    <span class="input-group-btn input-group-btn-vertical">
+                                        <button class="btn btn-number btn-outline-secondary bg-lgray rounded-0 border-0" type="button" onclick="increment('contributorsMax')"><i class="fa fa-angle-up"></i></button>
+                                        <button class="btn btn-number btn-outline-secondary bg-lgray border-secondary border-left-0 border-top-0 border-right-0 rounded-0" type="button" onclick="decrement('contributorsMax')"><i class="fa fa-angle-down"></i></button>
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="col-2">
+                                <div class="input-group">
+                                    <input type="text" id="createdMin" name="createdMin" class="form-control input-number bg-lgray border-secondary border-left-0 border-top-0 border-right-0 rounded-0" value="" placeholder="after">
                                     <span class="input-group-btn">
-                                        <button type="button" class="quantity-left-minus btn btn-number btn-outline-secondary rounded-0 border-left-0 border-top-0 border-right-0 bg-lgray"  data-type="minus" data-field="" onclick="decrement('minCommits')">
-                                            <span class="fa fa-minus"></span>
+                                        <button type="button" class="btn btn-number btn-outline-secondary rounded-0 border-left-0 border-top-0 border-right-0 bg-lgray">
+                                            <span class="fa fa-calendar-o"></span>
                                         </button>
                                     </span>
                                 </div>
                             </div>
                             <div class="col-2">
                                 <div class="input-group">
-                                    <input type="text" id="maxCommits" name="quantity" class="form-control input-number bg-lgray border-secondary border-left-0 border-top-0 border-right-0 rounded-0" value="0" min="0" max="9007199254740991">
+                                    <input type="text" id="createdMax" name="createdMax" class="form-control input-number bg-lgray border-secondary border-left-0 border-top-0 border-right-0 rounded-0" value="" placeholder="before">
                                     <span class="input-group-btn">
-                                        <button type="button" class="quantity-right-plus btn btn-number btn-outline-secondary rounded-0 border-left-0 border-top-0 border-right-0 bg-lgray" data-type="plus" data-field="" onclick="increment('maxCommits')">
-                                            <span class="fa fa-plus"></span>
-                                        </button>
-                                    </span>
-                                    <span class="input-group-btn">
-                                        <button type="button" class="quantity-left-minus btn btn-number btn-outline-secondary rounded-0 border-left-0 border-top-0 border-right-0 bg-lgray"  data-type="minus" data-field="" onclick="decrement('maxCommits')">
-                                            <span class="fa fa-minus"></span>
+                                        <button type="button" class="btn btn-number btn-outline-secondary rounded-0 border-left-0 border-top-0 border-right-0 bg-lgray">
+                                            <span class="fa fa-calendar-o"></span>
                                         </button>
                                     </span>
                                 </div>
                             </div>
                         </div>
-                        <div class="p-3 row"></div>
+                        <div class="pl-3 pr-3 row text-left">
+                            <div class="col-4">
+                                <p class="rowsublabel">Number of issues</p>
+                            </div>
+                            <div class="col-4">
+                                <p class="rowsublabel">Number of pull requests</p>
+                            </div>
+                            <div class="col-4">
+                                <p class="rowsublabel">Last commit at</p>
+                            </div>
+                        </div>
+                        <div class="pl-3 pr-3 pb-3 pt-1 row">
+                            <div class="col-2">
+                                <div class="input-group">
+                                    <input type="text" id="issuesMin" name="issuesMin" class="form-control input-number bg-lgray border-secondary border-left-0 border-top-0 border-right-0 rounded-0" value="" min="0" max="9223372036854775807" placeholder="min">
+                                    <span class="input-group-btn input-group-btn-vertical">
+                                        <button class="btn btn-number btn-outline-secondary bg-lgray rounded-0 border-0" type="button" onclick="increment('issuesMin')"><i class="fa fa-angle-up"></i></button>
+                                        <button class="btn btn-number btn-outline-secondary bg-lgray border-secondary border-left-0 border-top-0 border-right-0 rounded-0" type="button" onclick="decrement('issuesMin')"><i class="fa fa-angle-down"></i></button>
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="col-2">
+                                <div class="input-group">
+                                    <input type="text" id="issuesMax" name="issuesMax" class="form-control input-number bg-lgray border-secondary border-left-0 border-top-0 border-right-0 rounded-0" value="" min="0" max="9007199254740991" placeholder="max">
+                                    <span class="input-group-btn input-group-btn-vertical">
+                                        <button class="btn btn-number btn-outline-secondary bg-lgray rounded-0 border-0" type="button" onclick="increment('issuesMax')"><i class="fa fa-angle-up"></i></button>
+                                        <button class="btn btn-number btn-outline-secondary bg-lgray border-secondary border-left-0 border-top-0 border-right-0 rounded-0" type="button" onclick="decrement('issuesMax')"><i class="fa fa-angle-down"></i></button>
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="col-2">
+                                <div class="input-group">
+                                    <input type="text" id="pullsMin" name="pullsMin" class="form-control input-number bg-lgray border-secondary border-left-0 border-top-0 border-right-0 rounded-0" value="" min="0" max="9223372036854775807" placeholder="min">
+                                    <span class="input-group-btn input-group-btn-vertical">
+                                        <button class="btn btn-number btn-outline-secondary bg-lgray rounded-0 border-0" type="button" onclick="increment('pullsMin')"><i class="fa fa-angle-up"></i></button>
+                                        <button class="btn btn-number btn-outline-secondary bg-lgray border-secondary border-left-0 border-top-0 border-right-0 rounded-0" type="button" onclick="decrement('pullsMin')"><i class="fa fa-angle-down"></i></button>
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="col-2">
+                                <div class="input-group">
+                                    <input type="text" id="pullsMax" name="pullsMax" class="form-control input-number bg-lgray border-secondary border-left-0 border-top-0 border-right-0 rounded-0" value="" min="0" max="9223372036854775807" placeholder="max">
+                                    <span class="input-group-btn input-group-btn-vertical">
+                                        <button class="btn btn-number btn-outline-secondary bg-lgray rounded-0 border-0" type="button" onclick="increment('pullsMax')"><i class="fa fa-angle-up"></i></button>
+                                        <button class="btn btn-number btn-outline-secondary bg-lgray border-secondary border-left-0 border-top-0 border-right-0 rounded-0" type="button" onclick="decrement('pullsMax')"><i class="fa fa-angle-down"></i></button>
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="col-2">
+                                <div class="input-group">
+                                    <input type="text" id="committedMin" name="committedMin" class="form-control input-number bg-lgray border-secondary border-left-0 border-top-0 border-right-0 rounded-0" value="" placeholder="after">
+                                    <span class="input-group-btn">
+                                        <button type="button" class="btn btn-number btn-outline-secondary rounded-0 border-left-0 border-top-0 border-right-0 bg-lgray">
+                                            <span class="fa fa-calendar-o"></span>
+                                        </button>
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="col-2">
+                                <div class="input-group">
+                                    <input type="text" id="committedMax" name="committedMax" class="form-control input-number bg-lgray border-secondary border-left-0 border-top-0 border-right-0 rounded-0" value="" placeholder="before">
+                                    <span class="input-group-btn">
+                                        <button type="button" class="btn btn-number btn-outline-secondary rounded-0 border-left-0 border-top-0 border-right-0 bg-lgray">
+                                            <span class="fa fa-calendar-o"></span>
+                                        </button>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="pl-3 pr-3 row text-left">
+                            <div class="col-4">
+                                <p class="rowsublabel">Number of branches</p>
+                            </div>
+                            <div class="col-4">
+                                <p class="rowsublabel">Number of releases</p>
+                            </div>
+                        </div>
+                        <div class="pl-3 pr-3 pb-3 pt-1 row">
+                            <div class="col-2">
+                                <div class="input-group">
+                                    <input type="text" id="branchesMin" name="branchesMin" class="form-control input-number bg-lgray border-secondary border-left-0 border-top-0 border-right-0 rounded-0" value="" min="0" max="9223372036854775807" placeholder="min">
+                                    <span class="input-group-btn input-group-btn-vertical">
+                                        <button class="btn btn-number btn-outline-secondary bg-lgray rounded-0 border-0" type="button" onclick="increment('branchesMin')"><i class="fa fa-angle-up"></i></button>
+                                        <button class="btn btn-number btn-outline-secondary bg-lgray border-secondary border-left-0 border-top-0 border-right-0 rounded-0" type="button" onclick="decrement('branchesMin')"><i class="fa fa-angle-down"></i></button>
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="col-2">
+                                <div class="input-group">
+                                    <input type="text" id="branchesMax" name="branchesMax" class="form-control input-number bg-lgray border-secondary border-left-0 border-top-0 border-right-0 rounded-0" value="" min="0" max="9007199254740991" placeholder="max">
+                                    <span class="input-group-btn input-group-btn-vertical">
+                                        <button class="btn btn-number btn-outline-secondary bg-lgray rounded-0 border-0" type="button" onclick="increment('branchesMax')"><i class="fa fa-angle-up"></i></button>
+                                        <button class="btn btn-number btn-outline-secondary bg-lgray border-secondary border-left-0 border-top-0 border-right-0 rounded-0" type="button" onclick="decrement('branchesMax')"><i class="fa fa-angle-down"></i></button>
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="col-2">
+                                <div class="input-group">
+                                    <input type="text" id="releasesMin" name="releasesMin" class="form-control input-number bg-lgray border-secondary border-left-0 border-top-0 border-right-0 rounded-0" value="" min="0" max="9223372036854775807" placeholder="min">
+                                    <span class="input-group-btn input-group-btn-vertical">
+                                        <button class="btn btn-number btn-outline-secondary bg-lgray rounded-0 border-0" type="button" onclick="increment('releasesMin')"><i class="fa fa-angle-up"></i></button>
+                                        <button class="btn btn-number btn-outline-secondary bg-lgray border-secondary border-left-0 border-top-0 border-right-0 rounded-0" type="button" onclick="decrement('releasesMin')"><i class="fa fa-angle-down"></i></button>
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="col-2">
+                                <div class="input-group">
+                                    <input type="text" id="releasesMax" name="releasesMax" class="form-control input-number bg-lgray border-secondary border-left-0 border-top-0 border-right-0 rounded-0" value="" min="0" max="9223372036854775807" placeholder="max">
+                                    <span class="input-group-btn input-group-btn-vertical">
+                                        <button class="btn btn-number btn-outline-secondary bg-lgray rounded-0 border-0" type="button" onclick="increment('releasesMax')"><i class="fa fa-angle-up"></i></button>
+                                        <button class="btn btn-number btn-outline-secondary bg-lgray border-secondary border-left-0 border-top-0 border-right-0 rounded-0" type="button" onclick="decrement('releasesMax')"><i class="fa fa-angle-down"></i></button>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="p-3 row text-left">
+                            <div class="col-8">
+                                <p class="rowlabel">Popularity Filters</p>
+                            </div>
+                            <div class="col-4">
+                                <p class="rowlabel">Additional Filters</p>
+                            </div>
+                        </div>
+                        <div class="pl-3 pr-3 row text-left">
+                            <div class="col-4">
+                                <p class="rowsublabel">Number of stars</p>
+                            </div>
+                            <div class="col-4">
+                                <p class="rowsublabel">Number of watchers</p>
+                            </div>
+                            <div class="col-4">
+                                <div class="form-check text-left">
+                                    <label class="form-check-label">
+                                        <input type="checkbox" class="form-check-input" name="onlyForks" value="true" onchange="checkOnlyForked()"> Only forked projects
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="pl-3 pr-3 row">
+                            <div class="col-2">
+                                <div class="input-group">
+                                    <input type="text" id="starsMin" name="starsMin" class="form-control input-number bg-lgray border-secondary border-left-0 border-top-0 border-right-0 rounded-0" value="" min="0" max="9223372036854775807" placeholder="min">
+                                    <span class="input-group-btn input-group-btn-vertical">
+                                        <button class="btn btn-number btn-outline-secondary bg-lgray rounded-0 border-0" type="button" onclick="increment('starsMin')"><i class="fa fa-angle-up"></i></button>
+                                        <button class="btn btn-number btn-outline-secondary bg-lgray border-secondary border-left-0 border-top-0 border-right-0 rounded-0" type="button" onclick="decrement('starsMin')"><i class="fa fa-angle-down"></i></button>
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="col-2">
+                                <div class="input-group">
+                                    <input type="text" id="starsMax" name="starsMax" class="form-control input-number bg-lgray border-secondary border-left-0 border-top-0 border-right-0 rounded-0" value="" min="0" max="9007199254740991" placeholder="max">
+                                    <span class="input-group-btn input-group-btn-vertical">
+                                        <button class="btn btn-number btn-outline-secondary bg-lgray rounded-0 border-0" type="button" onclick="increment('starsMax')"><i class="fa fa-angle-up"></i></button>
+                                        <button class="btn btn-number btn-outline-secondary bg-lgray border-secondary border-left-0 border-top-0 border-right-0 rounded-0" type="button" onclick="decrement('starsMax')"><i class="fa fa-angle-down"></i></button>
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="col-2">
+                                <div class="input-group">
+                                    <input type="text" id="watchersMin" name="watchersMin" class="form-control input-number bg-lgray border-secondary border-left-0 border-top-0 border-right-0 rounded-0" value="" min="0" max="9223372036854775807" placeholder="min">
+                                    <span class="input-group-btn input-group-btn-vertical">
+                                        <button class="btn btn-number btn-outline-secondary bg-lgray rounded-0 border-0" type="button" onclick="increment('watchersMin')"><i class="fa fa-angle-up"></i></button>
+                                        <button class="btn btn-number btn-outline-secondary bg-lgray border-secondary border-left-0 border-top-0 border-right-0 rounded-0" type="button" onclick="decrement('watchersMin')"><i class="fa fa-angle-down"></i></button>
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="col-2">
+                                <div class="input-group">
+                                    <input type="text" id="watchersMax" name="watchersMax" class="form-control input-number bg-lgray border-secondary border-left-0 border-top-0 border-right-0 rounded-0" value="" min="0" max="9223372036854775807" placeholder="max">
+                                    <span class="input-group-btn input-group-btn-vertical">
+                                        <button class="btn btn-number btn-outline-secondary bg-lgray rounded-0 border-0" type="button" onclick="increment('watchersMax')"><i class="fa fa-angle-up"></i></button>
+                                        <button class="btn btn-number btn-outline-secondary bg-lgray border-secondary border-left-0 border-top-0 border-right-0 rounded-0" type="button" onclick="decrement('watchersMax')"><i class="fa fa-angle-down"></i></button>
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="col-4">
+                                <div class="form-check text-left">
+                                    <label class="form-check-label">
+                                        <input type="checkbox" class="form-check-input" name="excludeForks" value="true" onchange="checkExcludeForked()"> Exclude forked projects
+                                    </label>
+                                </div>
+                                <div class="form-check text-left">
+                                    <label class="form-check-label">
+                                        <input type="checkbox" class="form-check-input" name="hasIssues" value="true"> Has Open Issues
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="pl-3 pr-3 row text-left">
+                            <div class="col-4">
+                                <p class="rowsublabel">Number of forks</p>
+                            </div>
+                            <div class="col-4"> </div>
+                            <div class="col-4">
+                                <div class="form-check text-left">
+                                    <label class="form-check-label">
+                                        <input type="checkbox" class="form-check-input" name="hasPulls" value="true"> Has Open Pull Requests
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="pl-3 pr-3 pb-3 row">
+                            <div class="col-2">
+                                <div class="input-group">
+                                    <input type="text" id="forksMin" name="forksMin" class="form-control input-number bg-lgray border-secondary border-left-0 border-top-0 border-right-0 rounded-0" value="" min="0" max="9223372036854775807" placeholder="min">
+                                    <span class="input-group-btn input-group-btn-vertical">
+                                        <button class="btn btn-number btn-outline-secondary bg-lgray rounded-0 border-0" type="button" onclick="increment('forksMin')"><i class="fa fa-angle-up"></i></button>
+                                        <button class="btn btn-number btn-outline-secondary bg-lgray border-secondary border-left-0 border-top-0 border-right-0 rounded-0" type="button" onclick="decrement('forksMin')"><i class="fa fa-angle-down"></i></button>
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="col-2">
+                                <div class="input-group">
+                                    <input type="text" id="forksMax" name="forksMax" class="form-control input-number bg-lgray border-secondary border-left-0 border-top-0 border-right-0 rounded-0" value="" min="0" max="9007199254740991" placeholder="max">
+                                    <span class="input-group-btn input-group-btn-vertical">
+                                        <button class="btn btn-number btn-outline-secondary bg-lgray rounded-0 border-0" type="button" onclick="increment('forksMax')"><i class="fa fa-angle-up"></i></button>
+                                        <button class="btn btn-number btn-outline-secondary bg-lgray border-secondary border-left-0 border-top-0 border-right-0 rounded-0" type="button" onclick="decrement('forksMax')"><i class="fa fa-angle-down"></i></button>
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="col-4">
+                                <button type="submit" class="w-50 btn btn-secondary border-dark text-center">Submit</button>
+                            </div>
+                            <div class="col-4">
+                                <div class="form-check text-left">
+                                    <label class="form-check-label">
+                                        <input type="checkbox" class="form-check-input" name="hasWiki" value="true"> Has Wiki
+                                    </label>
+                                </div>
+                                <div class="form-check text-left">
+                                    <label class="form-check-label">
+                                        <input type="checkbox" class="form-check-input" name="hasLicense" value="true"> Has License
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
                     </form>
                 </div>
             </div>
@@ -170,6 +479,22 @@
                     value--;
                 }
                 document.getElementById(elementId).value = value;
+            }
+            
+            function checkOnlyForked() {
+                let excludeForks = document.getElementsByName("excludeForks")[0];
+                let onlyForks = document.getElementsByName("onlyForks")[0];
+                if (onlyForks.checked === true && excludeForks.checked === true){
+                    excludeForks.checked = false;
+                }
+            }
+
+            function checkExcludeForked() {
+                let excludeForks = document.getElementsByName("excludeForks")[0];
+                let onlyForks = document.getElementsByName("onlyForks")[0];
+                if (excludeForks.checked === true && onlyForks.checked === true){
+                    onlyForks.checked = false;
+                }
             }
         </script>
     </body>
