@@ -502,12 +502,9 @@
                 if (lang === "None") {
                     lang_btn.value = "";
                     lang_btn.innerHTML = "Language <i class=\"fa fa-angle-down fa-lg\"></i>";
-                } else if (lang === "CPP") {
-                    lang_btn.value = lang;
-                    lang_btn.innerHTML = "C++ <i class=\"fa fa-angle-down fa-lg\"></i>";
                 } else {
                     lang_btn.value = lang;
-                    lang_btn.innerHTML = lang + " <i class=\"fa fa-angle-down fa-lg\"></i>";
+                    lang_btn.innerHTML = ((lang === "CPP") ? "C++" : lang) + " <i class=\"fa fa-angle-down fa-lg\"></i>";
                 }
             }
         </script>
