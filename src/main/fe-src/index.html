@@ -60,18 +60,18 @@
                                 </div>
                             </div>
                             <div class="col-2">
-                                <button type="button" name="language" value="" class="w-100 btn btn-outline-secondary rounded-0 border-left-0 border-top-0 border-right-0 bg-lgray d-flex align-items-center justify-content-between" data-toggle="dropdown">
+                                <button type="button" id="language" name="language" value="" class="w-100 btn btn-outline-secondary rounded-0 border-left-0 border-top-0 border-right-0 bg-lgray d-flex align-items-center justify-content-between" data-toggle="dropdown">
                                     Language <i class="fa fa-angle-down fa-lg"></i>
                                 </button>
                                 <div class="dropdown-menu">
-                                    <a class="dropdown-item">None</a>
-                                    <a class="dropdown-item">Java</a>
-                                    <a class="dropdown-item">Kotlin</a>
-                                    <a class="dropdown-item">Python</a>
-                                    <a class="dropdown-item">C</a>
-                                    <a class="dropdown-item">C++</a>
-                                    <a class="dropdown-item">JavaScript</a>
-                                    <a class="dropdown-item">TypeScript</a>
+                                    <a class="dropdown-item" onclick="changeLanguage('None')">None</a>
+                                    <a class="dropdown-item" onclick="changeLanguage('Java')">Java</a>
+                                    <a class="dropdown-item" onclick="changeLanguage('Kotlin')">Kotlin</a>
+                                    <a class="dropdown-item" onclick="changeLanguage('Python')">Python</a>
+                                    <a class="dropdown-item" onclick="changeLanguage('C')">C</a>
+                                    <a class="dropdown-item" onclick="changeLanguage('CPP')">C++</a>
+                                    <a class="dropdown-item" onclick="changeLanguage('JavaScript')">JavaScript</a>
+                                    <a class="dropdown-item" onclick="changeLanguage('TypeScript')">TypeScript</a>
                                 </div>
                             </div>
                             <div class="col-2">
@@ -494,6 +494,20 @@
                 let onlyForks = document.getElementsByName("onlyForks")[0];
                 if (excludeForks.checked === true && onlyForks.checked === true){
                     onlyForks.checked = false;
+                }
+            }
+
+            function changeLanguage(lang) {
+                let lang_btn = document.getElementById("language");
+                if (lang === "None") {
+                    lang_btn.value = "";
+                    lang_btn.innerHTML = "Language <i class=\"fa fa-angle-down fa-lg\"></i>";
+                } else if (lang === "CPP") {
+                    lang_btn.value = lang;
+                    lang_btn.innerHTML = "C++ <i class=\"fa fa-angle-down fa-lg\"></i>";
+                } else {
+                    lang_btn.value = lang;
+                    lang_btn.innerHTML = lang + " <i class=\"fa fa-angle-down fa-lg\"></i>";
                 }
             }
         </script>
