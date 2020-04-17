@@ -8,8 +8,11 @@
         <meta name="author" content="Ozren Dabić">
 
         <!-- Bootstrap CSS -->
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.8.0/css/bootstrap-datepicker.min.css" />
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.8.0/js/bootstrap-datepicker.min.js"></script>
         <link rel="stylesheet" type="text/css" href="main.css">
         <title>GitHub Search</title>
     </head>
@@ -178,20 +181,20 @@
                                 </div>
                             </div>
                             <div class="col-2">
-                                <div class="input-group">
+                                <div class="input-group date" data-date-format="yyyy-mm-dd">
                                     <input type="text" id="createdMin" name="createdMin" class="form-control input-number bg-lgray border-secondary border-left-0 border-top-0 border-right-0 rounded-0" value="" placeholder="after">
                                     <span class="input-group-btn">
-                                        <button type="button" class="btn btn-number btn-outline-secondary rounded-0 border-left-0 border-top-0 border-right-0 bg-lgray">
+                                        <button type="button" id="btnCreatedMin" class="btn btn-number btn-outline-secondary rounded-0 border-left-0 border-top-0 border-right-0 bg-lgray">
                                             <span class="fa fa-calendar-o"></span>
                                         </button>
                                     </span>
                                 </div>
                             </div>
                             <div class="col-2">
-                                <div class="input-group">
+                                <div class="input-group date" data-date-format="yyyy-mm-dd">
                                     <input type="text" id="createdMax" name="createdMax" class="form-control input-number bg-lgray border-secondary border-left-0 border-top-0 border-right-0 rounded-0" value="" placeholder="before">
                                     <span class="input-group-btn">
-                                        <button type="button" class="btn btn-number btn-outline-secondary rounded-0 border-left-0 border-top-0 border-right-0 bg-lgray">
+                                        <button type="button" id="btnCreatedMax" class="btn btn-number btn-outline-secondary rounded-0 border-left-0 border-top-0 border-right-0 bg-lgray">
                                             <span class="fa fa-calendar-o"></span>
                                         </button>
                                     </span>
@@ -247,20 +250,20 @@
                                 </div>
                             </div>
                             <div class="col-2">
-                                <div class="input-group">
+                                <div class="input-group date" data-date-format="yyyy-mm-dd">
                                     <input type="text" id="committedMin" name="committedMin" class="form-control input-number bg-lgray border-secondary border-left-0 border-top-0 border-right-0 rounded-0" value="" placeholder="after">
                                     <span class="input-group-btn">
-                                        <button type="button" class="btn btn-number btn-outline-secondary rounded-0 border-left-0 border-top-0 border-right-0 bg-lgray">
+                                        <button type="button" id="btnCommittedMin" class="btn btn-number btn-outline-secondary rounded-0 border-left-0 border-top-0 border-right-0 bg-lgray">
                                             <span class="fa fa-calendar-o"></span>
                                         </button>
                                     </span>
                                 </div>
                             </div>
                             <div class="col-2">
-                                <div class="input-group">
+                                <div class="input-group date" data-date-format="yyyy-mm-dd">
                                     <input type="text" id="committedMax" name="committedMax" class="form-control input-number bg-lgray border-secondary border-left-0 border-top-0 border-right-0 rounded-0" value="" placeholder="before">
                                     <span class="input-group-btn">
-                                        <button type="button" class="btn btn-number btn-outline-secondary rounded-0 border-left-0 border-top-0 border-right-0 bg-lgray">
+                                        <button type="button" id="btnCommittedMax" class="btn btn-number btn-outline-secondary rounded-0 border-left-0 border-top-0 border-right-0 bg-lgray">
                                             <span class="fa fa-calendar-o"></span>
                                         </button>
                                     </span>
@@ -447,7 +450,6 @@
 
         <!-- Optional JavaScript -->
         <!-- jQuery first, then Popper.js, then Bootstrap JS -->
-        <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
         <script>
@@ -507,6 +509,46 @@
                     lang_btn.innerHTML = ((lang === "CPP") ? "C++" : lang) + " <i class=\"fa fa-angle-down fa-lg\"></i>";
                 }
             }
+        </script>
+        <script>
+            $(document).ready(function(){
+                const options = {
+                    format: 'yyyy/mm/dd',
+                    autoclose: true
+                };
+                $('#btnCreatedMin').datepicker(options).on('changeDate', function(ev) {
+                    let year = ev.date.getFullYear();
+                    let month = ("0" + (ev.date.getMonth() + 1)).slice(-2);
+                    let date = ("0" + (ev.date.getDate())).slice(-2);
+                    $('#btnCreatedMin').datepicker('hide');
+                    $('#createdMin').val(year+"-"+month+"-"+date);
+                    $('#btnCreatedMin').datepicker('clearDates');
+                });
+                $('#btnCreatedMax').datepicker(options).on('changeDate', function(ev) {
+                    let year = ev.date.getFullYear();
+                    let month = ("0" + (ev.date.getMonth() + 1)).slice(-2);
+                    let date = ("0" + (ev.date.getDate())).slice(-2);
+                    $('#btnCreatedMax').datepicker('hide');
+                    $('#createdMax').val(year+"-"+month+"-"+date);
+                    $('#btnCreatedMax').datepicker('clearDates');
+                });
+                $('#btnCommittedMin').datepicker(options).on('changeDate', function(ev) {
+                    let year = ev.date.getFullYear();
+                    let month = ("0" + (ev.date.getMonth() + 1)).slice(-2);
+                    let date = ("0" + (ev.date.getDate())).slice(-2);
+                    $('#btnCommittedMin').datepicker('hide');
+                    $('#committedMin').val(year+"-"+month+"-"+date);
+                    $('#btnCommittedMin').datepicker('clearDates');
+                });
+                $('#btnCommittedMax').datepicker(options).on('changeDate', function(ev) {
+                    let year = ev.date.getFullYear();
+                    let month = ("0" + (ev.date.getMonth() + 1)).slice(-2);
+                    let date = ("0" + (ev.date.getDate())).slice(-2);
+                    $('#btnCommittedMax').datepicker('hide');
+                    $('#committedMax').val(year+"-"+month+"-"+date);
+                    $('#btnCommittedMax').datepicker('clearDates');
+                });
+            })
         </script>
     </body>
 </html>
