@@ -4,13 +4,11 @@ html,body {
     height: 100%;
 }
 
-h1,h3,a,p,blockquote,pre,button,input,label {
+h1,h2,h3,h4,h5,a,p,blockquote,pre,button,input,label {
     font-family: "Trebuchet MS", "Lucida Grande", "Lucida Sans Unicode", "Lucida Sans", Tahoma, sans-serif;
     font-style: normal;
     font-variant: normal;
     margin: 0;
-    margin-block: 0;
-    margin-inline: 0;
 }
 
 h1 {
@@ -32,6 +30,7 @@ a {
 }
 
 a:hover {
+    color: #303000;
     cursor: pointer;
 }
 
@@ -70,7 +69,26 @@ input {
     background-color: grey;
 }
 
+#page-content {
+    background-image: url("public/img/logo-bg.png");
+    background-size: 200px;
+    background-position: bottom right;
+    background-repeat: no-repeat;
+}
+
 /* CLASSES */
+
+.b-2 {
+    border-width:2px !important;
+}
+
+.pr-4-5 {
+    padding-right: 36px !important;
+}
+
+.bg-dgray {
+    background-color: #303000;
+}
 
 .bg-lgray {
     background-color: #E6E6E6;
@@ -78,6 +96,10 @@ input {
 
 .bg-llgray {
     background-color: #F2F2F2;
+}
+
+.bg-llgray-transparent {
+    background-color: #F2F2F2EE;
 }
 
 .btn {
@@ -90,9 +112,27 @@ input {
     box-shadow: none;
 }
 
+a.dropdown-item {
+    text-decoration: none;
+}
+
 .dropdown-menu {
     max-height: 210px;
     overflow-y: auto;
+}
+
+.form-check label {
+    display: inline-block;
+    padding-right: 10px;
+    white-space: nowrap;
+}
+
+.form-check input {
+    vertical-align: middle;
+}
+
+.form-check label span {
+    vertical-align: middle;
 }
 
 .input-group-btn-vertical {
@@ -118,18 +158,37 @@ input {
     left: 4px;
 }
 
-.navbar-brand {
+.modal-dialog {
+    overflow-y: initial !important
+}
+.modal-body {
+    max-height: 80vh;
+    overflow-y: auto;
+}
+
+h1.navbar-brand {
     margin: 0;
     font-weight: bold;
     font-size: 80px;
+}
+
+h3.navbar-brand {
+    margin: 0;
+    font-weight: bold;
+    font-size: 30px;
 }
 
 .navbar-collapse {
     justify-content: flex-end;
 }
 
-.nav-link:hover {
+.nav-item {
+    color: grey;
     text-decoration: underline;
+}
+
+.nav-item:hover {
+    color: #303000;
 }
 
 .rowlabel {
@@ -143,4 +202,13 @@ input {
 
 .text-gray {
     color: grey;
+}
+
+.text-lgray {
+    color: #B3B3B3;
+}
+
+ul.typeahead {
+    width: inherit;
+    border-radius: 0;
 }

@@ -6,6 +6,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
         <meta name="description" content="GitHub Search Engine App, USI 2020 Bachelor Project">
         <meta name="author" content="Ozren Dabić">
+        <link rel="icon" type="image/png" href="public/img/logo-32.png">
 
         <!-- Bootstrap CSS -->
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
@@ -13,137 +14,106 @@
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.8.0/css/bootstrap-datepicker.min.css" />
         <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.8.0/js/bootstrap-datepicker.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-3-typeahead/4.0.2/bootstrap3-typeahead.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.3/dist/Chart.min.js"></script>
         <link rel="stylesheet" type="text/css" href="main.css">
         <title>GitHub Search</title>
     </head>
 
     <body class="d-flex flex-column">
-        <nav class="navbar navbar-expand-md">
-            <h1 class="navbar-brand">DEVINTA</h1>
+        <nav class="navbar navbar-expand-md py-0 d-flex align-items-start">
+            <div>
+                <div style="height: 80px">
+                    <h1 class="navbar-brand pr-4-5">DEVINTA</h1>
+                </div>
+                <div class="text-right" style="height: 30px">
+                    <h3 class="navbar-brand text-lgray pt-3">GitHub Search</h3>
+                </div>
+            </div>
             <button class="navbar-toggler navbar-dark" type="button" data-toggle="collapse" data-target="#main-navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
-            <div class="collapse navbar-collapse" id="main-navigation">
+            <div class="collapse navbar-collapse py-3 pl-3" id="main-navigation">
                 <ul class="navbar-nav">
-                    <li class="nav-item">
-                        <a class="nav-link" href="#">Stats</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#">Instructions</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#">How It Works</a>
-                    </li>
+                    <li class="nav-item"><a class="nav-link" data-toggle="modal" data-target="#statsModal">Stats</a></li>
+                    <li class="nav-item"><a class="nav-link">Instructions</a></li>
+                    <li class="nav-item"><a class="nav-link">How It Works</a></li>
                 </ul>
             </div>
         </nav>
 
-        <div id="page-content">
+        <div class="modal fade" id="statsModal" tabindex="-1" role="dialog" aria-labelledby="statsModalTitle" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-lg" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="statsModalTitle">Stats</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <canvas id="myChart" class="w-100"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="page-content" class="py-5">
             <div class="container-fluid text-center">
                 <div class="row justify-content-center">
-                    <form class="bg-llgray border w-75">
-                        <div class="pt-3 pl-3 pr-3 row text-left">
+                    <form id="form" autocomplete="off" class="w-75 bg-llgray-transparent border bg-tra">
+                        <div class="px-3 pt-3 row text-left">
                             <div class="col-12">
-                                <p class="rowlabel">General</p>
+                                <h1 class="rowlabel">General</h1>
                             </div>
                         </div>
                         <div class="p-3 row">
-                            <div class="col-6">
+                            <div class="col-8">
                                 <div class="input-group">
-                                    <input type="text" name="name" class="form-control rounded-0 bg-lgray border-secondary border-left-0 border-top-0 border-right-0" placeholder="Repository name">
+                                    <input type="text" id="name" name="name" class="form-control rounded-0 bg-lgray border-secondary border-left-0 border-top-0 border-right-0" placeholder="Repository name">
                                     <div class="input-group-append">
                                         <button type="button" id="match" name="nameEquals" value="false" class="btn btn-outline-secondary rounded-0 border-left-0 border-top-0 border-right-0 bg-lgray" data-toggle="dropdown">
                                             Matching <i class="fa fa-angle-down fa-lg"></i>
                                         </button>
-                                        <div class="dropdown-menu">
+                                        <div class="dropdown-menu dropdown-menu-right rounded-0">
                                             <a class="dropdown-item" onclick="changeToContains()">Contains</a>
                                             <a class="dropdown-item" onclick="changeToEquals()">Equals</a>
                                         </div>
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-2">
-                                <button type="button" id="language" name="language" value="" class="w-100 btn btn-outline-secondary rounded-0 border-left-0 border-top-0 border-right-0 bg-lgray d-flex align-items-center justify-content-between" data-toggle="dropdown">
-                                    Language <i class="fa fa-angle-down fa-lg"></i>
-                                </button>
-                                <div class="dropdown-menu">
-                                    <a class="dropdown-item" onclick="changeLanguage('None')">None</a>
-                                    <a class="dropdown-item" onclick="changeLanguage('Java')">Java</a>
-                                    <a class="dropdown-item" onclick="changeLanguage('Kotlin')">Kotlin</a>
-                                    <a class="dropdown-item" onclick="changeLanguage('Python')">Python</a>
-                                    <a class="dropdown-item" onclick="changeLanguage('C')">C</a>
-                                    <a class="dropdown-item" onclick="changeLanguage('CPP')">C++</a>
-                                    <a class="dropdown-item" onclick="changeLanguage('JavaScript')">JavaScript</a>
-                                    <a class="dropdown-item" onclick="changeLanguage('TypeScript')">TypeScript</a>
-                                </div>
-                            </div>
-                            <div class="col-2">
-                                <button type="button" name="license" value="" class="w-100 btn btn-outline-secondary rounded-0 border-left-0 border-top-0 border-right-0 bg-lgray d-flex align-items-center justify-content-between" data-toggle="dropdown">
-                                    License <i class="fa fa-angle-down fa-lg"></i>
-                                </button>
-                                <div class="dropdown-menu pre-scrollable">
-                                    <a class="dropdown-item">None</a>
-                                    <a class="dropdown-item">Academic Free License</a>
-                                    <a class="dropdown-item">Apache License</a>
-                                    <a class="dropdown-item">Artistic License</a>
-                                    <a class="dropdown-item">Boost Software License</a>
-                                    <a class="dropdown-item">BSD License</a>
-                                    <a class="dropdown-item">Creative Commons</a>
-                                    <a class="dropdown-item">Do What The F*ck You Want To Public License</a>
-                                    <a class="dropdown-item">GNU General Public License</a>
-                                    <a class="dropdown-item">GNU Lesser General Public License</a>
-                                    <a class="dropdown-item">ISC</a>
-                                    <a class="dropdown-item">LaTeX Project Public License</a>
-                                    <a class="dropdown-item">Microsoft Public License</a>
-                                    <a class="dropdown-item">MIT</a>
-                                    <a class="dropdown-item">Mozilla Public License</a>
-                                    <a class="dropdown-item">Open Software License</a>
-                                    <a class="dropdown-item">PostgreSQL License</a>
-                                    <a class="dropdown-item">SIL Open Font License</a>
-                                    <a class="dropdown-item">University of Illinois/NCSA Open Source License</a>
-                                    <a class="dropdown-item">The Unlicense</a>
-                                    <a class="dropdown-item">zLib License</a>
-                                    <a class="dropdown-item">Other</a>
-                                </div>
-                            </div>
-                            <div class="col-2">
-                                <button type="button" name="label" value="" class="w-100 btn btn-outline-secondary rounded-0 border-left-0 border-top-0 border-right-0 bg-lgray d-flex align-items-center justify-content-between" data-toggle="dropdown">
-                                    Label <i class="fa fa-angle-down fa-lg"></i>
-                                </button>
-                                <div class="dropdown-menu pre-scrollable">
-                                    <a class="dropdown-item">None</a>
-                                    <a class="dropdown-item">Bug</a>
-                                    <a class="dropdown-item">Documentation</a>
-                                    <a class="dropdown-item">Duplicate</a>
-                                    <a class="dropdown-item">Enhancement</a>
-                                    <a class="dropdown-item">Good First Issue</a>
-                                    <a class="dropdown-item">Help Wanted</a>
-                                    <a class="dropdown-item">Invalid</a>
-                                    <a class="dropdown-item">Question</a>
-                                    <a class="dropdown-item">Won't Fix</a>
-                                </div>
+                            <div class="col-4">
+                                <input id="language" name="language" class="form-control rounded-0 border-secondary border-top-0 border-left-0 border-right-0 bg-lgray" value="" type="text" placeholder="Language">
                             </div>
                         </div>
-                        <div class="pt-3 pl-3 pr-3 row text-left">
+                        <div class="px-3 pb-3 row">
                             <div class="col-8">
-                                <p class="rowlabel">History and Activity</p>
+                                <input id="license" name="license" class="form-control rounded-0 border-secondary border-top-0 border-left-0 border-right-0 bg-lgray" value="" type="text" placeholder="License">
                             </div>
                             <div class="col-4">
-                                <p class="rowlabel">Date-based Filters</p>
+                                <input id="label" name="label" class="form-control rounded-0 border-secondary border-top-0 border-left-0 border-right-0 bg-lgray" value="" type="text" placeholder="Uses Label">
                             </div>
                         </div>
-                        <div class="pt-3 pl-3 pr-3 row text-left">
-                            <div class="col-4">
-                                <p class="rowsublabel">Number of commits</p>
+                        <div class="px-3 pt-3 row text-left">
+                            <div class="col-8">
+                                <h1 class="rowlabel">History and Activity</h1>
                             </div>
                             <div class="col-4">
-                                <p class="rowsublabel">Number of contributors</p>
-                            </div>
-                            <div class="col-4">
-                                <p class="rowsublabel">Created at</p>
+                                <h1 class="rowlabel">Date-based Filters</h1>
                             </div>
                         </div>
-                        <div class="pl-3 pr-3 pb-3 pt-1 row">
+                        <div class="px-3 pt-3 row text-left">
+                            <div class="col-4">
+                                <h2 class="rowsublabel">Number of commits</h2>
+                            </div>
+                            <div class="col-4">
+                                <h2 class="rowsublabel">Number of contributors</h2>
+                            </div>
+                            <div class="col-4">
+                                <h2 class="rowsublabel">Created at</h2>
+                            </div>
+                        </div>
+                        <div class="px-3 pb-3 pt-1 row">
                             <div class="col-2">
                                 <div class="input-group">
                                     <input type="text" id="commitsMin" name="commitsMin" class="form-control input-number bg-lgray border-secondary border-left-0 border-top-0 border-right-0 rounded-0" value="" min="0" max="9223372036854775807" placeholder="min">
@@ -201,18 +171,18 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="pl-3 pr-3 row text-left">
+                        <div class="px-3 row text-left">
                             <div class="col-4">
-                                <p class="rowsublabel">Number of issues</p>
+                                <h2 class="rowsublabel">Number of issues</h2>
                             </div>
                             <div class="col-4">
-                                <p class="rowsublabel">Number of pull requests</p>
+                                <h2 class="rowsublabel">Number of pull requests</h2>
                             </div>
                             <div class="col-4">
-                                <p class="rowsublabel">Last commit at</p>
+                                <h2 class="rowsublabel">Last commit at</h2>
                             </div>
                         </div>
-                        <div class="pl-3 pr-3 pb-3 pt-1 row">
+                        <div class="px-3 pb-3 pt-1 row">
                             <div class="col-2">
                                 <div class="input-group">
                                     <input type="text" id="issuesMin" name="issuesMin" class="form-control input-number bg-lgray border-secondary border-left-0 border-top-0 border-right-0 rounded-0" value="" min="0" max="9223372036854775807" placeholder="min">
@@ -270,15 +240,15 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="pl-3 pr-3 row text-left">
+                        <div class="px-3 row text-left">
                             <div class="col-4">
-                                <p class="rowsublabel">Number of branches</p>
+                                <h2 class="rowsublabel">Number of branches</h2>
                             </div>
                             <div class="col-4">
-                                <p class="rowsublabel">Number of releases</p>
+                                <h2 class="rowsublabel">Number of releases</h2>
                             </div>
                         </div>
-                        <div class="pl-3 pr-3 pb-3 pt-1 row">
+                        <div class="px-3 pb-3 pt-1 row">
                             <div class="col-2">
                                 <div class="input-group">
                                     <input type="text" id="branchesMin" name="branchesMin" class="form-control input-number bg-lgray border-secondary border-left-0 border-top-0 border-right-0 rounded-0" value="" min="0" max="9223372036854775807" placeholder="min">
@@ -318,28 +288,28 @@
                         </div>
                         <div class="p-3 row text-left">
                             <div class="col-8">
-                                <p class="rowlabel">Popularity Filters</p>
+                                <h1 class="rowlabel">Popularity Filters</h1>
                             </div>
                             <div class="col-4">
-                                <p class="rowlabel">Additional Filters</p>
+                                <h1 class="rowlabel">Additional Filters</h1>
                             </div>
                         </div>
-                        <div class="pl-3 pr-3 row text-left">
+                        <div class="px-3 row text-left">
                             <div class="col-4">
-                                <p class="rowsublabel">Number of stars</p>
+                                <h2 class="rowsublabel">Number of stars</h2>
                             </div>
                             <div class="col-4">
-                                <p class="rowsublabel">Number of watchers</p>
+                                <h2 class="rowsublabel">Number of watchers</h2>
                             </div>
                             <div class="col-4">
                                 <div class="form-check text-left">
                                     <label class="form-check-label">
-                                        <input type="checkbox" class="form-check-input" name="onlyForks" value="true" onchange="checkOnlyForked()"> Only forked projects
+                                        <input type="checkbox" class="form-check-input" name="onlyForks" value="true" onchange="checkOnlyForked()"> <span>Only Forked Projects</span>
                                     </label>
                                 </div>
                             </div>
                         </div>
-                        <div class="pl-3 pr-3 row">
+                        <div class="px-3 row">
                             <div class="col-2">
                                 <div class="input-group">
                                     <input type="text" id="starsMin" name="starsMin" class="form-control input-number bg-lgray border-secondary border-left-0 border-top-0 border-right-0 rounded-0" value="" min="0" max="9223372036854775807" placeholder="min">
@@ -379,30 +349,30 @@
                             <div class="col-4">
                                 <div class="form-check text-left">
                                     <label class="form-check-label">
-                                        <input type="checkbox" class="form-check-input" name="excludeForks" value="true" onchange="checkExcludeForked()"> Exclude forked projects
+                                        <input type="checkbox" class="form-check-input" name="excludeForks" value="true" onchange="checkExcludeForked()"> <span>Exclude Forked Projects</span>
                                     </label>
                                 </div>
                                 <div class="form-check text-left">
                                     <label class="form-check-label">
-                                        <input type="checkbox" class="form-check-input" name="hasIssues" value="true"> Has Open Issues
+                                        <input type="checkbox" class="form-check-input" name="hasIssues" value="true"> <span>Has Open Issues</span>
                                     </label>
                                 </div>
                             </div>
                         </div>
-                        <div class="pl-3 pr-3 row text-left">
+                        <div class="px-3 row text-left">
                             <div class="col-4">
-                                <p class="rowsublabel">Number of forks</p>
+                                <h2 class="rowsublabel">Number of forks</h2>
                             </div>
                             <div class="col-4"> </div>
                             <div class="col-4">
                                 <div class="form-check text-left">
                                     <label class="form-check-label">
-                                        <input type="checkbox" class="form-check-input" name="hasPulls" value="true"> Has Open Pull Requests
+                                        <input type="checkbox" class="form-check-input" name="hasPulls" value="true"> <span>Has Open Pull Requests</span>
                                     </label>
                                 </div>
                             </div>
                         </div>
-                        <div class="pl-3 pr-3 pb-3 row">
+                        <div class="px-3 pb-3 row">
                             <div class="col-2">
                                 <div class="input-group">
                                     <input type="text" id="forksMin" name="forksMin" class="form-control input-number bg-lgray border-secondary border-left-0 border-top-0 border-right-0 rounded-0" value="" min="0" max="9223372036854775807" placeholder="min">
@@ -422,17 +392,17 @@
                                 </div>
                             </div>
                             <div class="col-4">
-                                <button type="submit" class="w-50 btn btn-secondary border-dark text-center">Submit</button>
+                                <button id="submit-button" type="submit" class="w-50 btn btn-secondary border-dark b-2 text-center mh-100" onclick="submit()">Search</button>
                             </div>
                             <div class="col-4">
                                 <div class="form-check text-left">
                                     <label class="form-check-label">
-                                        <input type="checkbox" class="form-check-input" name="hasWiki" value="true"> Has Wiki
+                                        <input type="checkbox" class="form-check-input" name="hasWiki" value="true"> <span>Has Wiki</span>
                                     </label>
                                 </div>
                                 <div class="form-check text-left">
                                     <label class="form-check-label">
-                                        <input type="checkbox" class="form-check-input" name="hasLicense" value="true"> Has License
+                                        <input type="checkbox" class="form-check-input" name="hasLicense" value="true"> <span>Has License</span>
                                     </label>
                                 </div>
                             </div>
@@ -442,9 +412,9 @@
             </div>
         </div>
 
-        <footer id="sticky-footer" class="py-3 bg-white">
-            <div class="container text-left">
-                <p class="text-gray">Created by: <a href="#">Ozren Dabić</a>, <a href="https://www.inf.usi.ch/phd/aghajani" target="_blank">Emad Aghajani</a>, <a href="https://www.inf.usi.ch/faculty/bavota" target="_blank">Gabriele Bavota</a></p>
+        <footer id="sticky-footer" class="py-3 px-3 bg-white">
+            <div class="text-left">
+                <p class="text-gray">Created by: <a href="https://www.linkedin.com/in/dabico" target="_blank">Ozren Dabić</a>, <a href="https://www.inf.usi.ch/phd/aghajani" target="_blank">Emad Aghajani</a>, <a href="https://www.inf.usi.ch/faculty/bavota" target="_blank">Gabriele Bavota</a></p>
             </div>
         </footer>
 
@@ -498,23 +468,17 @@
                     onlyForks.checked = false;
                 }
             }
-
-            function changeLanguage(lang) {
-                let lang_btn = document.getElementById("language");
-                if (lang === "None") {
-                    lang_btn.value = "";
-                    lang_btn.innerHTML = "Language <i class=\"fa fa-angle-down fa-lg\"></i>";
-                } else {
-                    lang_btn.value = lang;
-                    lang_btn.innerHTML = ((lang === "CPP") ? "C++" : lang) + " <i class=\"fa fa-angle-down fa-lg\"></i>";
-                }
-            }
         </script>
         <script>
             $(document).ready(function(){
                 const options = {
+                    autoclose: true,
+                    endDate: "0d",
                     format: 'yyyy/mm/dd',
-                    autoclose: true
+                    orientation: 'bottom right',
+                    todayHighlight: true,
+                    showWeekDays: false,
+                    startDate: '2008/01/01'
                 };
                 $('#btnCreatedMin').datepicker(options).on('changeDate', function(ev) {
                     let year = ev.date.getFullYear();
@@ -545,6 +509,128 @@
                     $('#committedMax').val(year+"-"+month+"-"+date);
                 });
             })
+        </script>
+        <script>
+            function dynamicColors(i,total) {
+                let c = 100 + i * 155/total;
+                return "rgb(" + c + "," + c + "," + c + ")";
+            }
+
+            let languages = [];
+            let values = [];
+            let colors = [];
+            let borders = [];
+
+            fetch("http://localhost:8080/r/stats").then(response => {
+                response.json().then(data => {
+                    let i = 0;
+                    let items = data.items;
+                    items.forEach(obj => {
+                        languages.push(obj.name);
+                        values.push(obj.value);
+                        colors.push(dynamicColors(i,items.length));;
+                        borders.push('rgba(48,48,0,1)');
+                        i++;
+                    });
+                });
+            }).catch(_ => {
+
+            });
+
+            let ctx = document.getElementById('myChart').getContext('2d');
+            let myChart = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: languages,
+                    datasets: [{
+                        label: '# of Votes',
+                        data: values,
+                        backgroundColor: colors,
+                        hoverBackgroundColor: colors,
+                        borderColor: borders
+                    }]
+                },
+                options: {
+                    legend: {
+                        position: 'left',
+                        labels: {
+                            defaultFontFamily: "'Trebuchet MS'"
+                        }
+                    },
+                    tooltips: {
+                        yAlign: 'bottom'
+                    }
+                }
+            });
+        </script>
+        <script>
+            fetch("http://localhost:8080/r/labels").then(response => {
+                response.json().then(data => {
+                    let labels = data.items;
+                    $('#label').typeahead({
+                        showHintOnFocus: true,
+                        source: labels,
+                        items: 10,
+                        minLength: 2
+                    });
+                });
+            }).catch(_ => {});
+
+            fetch("http://localhost:8080/l").then(response => {
+                response.json().then(data => {
+                    let languages = data.items;
+                    $('#language').typeahead({
+                        showHintOnFocus: true,
+                        source: languages,
+                        items: 10,
+                        minLength: 2
+                    });
+                });
+            }).catch(_ => {});
+
+            let licenses = [
+                "Academic Free License v3.0",
+                "Apache license 2.0",
+                "Artistic license 2.0",
+                "Boost Software License 1.0",
+                "BSD 2-clause \"Simplified\" license",
+                "BSD 3-clause \"New\" or \"Revised\" license",
+                "BSD 3-clause Clear license",
+                "Creative Commons license family",
+                "Creative Commons Zero v1.0 Universal",
+                "Creative Commons Attribution 4.0",
+                "Creative Commons Attribution Share Alike 4.0",
+                "Do What The F*ck You Want To Public License",
+                "Educational Community License v2.0",
+                "Eclipse Public License 1.0",
+                "European Union Public License 1.1",
+                "GNU Affero General Public License v3.0",
+                "GNU General Public License family",
+                "GNU General Public License v2.0",
+                "GNU General Public License v3.0",
+                "GNU Lesser General Public License family",
+                "GNU Lesser General Public License v2.1",
+                "GNU Lesser General Public License v3.0",
+                "ISC",
+                "LaTeX Project Public License v1.3c",
+                "Microsoft Public License",
+                "MIT",
+                "Mozilla Public License 2.0",
+                "Open Software License 3.0",
+                "PostgreSQL License",
+                "SIL Open Font License 1.1",
+                "University of Illinois/NCSA Open Source License",
+                "The Unlicense",
+                "zLib License",
+                "Other"
+            ];
+
+            $('#license').typeahead({
+                showHintOnFocus: true,
+                source: licenses,
+                items: 10,
+                minLength: 2
+            });
         </script>
     </body>
 </html>
