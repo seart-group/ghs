@@ -166,16 +166,22 @@ a.dropdown-item {
     overflow-y: auto;
 }
 
+.navbar {
+    min-height:125px !important
+}
+
 h1.navbar-brand {
     margin: 0;
     font-weight: bold;
     font-size: 80px;
+    line-height: normal;
 }
 
 h3.navbar-brand {
     margin: 0;
     font-weight: bold;
     font-size: 30px;
+    line-height: normal;
 }
 
 .navbar-collapse {

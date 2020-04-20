@@ -27,7 +27,7 @@
                     <h1 class="navbar-brand pr-4-5">DEVINTA</h1>
                 </div>
                 <div class="text-right" style="height: 30px">
-                    <h3 class="navbar-brand text-lgray pt-3">GitHub Search</h3>
+                    <h3 class="navbar-brand text-lgray">GitHub Search</h3>
                 </div>
             </div>
             <button class="navbar-toggler navbar-dark" type="button" data-toggle="collapse" data-target="#main-navigation">
@@ -36,8 +36,8 @@
             <div class="collapse navbar-collapse py-3 pl-3" id="main-navigation">
                 <ul class="navbar-nav">
                     <li class="nav-item"><a class="nav-link" data-toggle="modal" data-target="#statsModal">Stats</a></li>
-                    <li class="nav-item"><a class="nav-link">Instructions</a></li>
-                    <li class="nav-item"><a class="nav-link">How It Works</a></li>
+                    <li class="nav-item"><a class="nav-link" data-toggle="modal" data-target="#instructionsModal">Instructions</a></li>
+                    <li class="nav-item"><a class="nav-link" data-toggle="modal" data-target="#howitworksModal">How It Works</a></li>
                 </ul>
             </div>
         </nav>
@@ -52,7 +52,63 @@
                         </button>
                     </div>
                     <div class="modal-body">
-                        <canvas id="myChart" class="w-100"></canvas>
+                        <div class="chart-container w-100">
+                            <canvas id="myChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="modal fade" id="instructionsModal" tabindex="-1" role="dialog" aria-labelledby="instructionsModalTitle" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-lg" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="instructionsModalTitle">Instructions</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="w-100">
+                            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Integer enim neque volutpat ac tincidunt vitae semper quis lectus. Tellus in metus vulputate eu scelerisque felis imperdiet. Amet risus nullam eget felis. Imperdiet nulla malesuada pellentesque elit eget gravida cum. Cras adipiscing enim eu turpis egestas pretium aenean pharetra. In massa tempor nec feugiat nisl. Pretium fusce id velit ut tortor. Consequat id porta nibh venenatis cras sed. Ultricies mi eget mauris pharetra et ultrices neque ornare. Nunc congue nisi vitae suscipit tellus mauris a diam. Diam quam nulla porttitor massa id neque.
+
+                                Posuere urna nec tincidunt praesent semper feugiat. Venenatis cras sed felis eget velit aliquet sagittis id. A lacus vestibulum sed arcu non. Nisl condimentum id venenatis a condimentum vitae. Ipsum faucibus vitae aliquet nec ullamcorper. Donec ultrices tincidunt arcu non sodales neque. Hendrerit dolor magna eget est. Eget duis at tellus at urna condimentum mattis. Ornare suspendisse sed nisi lacus. Non consectetur a erat nam at lectus urna duis. Lorem dolor sed viverra ipsum nunc aliquet bibendum enim. Blandit volutpat maecenas volutpat blandit aliquam. Blandit aliquam etiam erat velit. Neque egestas congue quisque egestas diam in arcu. Turpis egestas sed tempus urna et pharetra. Ullamcorper malesuada proin libero nunc consequat interdum varius sit. Purus viverra accumsan in nisl nisi. Dictum fusce ut placerat orci nulla pellentesque dignissim enim sit. Nunc mattis enim ut tellus elementum sagittis vitae et leo. Ipsum a arcu cursus vitae congue mauris rhoncus aenean vel.
+
+                                Massa vitae tortor condimentum lacinia quis vel eros. Hendrerit gravida rutrum quisque non tellus orci ac auctor augue. Lorem dolor sed viverra ipsum nunc aliquet bibendum. Amet mauris commodo quis imperdiet massa tincidunt nunc pulvinar sapien. Scelerisque varius morbi enim nunc faucibus a. Vel elit scelerisque mauris pellentesque pulvinar pellentesque. Donec pretium vulputate sapien nec sagittis aliquam malesuada bibendum arcu. Aenean vel elit scelerisque mauris. Magna eget est lorem ipsum dolor sit amet. Eget est lorem ipsum dolor. Mi in nulla posuere sollicitudin aliquam ultrices sagittis orci a. Tincidunt augue interdum velit euismod in pellentesque massa placerat. Ut aliquam purus sit amet luctus venenatis lectus magna fringilla. Auctor augue mauris augue neque gravida in. Massa massa ultricies mi quis hendrerit dolor. A erat nam at lectus urna duis. Pharetra diam sit amet nisl. Tempor id eu nisl nunc mi. Ultricies tristique nulla aliquet enim tortor at auctor.
+
+                                Pharetra et ultrices neque ornare. Suspendisse sed nisi lacus sed. Vestibulum lectus mauris ultrices eros in cursus turpis massa. Elementum sagittis vitae et leo duis ut. Odio euismod lacinia at quis risus sed vulputate odio ut. Feugiat nibh sed pulvinar proin gravida hendrerit lectus a. Varius duis at consectetur lorem donec massa sapien faucibus. Aliquam id diam maecenas ultricies. Morbi tempus iaculis urna id volutpat lacus laoreet non. A arcu cursus vitae congue mauris rhoncus aenean vel elit. Neque convallis a cras semper auctor neque. Eu volutpat odio facilisis mauris sit. Leo vel fringilla est ullamcorper eget nulla. Aenean euismod elementum nisi quis. Aliquet nibh praesent tristique magna sit.
+
+                                Commodo sed egestas egestas fringilla phasellus. Massa vitae tortor condimentum lacinia quis vel eros. Sodales ut etiam sit amet nisl purus. Consectetur adipiscing elit pellentesque habitant morbi tristique. Ut porttitor leo a diam sollicitudin tempor id eu nisl. Varius sit amet mattis vulputate enim nulla aliquet. Et odio pellentesque diam volutpat commodo sed egestas egestas. Nisl purus in mollis nunc sed id semper risus. Id leo in vitae turpis massa. Placerat orci nulla pellentesque dignissim enim. Vulputate dignissim suspendisse in est ante in nibh mauris cursus. Adipiscing vitae proin sagittis nisl rhoncus mattis rhoncus urna neque. Risus commodo viverra maecenas accumsan lacus. Commodo ullamcorper a lacus vestibulum sed arcu non odio euismod. Id neque aliquam vestibulum morbi blandit cursus risus at. Rhoncus urna neque viverra justo nec.
+
+                                Consequat ac felis donec et odio pellentesque. Platea dictumst vestibulum rhoncus est pellentesque elit ullamcorper dignissim. Luctus venenatis lectus magna fringilla urna porttitor rhoncus dolor. Penatibus et magnis dis parturient montes nascetur ridiculus. Amet nulla facilisi morbi tempus iaculis urna id volutpat. Bibendum arcu vitae elementum curabitur. Lorem dolor sed viverra ipsum. In nibh mauris cursus mattis molestie a. Felis donec et odio pellentesque diam volutpat. Nec feugiat nisl pretium fusce id velit. Lorem donec massa sapien faucibus et molestie ac. Sit amet est placerat in. Eget mi proin sed libero enim sed. Euismod quis viverra nibh cras pulvinar mattis nunc sed blandit. In egestas erat imperdiet sed euismod. Dolor purus non enim praesent elementum facilisis leo. Tellus orci ac auctor augue mauris.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="modal fade" id="howitworksModal" tabindex="-1" role="dialog" aria-labelledby="howitworksModalTitle" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-lg" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="howitworksModalTitle">How It Works</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="w-100">
+                            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Integer enim neque volutpat ac tincidunt vitae semper quis lectus. Tellus in metus vulputate eu scelerisque felis imperdiet. Amet risus nullam eget felis. Imperdiet nulla malesuada pellentesque elit eget gravida cum. Cras adipiscing enim eu turpis egestas pretium aenean pharetra. In massa tempor nec feugiat nisl. Pretium fusce id velit ut tortor. Consequat id porta nibh venenatis cras sed. Ultricies mi eget mauris pharetra et ultrices neque ornare. Nunc congue nisi vitae suscipit tellus mauris a diam. Diam quam nulla porttitor massa id neque.
+
+                                Posuere urna nec tincidunt praesent semper feugiat. Venenatis cras sed felis eget velit aliquet sagittis id. A lacus vestibulum sed arcu non. Nisl condimentum id venenatis a condimentum vitae. Ipsum faucibus vitae aliquet nec ullamcorper. Donec ultrices tincidunt arcu non sodales neque. Hendrerit dolor magna eget est. Eget duis at tellus at urna condimentum mattis. Ornare suspendisse sed nisi lacus. Non consectetur a erat nam at lectus urna duis. Lorem dolor sed viverra ipsum nunc aliquet bibendum enim. Blandit volutpat maecenas volutpat blandit aliquam. Blandit aliquam etiam erat velit. Neque egestas congue quisque egestas diam in arcu. Turpis egestas sed tempus urna et pharetra. Ullamcorper malesuada proin libero nunc consequat interdum varius sit. Purus viverra accumsan in nisl nisi. Dictum fusce ut placerat orci nulla pellentesque dignissim enim sit. Nunc mattis enim ut tellus elementum sagittis vitae et leo. Ipsum a arcu cursus vitae congue mauris rhoncus aenean vel.
+
+                                Massa vitae tortor condimentum lacinia quis vel eros. Hendrerit gravida rutrum quisque non tellus orci ac auctor augue. Lorem dolor sed viverra ipsum nunc aliquet bibendum. Amet mauris commodo quis imperdiet massa tincidunt nunc pulvinar sapien. Scelerisque varius morbi enim nunc faucibus a. Vel elit scelerisque mauris pellentesque pulvinar pellentesque. Donec pretium vulputate sapien nec sagittis aliquam malesuada bibendum arcu. Aenean vel elit scelerisque mauris. Magna eget est lorem ipsum dolor sit amet. Eget est lorem ipsum dolor. Mi in nulla posuere sollicitudin aliquam ultrices sagittis orci a. Tincidunt augue interdum velit euismod in pellentesque massa placerat. Ut aliquam purus sit amet luctus venenatis lectus magna fringilla. Auctor augue mauris augue neque gravida in. Massa massa ultricies mi quis hendrerit dolor. A erat nam at lectus urna duis. Pharetra diam sit amet nisl. Tempor id eu nisl nunc mi. Ultricies tristique nulla aliquet enim tortor at auctor.
+
+                                Pharetra et ultrices neque ornare. Suspendisse sed nisi lacus sed. Vestibulum lectus mauris ultrices eros in cursus turpis massa. Elementum sagittis vitae et leo duis ut. Odio euismod lacinia at quis risus sed vulputate odio ut. Feugiat nibh sed pulvinar proin gravida hendrerit lectus a. Varius duis at consectetur lorem donec massa sapien faucibus. Aliquam id diam maecenas ultricies. Morbi tempus iaculis urna id volutpat lacus laoreet non. A arcu cursus vitae congue mauris rhoncus aenean vel elit. Neque convallis a cras semper auctor neque. Eu volutpat odio facilisis mauris sit. Leo vel fringilla est ullamcorper eget nulla. Aenean euismod elementum nisi quis. Aliquet nibh praesent tristique magna sit.
+
+                                Commodo sed egestas egestas fringilla phasellus. Massa vitae tortor condimentum lacinia quis vel eros. Sodales ut etiam sit amet nisl purus. Consectetur adipiscing elit pellentesque habitant morbi tristique. Ut porttitor leo a diam sollicitudin tempor id eu nisl. Varius sit amet mattis vulputate enim nulla aliquet. Et odio pellentesque diam volutpat commodo sed egestas egestas. Nisl purus in mollis nunc sed id semper risus. Id leo in vitae turpis massa. Placerat orci nulla pellentesque dignissim enim. Vulputate dignissim suspendisse in est ante in nibh mauris cursus. Adipiscing vitae proin sagittis nisl rhoncus mattis rhoncus urna neque. Risus commodo viverra maecenas accumsan lacus. Commodo ullamcorper a lacus vestibulum sed arcu non odio euismod. Id neque aliquam vestibulum morbi blandit cursus risus at. Rhoncus urna neque viverra justo nec.
+
+                                Consequat ac felis donec et odio pellentesque. Platea dictumst vestibulum rhoncus est pellentesque elit ullamcorper dignissim. Luctus venenatis lectus magna fringilla urna porttitor rhoncus dolor. Penatibus et magnis dis parturient montes nascetur ridiculus. Amet nulla facilisi morbi tempus iaculis urna id volutpat. Bibendum arcu vitae elementum curabitur. Lorem dolor sed viverra ipsum. In nibh mauris cursus mattis molestie a. Felis donec et odio pellentesque diam volutpat. Nec feugiat nisl pretium fusce id velit. Lorem donec massa sapien faucibus et molestie ac. Sit amet est placerat in. Eget mi proin sed libero enim sed. Euismod quis viverra nibh cras pulvinar mattis nunc sed blandit. In egestas erat imperdiet sed euismod. Dolor purus non enim praesent elementum facilisis leo. Tellus orci ac auctor augue mauris.</p>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -519,7 +575,6 @@
             let languages = [];
             let values = [];
             let colors = [];
-            let borders = [];
 
             fetch("http://localhost:8080/r/stats").then(response => {
                 response.json().then(data => {
@@ -528,40 +583,45 @@
                     items.forEach(obj => {
                         languages.push(obj.name);
                         values.push(obj.value);
-                        colors.push(dynamicColors(i,items.length));;
-                        borders.push('rgba(48,48,0,1)');
+                        colors.push(dynamicColors(i,items.length));
                         i++;
                     });
                 });
-            }).catch(_ => {
+            }).catch(_ => {});
 
-            });
+            Chart.defaults.global.defaultFontFamily = "Trebuchet MS";
 
             let ctx = document.getElementById('myChart').getContext('2d');
-            let myChart = new Chart(ctx, {
-                type: 'doughnut',
+            let config = {
+                type: 'bar',
                 data: {
                     labels: languages,
                     datasets: [{
-                        label: '# of Votes',
+                        label: '# of repos',
                         data: values,
                         backgroundColor: colors,
-                        hoverBackgroundColor: colors,
-                        borderColor: borders
+                        hoverBackgroundColor: colors
                     }]
                 },
                 options: {
                     legend: {
-                        position: 'left',
-                        labels: {
-                            defaultFontFamily: "'Trebuchet MS'"
-                        }
+                        display: false
                     },
                     tooltips: {
                         yAlign: 'bottom'
+                    },
+                    layout: {
+                        padding: {
+                            left: 15,
+                            right: 15,
+                            top: 30,
+                            bottom: 30
+                        }
                     }
                 }
-            });
+            };
+
+            let chart = new Chart(ctx,config);
         </script>
         <script>
             fetch("http://localhost:8080/r/labels").then(response => {
@@ -632,5 +692,10 @@
                 minLength: 2
             });
         </script>
+    <script>
+        $('.modal').on('show.bs.modal', function () {
+            $('.modal-body').animate({ scrollTop: 0 }, 'fast');
+        });
+    </script>
     </body>
 </html>
