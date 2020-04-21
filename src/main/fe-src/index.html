@@ -7,12 +7,12 @@
         <meta name="description" content="GitHub Search Engine App, USI 2020 Bachelor Project">
         <meta name="author" content="Ozren Dabić">
         <link rel="icon" type="image/png" href="public/img/logo-32.png">
-
         <!-- Bootstrap CSS -->
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.8.0/css/bootstrap-datepicker.min.css" />
+        <!-- Scripts -->
         <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.8.0/js/bootstrap-datepicker.min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-3-typeahead/4.0.2/bootstrap3-typeahead.min.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.3/dist/Chart.min.js"></script>
@@ -143,6 +143,7 @@
                             </div>
                         </div>
                         <div class="px-3 pb-3 row">
+                            <!-- TODO Define RegExes for labels and licenses -->
                             <div class="col-8">
                                 <input id="license" name="license" class="form-control rounded-0 border-secondary border-top-0 border-left-0 border-right-0 bg-lgray" value="" type="text" placeholder="License">
                             </div>
@@ -360,7 +361,7 @@
                             <div class="col-4">
                                 <div class="form-check text-left">
                                     <label class="form-check-label">
-                                        <input type="checkbox" class="form-check-input" name="onlyForks" value="true" onchange="checkOnlyForked()"> <span>Only Forked Projects</span>
+                                        <input type="checkbox" class="form-check-input" id="onlyForks" name="onlyForks" onchange="checkOnlyForked()"><span>Only Forked Projects</span>
                                     </label>
                                 </div>
                             </div>
@@ -405,12 +406,12 @@
                             <div class="col-4">
                                 <div class="form-check text-left">
                                     <label class="form-check-label">
-                                        <input type="checkbox" class="form-check-input" name="excludeForks" value="true" onchange="checkExcludeForked()"> <span>Exclude Forked Projects</span>
+                                        <input type="checkbox" class="form-check-input" id="excludeForks" name="excludeForks" onchange="checkExcludeForked()"><span>Exclude Forked Projects</span>
                                     </label>
                                 </div>
                                 <div class="form-check text-left">
                                     <label class="form-check-label">
-                                        <input type="checkbox" class="form-check-input" name="hasIssues" value="true"> <span>Has Open Issues</span>
+                                        <input type="checkbox" class="form-check-input" id="hasIssues" name="hasIssues"><span>Has Open Issues</span>
                                     </label>
                                 </div>
                             </div>
@@ -419,11 +420,11 @@
                             <div class="col-4">
                                 <h2 class="rowsublabel">Number of forks</h2>
                             </div>
-                            <div class="col-4"> </div>
+                            <div class="col-4"></div>
                             <div class="col-4">
                                 <div class="form-check text-left">
                                     <label class="form-check-label">
-                                        <input type="checkbox" class="form-check-input" name="hasPulls" value="true"> <span>Has Open Pull Requests</span>
+                                        <input type="checkbox" class="form-check-input" id="hasPulls" name="hasPulls"><span>Has Open Pull Requests</span>
                                     </label>
                                 </div>
                             </div>
@@ -448,17 +449,17 @@
                                 </div>
                             </div>
                             <div class="col-4">
-                                <button id="submit-button" type="submit" class="w-50 btn btn-secondary border-dark b-2 text-center mh-100" onclick="submit()">Search</button>
+                                <button id="submit-button" type="submit" class="w-50 btn btn-secondary border-dark b-2 text-center mh-100">Search</button>
                             </div>
                             <div class="col-4">
                                 <div class="form-check text-left">
                                     <label class="form-check-label">
-                                        <input type="checkbox" class="form-check-input" name="hasWiki" value="true"> <span>Has Wiki</span>
+                                        <input type="checkbox" class="form-check-input" id="hasWiki" name="hasWiki"><span>Has Wiki</span>
                                     </label>
                                 </div>
                                 <div class="form-check text-left">
                                     <label class="form-check-label">
-                                        <input type="checkbox" class="form-check-input" name="hasLicense" value="true"> <span>Has License</span>
+                                        <input type="checkbox" class="form-check-input" id="hasLicense" name="hasLicense"><span>Has License</span>
                                     </label>
                                 </div>
                             </div>
@@ -479,6 +480,10 @@
         <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
         <script>
+            String.prototype.isEmpty = function() {
+                return (this.length === 0 || !this.trim());
+            };
+
             function changeToContains() {
                 let button = document.getElementById("match");
                 button.value = false;
@@ -526,45 +531,37 @@
             }
         </script>
         <script>
-            $(document).ready(function(){
-                const options = {
-                    autoclose: true,
-                    endDate: "0d",
-                    format: 'yyyy/mm/dd',
-                    orientation: 'bottom right',
-                    todayHighlight: true,
-                    showWeekDays: false,
-                    startDate: '2008/01/01'
-                };
-                $('#btnCreatedMin').datepicker(options).on('changeDate', function(ev) {
-                    let year = ev.date.getFullYear();
-                    let month = ("0" + (ev.date.getMonth() + 1)).slice(-2);
-                    let date = ("0" + (ev.date.getDate())).slice(-2);
-                    $('#btnCreatedMin').datepicker('hide');
-                    $('#createdMin').val(year+"-"+month+"-"+date);
-                });
-                $('#btnCreatedMax').datepicker(options).on('changeDate', function(ev) {
-                    let year = ev.date.getFullYear();
-                    let month = ("0" + (ev.date.getMonth() + 1)).slice(-2);
-                    let date = ("0" + (ev.date.getDate())).slice(-2);
-                    $('#btnCreatedMax').datepicker('hide');
-                    $('#createdMax').val(year+"-"+month+"-"+date);
-                });
-                $('#btnCommittedMin').datepicker(options).on('changeDate', function(ev) {
-                    let year = ev.date.getFullYear();
-                    let month = ("0" + (ev.date.getMonth() + 1)).slice(-2);
-                    let date = ("0" + (ev.date.getDate())).slice(-2);
-                    $('#btnCommittedMin').datepicker('hide');
-                    $('#committedMin').val(year+"-"+month+"-"+date);
-                });
-                $('#btnCommittedMax').datepicker(options).on('changeDate', function(ev) {
-                    let year = ev.date.getFullYear();
-                    let month = ("0" + (ev.date.getMonth() + 1)).slice(-2);
-                    let date = ("0" + (ev.date.getDate())).slice(-2);
-                    $('#btnCommittedMax').datepicker('hide');
-                    $('#committedMax').val(year+"-"+month+"-"+date);
-                });
-            })
+            function localToUTC(date) {
+                let localDateMS = date.getTime();
+                let localOffsetMS = date.getTimezoneOffset() * 60000;
+                return (new Date(localDateMS - localOffsetMS)).toISOString().slice(0,10);
+            }
+
+            const options = {
+                autoclose: true,
+                endDate: "0d",
+                format: 'yyyy/mm/dd',
+                orientation: 'bottom right',
+                todayHighlight: true,
+                showWeekDays: false,
+                startDate: '2008/01/01'
+            };
+            $('#btnCreatedMin').datepicker(options).on('changeDate', function(ev) {
+                $('#btnCreatedMin').datepicker('hide');
+                $('#createdMin').val(localToUTC(ev.date));
+            });
+            $('#btnCreatedMax').datepicker(options).on('changeDate', function(ev) {
+                $('#btnCreatedMax').datepicker('hide');
+                $('#createdMax').val(localToUTC(ev.date));
+            });
+            $('#btnCommittedMin').datepicker(options).on('changeDate', function(ev) {
+                $('#btnCommittedMin').datepicker('hide');
+                $('#committedMin').val(localToUTC(ev.date));
+            });
+            $('#btnCommittedMax').datepicker(options).on('changeDate', function(ev) {
+                $('#btnCommittedMax').datepicker('hide');
+                $('#committedMax').val(localToUTC(ev.date));
+            });
         </script>
         <script>
             function dynamicColors(i,total) {
@@ -692,10 +689,65 @@
                 minLength: 2
             });
         </script>
-    <script>
-        $('.modal').on('show.bs.modal', function () {
-            $('.modal-body').animate({ scrollTop: 0 }, 'fast');
-        });
-    </script>
+        <script>
+            $('.modal').on('show.bs.modal', function () {
+                $('.modal-body').animate({ scrollTop: 0 }, 'fast');
+            });
+        </script>
+        <script>
+            function submitQuery() {
+                let name = document.getElementById("name").value;
+                let nameEquals = document.getElementById("match").value;
+                let language = document.getElementById("language").value;
+                let label = document.getElementById("label").value;
+                let license = document.getElementById("license").value;
+
+                let commitsMin = document.getElementById("commitsMin").value;
+                let commitsMax = document.getElementById("commitsMax").value;
+                let contributorsMin = document.getElementById("contributorsMin").value;
+                let contributorsMax = document.getElementById("contributorsMax").value;
+                let issuesMin = document.getElementById("issuesMin").value;
+                let issuesMax = document.getElementById("issuesMax").value;
+                let pullsMin = document.getElementById("pullsMin").value;
+                let pullsMax = document.getElementById("pullsMax").value;
+                let branchesMin = document.getElementById("branchesMin").value;
+                let branchesMax = document.getElementById("branchesMax").value;
+                let releasesMin = document.getElementById("releasesMin").value;
+                let releasesMax = document.getElementById("releasesMax").value;
+                let starsMin = document.getElementById("starsMin").value;
+                let starsMax = document.getElementById("starsMax").value;
+                let watchersMin = document.getElementById("watchersMin").value;
+                let watchersMax = document.getElementById("watchersMax").value;
+                let forksMin = document.getElementById("forksMin").value;
+                let forksMax = document.getElementById("forksMax").value;
+
+                let createdMin = document.getElementById("createdMin").value;
+                let createdMax = document.getElementById("createdMax").value;
+                let committedMin = document.getElementById("committedMin").value;
+                let committedMax = document.getElementById("committedMax").value;
+
+                let onlyForks = document.getElementById("onlyForks").checked;
+                let excludeForks = document.getElementById("excludeForks").checked;
+                let hasIssues = document.getElementById("hasIssues").checked;
+                let hasPulls = document.getElementById("hasPulls").checked;
+                let hasWiki = document.getElementById("hasWiki").checked;
+                let hasLicense = document.getElementById("hasLicense").checked;
+
+                let search_base = "http://localhost:8080/r/search?";
+                let download_base = "http://localhost:8080/r/search/download?";
+
+                if (!name.isEmpty()){
+                    name = name.trim();
+                    search_base += "name=" + name;
+                    download_base += "name=" + name;
+                    console.log(search_base);
+                }
+            }
+
+            $('#form').submit(function () {
+                submitQuery();
+                return false;
+            });
+        </script>
     </body>
 </html>
