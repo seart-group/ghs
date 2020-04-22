@@ -67,15 +67,24 @@ public class GitRepoConverter {
         this.driver.quit();
     }
 
-    public GitRepo jsonToGitRepo(JsonObject json,String language) throws IOException {
+    public GitRepo jsonToGitRepo(JsonObject json,String language) throws IOException,InterruptedException {
         String repositoryURL = json.get("html_url").getAsString();
         WebDriverWait webDriverWait = new WebDriverWait(driver, Duration.ofSeconds(10));
         GitHubPageCrawlerService crawlerService = new GitHubPageCrawlerService(repositoryURL,driver,webDriverWait);
         try {
             crawlerService.mine();
         } catch (HttpStatusException ex) {
-            logger.error(ex.getMessage());
-            return null;
+            int code = ex.getStatusCode();
+            logger.error(ex.getMessage()+": "+ex.getUrl());
+            logger.error("Status: "+code);
+            if (code == 404){
+                logger.error("This repository no longer exists");
+                return null;
+            } else if (code == 429){
+                logger.error("Retrying");
+                Thread.sleep(60000);
+                return jsonToGitRepo(json,language);
+            }
         }
         JsonElement license = json.get("license");
         JsonElement homepage = json.get("homepage");
