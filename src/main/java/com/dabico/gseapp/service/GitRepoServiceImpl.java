@@ -91,8 +91,7 @@ public class GitRepoServiceImpl implements GitRepoService {
                                  issuesMin, issuesMax, pullsMin, pullsMax, branchesMin, branchesMax, releasesMin, releasesMax,
                                  starsMin, starsMax, watchersMin, watchersMax, forksMin, forksMax, createdMin, createdMax,
                                  committedMin, committedMax, excludeForks, onlyForks, hasIssues, hasPulls, hasWiki, hasLicense,
-                                 ++page, pageSize))
-                    .toUriComponentsBuilder().scheme("http").build().toUriString();
+                                 ++page, pageSize)).toString().split("\\{")[0];;
             repoDtoListPaginated.setNext(next);
         }
         if (repoDtos.size() > 0){
@@ -101,8 +100,7 @@ public class GitRepoServiceImpl implements GitRepoService {
                             contributorsMax,issuesMin,issuesMax,pullsMin,pullsMax,branchesMin,branchesMax,releasesMin,
                             releasesMax,starsMin,starsMax,watchersMin,watchersMax,forksMin,forksMax,createdMin,
                             createdMax,committedMin,committedMax,excludeForks,onlyForks,hasIssues,hasPulls,hasWiki,
-                            hasLicense))
-                    .toUriComponentsBuilder().scheme("http").build().toUriString();
+                            hasLicense)).toString().split("\\{")[0];;
             repoDtoListPaginated.setDownload(download);
         }
         return repoDtoListPaginated;
