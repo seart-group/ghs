@@ -143,12 +143,11 @@
                             </div>
                         </div>
                         <div class="px-3 pb-3 row">
-                            <!-- TODO Define RegExes for labels and licenses -->
                             <div class="col-8">
-                                <input id="license" name="license" class="form-control rounded-0 border-secondary border-top-0 border-left-0 border-right-0 bg-lgray" value="" type="text" placeholder="License">
+                                <input id="license" name="license" class="form-control rounded-0 border-secondary border-top-0 border-left-0 border-right-0 bg-lgray" value="" type="text" placeholder="License" pattern="[A-Za-z0-9-.*/\s]*" title="Please use only existing GitHub licenses">
                             </div>
                             <div class="col-4">
-                                <input id="label" name="label" class="form-control rounded-0 border-secondary border-top-0 border-left-0 border-right-0 bg-lgray" value="" type="text" placeholder="Uses Label">
+                                <input id="label" name="label" class="form-control rounded-0 border-secondary border-top-0 border-left-0 border-right-0 bg-lgray" value="" type="text" placeholder="Uses Label" pattern="[A-Za-z0-9-.:*/?\s]*" title="Please avoid using non-alphanumeric characters">
                             </div>
                         </div>
                         <div class="px-3 pt-3 row text-left">
