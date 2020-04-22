@@ -58,6 +58,12 @@ input {
     border-bottom: black;
 }
 
+input:invalid,
+input:focus:invalid {
+    color: #721c24;
+    background-color: #f8d7da;
+}
+
 /* IDS */
 
 #page-content {
