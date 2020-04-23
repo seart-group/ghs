@@ -74,30 +74,30 @@ public class CrawlProjectsJob {
             if (limit != null){
                 assert limit.before(startDate);
                 interval = new DateInterval(limit,startDate);
-                create(interval,language);
-                update(interval,language);
+                crawlCreatedRepos(interval,language);
+                crawlUpdatedRepos(interval,language);
             } else {
                 interval = new DateInterval(applicationPropertyService.getStartDate(),startDate);
-                create(interval,language);
+                crawlCreatedRepos(interval,language);
             }
         }
     }
 
-    private void create(DateInterval interval, String language) throws Exception {
+    private void crawlCreatedRepos(DateInterval interval, String language) throws Exception {
         logger.info("Created: "+language.toUpperCase()+" "+interval);
         logger.info("Token: " + this.currentToken);
-        crawl(interval,language,false);
-        logger.info("Create Complete!");
+        crawlRepos(interval,language,false);
+        logger.info("Created interval crawl complete!");
     }
 
-    private void update(DateInterval interval, String language) throws Exception {
+    private void crawlUpdatedRepos(DateInterval interval, String language) throws Exception {
         logger.info("Updated: "+language.toUpperCase()+" "+interval);
         logger.info("Token: " + this.currentToken);
-        crawl(interval,language,true);
-        logger.info("Update Complete!");
+        crawlRepos(interval,language,true);
+        logger.info("Updated interval crawl complete!");
     }
 
-    private void crawl(DateInterval interval, String language, Boolean mode) throws Exception {
+    private void crawlRepos(DateInterval interval, String language, Boolean mode) throws Exception {
         requestQueue.add(interval);
         do {
             DateInterval first = requestQueue.remove(0);
