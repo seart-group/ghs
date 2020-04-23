@@ -5,6 +5,7 @@ import com.google.gson.JsonObject;
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
 import okhttp3.*;
+import org.apache.http.client.HttpResponseException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -36,6 +37,10 @@ public class GitHubApiService {
                                                 "+fork:true+is:public&page=" + page +
                                                 "&per_page=100", token);
         //TODO Remove guards when done
+        if (response.code() > 499){
+            response.close();
+            throw new HttpResponseException(response.code(),"Unable to communicate with GitHub's servers");
+        }
         Thread.sleep(1000);
         return response;
     }
@@ -49,16 +54,21 @@ public class GitHubApiService {
             JsonObject search = bodyJson.get("resources").getAsJsonObject().get("search").getAsJsonObject();
             int remaining = search.get("remaining").getAsInt();
             return remaining <= 0;
+        } else if (response.code() > 499) {
+            response.close();
+            throw new HttpResponseException(response.code(),"Unable to communicate with GitHub's servers");
         } else {
-            //TODO Replace with a custom exception
-            //or something like, "no connection exception"
-            throw new RuntimeException();
+            throw new RuntimeException("Something unexpected happened");
         }
     }
 
     public Response searchRepoLabels(String name, String token) throws IOException, InterruptedException {
         //TODO Adjust scalability for more than 100 labels used THEORETICALLY SHOULD NOT HAPPEN
         Response response = makeAPICall(generateLabelsURL(name) + "?page=1&per_page=100",token);
+        if (response.code() > 499){
+            response.close();
+            throw new HttpResponseException(response.code(),"Unable to communicate with GitHub's servers");
+        }
         Thread.sleep(2000);
         return response;
     }
@@ -66,6 +76,10 @@ public class GitHubApiService {
     public Response searchRepoLanguages(String name, String token) throws IOException, InterruptedException {
         //TODO Adjust scalability for more than 100 languages used THEORETICALLY SHOULD NOT HAPPEN
         Response response = makeAPICall(generateLanguagesURL(name) + "?page=1&per_page=100",token);
+        if (response.code() > 499){
+            response.close();
+            throw new HttpResponseException(response.code(),"Unable to communicate with GitHub's servers");
+        }
         Thread.sleep(2000);
         return response;
     }
