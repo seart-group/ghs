@@ -126,7 +126,7 @@ public class GitRepoConverter {
 
     public List<String[]> repoListToCSVRowList(List<GitRepo> repos){
         List<String[]> results = repos.stream().map(this::repoToCSVRow).collect(Collectors.toList());
-        String[] header = new String[]{"id","name","fork project","commits","branches","default branch","releases",
+        String[] header = new String[]{"name","fork project","commits","branches","default branch","releases",
                                        "contributors","license","watchers","stargazers","forks","size","created",
                                        "pushed","updated","homepage","main language","total issues","open issues",
                                        "total pull requests","open pull requests","last commit","last commit SHA",
@@ -175,33 +175,32 @@ public class GitRepoConverter {
     }
 
     public String[] repoToCSVRow(GitRepo repo){
-        String[] attributes = new String[26];
-        attributes[0]  = repo.getId().toString();
-        attributes[1]  = repo.getName();
-        attributes[2]  = repo.getIsFork().toString();
-        attributes[3]  = repo.getCommits().toString();
-        attributes[4]  = repo.getBranches().toString();
-        attributes[5]  = repo.getDefaultBranch();
-        attributes[6]  = repo.getReleases().toString();
-        attributes[7]  = repo.getContributors().toString();
-        attributes[8]  = repo.getLicense();
-        attributes[9]  = repo.getWatchers().toString();
-        attributes[10] = repo.getStargazers().toString();
-        attributes[11] = repo.getForks().toString();
-        attributes[12] = repo.getSize().toString();
-        attributes[13] = repo.getCreatedAt().toString();
-        attributes[14] = repo.getPushedAt().toString();
-        attributes[15] = repo.getUpdatedAt().toString();
-        attributes[16] = repo.getHomepage();
-        attributes[17] = repo.getMainLanguage();
-        attributes[18] = repo.getTotalIssues().toString();
-        attributes[19] = repo.getOpenIssues().toString();
-        attributes[20] = repo.getTotalPullRequests().toString();
-        attributes[21] = repo.getOpenPullRequests().toString();
-        attributes[22] = repo.getLastCommit().toString();
-        attributes[23] = repo.getLastCommitSHA();
-        attributes[24] = repo.getHasWiki().toString();
-        attributes[25] = repo.getIsArchived().toString();
+        String[] attributes = new String[25];
+        attributes[0]  = repo.getName();
+        attributes[1]  = repo.getIsFork().toString();
+        attributes[2]  = repo.getCommits().toString();
+        attributes[3]  = repo.getBranches().toString();
+        attributes[4]  = repo.getDefaultBranch();
+        attributes[5]  = repo.getReleases().toString();
+        attributes[6]  = repo.getContributors().toString();
+        attributes[7]  = repo.getLicense();
+        attributes[8]  = repo.getWatchers().toString();
+        attributes[9]  = repo.getStargazers().toString();
+        attributes[10] = repo.getForks().toString();
+        attributes[11] = repo.getSize().toString();
+        attributes[12] = repo.getCreatedAt().toString();
+        attributes[13] = repo.getPushedAt().toString();
+        attributes[14] = repo.getUpdatedAt().toString();
+        attributes[15] = repo.getHomepage();
+        attributes[16] = repo.getMainLanguage();
+        attributes[17] = repo.getTotalIssues().toString();
+        attributes[18] = repo.getOpenIssues().toString();
+        attributes[19] = repo.getTotalPullRequests().toString();
+        attributes[20] = repo.getOpenPullRequests().toString();
+        attributes[21] = repo.getLastCommit().toString();
+        attributes[22] = repo.getLastCommitSHA();
+        attributes[23] = repo.getHasWiki().toString();
+        attributes[24] = repo.getIsArchived().toString();
         return attributes;
     }
 
