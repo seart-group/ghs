@@ -141,8 +141,8 @@ public class CrawlProjectsJob {
             } else {
                 Pair<DateInterval,DateInterval> newIntervals = interval.splitInterval();
                 if (newIntervals != null){
-                    requestQueue.add(newIntervals.getValue0());
-                    requestQueue.add(newIntervals.getValue1());
+                    requestQueue.add(0,newIntervals.getValue1());
+                    requestQueue.add(0,newIntervals.getValue0());
                 }
                 response.close();
             }
