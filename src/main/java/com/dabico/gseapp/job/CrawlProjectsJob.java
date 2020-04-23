@@ -173,14 +173,13 @@ public class CrawlProjectsJob {
         ResponseBody responseBody = response.body();
         if (response.isSuccessful() && responseBody != null){
             JsonArray results = parseString(responseBody.string()).getAsJsonArray();
-            results.forEach(result ->
-                    repo_labels.add(GitRepoLabel.builder()
-                                                .repo(repo)
-                                                .label(result.getAsJsonObject().get("name").getAsString())
-                                                .build())
+            results.forEach(result -> repo_labels.add(GitRepoLabel.builder()
+                                                 .repo(repo)
+                                                 .label(result.getAsJsonObject().get("name").getAsString())
+                                                 .build())
             );
+            gitRepoService.createUpdateLabels(repo,repo_labels);
         }
-        gitRepoService.createUpdateLabels(repo,repo_labels);
         response.close();
     }
 
@@ -190,15 +189,15 @@ public class CrawlProjectsJob {
         ResponseBody responseBody = response.body();
         if (response.isSuccessful() && responseBody != null){
             JsonObject result = parseString(responseBody.string()).getAsJsonObject();
-            Set<String> keySet = result .keySet();
+            Set<String> keySet = result.keySet();
             keySet.forEach(key -> repo_languages.add(GitRepoLanguage.builder()
                                                                     .repo(repo)
                                                                     .language(key)
                                                                     .sizeOfCode(result.get(key).getAsLong())
                                                                     .build())
             );
+            gitRepoService.createUpdateLanguages(repo,repo_languages);
         }
-        gitRepoService.createUpdateLanguages(repo,repo_languages);
         response.close();
     }
 
