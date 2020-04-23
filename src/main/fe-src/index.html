@@ -115,356 +115,357 @@
         </div>
 
         <div id="page-content" class="py-5">
-            <div class="container-fluid text-center">
-                <div class="row justify-content-center">
-                    <form id="form" autocomplete="off" class="w-75 bg-llgray-transparent border bg-tra">
-                        <div class="px-3 pt-3 row text-left">
-                            <div class="col-12">
-                                <h1 class="rowlabel">General</h1>
-                            </div>
+            <div id="form-container" class="row justify-content-center text-center">
+                <form id="form" autocomplete="off" class="w-75 bg-llgray-transparent border bg-tra">
+                    <div class="px-3 pt-3 row text-left">
+                        <div class="col-12">
+                            <h1 class="rowlabel">General</h1>
                         </div>
-                        <div class="p-3 row">
-                            <div class="col-8">
-                                <div class="input-group">
-                                    <input type="text" id="name" name="name" class="form-control rounded-0 bg-lgray border-secondary border-left-0 border-top-0 border-right-0" placeholder="Repository name" pattern="[A-Za-z0-9-_.]*" title="Only letters, numbers, dash, underscore and dot characters are allowed here!">
-                                    <div class="input-group-append">
-                                        <button type="button" id="match" name="nameEquals" value="false" class="btn btn-outline-secondary rounded-0 border-left-0 border-top-0 border-right-0 bg-lgray" data-toggle="dropdown">
-                                            Matching <i class="fa fa-angle-down fa-lg"></i>
-                                        </button>
-                                        <div class="dropdown-menu dropdown-menu-right rounded-0">
-                                            <a class="dropdown-item" onclick="changeToContains()">Contains</a>
-                                            <a class="dropdown-item" onclick="changeToEquals()">Equals</a>
-                                        </div>
+                    </div>
+                    <div class="p-3 row">
+                        <div class="col-8">
+                            <div class="input-group">
+                                <input type="text" id="name" name="name" class="form-control rounded-0 bg-lgray border-secondary border-left-0 border-top-0 border-right-0" placeholder="Repository name" pattern="[A-Za-z0-9-_.]*" title="Only letters, numbers, dash, underscore and dot characters are allowed here!">
+                                <div class="input-group-append">
+                                    <button type="button" id="match" name="nameEquals" value="false" class="btn btn-outline-secondary rounded-0 border-left-0 border-top-0 border-right-0 bg-lgray" data-toggle="dropdown">
+                                        Matching <i class="fa fa-angle-down fa-lg"></i>
+                                    </button>
+                                    <div class="dropdown-menu dropdown-menu-right rounded-0">
+                                        <a class="dropdown-item" onclick="changeToContains()">Contains</a>
+                                        <a class="dropdown-item" onclick="changeToEquals()">Equals</a>
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-4">
-                                <input id="language" name="language" class="form-control rounded-0 border-secondary border-top-0 border-left-0 border-right-0 bg-lgray" value="" type="text" placeholder="Language" pattern="[A-Za-z]*" title="Only letters are allowed here!">
-                            </div>
                         </div>
-                        <div class="px-3 pb-3 row">
-                            <div class="col-8">
-                                <input id="license" name="license" class="form-control rounded-0 border-secondary border-top-0 border-left-0 border-right-0 bg-lgray" value="" type="text" placeholder="License" pattern="[A-Za-z0-9-.*/\s]*" title="Please use only existing GitHub licenses">
-                            </div>
-                            <div class="col-4">
-                                <input id="label" name="label" class="form-control rounded-0 border-secondary border-top-0 border-left-0 border-right-0 bg-lgray" value="" type="text" placeholder="Uses Label" pattern="[A-Za-z0-9-.:*/?\s]*" title="Please avoid using non-alphanumeric characters">
-                            </div>
+                        <div class="col-4">
+                            <input id="language" name="language" class="form-control rounded-0 border-secondary border-top-0 border-left-0 border-right-0 bg-lgray" value="" type="text" placeholder="Language" pattern="[A-Za-z]*" title="Only letters are allowed here!">
                         </div>
-                        <div class="px-3 pt-3 row text-left">
-                            <div class="col-8">
-                                <h1 class="rowlabel">History and Activity</h1>
-                            </div>
-                            <div class="col-4">
-                                <h1 class="rowlabel">Date-based Filters</h1>
-                            </div>
+                    </div>
+                    <div class="px-3 pb-3 row">
+                        <div class="col-8">
+                            <input id="license" name="license" class="form-control rounded-0 border-secondary border-top-0 border-left-0 border-right-0 bg-lgray" value="" type="text" placeholder="License" pattern="[A-Za-z0-9-.*/\s]*" title="Please use only existing GitHub licenses">
                         </div>
-                        <div class="px-3 pt-3 row text-left">
-                            <div class="col-4">
-                                <h2 class="rowsublabel">Number of commits</h2>
-                            </div>
-                            <div class="col-4">
-                                <h2 class="rowsublabel">Number of contributors</h2>
-                            </div>
-                            <div class="col-4">
-                                <h2 class="rowsublabel">Created at</h2>
-                            </div>
+                        <div class="col-4">
+                            <input id="label" name="label" class="form-control rounded-0 border-secondary border-top-0 border-left-0 border-right-0 bg-lgray" value="" type="text" placeholder="Uses Label" pattern="[A-Za-z0-9-.:*/?\s]*" title="Please avoid using non-alphanumeric characters">
                         </div>
-                        <div class="px-3 pb-3 pt-1 row">
-                            <div class="col-2">
-                                <div class="input-group">
-                                    <input type="text" id="commitsMin" name="commitsMin" class="form-control input-number bg-lgray border-secondary border-left-0 border-top-0 border-right-0 rounded-0" value="" min="0" max="9223372036854775807" placeholder="min" pattern="0|([1-9][0-9]*)" title="Only non-negative integers are allowed here!">
-                                    <span class="input-group-btn input-group-btn-vertical">
+                    </div>
+                    <div class="px-3 pt-3 row text-left">
+                        <div class="col-8">
+                            <h1 class="rowlabel">History and Activity</h1>
+                        </div>
+                        <div class="col-4">
+                            <h1 class="rowlabel">Date-based Filters</h1>
+                        </div>
+                    </div>
+                    <div class="px-3 pt-3 row text-left">
+                        <div class="col-4">
+                            <h2 class="rowsublabel">Number of commits</h2>
+                        </div>
+                        <div class="col-4">
+                            <h2 class="rowsublabel">Number of contributors</h2>
+                        </div>
+                        <div class="col-4">
+                            <h2 class="rowsublabel">Created at</h2>
+                        </div>
+                    </div>
+                    <div class="px-3 pb-3 pt-1 row">
+                        <div class="col-2">
+                            <div class="input-group">
+                                <input type="text" id="commitsMin" name="commitsMin" class="form-control input-number bg-lgray border-secondary border-left-0 border-top-0 border-right-0 rounded-0" value="" min="0" max="9223372036854775807" placeholder="min" pattern="0|([1-9][0-9]*)" title="Only non-negative integers are allowed here!">
+                                <span class="input-group-btn input-group-btn-vertical">
                                         <button class="btn btn-number btn-outline-secondary bg-lgray rounded-0 border-0" type="button" onclick="increment('commitsMin')"><i class="fa fa-angle-up"></i></button>
                                         <button class="btn btn-number btn-outline-secondary bg-lgray border-secondary border-left-0 border-top-0 border-right-0 rounded-0" type="button" onclick="decrement('commitsMin')"><i class="fa fa-angle-down"></i></button>
                                     </span>
-                                </div>
                             </div>
-                            <div class="col-2">
-                                <div class="input-group">
-                                    <input type="text" id="commitsMax" name="commitsMax" class="form-control input-number bg-lgray border-secondary border-left-0 border-top-0 border-right-0 rounded-0" value="" min="0" max="9007199254740991" placeholder="max" pattern="0|([1-9][0-9]*)" title="Only non-negative integers are allowed here!">
-                                    <span class="input-group-btn input-group-btn-vertical">
+                        </div>
+                        <div class="col-2">
+                            <div class="input-group">
+                                <input type="text" id="commitsMax" name="commitsMax" class="form-control input-number bg-lgray border-secondary border-left-0 border-top-0 border-right-0 rounded-0" value="" min="0" max="9007199254740991" placeholder="max" pattern="0|([1-9][0-9]*)" title="Only non-negative integers are allowed here!">
+                                <span class="input-group-btn input-group-btn-vertical">
                                         <button class="btn btn-number btn-outline-secondary bg-lgray rounded-0 border-0" type="button" onclick="increment('commitsMax')"><i class="fa fa-angle-up"></i></button>
                                         <button class="btn btn-number btn-outline-secondary bg-lgray border-secondary border-left-0 border-top-0 border-right-0 rounded-0" type="button" onclick="decrement('commitsMax')"><i class="fa fa-angle-down"></i></button>
                                     </span>
-                                </div>
                             </div>
-                            <div class="col-2">
-                                <div class="input-group">
-                                    <input type="text" id="contributorsMin" name="contributorsMin" class="form-control input-number bg-lgray border-secondary border-left-0 border-top-0 border-right-0 rounded-0" value="" min="0" max="9223372036854775807" placeholder="min" pattern="0|([1-9][0-9]*)" title="Only non-negative integers are allowed here!">
-                                    <span class="input-group-btn input-group-btn-vertical">
+                        </div>
+                        <div class="col-2">
+                            <div class="input-group">
+                                <input type="text" id="contributorsMin" name="contributorsMin" class="form-control input-number bg-lgray border-secondary border-left-0 border-top-0 border-right-0 rounded-0" value="" min="0" max="9223372036854775807" placeholder="min" pattern="0|([1-9][0-9]*)" title="Only non-negative integers are allowed here!">
+                                <span class="input-group-btn input-group-btn-vertical">
                                         <button class="btn btn-number btn-outline-secondary bg-lgray rounded-0 border-0" type="button" onclick="increment('contributorsMin')"><i class="fa fa-angle-up"></i></button>
                                         <button class="btn btn-number btn-outline-secondary bg-lgray border-secondary border-left-0 border-top-0 border-right-0 rounded-0" type="button" onclick="decrement('contributorsMin')"><i class="fa fa-angle-down"></i></button>
                                     </span>
-                                </div>
                             </div>
-                            <div class="col-2">
-                                <div class="input-group">
-                                    <input type="text" id="contributorsMax" name="contributorsMax" class="form-control input-number bg-lgray border-secondary border-left-0 border-top-0 border-right-0 rounded-0" value="" min="0" max="9223372036854775807" placeholder="max" pattern="0|([1-9][0-9]*)" title="Only non-negative integers are allowed here!">
-                                    <span class="input-group-btn input-group-btn-vertical">
+                        </div>
+                        <div class="col-2">
+                            <div class="input-group">
+                                <input type="text" id="contributorsMax" name="contributorsMax" class="form-control input-number bg-lgray border-secondary border-left-0 border-top-0 border-right-0 rounded-0" value="" min="0" max="9223372036854775807" placeholder="max" pattern="0|([1-9][0-9]*)" title="Only non-negative integers are allowed here!">
+                                <span class="input-group-btn input-group-btn-vertical">
                                         <button class="btn btn-number btn-outline-secondary bg-lgray rounded-0 border-0" type="button" onclick="increment('contributorsMax')"><i class="fa fa-angle-up"></i></button>
                                         <button class="btn btn-number btn-outline-secondary bg-lgray border-secondary border-left-0 border-top-0 border-right-0 rounded-0" type="button" onclick="decrement('contributorsMax')"><i class="fa fa-angle-down"></i></button>
                                     </span>
-                                </div>
                             </div>
-                            <div class="col-2">
-                                <div class="input-group date" data-date-format="yyyy-mm-dd">
-                                    <input type="text" id="createdMin" name="createdMin" class="form-control input-number bg-lgray border-secondary border-left-0 border-top-0 border-right-0 rounded-0" value="" placeholder="after" pattern="(((20)[0-9]{2}[\-.](0[13578]|1[02])[\-.](0[1-9]|[12][0-9]|3[01]))|(20)[0-9]{2}[\-.](0[469]|11)[\-.](0[1-9]|[12][0-9]|30)|(20)[0-9]{2}[\-.](02)[\-.](0[1-9]|1[0-9]|2[0-8])|(((20)(04|08|[2468][048]|[13579][26]))|2000)[\-.](02)[\-.]29){0,1}" title="Make sure your date is formatted as: YYYY-MM-DD">
-                                    <span class="input-group-btn">
+                        </div>
+                        <div class="col-2">
+                            <div class="input-group date" data-date-format="yyyy-mm-dd">
+                                <input type="text" id="createdMin" name="createdMin" class="form-control input-number bg-lgray border-secondary border-left-0 border-top-0 border-right-0 rounded-0" value="" placeholder="after" pattern="(((20)[0-9]{2}[\-.](0[13578]|1[02])[\-.](0[1-9]|[12][0-9]|3[01]))|(20)[0-9]{2}[\-.](0[469]|11)[\-.](0[1-9]|[12][0-9]|30)|(20)[0-9]{2}[\-.](02)[\-.](0[1-9]|1[0-9]|2[0-8])|(((20)(04|08|[2468][048]|[13579][26]))|2000)[\-.](02)[\-.]29){0,1}" title="Make sure your date is formatted as: YYYY-MM-DD">
+                                <span class="input-group-btn">
                                         <button type="button" id="btnCreatedMin" class="btn btn-number btn-outline-secondary rounded-0 border-left-0 border-top-0 border-right-0 bg-lgray">
                                             <span class="fa fa-calendar-o"></span>
                                         </button>
                                     </span>
-                                </div>
                             </div>
-                            <div class="col-2">
-                                <div class="input-group date" data-date-format="yyyy-mm-dd">
-                                    <input type="text" id="createdMax" name="createdMax" class="form-control input-number bg-lgray border-secondary border-left-0 border-top-0 border-right-0 rounded-0" value="" placeholder="before" pattern="(((20)[0-9]{2}[\-.](0[13578]|1[02])[\-.](0[1-9]|[12][0-9]|3[01]))|(20)[0-9]{2}[\-.](0[469]|11)[\-.](0[1-9]|[12][0-9]|30)|(20)[0-9]{2}[\-.](02)[\-.](0[1-9]|1[0-9]|2[0-8])|(((20)(04|08|[2468][048]|[13579][26]))|2000)[\-.](02)[\-.]29){0,1}" title="Make sure your date is formatted as: YYYY-MM-DD">
-                                    <span class="input-group-btn">
+                        </div>
+                        <div class="col-2">
+                            <div class="input-group date" data-date-format="yyyy-mm-dd">
+                                <input type="text" id="createdMax" name="createdMax" class="form-control input-number bg-lgray border-secondary border-left-0 border-top-0 border-right-0 rounded-0" value="" placeholder="before" pattern="(((20)[0-9]{2}[\-.](0[13578]|1[02])[\-.](0[1-9]|[12][0-9]|3[01]))|(20)[0-9]{2}[\-.](0[469]|11)[\-.](0[1-9]|[12][0-9]|30)|(20)[0-9]{2}[\-.](02)[\-.](0[1-9]|1[0-9]|2[0-8])|(((20)(04|08|[2468][048]|[13579][26]))|2000)[\-.](02)[\-.]29){0,1}" title="Make sure your date is formatted as: YYYY-MM-DD">
+                                <span class="input-group-btn">
                                         <button type="button" id="btnCreatedMax" class="btn btn-number btn-outline-secondary rounded-0 border-left-0 border-top-0 border-right-0 bg-lgray">
                                             <span class="fa fa-calendar-o"></span>
                                         </button>
                                     </span>
-                                </div>
                             </div>
                         </div>
-                        <div class="px-3 row text-left">
-                            <div class="col-4">
-                                <h2 class="rowsublabel">Number of issues</h2>
-                            </div>
-                            <div class="col-4">
-                                <h2 class="rowsublabel">Number of pull requests</h2>
-                            </div>
-                            <div class="col-4">
-                                <h2 class="rowsublabel">Last commit at</h2>
-                            </div>
+                    </div>
+                    <div class="px-3 row text-left">
+                        <div class="col-4">
+                            <h2 class="rowsublabel">Number of issues</h2>
                         </div>
-                        <div class="px-3 pb-3 pt-1 row">
-                            <div class="col-2">
-                                <div class="input-group">
-                                    <input type="text" id="issuesMin" name="issuesMin" class="form-control input-number bg-lgray border-secondary border-left-0 border-top-0 border-right-0 rounded-0" value="" min="0" max="9223372036854775807" placeholder="min" pattern="0|([1-9][0-9]*)" title="Only non-negative integers are allowed here!">
-                                    <span class="input-group-btn input-group-btn-vertical">
+                        <div class="col-4">
+                            <h2 class="rowsublabel">Number of pull requests</h2>
+                        </div>
+                        <div class="col-4">
+                            <h2 class="rowsublabel">Last commit at</h2>
+                        </div>
+                    </div>
+                    <div class="px-3 pb-3 pt-1 row">
+                        <div class="col-2">
+                            <div class="input-group">
+                                <input type="text" id="issuesMin" name="issuesMin" class="form-control input-number bg-lgray border-secondary border-left-0 border-top-0 border-right-0 rounded-0" value="" min="0" max="9223372036854775807" placeholder="min" pattern="0|([1-9][0-9]*)" title="Only non-negative integers are allowed here!">
+                                <span class="input-group-btn input-group-btn-vertical">
                                         <button class="btn btn-number btn-outline-secondary bg-lgray rounded-0 border-0" type="button" onclick="increment('issuesMin')"><i class="fa fa-angle-up"></i></button>
                                         <button class="btn btn-number btn-outline-secondary bg-lgray border-secondary border-left-0 border-top-0 border-right-0 rounded-0" type="button" onclick="decrement('issuesMin')"><i class="fa fa-angle-down"></i></button>
                                     </span>
-                                </div>
                             </div>
-                            <div class="col-2">
-                                <div class="input-group">
-                                    <input type="text" id="issuesMax" name="issuesMax" class="form-control input-number bg-lgray border-secondary border-left-0 border-top-0 border-right-0 rounded-0" value="" min="0" max="9007199254740991" placeholder="max" pattern="0|([1-9][0-9]*)" title="Only non-negative integers are allowed here!">
-                                    <span class="input-group-btn input-group-btn-vertical">
+                        </div>
+                        <div class="col-2">
+                            <div class="input-group">
+                                <input type="text" id="issuesMax" name="issuesMax" class="form-control input-number bg-lgray border-secondary border-left-0 border-top-0 border-right-0 rounded-0" value="" min="0" max="9007199254740991" placeholder="max" pattern="0|([1-9][0-9]*)" title="Only non-negative integers are allowed here!">
+                                <span class="input-group-btn input-group-btn-vertical">
                                         <button class="btn btn-number btn-outline-secondary bg-lgray rounded-0 border-0" type="button" onclick="increment('issuesMax')"><i class="fa fa-angle-up"></i></button>
                                         <button class="btn btn-number btn-outline-secondary bg-lgray border-secondary border-left-0 border-top-0 border-right-0 rounded-0" type="button" onclick="decrement('issuesMax')"><i class="fa fa-angle-down"></i></button>
                                     </span>
-                                </div>
                             </div>
-                            <div class="col-2">
-                                <div class="input-group">
-                                    <input type="text" id="pullsMin" name="pullsMin" class="form-control input-number bg-lgray border-secondary border-left-0 border-top-0 border-right-0 rounded-0" value="" min="0" max="9223372036854775807" placeholder="min" pattern="0|([1-9][0-9]*)" title="Only non-negative integers are allowed here!">
-                                    <span class="input-group-btn input-group-btn-vertical">
+                        </div>
+                        <div class="col-2">
+                            <div class="input-group">
+                                <input type="text" id="pullsMin" name="pullsMin" class="form-control input-number bg-lgray border-secondary border-left-0 border-top-0 border-right-0 rounded-0" value="" min="0" max="9223372036854775807" placeholder="min" pattern="0|([1-9][0-9]*)" title="Only non-negative integers are allowed here!">
+                                <span class="input-group-btn input-group-btn-vertical">
                                         <button class="btn btn-number btn-outline-secondary bg-lgray rounded-0 border-0" type="button" onclick="increment('pullsMin')"><i class="fa fa-angle-up"></i></button>
                                         <button class="btn btn-number btn-outline-secondary bg-lgray border-secondary border-left-0 border-top-0 border-right-0 rounded-0" type="button" onclick="decrement('pullsMin')"><i class="fa fa-angle-down"></i></button>
                                     </span>
-                                </div>
                             </div>
-                            <div class="col-2">
-                                <div class="input-group">
-                                    <input type="text" id="pullsMax" name="pullsMax" class="form-control input-number bg-lgray border-secondary border-left-0 border-top-0 border-right-0 rounded-0" value="" min="0" max="9223372036854775807" placeholder="max" pattern="0|([1-9][0-9]*)" title="Only non-negative integers are allowed here!">
-                                    <span class="input-group-btn input-group-btn-vertical">
+                        </div>
+                        <div class="col-2">
+                            <div class="input-group">
+                                <input type="text" id="pullsMax" name="pullsMax" class="form-control input-number bg-lgray border-secondary border-left-0 border-top-0 border-right-0 rounded-0" value="" min="0" max="9223372036854775807" placeholder="max" pattern="0|([1-9][0-9]*)" title="Only non-negative integers are allowed here!">
+                                <span class="input-group-btn input-group-btn-vertical">
                                         <button class="btn btn-number btn-outline-secondary bg-lgray rounded-0 border-0" type="button" onclick="increment('pullsMax')"><i class="fa fa-angle-up"></i></button>
                                         <button class="btn btn-number btn-outline-secondary bg-lgray border-secondary border-left-0 border-top-0 border-right-0 rounded-0" type="button" onclick="decrement('pullsMax')"><i class="fa fa-angle-down"></i></button>
                                     </span>
-                                </div>
                             </div>
-                            <div class="col-2">
-                                <div class="input-group date" data-date-format="yyyy-mm-dd">
-                                    <input type="text" id="committedMin" name="committedMin" class="form-control input-number bg-lgray border-secondary border-left-0 border-top-0 border-right-0 rounded-0" value="" placeholder="after" pattern="(((20)[0-9]{2}[\-.](0[13578]|1[02])[\-.](0[1-9]|[12][0-9]|3[01]))|(20)[0-9]{2}[\-.](0[469]|11)[\-.](0[1-9]|[12][0-9]|30)|(20)[0-9]{2}[\-.](02)[\-.](0[1-9]|1[0-9]|2[0-8])|(((20)(04|08|[2468][048]|[13579][26]))|2000)[\-.](02)[\-.]29){0,1}" title="Make sure your date is formatted as: YYYY-MM-DD">
-                                    <span class="input-group-btn">
+                        </div>
+                        <div class="col-2">
+                            <div class="input-group date" data-date-format="yyyy-mm-dd">
+                                <input type="text" id="committedMin" name="committedMin" class="form-control input-number bg-lgray border-secondary border-left-0 border-top-0 border-right-0 rounded-0" value="" placeholder="after" pattern="(((20)[0-9]{2}[\-.](0[13578]|1[02])[\-.](0[1-9]|[12][0-9]|3[01]))|(20)[0-9]{2}[\-.](0[469]|11)[\-.](0[1-9]|[12][0-9]|30)|(20)[0-9]{2}[\-.](02)[\-.](0[1-9]|1[0-9]|2[0-8])|(((20)(04|08|[2468][048]|[13579][26]))|2000)[\-.](02)[\-.]29){0,1}" title="Make sure your date is formatted as: YYYY-MM-DD">
+                                <span class="input-group-btn">
                                         <button type="button" id="btnCommittedMin" class="btn btn-number btn-outline-secondary rounded-0 border-left-0 border-top-0 border-right-0 bg-lgray">
                                             <span class="fa fa-calendar-o"></span>
                                         </button>
                                     </span>
-                                </div>
                             </div>
-                            <div class="col-2">
-                                <div class="input-group date" data-date-format="yyyy-mm-dd">
-                                    <input type="text" id="committedMax" name="committedMax" class="form-control input-number bg-lgray border-secondary border-left-0 border-top-0 border-right-0 rounded-0" value="" placeholder="before" pattern="(((20)[0-9]{2}[\-.](0[13578]|1[02])[\-.](0[1-9]|[12][0-9]|3[01]))|(20)[0-9]{2}[\-.](0[469]|11)[\-.](0[1-9]|[12][0-9]|30)|(20)[0-9]{2}[\-.](02)[\-.](0[1-9]|1[0-9]|2[0-8])|(((20)(04|08|[2468][048]|[13579][26]))|2000)[\-.](02)[\-.]29){0,1}" title="Make sure your date is formatted as: YYYY-MM-DD">
-                                    <span class="input-group-btn">
+                        </div>
+                        <div class="col-2">
+                            <div class="input-group date" data-date-format="yyyy-mm-dd">
+                                <input type="text" id="committedMax" name="committedMax" class="form-control input-number bg-lgray border-secondary border-left-0 border-top-0 border-right-0 rounded-0" value="" placeholder="before" pattern="(((20)[0-9]{2}[\-.](0[13578]|1[02])[\-.](0[1-9]|[12][0-9]|3[01]))|(20)[0-9]{2}[\-.](0[469]|11)[\-.](0[1-9]|[12][0-9]|30)|(20)[0-9]{2}[\-.](02)[\-.](0[1-9]|1[0-9]|2[0-8])|(((20)(04|08|[2468][048]|[13579][26]))|2000)[\-.](02)[\-.]29){0,1}" title="Make sure your date is formatted as: YYYY-MM-DD">
+                                <span class="input-group-btn">
                                         <button type="button" id="btnCommittedMax" class="btn btn-number btn-outline-secondary rounded-0 border-left-0 border-top-0 border-right-0 bg-lgray">
                                             <span class="fa fa-calendar-o"></span>
                                         </button>
                                     </span>
-                                </div>
                             </div>
                         </div>
-                        <div class="px-3 row text-left">
-                            <div class="col-4">
-                                <h2 class="rowsublabel">Number of branches</h2>
-                            </div>
-                            <div class="col-4">
-                                <h2 class="rowsublabel">Number of releases</h2>
-                            </div>
+                    </div>
+                    <div class="px-3 row text-left">
+                        <div class="col-4">
+                            <h2 class="rowsublabel">Number of branches</h2>
                         </div>
-                        <div class="px-3 pb-3 pt-1 row">
-                            <div class="col-2">
-                                <div class="input-group">
-                                    <input type="text" id="branchesMin" name="branchesMin" class="form-control input-number bg-lgray border-secondary border-left-0 border-top-0 border-right-0 rounded-0" value="" min="0" max="9223372036854775807" placeholder="min" pattern="0|([1-9][0-9]*)" title="Only non-negative integers are allowed here!">
-                                    <span class="input-group-btn input-group-btn-vertical">
+                        <div class="col-4">
+                            <h2 class="rowsublabel">Number of releases</h2>
+                        </div>
+                    </div>
+                    <div class="px-3 pb-3 pt-1 row">
+                        <div class="col-2">
+                            <div class="input-group">
+                                <input type="text" id="branchesMin" name="branchesMin" class="form-control input-number bg-lgray border-secondary border-left-0 border-top-0 border-right-0 rounded-0" value="" min="0" max="9223372036854775807" placeholder="min" pattern="0|([1-9][0-9]*)" title="Only non-negative integers are allowed here!">
+                                <span class="input-group-btn input-group-btn-vertical">
                                         <button class="btn btn-number btn-outline-secondary bg-lgray rounded-0 border-0" type="button" onclick="increment('branchesMin')"><i class="fa fa-angle-up"></i></button>
                                         <button class="btn btn-number btn-outline-secondary bg-lgray border-secondary border-left-0 border-top-0 border-right-0 rounded-0" type="button" onclick="decrement('branchesMin')"><i class="fa fa-angle-down"></i></button>
                                     </span>
-                                </div>
                             </div>
-                            <div class="col-2">
-                                <div class="input-group">
-                                    <input type="text" id="branchesMax" name="branchesMax" class="form-control input-number bg-lgray border-secondary border-left-0 border-top-0 border-right-0 rounded-0" value="" min="0" max="9007199254740991" placeholder="max" pattern="0|([1-9][0-9]*)" title="Only non-negative integers are allowed here!">
-                                    <span class="input-group-btn input-group-btn-vertical">
+                        </div>
+                        <div class="col-2">
+                            <div class="input-group">
+                                <input type="text" id="branchesMax" name="branchesMax" class="form-control input-number bg-lgray border-secondary border-left-0 border-top-0 border-right-0 rounded-0" value="" min="0" max="9007199254740991" placeholder="max" pattern="0|([1-9][0-9]*)" title="Only non-negative integers are allowed here!">
+                                <span class="input-group-btn input-group-btn-vertical">
                                         <button class="btn btn-number btn-outline-secondary bg-lgray rounded-0 border-0" type="button" onclick="increment('branchesMax')"><i class="fa fa-angle-up"></i></button>
                                         <button class="btn btn-number btn-outline-secondary bg-lgray border-secondary border-left-0 border-top-0 border-right-0 rounded-0" type="button" onclick="decrement('branchesMax')"><i class="fa fa-angle-down"></i></button>
                                     </span>
-                                </div>
                             </div>
-                            <div class="col-2">
-                                <div class="input-group">
-                                    <input type="text" id="releasesMin" name="releasesMin" class="form-control input-number bg-lgray border-secondary border-left-0 border-top-0 border-right-0 rounded-0" value="" min="0" max="9223372036854775807" placeholder="min" pattern="0|([1-9][0-9]*)" title="Only non-negative integers are allowed here!">
-                                    <span class="input-group-btn input-group-btn-vertical">
+                        </div>
+                        <div class="col-2">
+                            <div class="input-group">
+                                <input type="text" id="releasesMin" name="releasesMin" class="form-control input-number bg-lgray border-secondary border-left-0 border-top-0 border-right-0 rounded-0" value="" min="0" max="9223372036854775807" placeholder="min" pattern="0|([1-9][0-9]*)" title="Only non-negative integers are allowed here!">
+                                <span class="input-group-btn input-group-btn-vertical">
                                         <button class="btn btn-number btn-outline-secondary bg-lgray rounded-0 border-0" type="button" onclick="increment('releasesMin')"><i class="fa fa-angle-up"></i></button>
                                         <button class="btn btn-number btn-outline-secondary bg-lgray border-secondary border-left-0 border-top-0 border-right-0 rounded-0" type="button" onclick="decrement('releasesMin')"><i class="fa fa-angle-down"></i></button>
                                     </span>
-                                </div>
                             </div>
-                            <div class="col-2">
-                                <div class="input-group">
-                                    <input type="text" id="releasesMax" name="releasesMax" class="form-control input-number bg-lgray border-secondary border-left-0 border-top-0 border-right-0 rounded-0" value="" min="0" max="9223372036854775807" placeholder="max" pattern="0|([1-9][0-9]*)" title="Only non-negative integers are allowed here!">
-                                    <span class="input-group-btn input-group-btn-vertical">
+                        </div>
+                        <div class="col-2">
+                            <div class="input-group">
+                                <input type="text" id="releasesMax" name="releasesMax" class="form-control input-number bg-lgray border-secondary border-left-0 border-top-0 border-right-0 rounded-0" value="" min="0" max="9223372036854775807" placeholder="max" pattern="0|([1-9][0-9]*)" title="Only non-negative integers are allowed here!">
+                                <span class="input-group-btn input-group-btn-vertical">
                                         <button class="btn btn-number btn-outline-secondary bg-lgray rounded-0 border-0" type="button" onclick="increment('releasesMax')"><i class="fa fa-angle-up"></i></button>
                                         <button class="btn btn-number btn-outline-secondary bg-lgray border-secondary border-left-0 border-top-0 border-right-0 rounded-0" type="button" onclick="decrement('releasesMax')"><i class="fa fa-angle-down"></i></button>
                                     </span>
-                                </div>
                             </div>
                         </div>
-                        <div class="p-3 row text-left">
-                            <div class="col-8">
-                                <h1 class="rowlabel">Popularity Filters</h1>
-                            </div>
-                            <div class="col-4">
-                                <h1 class="rowlabel">Additional Filters</h1>
+                    </div>
+                    <div class="p-3 row text-left">
+                        <div class="col-8">
+                            <h1 class="rowlabel">Popularity Filters</h1>
+                        </div>
+                        <div class="col-4">
+                            <h1 class="rowlabel">Additional Filters</h1>
+                        </div>
+                    </div>
+                    <div class="px-3 row text-left">
+                        <div class="col-4">
+                            <h2 class="rowsublabel">Number of stars</h2>
+                        </div>
+                        <div class="col-4">
+                            <h2 class="rowsublabel">Number of watchers</h2>
+                        </div>
+                        <div class="col-4">
+                            <div class="form-check text-left">
+                                <label class="form-check-label">
+                                    <input type="checkbox" class="form-check-input" id="onlyForks" name="onlyForks" onchange="checkOnlyForked()"><span>Only Forked Projects</span>
+                                </label>
                             </div>
                         </div>
-                        <div class="px-3 row text-left">
-                            <div class="col-4">
-                                <h2 class="rowsublabel">Number of stars</h2>
-                            </div>
-                            <div class="col-4">
-                                <h2 class="rowsublabel">Number of watchers</h2>
-                            </div>
-                            <div class="col-4">
-                                <div class="form-check text-left">
-                                    <label class="form-check-label">
-                                        <input type="checkbox" class="form-check-input" id="onlyForks" name="onlyForks" onchange="checkOnlyForked()"><span>Only Forked Projects</span>
-                                    </label>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="px-3 row">
-                            <div class="col-2">
-                                <div class="input-group">
-                                    <input type="text" id="starsMin" name="starsMin" class="form-control input-number bg-lgray border-secondary border-left-0 border-top-0 border-right-0 rounded-0" value="" min="0" max="9223372036854775807" placeholder="min" pattern="0|([1-9][0-9]*)" title="Only non-negative integers are allowed here!">
-                                    <span class="input-group-btn input-group-btn-vertical">
+                    </div>
+                    <div class="px-3 row">
+                        <div class="col-2">
+                            <div class="input-group">
+                                <input type="text" id="starsMin" name="starsMin" class="form-control input-number bg-lgray border-secondary border-left-0 border-top-0 border-right-0 rounded-0" value="" min="0" max="9223372036854775807" placeholder="min" pattern="0|([1-9][0-9]*)" title="Only non-negative integers are allowed here!">
+                                <span class="input-group-btn input-group-btn-vertical">
                                         <button class="btn btn-number btn-outline-secondary bg-lgray rounded-0 border-0" type="button" onclick="increment('starsMin')"><i class="fa fa-angle-up"></i></button>
                                         <button class="btn btn-number btn-outline-secondary bg-lgray border-secondary border-left-0 border-top-0 border-right-0 rounded-0" type="button" onclick="decrement('starsMin')"><i class="fa fa-angle-down"></i></button>
                                     </span>
-                                </div>
                             </div>
-                            <div class="col-2">
-                                <div class="input-group">
-                                    <input type="text" id="starsMax" name="starsMax" class="form-control input-number bg-lgray border-secondary border-left-0 border-top-0 border-right-0 rounded-0" value="" min="0" max="9007199254740991" placeholder="max" pattern="0|([1-9][0-9]*)" title="Only non-negative integers are allowed here!">
-                                    <span class="input-group-btn input-group-btn-vertical">
+                        </div>
+                        <div class="col-2">
+                            <div class="input-group">
+                                <input type="text" id="starsMax" name="starsMax" class="form-control input-number bg-lgray border-secondary border-left-0 border-top-0 border-right-0 rounded-0" value="" min="0" max="9007199254740991" placeholder="max" pattern="0|([1-9][0-9]*)" title="Only non-negative integers are allowed here!">
+                                <span class="input-group-btn input-group-btn-vertical">
                                         <button class="btn btn-number btn-outline-secondary bg-lgray rounded-0 border-0" type="button" onclick="increment('starsMax')"><i class="fa fa-angle-up"></i></button>
                                         <button class="btn btn-number btn-outline-secondary bg-lgray border-secondary border-left-0 border-top-0 border-right-0 rounded-0" type="button" onclick="decrement('starsMax')"><i class="fa fa-angle-down"></i></button>
                                     </span>
-                                </div>
                             </div>
-                            <div class="col-2">
-                                <div class="input-group">
-                                    <input type="text" id="watchersMin" name="watchersMin" class="form-control input-number bg-lgray border-secondary border-left-0 border-top-0 border-right-0 rounded-0" value="" min="0" max="9223372036854775807" placeholder="min" pattern="0|([1-9][0-9]*)" title="Only non-negative integers are allowed here!">
-                                    <span class="input-group-btn input-group-btn-vertical">
+                        </div>
+                        <div class="col-2">
+                            <div class="input-group">
+                                <input type="text" id="watchersMin" name="watchersMin" class="form-control input-number bg-lgray border-secondary border-left-0 border-top-0 border-right-0 rounded-0" value="" min="0" max="9223372036854775807" placeholder="min" pattern="0|([1-9][0-9]*)" title="Only non-negative integers are allowed here!">
+                                <span class="input-group-btn input-group-btn-vertical">
                                         <button class="btn btn-number btn-outline-secondary bg-lgray rounded-0 border-0" type="button" onclick="increment('watchersMin')"><i class="fa fa-angle-up"></i></button>
                                         <button class="btn btn-number btn-outline-secondary bg-lgray border-secondary border-left-0 border-top-0 border-right-0 rounded-0" type="button" onclick="decrement('watchersMin')"><i class="fa fa-angle-down"></i></button>
                                     </span>
-                                </div>
                             </div>
-                            <div class="col-2">
-                                <div class="input-group">
-                                    <input type="text" id="watchersMax" name="watchersMax" class="form-control input-number bg-lgray border-secondary border-left-0 border-top-0 border-right-0 rounded-0" value="" min="0" max="9223372036854775807" placeholder="max" pattern="0|([1-9][0-9]*)" title="Only non-negative integers are allowed here!">
-                                    <span class="input-group-btn input-group-btn-vertical">
+                        </div>
+                        <div class="col-2">
+                            <div class="input-group">
+                                <input type="text" id="watchersMax" name="watchersMax" class="form-control input-number bg-lgray border-secondary border-left-0 border-top-0 border-right-0 rounded-0" value="" min="0" max="9223372036854775807" placeholder="max" pattern="0|([1-9][0-9]*)" title="Only non-negative integers are allowed here!">
+                                <span class="input-group-btn input-group-btn-vertical">
                                         <button class="btn btn-number btn-outline-secondary bg-lgray rounded-0 border-0" type="button" onclick="increment('watchersMax')"><i class="fa fa-angle-up"></i></button>
                                         <button class="btn btn-number btn-outline-secondary bg-lgray border-secondary border-left-0 border-top-0 border-right-0 rounded-0" type="button" onclick="decrement('watchersMax')"><i class="fa fa-angle-down"></i></button>
                                     </span>
-                                </div>
-                            </div>
-                            <div class="col-4">
-                                <div class="form-check text-left">
-                                    <label class="form-check-label">
-                                        <input type="checkbox" class="form-check-input" id="excludeForks" name="excludeForks" onchange="checkExcludeForked()"><span>Exclude Forked Projects</span>
-                                    </label>
-                                </div>
-                                <div class="form-check text-left">
-                                    <label class="form-check-label">
-                                        <input type="checkbox" class="form-check-input" id="hasIssues" name="hasIssues"><span>Has Open Issues</span>
-                                    </label>
-                                </div>
                             </div>
                         </div>
-                        <div class="px-3 row text-left">
-                            <div class="col-4">
-                                <h2 class="rowsublabel">Number of forks</h2>
+                        <div class="col-4">
+                            <div class="form-check text-left">
+                                <label class="form-check-label">
+                                    <input type="checkbox" class="form-check-input" id="excludeForks" name="excludeForks" onchange="checkExcludeForked()"><span>Exclude Forked Projects</span>
+                                </label>
                             </div>
-                            <div class="col-4"></div>
-                            <div class="col-4">
-                                <div class="form-check text-left">
-                                    <label class="form-check-label">
-                                        <input type="checkbox" class="form-check-input" id="hasPulls" name="hasPulls"><span>Has Open Pull Requests</span>
-                                    </label>
-                                </div>
+                            <div class="form-check text-left">
+                                <label class="form-check-label">
+                                    <input type="checkbox" class="form-check-input" id="hasIssues" name="hasIssues"><span>Has Open Issues</span>
+                                </label>
                             </div>
                         </div>
-                        <div class="px-3 pb-3 row">
-                            <div class="col-2">
-                                <div class="input-group">
-                                    <input type="text" id="forksMin" name="forksMin" class="form-control input-number bg-lgray border-secondary border-left-0 border-top-0 border-right-0 rounded-0" value="" min="0" max="9223372036854775807" placeholder="min" pattern="0|([1-9][0-9]*)" title="Only non-negative integers are allowed here!">
-                                    <span class="input-group-btn input-group-btn-vertical">
+                    </div>
+                    <div class="px-3 row text-left">
+                        <div class="col-4">
+                            <h2 class="rowsublabel">Number of forks</h2>
+                        </div>
+                        <div class="col-4"></div>
+                        <div class="col-4">
+                            <div class="form-check text-left">
+                                <label class="form-check-label">
+                                    <input type="checkbox" class="form-check-input" id="hasPulls" name="hasPulls"><span>Has Open Pull Requests</span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="px-3 pb-3 row">
+                        <div class="col-2">
+                            <div class="input-group">
+                                <input type="text" id="forksMin" name="forksMin" class="form-control input-number bg-lgray border-secondary border-left-0 border-top-0 border-right-0 rounded-0" value="" min="0" max="9223372036854775807" placeholder="min" pattern="0|([1-9][0-9]*)" title="Only non-negative integers are allowed here!">
+                                <span class="input-group-btn input-group-btn-vertical">
                                         <button class="btn btn-number btn-outline-secondary bg-lgray rounded-0 border-0" type="button" onclick="increment('forksMin')"><i class="fa fa-angle-up"></i></button>
                                         <button class="btn btn-number btn-outline-secondary bg-lgray border-secondary border-left-0 border-top-0 border-right-0 rounded-0" type="button" onclick="decrement('forksMin')"><i class="fa fa-angle-down"></i></button>
                                     </span>
-                                </div>
                             </div>
-                            <div class="col-2">
-                                <div class="input-group">
-                                    <input type="text" id="forksMax" name="forksMax" class="form-control input-number bg-lgray border-secondary border-left-0 border-top-0 border-right-0 rounded-0" value="" min="0" max="9007199254740991" placeholder="max" pattern="0|([1-9][0-9]*)" title="Only non-negative integers are allowed here!">
-                                    <span class="input-group-btn input-group-btn-vertical">
+                        </div>
+                        <div class="col-2">
+                            <div class="input-group">
+                                <input type="text" id="forksMax" name="forksMax" class="form-control input-number bg-lgray border-secondary border-left-0 border-top-0 border-right-0 rounded-0" value="" min="0" max="9007199254740991" placeholder="max" pattern="0|([1-9][0-9]*)" title="Only non-negative integers are allowed here!">
+                                <span class="input-group-btn input-group-btn-vertical">
                                         <button class="btn btn-number btn-outline-secondary bg-lgray rounded-0 border-0" type="button" onclick="increment('forksMax')"><i class="fa fa-angle-up"></i></button>
                                         <button class="btn btn-number btn-outline-secondary bg-lgray border-secondary border-left-0 border-top-0 border-right-0 rounded-0" type="button" onclick="decrement('forksMax')"><i class="fa fa-angle-down"></i></button>
                                     </span>
-                                </div>
-                            </div>
-                            <div class="col-4">
-                                <button id="submit-button" type="submit" class="w-50 btn btn-secondary border-dark b-2 text-center mh-100">Search</button>
-                            </div>
-                            <div class="col-4">
-                                <div class="form-check text-left">
-                                    <label class="form-check-label">
-                                        <input type="checkbox" class="form-check-input" id="hasWiki" name="hasWiki"><span>Has Wiki</span>
-                                    </label>
-                                </div>
-                                <div class="form-check text-left">
-                                    <label class="form-check-label">
-                                        <input type="checkbox" class="form-check-input" id="hasLicense" name="hasLicense"><span>Has License</span>
-                                    </label>
-                                </div>
                             </div>
                         </div>
-                    </form>
-                </div>
+                        <div class="col-4">
+                            <button id="submit-button" type="submit" class="w-50 btn btn-secondary border-dark b-2 text-center mh-100">Search</button>
+                        </div>
+                        <div class="col-4">
+                            <div class="form-check text-left">
+                                <label class="form-check-label">
+                                    <input type="checkbox" class="form-check-input" id="hasWiki" name="hasWiki"><span>Has Wiki</span>
+                                </label>
+                            </div>
+                            <div class="form-check text-left">
+                                <label class="form-check-label">
+                                    <input type="checkbox" class="form-check-input" id="hasLicense" name="hasLicense"><span>Has License</span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div id="results-container" class="row justify-content-center text-center d-none">
+                Inner content
             </div>
         </div>
 
@@ -735,12 +736,153 @@
                 let search_base = "http://localhost:8080/r/search?";
                 let download_base = "http://localhost:8080/r/search/download?";
 
+                search_base += "nameEquals=" + nameEquals;
+                download_base += "nameEquals=" + nameEquals;
+                search_base += "&onlyForks=" + onlyForks;
+                download_base += "&onlyForks=" + onlyForks;
+                search_base += "&excludeForks=" + excludeForks;
+                download_base += "&excludeForks=" + excludeForks;
+                search_base += "&hasIssues=" + hasIssues;
+                download_base += "&hasIssues=" + hasIssues;
+                search_base += "&hasPulls=" + hasPulls;
+                download_base += "&hasPulls=" + hasPulls;
+                search_base += "&hasWiki=" + hasWiki;
+                download_base += "&hasWiki=" + hasWiki;
+                search_base += "&hasLicense=" + hasLicense;
+                download_base += "&hasLicense=" + hasLicense;
+
                 if (!name.isEmpty()){
-                    name = name.trim();
-                    search_base += "name=" + name;
-                    download_base += "name=" + name;
-                    console.log(search_base);
+                    search_base += "&name=" + name;
+                    download_base += "&name=" + name;
                 }
+
+                if (!language.isEmpty()){
+                    search_base += "&language=" + language;
+                    download_base += "&language=" + language;
+                }
+
+                if (!label.isEmpty()){
+                    search_base += "&label=" + label;
+                    download_base += "&label=" + label;
+                }
+
+                if (!license.isEmpty()){
+                    search_base += "&license=" + license;
+                    download_base += "&license=" + license;
+                }
+
+                if (!commitsMin.isEmpty()){
+                    search_base += "&commitsMin=" + commitsMin;
+                    download_base += "&commitsMin=" + commitsMin;
+                }
+
+                if (!commitsMax.isEmpty()){
+                    search_base += "&commitsMax=" + commitsMax;
+                    download_base += "&commitsMax=" + commitsMax;
+                }
+
+                if (!contributorsMin.isEmpty()){
+                    search_base += "&contributorsMin=" + contributorsMin;
+                    download_base += "&contributorsMin=" + contributorsMin;
+                }
+
+                if (!contributorsMax.isEmpty()){
+                    search_base += "&contributorsMax=" + contributorsMax;
+                    download_base += "&contributorsMax=" + contributorsMax;
+                }
+
+                if (!issuesMin.isEmpty()){
+                    search_base += "&issuesMin=" + issuesMin;
+                    download_base += "&issuesMin=" + issuesMin;
+                }
+
+                if (!issuesMax.isEmpty()){
+                    search_base += "&issuesMax=" + issuesMax;
+                    download_base += "&issuesMax=" + issuesMax;
+                }
+
+                if (!pullsMin.isEmpty()){
+                    search_base += "&pullsMin=" + pullsMin;
+                    download_base += "&pullsMin=" + pullsMin;
+                }
+
+                if (!pullsMax.isEmpty()){
+                    search_base += "&pullsMax=" + pullsMax;
+                    download_base += "&pullsMax=" + pullsMax;
+                }
+
+                if (!branchesMin.isEmpty()){
+                    search_base += "&branchesMin=" + branchesMin;
+                    download_base += "&branchesMin=" + branchesMin;
+                }
+
+                if (!branchesMax.isEmpty()){
+                    search_base += "&branchesMax=" + branchesMax;
+                    download_base += "&branchesMax=" + branchesMax;
+                }
+
+                if (!releasesMin.isEmpty()){
+                    search_base += "&releasesMin=" + releasesMin;
+                    download_base += "&releasesMin=" + releasesMin;
+                }
+
+                if (!releasesMax.isEmpty()){
+                    search_base += "&releasesMax=" + releasesMax;
+                    download_base += "&releasesMax=" + releasesMax;
+                }
+
+                if (!starsMin.isEmpty()){
+                    search_base += "&starsMin=" + starsMin;
+                    download_base += "&starsMin=" + starsMin;
+                }
+
+                if (!starsMax.isEmpty()){
+                    search_base += "&starsMax=" + starsMax;
+                    download_base += "&starsMax=" + starsMax;
+                }
+
+                if (!watchersMin.isEmpty()){
+                    search_base += "&watchersMin=" + watchersMin;
+                    download_base += "&watchersMin=" + watchersMin;
+                }
+
+                if (!watchersMax.isEmpty()){
+                    search_base += "&watchersMax=" + watchersMax;
+                    download_base += "&watchersMax=" + watchersMax;
+                }
+
+                if (!forksMin.isEmpty()){
+                    search_base += "&forksMin=" + forksMin;
+                    download_base += "&forksMin=" + forksMin;
+                }
+
+                if (!forksMax.isEmpty()){
+                    search_base += "&forksMax=" + forksMax;
+                    download_base += "&forksMax=" + forksMax;
+                }
+
+                if (!createdMin.isEmpty()){
+                    search_base += "&createdMin=" + createdMin;
+                    download_base += "&createdMin=" + createdMin;
+                }
+
+                if (!createdMax.isEmpty()){
+                    search_base += "&createdMax=" + createdMax;
+                    download_base += "&createdMax=" + createdMax;
+                }
+
+                if (!committedMin.isEmpty()){
+                    search_base += "&committedMin=" + committedMin;
+                    download_base += "&committedMin=" + committedMin;
+                }
+
+                if (!committedMax.isEmpty()){
+                    search_base += "&committedMax=" + committedMax;
+                    download_base += "&committedMax=" + committedMax;
+                }
+
+                console.log(encodeURI(search_base));
+                console.log(encodeURI(download_base));
             }
 
             $('#form').submit(function () {
