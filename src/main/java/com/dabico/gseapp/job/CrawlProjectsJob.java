@@ -224,7 +224,7 @@ public class CrawlProjectsJob {
     }
 
     private String getNewToken(){
-        tokenOrdinal++;
-        return accessTokens.get(tokenOrdinal % accessTokens.size());
+        tokenOrdinal = (tokenOrdinal + 1) % accessTokens.size();
+        return accessTokens.get(tokenOrdinal);
     }
 }
