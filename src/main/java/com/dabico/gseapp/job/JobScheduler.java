@@ -37,10 +37,6 @@ public class JobScheduler {
             crawlProjectsJob.run();
             logger.info("Next crawl scheduled for: " + Date.from(Instant.now().plusMillis(applicationPropertyService.getScheduling())));
         } catch (Exception ex) {
-            //HANDLE TIMEOUT EXCEPTION FROM SELENIUM FOR LOSS OF CONNECTION
-            //HANDLE SOCKET EXCEPTION FOR LOSS OF CONNECTION (JSOUP)
-            //HANDLE SOCKET TIMEOUT FOR LOSS OF CONNECTION (API)
-            //HANDLE 500s FROM GIT
             ex.printStackTrace();
         }
     }
