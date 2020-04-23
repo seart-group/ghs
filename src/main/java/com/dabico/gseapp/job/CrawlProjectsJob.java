@@ -67,17 +67,17 @@ public class CrawlProjectsJob {
 
     public void run() throws Exception {
         reset();
-        Date startDate = Date.from(Instant.now().minus(Duration.ofHours(2)));
+        Date endDate = Date.from(Instant.now().minus(Duration.ofHours(2)));
         for (String language : languages){
-            Date limit = crawlJobService.getCrawlDateByLanguage(language);
+            Date startDate = crawlJobService.getCrawlDateByLanguage(language);
             DateInterval interval;
-            if (limit != null){
-                assert limit.before(startDate);
-                interval = new DateInterval(limit,startDate);
+            if (startDate != null){
+                assert startDate.before(endDate);
+                interval = new DateInterval(startDate,endDate);
                 crawlCreatedRepos(interval,language);
                 crawlUpdatedRepos(interval,language);
             } else {
-                interval = new DateInterval(applicationPropertyService.getStartDate(),startDate);
+                interval = new DateInterval(applicationPropertyService.getStartDate(),endDate);
                 crawlCreatedRepos(interval,language);
             }
         }
