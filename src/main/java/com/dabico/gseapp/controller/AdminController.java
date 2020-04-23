@@ -57,7 +57,6 @@ public class AdminController {
         }
     }
 
-    @CrossOrigin
     @GetMapping("/l")
     public ResponseEntity<?> getLanguages(){
         return ResponseEntity.ok(supportedLanguageService.getAll());
@@ -78,7 +77,6 @@ public class AdminController {
         return ResponseEntity.ok(gitRepoService.getAllLanguageStatistics());
     }
 
-    @CrossOrigin
     @GetMapping("/r/stats")
     public ResponseEntity<?> getRepoStatistics(){
         return ResponseEntity.ok(gitRepoService.getMainLanguageStatistics());

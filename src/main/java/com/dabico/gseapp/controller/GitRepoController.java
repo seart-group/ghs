@@ -139,7 +139,6 @@ public class GitRepoController {
         }
     }
 
-    @CrossOrigin
     @GetMapping("/r/labels")
     public ResponseEntity<?> getAllLabels(){
         return ResponseEntity.ok(gitRepoService.getAllLabels());
