@@ -74,6 +74,6 @@ Here's a list of arguments supported by the application:
 3. app.crawl.startdate
   - Type: String
   - Default: 2008-01-01T00:00:00
-  - Description: "Beginning of time", basically the earliest date for crawling repos, formatted as a yyyy-MM-ddTHH:MM:SS string.
+  - Description: "Beginning of time". Basically the earliest supported date for crawling repos, if no crawl jobs were previously performed. Formatted as a yyyy-MM-ddTHH:MM:SS string.
   
 Note that although there are other parameters, I strongly recommend you **DON'T** override them.
