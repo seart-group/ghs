@@ -69,7 +69,7 @@ public class GitRepoConverter {
 
     public GitRepo jsonToGitRepo(JsonObject json,String language) throws IOException,InterruptedException {
         String repositoryURL = json.get("html_url").getAsString();
-        WebDriverWait webDriverWait = new WebDriverWait(driver, Duration.ofSeconds(10));
+        WebDriverWait webDriverWait = new WebDriverWait(driver, Duration.ofSeconds(30));
         GitHubPageCrawlerService crawlerService = new GitHubPageCrawlerService(repositoryURL,driver,webDriverWait);
         try {
             crawlerService.mine();
@@ -82,7 +82,7 @@ public class GitRepoConverter {
                 return null;
             } else if (code == 429){
                 logger.error("Retrying");
-                Thread.sleep(60000);
+                Thread.sleep(300000);
                 return jsonToGitRepo(json,language);
             }
         }
