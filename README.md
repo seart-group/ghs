@@ -64,6 +64,18 @@ And to override the value of an existing parameter, run:
 mvn spring-boot:run -Dspring-boot.run.arguments=--arg.one.name=argvalue,--arg.two.name=1
 ```
 
+### Running the .jar
+
+First build the project by running the following command in the terminal:
+```
+mvn clean package
+```
+If it did not exist yet, you should now see the **target** directory in the project root. The root of said directory will contain the Java Archive file for the project. All you have to do now is run the following:
+```
+java -jar target/gse-application-X.X.X.jar
+```
+Note that the name of the .jar file **gse-application-X.X.X** is derived from the settings in **pom.xml**, following the format of: *artifactId-version.jar*
+
 ### Supported arguments
 
 Here's a list of arguments supported by the application:
