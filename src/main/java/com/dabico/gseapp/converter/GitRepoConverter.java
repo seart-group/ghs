@@ -20,14 +20,13 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.URL;
 import java.time.Duration;
 import java.util.List;
-import java.util.Objects;
 import java.util.stream.Collectors;
 
 import static com.dabico.gseapp.util.DateUtils.fromGitDateString;
@@ -41,15 +40,11 @@ public class GitRepoConverter {
 
     @Autowired
     public GitRepoConverter(){
-        ClassLoader classLoader = getClass().getClassLoader();
-        URL url = classLoader.getResource("chromedriver");
-        String driverFile = Objects.requireNonNull(url).getFile();
-        System.setProperty("webdriver.chrome.driver", driverFile);
+        String driverPath = new ClassPathResource("src/main/resources/chromedriver").getPath();
+        System.setProperty("webdriver.chrome.driver", driverPath);
         System.setProperty("webdriver.chrome.silentOutput", "true");
         DesiredCapabilities capabilities = new DesiredCapabilities();
-        ChromeDriverService service = new ChromeDriverService.Builder()
-                .usingDriverExecutable(new File(driverFile))
-                .build();
+        ChromeDriverService service = new ChromeDriverService.Builder().usingDriverExecutable(new File(driverPath)).build();
         ChromeOptions options = new ChromeOptions();
         options.addArguments("--no-sandbox");
         options.addArguments("--headless");

@@ -2,13 +2,12 @@ package com.dabico.gseapp.util;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.core.io.ClassPathResource;
 
 import java.io.FileInputStream;
-import java.net.URL;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.Objects;
 import java.util.Properties;
 
 public class PropertiesExtractor {
@@ -18,9 +17,8 @@ public class PropertiesExtractor {
     private static Properties properties;
     static {
         properties = new Properties();
-        URL url = PropertiesExtractor.class.getClassLoader().getResource("application.properties");
         try {
-            properties.load(new FileInputStream(Objects.requireNonNull(url).getPath()));
+            properties.load(new FileInputStream(new ClassPathResource("src/main/resources/application.properties").getPath()));
         } catch (Exception e) {
             logger.error(e.getMessage());
         }
