@@ -47,7 +47,11 @@ To run the application through the terminal, first make sure you have downloaded
 ```
 export PATH=/Users/username/Documents/apache-maven-X.X.X/bin:$PATH
 ```
-Note that this will only temporarily add the environment variable, until the current terminal is ends. Refer to [this article](https://medium.com/@youngstone89/setting-up-environment-variables-in-mac-os-28e5941c771c) if you wish to permanently add it. To ensure that the path variable has been added, run:  
+Note that this will only temporarily add the environment variable, until the current terminal is ends. To permanently add it, simply run the following:
+```
+echo 'export PATH="/Users/username/Documents/apache-maven-X.X.X/bin:$PATH"' >> ~/.bash_profile
+```
+To ensure that the path variable has been added, run:  
 ```
 mvn -v
 ```
