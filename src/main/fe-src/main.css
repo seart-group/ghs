@@ -66,16 +66,13 @@ input:focus:invalid {
 
 /* IDS */
 
-#page-content {
-    flex: 1 0 auto;
-}
-
 #sticky-footer {
     flex-shrink: 0;
     background-color: grey;
 }
 
 #page-content {
+    flex: 1 0 auto;
     background-image: url("public/img/logo-bg.png");
     background-size: 200px;
     background-position: bottom right;
@@ -110,6 +107,10 @@ input:focus:invalid {
 
 .btn {
     text-align: left;
+}
+
+a.btn {
+    text-decoration: none;
 }
 
 .btn:active,

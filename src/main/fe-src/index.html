@@ -12,11 +12,12 @@
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.8.0/css/bootstrap-datepicker.min.css" />
+        <link rel="stylesheet" type="text/css" href="public/img/icomoon/style.css">
+        <link rel="stylesheet" type="text/css" href="main.css">
         <!-- Scripts -->
         <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.8.0/js/bootstrap-datepicker.min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-3-typeahead/4.0.2/bootstrap3-typeahead.min.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.3/dist/Chart.min.js"></script>
-        <link rel="stylesheet" type="text/css" href="main.css">
         <title>GitHub Search</title>
     </head>
 
@@ -464,8 +465,52 @@
                     </div>
                 </form>
             </div>
-            <div id="results-container" class="row justify-content-center text-center d-none">
-                Inner content
+            <div id="results-container" class="d-none row justify-content-center text-center">
+                <div id="results-container-header" class="row w-75 bg-llgray border border-bottom-0 justify-content-between">
+                    <button id="back-button" class="btn btn-outline-secondary bg-llgray rounded-0 border-0">
+                        <span class="fa fa-angle-left"></span>
+                        Back
+                    </button>
+                    <a id="download-button" href="" target="_blank" class="btn btn-outline-secondary bg-llgray rounded-0 border-0">
+                        Download
+                        <span class="fa fa-file-excel-o"></span>
+                    </a>
+                </div>
+                <div id="results-container-items" class="w-75 bg-llgray border border-top-0 border-bottom-0 justify-content-center">
+                    <div>
+                        <div class="row mw-100 py-3 mx-3 border">
+                            <div class="col-8 d-flex align-items-center justify-content-start">
+                                <span class="pr-1 fa-fw icon-repo" title="Repository"></span>
+<!--                                <span class="pr-1 icon-repo-forked" title="Fork"></span>-->
+<!--                                <span class="pr-1 icon-archive" title="Archived"></span>-->
+                                <a href="https://github.com/dabico/CloudShare" target="_blank" class="text-dark rowsublabel">
+                                    dabico/CloudShare
+                                </a>
+                            </div>
+                            <div class="col-4 d-flex justify-content-end">
+                                <div class="ml-1 d-flex align-items-center"><i class="mx-1 icon-eye" title="Watchers"></i><span>1600</span></div>
+                                <div class="mx-1 d-flex align-items-center"><i class="mx-1 icon-star" title="Stargazers"></i><span>1216</span></div>
+                                <div class="mr-1 d-flex align-items-center"><i class="mx-1 icon-repo-forked" title="Forks"></i><span>16</span></div>
+                            </div>
+                            <div class="col-md-auto d-flex align-items-center justify-content-start">
+                                <span class="pr-1 icon-law" title="License"></span><span>Do What The F*ck You Want To Public License</span>
+                            </div>
+                            <div class="col d-flex align-items-center justify-content-end">
+                                <div class="ml-1 d-flex align-items-center"><i class="mx-1 icon-git-commit" title="Commits"></i><span>23000</span></div>
+                                <div class="mx-1 d-flex align-items-center"><i class="mx-1 icon-git-branch" title="Branches"></i><span>12</span></div>
+                                <div class="mx-1 d-flex align-items-center"><i class="mx-1 icon-tag" title="Releases"></i><span>101</span></div>
+                                <div class="mr-1 d-flex align-items-center"><i class="mx-1 icon-organization" title="Contributors"></i><span>1111</span></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div id="results-container-footer" class="row w-75 bg-llgray border border-top-0 justify-content-center">
+                    <button type="button" id="nextButton" class="w-100 btn btn-outline-secondary bg-llgray rounded-0 border-0 text-center">
+                        <span class="fa fa-lg fa-angle-down"></span>
+                        Show More
+                        <span class="fa fa-lg fa-angle-down"></span>
+                    </button>
+                </div>
             </div>
         </div>
 
@@ -614,11 +659,18 @@
                             top: 45,
                             bottom: 15
                         }
+                    },
+                    scales: {
+                        yAxes: [{
+                            ticks: {
+                                beginAtZero: true
+                            }
+                        }]
                     }
                 }
             };
 
-            let chart = new Chart(ctx,config);
+            new Chart(ctx,config);
         </script>
         <script>
             fetch("http://localhost:8080/r/labels").then(response => {
@@ -888,6 +940,16 @@
             $('#form').submit(function () {
                 submitQuery();
                 return false;
+            });
+
+            $('#submit-button').click(function () {
+                $('#form-container').toggleClass('d-none');
+                $('#results-container').toggleClass('d-none');
+            });
+
+            $('#back-button').click(function () {
+                $('#form-container').toggleClass('d-none');
+                $('#results-container').toggleClass('d-none');
             });
 
             $(document).on("keydown", "form", function(event) {
