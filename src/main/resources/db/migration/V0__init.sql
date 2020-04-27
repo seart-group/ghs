@@ -9,7 +9,7 @@ create table repo
     is_fork_project bit null,
     commits bigint null,
     branches bigint null,
-    default_branch varchar(128) null,
+    default_branch varchar(256) null,
     releases bigint null,
     contributors bigint null,
     license varchar(64) null,
