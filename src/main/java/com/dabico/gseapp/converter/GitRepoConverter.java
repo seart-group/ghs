@@ -26,6 +26,7 @@ import org.springframework.stereotype.Service;
 import java.io.File;
 import java.io.IOException;
 import java.time.Duration;
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -170,16 +171,24 @@ public class GitRepoConverter {
     }
 
     public String[] repoToCSVRow(GitRepo repo){
+        Long commits = repo.getCommits();
+        Long branches = repo.getBranches();
+        Long releases = repo.getReleases();
+        Long contributors = repo.getContributors();
+        Long watchers = repo.getWatchers();
+        Date lastCommit = repo.getLastCommit();
+        String lastCommitSHA = repo.getLastCommitSHA();
+
         String[] attributes = new String[25];
         attributes[0]  = repo.getName();
         attributes[1]  = repo.getIsFork().toString();
-        attributes[2]  = repo.getCommits().toString();
-        attributes[3]  = repo.getBranches().toString();
+        attributes[2]  = (commits > -1) ? commits.toString() : "?";
+        attributes[3]  = (branches > -1) ? branches.toString() : "?";
         attributes[4]  = repo.getDefaultBranch();
-        attributes[5]  = repo.getReleases().toString();
-        attributes[6]  = repo.getContributors().toString();
+        attributes[5]  = (releases > -1) ? releases.toString() : "?";
+        attributes[6]  = (contributors > -2) ? ((contributors > -1) ? contributors.toString() : "?") : "∞";
         attributes[7]  = repo.getLicense();
-        attributes[8]  = repo.getWatchers().toString();
+        attributes[8]  = (watchers > -1) ? watchers.toString() : "?";
         attributes[9]  = repo.getStargazers().toString();
         attributes[10] = repo.getForks().toString();
         attributes[11] = repo.getSize().toString();
@@ -192,8 +201,8 @@ public class GitRepoConverter {
         attributes[18] = repo.getOpenIssues().toString();
         attributes[19] = repo.getTotalPullRequests().toString();
         attributes[20] = repo.getOpenPullRequests().toString();
-        attributes[21] = repo.getLastCommit().toString();
-        attributes[22] = repo.getLastCommitSHA();
+        attributes[21] = (lastCommit != null) ? lastCommit.toString() : "?";
+        attributes[22] = (lastCommitSHA != null) ? lastCommitSHA : "?";
         attributes[23] = repo.getHasWiki().toString();
         attributes[24] = repo.getIsArchived().toString();
         return attributes;
