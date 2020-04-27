@@ -79,15 +79,15 @@ Note that the name of the .jar file **gse-application-X.X.X** is derived from th
 ### Supported arguments
 
 Here's a list of arguments supported by the application:
-1. app.crawl.enabled
+1. `app.crawl.enabled`
   - Type: boolean
   - Default: true
   - Description: Specifies if the crawling jobs are enabled on startup
-2. app.crawl.scheduling
+2. `app.crawl.scheduling`
   - Type: String
   - Default: 43200000 (12H translated to MS)
   - Description: Scheduling rate, expressed as a numeric string
-3. app.crawl.startdate
+3. `app.crawl.startdate`
   - Type: String
   - Default: 2008-01-01T00:00:00
   - Description: "Beginning of time". Basically the earliest supported date for crawling repos, if no crawl jobs were previously performed. Formatted as a yyyy-MM-ddTHH:MM:SS string.
