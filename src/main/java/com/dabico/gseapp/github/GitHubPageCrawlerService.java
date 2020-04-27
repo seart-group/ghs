@@ -146,8 +146,9 @@ public class GitHubPageCrawlerService {
         try {
             return mineWithSelenium(contributorsReg,contributorsAlt);
         } catch (NumberFormatException ex){
-            if (normalizeNumberString(driver.findElementByCssSelector(contributorsAlt).getText()).equals("∞")){
-                return Long.MAX_VALUE;
+            if (ex.getMessage().split(": ")[1].equals("\"∞\"")){
+                //Record error state -2 if repo has "infinite" contributors
+                return -2;
             }
             return -1;
         } catch (TimeoutException ex) {
