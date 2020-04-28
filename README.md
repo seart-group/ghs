@@ -21,6 +21,34 @@ CREATE DATABASE gse CHARACTER SET utf8 COLLATE utf8_bin;
 
 ### Step 3:
 
+Manually set the MySQL server timezone to UTC, using the command:
+```mysql
+SET GLOBAL time_zone = '+00:00';
+```
+To ensure that the timezone has been successfully set, run:
+```mysql
+SELECT @@global.time_zone, @@session.time_zone;
+```
+You should see something like:
+```
++--------------------+---------------------+
+| @@global.time_zone | @@session.time_zone |
++--------------------+---------------------+
+| +00:00             | SYSTEM              |
++--------------------+---------------------+
+1 row in set (0.00 sec)
+```
+Note that this step is **necessary** whenever a new MySQL session starts, as the `SET` command will only be valid for the current session. To permanently set MySQL's default timezone to UTC, you must add the following line to your `my.cnf` (usually located in `/usr/local/etc`) config file, under the `[mysqld]` section:
+```
+default-time-zone = "+00:00"
+```
+Be sure to restart your MySQL service for the changes to take effect! If you are having trouble with locating the `my.cnf` file, type the following into the terminal:
+```
+mysql --help | grep /my.cnf
+```
+
+### Step 4:
+
 Create the user by running these two commands in sequence:  
 ``` mysql
 CREATE USER 'gseadmin'@'%' identified by 'Lugano2020';
