@@ -14,11 +14,13 @@ import com.google.gson.*;
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
 import okhttp3.*;
+import org.apache.http.client.HttpResponseException;
 import org.javatuples.Pair;
 import org.slf4j.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.*;
@@ -30,6 +32,8 @@ import static com.google.gson.JsonParser.*;
 public class CrawlProjectsJob {
 
     static final Logger logger = LoggerFactory.getLogger(CrawlProjectsJob.class);
+
+    static Long defaultRetryPeriod = 3600000L;
 
     List<DateInterval> requestQueue = new ArrayList<>();
     List<String> accessTokens = new ArrayList<>();
@@ -216,9 +220,16 @@ public class CrawlProjectsJob {
         accessTokenRepository.findAll().forEach(accessToken -> accessTokens.add(accessToken.getValue()));
     }
 
-    private void replaceTokenIfExpired() throws Exception {
-        if (gitHubApiService.isTokenLimitExceeded(currentToken)){
-            currentToken = getNewToken();
+    private void replaceTokenIfExpired() throws IOException,InterruptedException {
+        try {
+            if (gitHubApiService.isTokenLimitExceeded(currentToken)){
+                currentToken = getNewToken();
+            }
+        } catch (HttpResponseException ex) {
+            logger.error("Error communicating with GitHub.");
+            logger.error("Server Error Encountered: " + ex.getStatusCode());
+            Thread.sleep(defaultRetryPeriod);
+            logger.error("Retrying...");
         }
     }
 

@@ -51,7 +51,7 @@ public class GitHubApiService {
             int remaining = search.get("remaining").getAsInt();
             return remaining <= 0;
         } else {
-            throw new RuntimeException("Something unexpected happened");
+            throw new HttpResponseException(response.code(),"GitHub Server Error");
         }
     }
 
