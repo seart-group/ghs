@@ -118,7 +118,6 @@ public class CrawlProjectsJob {
         replaceTokenIfExpired();
         Response response = gitHubApiService.searchRepositories(language,interval,page,currentToken,update);
         ResponseBody responseBody = response.body();
-
         if (response.isSuccessful() && responseBody != null){
             JsonObject bodyJson = parseString(responseBody.string()).getAsJsonObject();
             int totalResults = bodyJson.get("total_count").getAsInt();
@@ -128,23 +127,7 @@ public class CrawlProjectsJob {
                 JsonArray results = bodyJson.get("items").getAsJsonArray();
                 response.close();
                 saveRetrievedRepos(results,language);
-
-                if (totalPages > 1){
-                    page++;
-                    while (page <= totalPages){
-                        replaceTokenIfExpired();
-                        response = gitHubApiService.searchRepositories(language,interval,page,currentToken,update);
-                        responseBody = response.body();
-                        if (response.isSuccessful() && responseBody != null){
-                            bodyJson = parseString(responseBody.string()).getAsJsonObject();
-                            response.close();
-                            results = bodyJson.get("items").getAsJsonArray();
-                            saveRetrievedRepos(results,language);
-                            page++;
-                        }
-                        response.close();
-                    }
-                }
+                retrieveRemainingRepos(interval, language, update, results, totalPages);
                 crawlJobService.updateCrawlDateForLanguage(language,interval.getEnd());
             } else {
                 Pair<DateInterval,DateInterval> newIntervals = interval.splitInterval();
@@ -154,8 +137,43 @@ public class CrawlProjectsJob {
                 }
                 response.close();
             }
+        } else if (response.code() > 499){
+            logger.error("Error retrieving repositories.");
+            logger.error("Server Error Encountered: " + response.code());
+            Thread.sleep(defaultRetryPeriod);
+            logger.error("Retrying...");
+            retrieveRepos(interval, language, update);
         }
         response.close();
+    }
+
+    private void retrieveRemainingRepos(DateInterval interval,
+                                        String language,
+                                        Boolean update,
+                                        JsonArray results,
+                                        int totalPages) throws Exception {
+        if (totalPages > 1){
+            int page = 2;
+            while (page <= totalPages){
+                replaceTokenIfExpired();
+                Response response = gitHubApiService.searchRepositories(language,interval,page,currentToken,update);
+                ResponseBody responseBody = response.body();
+                if (response.isSuccessful() && responseBody != null){
+                    JsonObject bodyJson = parseString(responseBody.string()).getAsJsonObject();
+                    response.close();
+                    results = bodyJson.get("items").getAsJsonArray();
+                    saveRetrievedRepos(results,language);
+                    page++;
+                } else if (response.code() > 499){
+                    logger.error("Error retrieving repositories at page: " + page);
+                    logger.error("Server Error Encountered: " + response.code());
+                    Thread.sleep(defaultRetryPeriod);
+                    logger.error("Retrying...");
+                    retrieveRemainingRepos(interval, language, update, results, totalPages);
+                }
+                response.close();
+            }
+        }
     }
 
     private void saveRetrievedRepos(JsonArray results, String language) throws Exception {
@@ -184,6 +202,12 @@ public class CrawlProjectsJob {
                                                  .build())
             );
             gitRepoService.createUpdateLabels(repo,repo_labels);
+        } else if (response.code() > 499){
+            logger.error("Error retrieving labels.");
+            logger.error("Server Error Encountered: " + response.code());
+            Thread.sleep(defaultRetryPeriod);
+            logger.error("Retrying...");
+            retrieveRepoLabels(repo);
         }
         response.close();
     }
@@ -203,6 +227,12 @@ public class CrawlProjectsJob {
                                                                     .build())
             );
             gitRepoService.createUpdateLanguages(repo,repo_languages);
+        } else if (response.code() > 499){
+            logger.error("Error retrieving languages.");
+            logger.error("Server Error Encountered: " + response.code());
+            Thread.sleep(defaultRetryPeriod);
+            logger.error("Retrying...");
+            retrieveRepoLanguages(repo);
         }
         response.close();
     }
