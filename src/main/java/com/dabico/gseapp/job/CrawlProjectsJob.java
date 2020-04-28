@@ -106,6 +106,10 @@ public class CrawlProjectsJob {
         do {
             DateInterval first = requestQueue.remove(0);
             retrieveRepos(first,language,mode);
+            if (!requestQueue.isEmpty()) {
+                logger.info("Next Crawl Intervals:");
+                logger.info(requestQueue.toString());
+            }
         } while (!requestQueue.isEmpty());
     }
 
@@ -152,14 +156,10 @@ public class CrawlProjectsJob {
             }
         }
         response.close();
-        if (!requestQueue.isEmpty()) {
-            logger.info("Next Crawl Intervals:");
-            logger.info(requestQueue.toString());
-        }
     }
 
     private void saveRetrievedRepos(JsonArray results, String language) throws Exception {
-        logger.info("Adding: "+results.size()+" results");
+        logger.info("Adding: "+results.size()+" repositories.");
         for (JsonElement element : results){
             JsonObject repoJson = element.getAsJsonObject();
             GitRepo repo = gitRepoConverter.jsonToGitRepo(repoJson,language);
@@ -177,6 +177,7 @@ public class CrawlProjectsJob {
         ResponseBody responseBody = response.body();
         if (response.isSuccessful() && responseBody != null){
             JsonArray results = parseString(responseBody.string()).getAsJsonArray();
+            logger.info("Adding: "+results.size()+" labels.");
             results.forEach(result -> repo_labels.add(GitRepoLabel.builder()
                                                  .repo(repo)
                                                  .label(result.getAsJsonObject().get("name").getAsString())
@@ -194,6 +195,7 @@ public class CrawlProjectsJob {
         if (response.isSuccessful() && responseBody != null){
             JsonObject result = parseString(responseBody.string()).getAsJsonObject();
             Set<String> keySet = result.keySet();
+            logger.info("Adding: "+keySet.size()+" languages.");
             keySet.forEach(key -> repo_languages.add(GitRepoLanguage.builder()
                                                                     .repo(repo)
                                                                     .language(key)
