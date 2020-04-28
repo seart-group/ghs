@@ -69,7 +69,7 @@ public class CrawlProjectsJob {
         this.applicationPropertyService = applicationPropertyService;
     }
 
-    public void run() throws Exception {
+    public void run() throws IOException,InterruptedException {
         reset();
         Date endDate = Date.from(Instant.now().minus(Duration.ofHours(2)));
         for (String language : languages){
@@ -87,21 +87,21 @@ public class CrawlProjectsJob {
         }
     }
 
-    private void crawlCreatedRepos(DateInterval interval, String language) throws Exception {
+    private void crawlCreatedRepos(DateInterval interval, String language) throws IOException,InterruptedException {
         logger.info("Created: "+language.toUpperCase()+" "+interval);
         logger.info("Token: " + this.currentToken);
         crawlRepos(interval,language,false);
         logger.info("Created interval crawl complete!");
     }
 
-    private void crawlUpdatedRepos(DateInterval interval, String language) throws Exception {
+    private void crawlUpdatedRepos(DateInterval interval, String language) throws IOException,InterruptedException {
         logger.info("Updated: "+language.toUpperCase()+" "+interval);
         logger.info("Token: " + this.currentToken);
         crawlRepos(interval,language,true);
         logger.info("Updated interval crawl complete!");
     }
 
-    private void crawlRepos(DateInterval interval, String language, Boolean mode) throws Exception {
+    private void crawlRepos(DateInterval interval, String language, Boolean mode) throws IOException,InterruptedException {
         requestQueue.add(interval);
         do {
             DateInterval first = requestQueue.remove(0);
@@ -113,7 +113,7 @@ public class CrawlProjectsJob {
         } while (!requestQueue.isEmpty());
     }
 
-    private void retrieveRepos(DateInterval interval, String language, Boolean update) throws Exception {
+    private void retrieveRepos(DateInterval interval, String language, Boolean update) throws IOException,InterruptedException {
         int page = 1;
         replaceTokenIfExpired();
         Response response = gitHubApiService.searchRepositories(language,interval,page,currentToken,update);
@@ -151,7 +151,7 @@ public class CrawlProjectsJob {
                                         String language,
                                         Boolean update,
                                         JsonArray results,
-                                        int totalPages) throws Exception {
+                                        int totalPages) throws IOException,InterruptedException {
         if (totalPages > 1){
             int page = 2;
             while (page <= totalPages){
@@ -176,7 +176,7 @@ public class CrawlProjectsJob {
         }
     }
 
-    private void saveRetrievedRepos(JsonArray results, String language) throws Exception {
+    private void saveRetrievedRepos(JsonArray results, String language) throws IOException,InterruptedException {
         logger.info("Adding: "+results.size()+" repositories.");
         for (JsonElement element : results){
             JsonObject repoJson = element.getAsJsonObject();
@@ -189,7 +189,7 @@ public class CrawlProjectsJob {
         }
     }
 
-    private void retrieveRepoLabels(GitRepo repo) throws Exception {
+    private void retrieveRepoLabels(GitRepo repo) throws IOException,InterruptedException {
         List<GitRepoLabel> repo_labels = new ArrayList<>();
         Response response = gitHubApiService.searchRepoLabels(repo.getName(),currentToken);
         ResponseBody responseBody = response.body();
@@ -212,7 +212,7 @@ public class CrawlProjectsJob {
         response.close();
     }
 
-    private void retrieveRepoLanguages(GitRepo repo) throws Exception {
+    private void retrieveRepoLanguages(GitRepo repo) throws IOException,InterruptedException {
         List<GitRepoLanguage> repo_languages = new ArrayList<>();
         Response response = gitHubApiService.searchRepoLanguages(repo.getName(),currentToken);
         ResponseBody responseBody = response.body();
