@@ -7,6 +7,7 @@ import lombok.experimental.FieldDefaults;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.openqa.selenium.By;
+import org.openqa.selenium.TimeoutException;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
@@ -126,25 +127,57 @@ public class GitHubPageCrawlerService {
         try {
             lastCommit = fromGitDateString(document.select(commitDateReg).first().attr("datetime"));
             lastCommitSHA = document.select(commitSHAReg).attr("value");
-        } catch (NullPointerException ignored) {}
+        } catch (NullPointerException ignored) {
+            logger.error("Error locating commits");
+        }
     }
 
-    private long mineCommitsSelenium() { return mineWithSelenium(commitsReg,commitsAlt); }
+    private long mineCommitsSelenium() {
+        try {
+            return mineWithSelenium(commitsReg,commitsAlt);
+        } catch (TimeoutException ex) {
+            logger.error("Number of commits could not be mined at this time!");
+            logger.error("Reason: Selenium could not locate the specified element");
+            return -1;
+        }
+    }
 
     private long mineContributorsSelenium() {
         try {
             return mineWithSelenium(contributorsReg,contributorsAlt);
         } catch (NumberFormatException ex){
-            if (normalizeNumberString(driver.findElementByCssSelector(contributorsAlt).getText()).equals("∞")){
-                return Long.MAX_VALUE;
+            if (ex.getMessage().split(": ")[1].equals("\"∞\"")){
+                //Record error state -2 if repo has "infinite" contributors
+                return -2;
             }
-            return 0;
+            return -1;
+        } catch (TimeoutException ex) {
+            logger.error("Number of contributors could not be mined at this time!");
+            logger.error("Reason: Selenium could not locate the specified element");
+            return -1;
         }
     }
 
-    private long mineBranchesSelenium(){ return mineWithSelenium(branchesReg,branchesAlt); }
+    private long mineBranchesSelenium(){
+        try {
+            return mineWithSelenium(branchesReg,branchesAlt);
+        } catch (TimeoutException ex) {
+            logger.error("Number of branches could not be mined at this time!");
+            logger.error("Reason: Selenium could not locate the specified element");
+            return -1;
+        }
+    }
 
-    private long mineReleasesSelenium(){ return mineWithSelenium(releasesReg,releasesAlt); }
+    private long mineReleasesSelenium(){
+        try {
+            return mineWithSelenium(releasesReg,releasesAlt);
+        } catch (TimeoutException ex) {
+            logger.error("Number of releases could not be mined at this time!");
+            logger.error("Reason: Selenium could not locate the specified element");
+            return -1;
+        }
+
+    }
 
     private long mineWithSelenium(String elementReg, String elementAlt){
         driver.get(repoURL);
@@ -159,7 +192,16 @@ public class GitHubPageCrawlerService {
         }
     }
 
-    private long mineWatchersSelenium(){ return mineWithSeleniumAlt(watchersSeleniumReg,watchersSeleniumAlt); }
+    private long mineWatchersSelenium(){
+        try {
+            return mineWithSeleniumAlt(watchersSeleniumReg,watchersSeleniumAlt);
+        } catch (TimeoutException ex) {
+            logger.error("Number of watchers could not be mined at this time!");
+            logger.error("Reason: Selenium could not locate the specified element");
+            return -1;
+        }
+
+    }
 
     private long mineWithSeleniumAlt(String elementReg, String elementAlt){
         driver.get(repoURL);

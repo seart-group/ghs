@@ -21,6 +21,34 @@ CREATE DATABASE gse CHARACTER SET utf8 COLLATE utf8_bin;
 
 ### Step 3:
 
+Manually set the MySQL server timezone to UTC, using the command:
+```mysql
+SET GLOBAL time_zone = '+00:00';
+```
+To ensure that the timezone has been successfully set, run:
+```mysql
+SELECT @@global.time_zone, @@session.time_zone;
+```
+You should see something like:
+```
++--------------------+---------------------+
+| @@global.time_zone | @@session.time_zone |
++--------------------+---------------------+
+| +00:00             | SYSTEM              |
++--------------------+---------------------+
+1 row in set (0.00 sec)
+```
+Note that this step is **necessary** whenever a new MySQL session starts, as the `SET` command will only be valid for the current session. To permanently set MySQL's default timezone to UTC, you must add the following line to your `my.cnf` (usually located in `/usr/local/etc`) config file, under the `[mysqld]` section:
+```
+default-time-zone = "+00:00"
+```
+Be sure to restart your MySQL service for the changes to take effect! If you are having trouble with locating the `my.cnf` file, type the following into the terminal:
+```
+mysql --help | grep /my.cnf
+```
+
+### Step 4:
+
 Create the user by running these two commands in sequence:  
 ``` mysql
 CREATE USER 'gseadmin'@'%' identified by 'Lugano2020';
@@ -47,7 +75,11 @@ To run the application through the terminal, first make sure you have downloaded
 ```
 export PATH=/Users/username/Documents/apache-maven-X.X.X/bin:$PATH
 ```
-Note that this will only temporarely add the environment variable, until the current terminal is ends. Refer to [this article](https://medium.com/@youngstone89/setting-up-environment-variables-in-mac-os-28e5941c771c) if you wish to temporarily add it. To ensure that the path variable has been added, run:  
+Note that this will only temporarily add the environment variable, until the current terminal is ends. To permanently add it, simply run the following:
+```
+echo 'export PATH="/Users/username/Documents/apache-maven-X.X.X/bin:$PATH"' >> ~/.bash_profile
+```
+To ensure that the path variable has been added, run:  
 ```
 mvn -v
 ```
@@ -60,20 +92,32 @@ And to override the value of an existing parameter, run:
 mvn spring-boot:run -Dspring-boot.run.arguments=--arg.one.name=argvalue,--arg.two.name=1
 ```
 
+### Running the .jar
+
+First build the project by running the following command in the terminal:
+```
+mvn clean package
+```
+If it did not exist yet, you should now see the **target** directory in the project root. The root of said directory will contain the Java Archive file for the project. All you have to do now is run the following:
+```
+java -jar target/gse-application-X.X.X.jar
+```
+Note that the name of the .jar file **gse-application-X.X.X** is derived from the settings in **pom.xml**, following the format of: *artifactId-version.jar*
+
 ### Supported arguments
 
 Here's a list of arguments supported by the application:
-1. app.crawl.enabled
+1. `app.crawl.enabled`
   - Type: boolean
   - Default: true
   - Description: Specifies if the crawling jobs are enabled on startup
-2. app.crawl.scheduling
+2. `app.crawl.scheduling`
   - Type: String
   - Default: 43200000 (12H translated to MS)
   - Description: Scheduling rate, expressed as a numeric string
-3. app.crawl.startdate
+3. `app.crawl.startdate`
   - Type: String
   - Default: 2008-01-01T00:00:00
-  - Description: "Beginning of time", basically the earliest date for crawling repos, formatted as a yyyy-MM-ddTHH:MM:SS string.
+  - Description: "Beginning of time". Basically the earliest supported date for crawling repos, if no crawl jobs were previously performed. Formatted as a yyyy-MM-ddTHH:MM:SS string.
   
 Note that although there are other parameters, I strongly recommend you **DON'T** override them.

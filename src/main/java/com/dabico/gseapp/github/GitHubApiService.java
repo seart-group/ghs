@@ -5,6 +5,7 @@ import com.google.gson.JsonObject;
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
 import okhttp3.*;
+import org.apache.http.client.HttpResponseException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -50,9 +51,7 @@ public class GitHubApiService {
             int remaining = search.get("remaining").getAsInt();
             return remaining <= 0;
         } else {
-            //TODO Replace with a custom exception
-            //or something like, "no connection exception"
-            throw new RuntimeException();
+            throw new HttpResponseException(response.code(),"GitHub Server Error");
         }
     }
 

@@ -14,11 +14,13 @@ import com.google.gson.*;
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
 import okhttp3.*;
+import org.apache.http.client.HttpResponseException;
 import org.javatuples.Pair;
 import org.slf4j.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.*;
@@ -30,6 +32,8 @@ import static com.google.gson.JsonParser.*;
 public class CrawlProjectsJob {
 
     static final Logger logger = LoggerFactory.getLogger(CrawlProjectsJob.class);
+
+    static Long defaultRetryPeriod = 3600000L;
 
     List<DateInterval> requestQueue = new ArrayList<>();
     List<String> accessTokens = new ArrayList<>();
@@ -65,52 +69,55 @@ public class CrawlProjectsJob {
         this.applicationPropertyService = applicationPropertyService;
     }
 
-    public void run() throws Exception {
+    public void run() throws IOException,InterruptedException {
         reset();
-        Date startDate = Date.from(Instant.now().minus(Duration.ofHours(2)));
+        Date endDate = Date.from(Instant.now().minus(Duration.ofHours(2)));
         for (String language : languages){
-            Date limit = crawlJobService.getCrawlDateByLanguage(language);
+            Date startDate = crawlJobService.getCrawlDateByLanguage(language);
             DateInterval interval;
-            if (limit != null){
-                assert limit.before(startDate);
-                interval = new DateInterval(limit,startDate);
-                create(interval,language);
-                update(interval,language);
+            if (startDate != null){
+                assert startDate.before(endDate);
+                interval = new DateInterval(startDate,endDate);
+                crawlCreatedRepos(interval,language);
+                crawlUpdatedRepos(interval,language);
             } else {
-                interval = new DateInterval(applicationPropertyService.getStartDate(),startDate);
-                create(interval,language);
+                interval = new DateInterval(applicationPropertyService.getStartDate(),endDate);
+                crawlCreatedRepos(interval,language);
             }
         }
     }
 
-    private void create(DateInterval interval, String language) throws Exception {
+    private void crawlCreatedRepos(DateInterval interval, String language) throws IOException,InterruptedException {
         logger.info("Created: "+language.toUpperCase()+" "+interval);
         logger.info("Token: " + this.currentToken);
-        crawl(interval,language,false);
-        logger.info("Create Complete!");
+        crawlRepos(interval,language,false);
+        logger.info("Created interval crawl complete!");
     }
 
-    private void update(DateInterval interval, String language) throws Exception {
+    private void crawlUpdatedRepos(DateInterval interval, String language) throws IOException,InterruptedException {
         logger.info("Updated: "+language.toUpperCase()+" "+interval);
         logger.info("Token: " + this.currentToken);
-        crawl(interval,language,true);
-        logger.info("Update Complete!");
+        crawlRepos(interval,language,true);
+        logger.info("Updated interval crawl complete!");
     }
 
-    private void crawl(DateInterval interval, String language, Boolean mode) throws Exception {
+    private void crawlRepos(DateInterval interval, String language, Boolean mode) throws IOException,InterruptedException {
         requestQueue.add(interval);
         do {
             DateInterval first = requestQueue.remove(0);
             retrieveRepos(first,language,mode);
+            if (!requestQueue.isEmpty()) {
+                logger.info("Next Crawl Intervals:");
+                logger.info(requestQueue.toString());
+            }
         } while (!requestQueue.isEmpty());
     }
 
-    private void retrieveRepos(DateInterval interval, String language, Boolean update) throws Exception {
+    private void retrieveRepos(DateInterval interval, String language, Boolean update) throws IOException,InterruptedException {
         int page = 1;
         replaceTokenIfExpired();
         Response response = gitHubApiService.searchRepositories(language,interval,page,currentToken,update);
         ResponseBody responseBody = response.body();
-
         if (response.isSuccessful() && responseBody != null){
             JsonObject bodyJson = parseString(responseBody.string()).getAsJsonObject();
             int totalResults = bodyJson.get("total_count").getAsInt();
@@ -120,42 +127,57 @@ public class CrawlProjectsJob {
                 JsonArray results = bodyJson.get("items").getAsJsonArray();
                 response.close();
                 saveRetrievedRepos(results,language);
-
-                if (totalPages > 1){
-                    page++;
-                    while (page <= totalPages){
-                        replaceTokenIfExpired();
-                        response = gitHubApiService.searchRepositories(language,interval,page,currentToken,update);
-                        responseBody = response.body();
-                        if (response.isSuccessful() && responseBody != null){
-                            bodyJson = parseString(responseBody.string()).getAsJsonObject();
-                            response.close();
-                            results = bodyJson.get("items").getAsJsonArray();
-                            saveRetrievedRepos(results,language);
-                            page++;
-                        }
-                        response.close();
-                    }
-                }
+                retrieveRemainingRepos(interval, language, update, results, totalPages);
                 crawlJobService.updateCrawlDateForLanguage(language,interval.getEnd());
             } else {
                 Pair<DateInterval,DateInterval> newIntervals = interval.splitInterval();
                 if (newIntervals != null){
-                    requestQueue.add(newIntervals.getValue0());
-                    requestQueue.add(newIntervals.getValue1());
+                    requestQueue.add(0,newIntervals.getValue1());
+                    requestQueue.add(0,newIntervals.getValue0());
+                }
+                response.close();
+            }
+        } else if (response.code() > 499){
+            logger.error("Error retrieving repositories.");
+            logger.error("Server Error Encountered: " + response.code());
+            Thread.sleep(defaultRetryPeriod);
+            logger.error("Retrying...");
+            retrieveRepos(interval, language, update);
+        }
+        response.close();
+    }
+
+    private void retrieveRemainingRepos(DateInterval interval,
+                                        String language,
+                                        Boolean update,
+                                        JsonArray results,
+                                        int totalPages) throws IOException,InterruptedException {
+        if (totalPages > 1){
+            int page = 2;
+            while (page <= totalPages){
+                replaceTokenIfExpired();
+                Response response = gitHubApiService.searchRepositories(language,interval,page,currentToken,update);
+                ResponseBody responseBody = response.body();
+                if (response.isSuccessful() && responseBody != null){
+                    JsonObject bodyJson = parseString(responseBody.string()).getAsJsonObject();
+                    response.close();
+                    results = bodyJson.get("items").getAsJsonArray();
+                    saveRetrievedRepos(results,language);
+                    page++;
+                } else if (response.code() > 499){
+                    logger.error("Error retrieving repositories at page: " + page);
+                    logger.error("Server Error Encountered: " + response.code());
+                    Thread.sleep(defaultRetryPeriod);
+                    logger.error("Retrying...");
+                    retrieveRemainingRepos(interval, language, update, results, totalPages);
                 }
                 response.close();
             }
         }
-        response.close();
-        if (!requestQueue.isEmpty()) {
-            logger.info("Next Crawl Intervals:");
-            logger.info(requestQueue.toString());
-        }
     }
 
-    private void saveRetrievedRepos(JsonArray results, String language) throws Exception {
-        logger.info("Adding: "+results.size()+" results");
+    private void saveRetrievedRepos(JsonArray results, String language) throws IOException,InterruptedException {
+        logger.info("Adding: "+results.size()+" repositories.");
         for (JsonElement element : results){
             JsonObject repoJson = element.getAsJsonObject();
             GitRepo repo = gitRepoConverter.jsonToGitRepo(repoJson,language);
@@ -167,38 +189,51 @@ public class CrawlProjectsJob {
         }
     }
 
-    private void retrieveRepoLabels(GitRepo repo) throws Exception {
+    private void retrieveRepoLabels(GitRepo repo) throws IOException,InterruptedException {
         List<GitRepoLabel> repo_labels = new ArrayList<>();
         Response response = gitHubApiService.searchRepoLabels(repo.getName(),currentToken);
         ResponseBody responseBody = response.body();
         if (response.isSuccessful() && responseBody != null){
             JsonArray results = parseString(responseBody.string()).getAsJsonArray();
-            results.forEach(result ->
-                    repo_labels.add(GitRepoLabel.builder()
-                                                .repo(repo)
-                                                .label(result.getAsJsonObject().get("name").getAsString())
-                                                .build())
+            logger.info("Adding: "+results.size()+" labels.");
+            results.forEach(result -> repo_labels.add(GitRepoLabel.builder()
+                                                 .repo(repo)
+                                                 .label(result.getAsJsonObject().get("name").getAsString())
+                                                 .build())
             );
+            gitRepoService.createUpdateLabels(repo,repo_labels);
+        } else if (response.code() > 499){
+            logger.error("Error retrieving labels.");
+            logger.error("Server Error Encountered: " + response.code());
+            Thread.sleep(defaultRetryPeriod);
+            logger.error("Retrying...");
+            retrieveRepoLabels(repo);
         }
-        gitRepoService.createUpdateLabels(repo,repo_labels);
         response.close();
     }
 
-    private void retrieveRepoLanguages(GitRepo repo) throws Exception {
+    private void retrieveRepoLanguages(GitRepo repo) throws IOException,InterruptedException {
         List<GitRepoLanguage> repo_languages = new ArrayList<>();
         Response response = gitHubApiService.searchRepoLanguages(repo.getName(),currentToken);
         ResponseBody responseBody = response.body();
         if (response.isSuccessful() && responseBody != null){
             JsonObject result = parseString(responseBody.string()).getAsJsonObject();
-            Set<String> keySet = result .keySet();
+            Set<String> keySet = result.keySet();
+            logger.info("Adding: "+keySet.size()+" languages.");
             keySet.forEach(key -> repo_languages.add(GitRepoLanguage.builder()
                                                                     .repo(repo)
                                                                     .language(key)
                                                                     .sizeOfCode(result.get(key).getAsLong())
                                                                     .build())
             );
+            gitRepoService.createUpdateLanguages(repo,repo_languages);
+        } else if (response.code() > 499){
+            logger.error("Error retrieving languages.");
+            logger.error("Server Error Encountered: " + response.code());
+            Thread.sleep(defaultRetryPeriod);
+            logger.error("Retrying...");
+            retrieveRepoLanguages(repo);
         }
-        gitRepoService.createUpdateLanguages(repo,repo_languages);
         response.close();
     }
 
@@ -217,14 +252,21 @@ public class CrawlProjectsJob {
         accessTokenRepository.findAll().forEach(accessToken -> accessTokens.add(accessToken.getValue()));
     }
 
-    private void replaceTokenIfExpired() throws Exception {
-        if (gitHubApiService.isTokenLimitExceeded(currentToken)){
-            currentToken = getNewToken();
+    private void replaceTokenIfExpired() throws IOException,InterruptedException {
+        try {
+            if (gitHubApiService.isTokenLimitExceeded(currentToken)){
+                currentToken = getNewToken();
+            }
+        } catch (HttpResponseException ex) {
+            logger.error("Error communicating with GitHub.");
+            logger.error("Server Error Encountered: " + ex.getStatusCode());
+            Thread.sleep(defaultRetryPeriod);
+            logger.error("Retrying...");
         }
     }
 
     private String getNewToken(){
-        tokenOrdinal++;
-        return accessTokens.get(tokenOrdinal % accessTokens.size());
+        tokenOrdinal = (tokenOrdinal + 1) % accessTokens.size();
+        return accessTokens.get(tokenOrdinal);
     }
 }

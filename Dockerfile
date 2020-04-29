@@ -1,10 +1,9 @@
-FROM maven:3-jdk-8-alpine
+FROM adoptopenjdk/openjdk12:alpine-jre
+
+ARG JAR_FILE=target/gse-application-0.9.0.jar
 
 WORKDIR /usr/src/app
 
-COPY . /usr/src/app
-RUN mvn package
+COPY ${JAR_FILE} app.jar
 
-ENV PORT 5000
-EXPOSE $PORT
-CMD [ "sh", "-c", "mvn -Dserver.port=${PORT} spring-boot:run" ]
+ENTRYPOINT ["java","-jar","app.jar"]

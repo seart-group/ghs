@@ -1,5 +1,8 @@
--- To create DB manually in SQL console use:
+-- To create DB manually in MySQL console use:
 -- CREATE DATABASE gse CHARACTER SET utf8 COLLATE utf8_bin;
+-- To ensure that the time zone is set to UTC
+-- SET GLOBAL time_zone = '+0:00';
+-- SELECT @@global.time_zone, @@session.time_zone;
 
 create table repo
 (
@@ -9,7 +12,7 @@ create table repo
     is_fork_project bit null,
     commits bigint null,
     branches bigint null,
-    default_branch varchar(40) null,
+    default_branch varchar(256) null,
     releases bigint null,
     contributors bigint null,
     license varchar(64) null,
@@ -91,8 +94,8 @@ create table crawl_job
 create index crawl_job_index_language_id
     on crawl_job (language_id);
 
-CREATE TABLE `hibernate_sequence` (
-  `next_val` bigint(20) DEFAULT NULL
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+create table `hibernate_sequence` (
+  `next_val` bigint(20) default null
+) ENGINE=MyISAM default CHARSET=utf8 COLLATE=utf8_bin;
 
 insert into hibernate_sequence (next_val) values (0);
