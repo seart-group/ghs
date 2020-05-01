@@ -73,6 +73,13 @@ public class GitHubPageCrawlerService {
             commits  = parseLong(normalizeNumberString(document.select(commitsReg).first().html()));
         } catch (NullPointerException ignored) {
             commits  = mineCommitsSelenium();
+        } catch (NumberFormatException ex){
+            if (ex.getMessage().split(": ")[1].equals("\"∞\"")){
+                //Record error state -2 if repo has "infinite" commits
+                commits = -2;
+            } else {
+                commits = -1;
+            }
         }
 
         try {
