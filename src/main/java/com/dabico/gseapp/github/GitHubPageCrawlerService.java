@@ -92,7 +92,12 @@ public class GitHubPageCrawlerService {
         } catch (NullPointerException ex){
             contributors = mineContributorsSelenium();
         } catch (NumberFormatException ex){
-            contributors = Long.MAX_VALUE;
+            if (ex.getMessage().split(": ")[1].equals("\"∞\"")){
+                //Record error state -2 if repo has "infinite" contributors
+                contributors = -2;
+            } else {
+                contributors = -1;
+            }
         }
 
         try {
