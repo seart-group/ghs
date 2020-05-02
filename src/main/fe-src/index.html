@@ -743,20 +743,20 @@
                 let repo_stargazers = item.stargazers;
                 let repo_forks = item.forks;
                 let repo_size = formatBytes(item.size);
-                let repo_createdAt = item.createdAt.replace("T"," ").slice(0,19);
-                let repo_pushedAt = item.pushedAt.replace("T"," ").slice(0,19);
-                let repo_updatedAt = item.updatedAt.replace("T"," ").slice(0,19);
+                let repo_createdAt = item.createdAt.replace("T"," ");
+                let repo_pushedAt = item.pushedAt.replace("T"," ");
+                let repo_updatedAt = item.updatedAt.replace("T"," ");
                 let repo_homepage = item.homepage;
                 let repo_mainLanguage = item.mainLanguage;
                 let repo_totalIssues = item.totalIssues;
                 let repo_openIssues = item.openIssues;
                 let repo_totalPullRequests = item.totalPullRequests;
                 let repo_openPullRequests = item.openPullRequests;
-                let repo_lastCommit = item.lastCommit.replace("T"," ").slice(0,19);
+                let repo_lastCommit = item.lastCommit.replace("T"," ");
                 let repo_lastCommitSHA = item.lastCommitSHA;
                 let repo_hasWiki = item.hasWiki;
                 let repo_isArchived = item.isArchived;
-                let repo_languages = item.languages;
+                let repo_languages = item.languages.sort((x,y) => (x.sizeOfCode > y.sizeOfCode) ? -1 : 1);
                 let repo_labels = item.labels;
 
                 let result = '<div id="repo-'+repo_id+'" class="pb-3"></div>';
@@ -861,95 +861,112 @@
                 let row_7 = '<div class="row mw-100 py-3 mx-3 border border-top-0 border-bottom-0">'+
                             '<div class="col d-flex justify-content-between">'+
                             '<div class="col d-flex align-items-center justify-content-start pl-0">'+
-                            '<i class="mx-1 icon-repo-template" title="Date Created"></i><span>'+repo_createdAt+'</span></div>'+
+                            '<i class="mx-1 icon-repo-template" title="Date Created"></i>'+
+                            '<span title="'+repo_createdAt.slice(0,19)+'">Created: '+repo_createdAt.slice(0,10)+'</span></div>'+
                             '<div class="col d-flex align-items-center justify-content-start">'+
-                            '<i class="mx-1 icon-pencil" title="Last Updated"></i><span>'+repo_updatedAt+'</span></div>'+
+                            '<i class="mx-1 icon-pencil" title="Date Updated"></i>'+
+                            '<span title="'+repo_updatedAt.slice(0,19)+'">Updated: '+repo_updatedAt.slice(0,10)+'</span></div>'+
                             '<div class="col d-flex align-items-center justify-content-start">'+
-                            '<i class="mx-1 icon-repo-push" title="Last Pushed"></i><span>'+repo_pushedAt+'</span></div>'+
+                            '<i class="mx-1 icon-repo-push" title="Date Last Pushed"></i>'+
+                            '<span title="'+repo_pushedAt.slice(0,19)+'">Last Push: '+repo_pushedAt.slice(0,10)+'</span></div>'+
                             '<div class="col d-flex align-items-center justify-content-start pr-0">'+
-                            '<i class="mx-1 icon-diff" title="Last Commit"></i><span>'+repo_lastCommit+'</span></div>'+
+                            '<i class="mx-1 icon-diff" title="Last Commit Date"></i>'+
+                            '<span title="'+repo_lastCommit.slice(0,19)+'">Last Commit: '+repo_lastCommit.slice(0,10)+'</span></div>'+
                             '</div></div>';
 
                 result = $(result).append(row_7);
 
                 let row_8 = '<div class="row mw-100 mx-3 border border-top-0 border-bottom-0"></div>';
                 let row_8_col = '<div class="col d-flex justify-content-between"></div>';
-                let row_8_col_col = '<div class="col d-flex align-items-center justify-content-center chart-container px-0"></div>';
+                let row_8_col_col = '<div class="col d-flex align-items-center justify-content-center chart-container px-0" style="position: relative; height: 45px"></div>';
 
-                if (repo_languages.length > 0){
-                    // Doesn't work for some reason... Makes item disappear, and causes some undefined behaviour
+                if (repo_languages.length > 1){
+                    // TODO Fix problem with displaying the
+                    row_8_col_col = $(row_8_col_col).append('<canvas id="repo-'+repo_id+'-chart"></canvas>');
+                    row_8_col = $(row_8_col).append(row_8_col_col);
+                    row_8 = $(row_8).append(row_8_col);
+                    result = $(result).append(row_8);
 
-                    // row_8_col_col = $(row_8_col_col).append('<canvas id="repo-'+repo_id+'-chart"></canvas>');
-                    // row_8_col = $(row_8_col).append(row_8_col_col);
-                    // row_8 = $(row_8).append(row_8_col);
-                    // result = $(result).append(row_8);
-                    //
-                    // let colors = ['#008000','#7CFC00','#FFFF00',
-                    //               '#FFD700','#FFA500','#FF4500',
-                    //               '#8B0000','#C71585','#FF00FF',
-                    //               '#800080','#4B0082','#0000CD',
-                    //               '#0000FF','#4169E1','#00BFFF'];
-                    // let entries = [];
-                    // let sizes = [];
-                    // let percentages = [];
-                    // let data = [];
-                    //
-                    // repo_languages.forEach(lang => {
-                    //     entries.push(lang.language);
-                    //     sizes.push(lang.sizeOfCode);
-                    // });
-                    //
-                    // let totalSize = sizes.reduce((x,y) => x + y, 0);
-                    //
-                    // sizes.forEach(x => {
-                    //     percentages.push((x/totalSize * 100).toFixed(2));
-                    // });
-                    //
-                    // for (let i = 0; i < percentages.length; i++){
-                    //     data.push({"label":entries[i],"data":[percentages[i]],"backgroundColor":colors[i]});
-                    // }
-                    //
-                    // let ctx = document.getElementById('repo-'+repo_id+'-chart');
-                    //
-                    // Chart.defaults.global.defaultFontFamily = "Trebuchet MS";
-                    //
-                    // let repo_chart = new Chart(ctx, {
-                    //     type: 'horizontalBar',
-                    //     data: {
-                    //         labels: [],
-                    //         datasets: data
-                    //     },
-                    //     options: {
-                    //         responsive: true,
-                    //         maintainAspectRatio: false,
-                    //         legend: {
-                    //             display: false
-                    //         },
-                    //         scales: {
-                    //             xAxes: [{
-                    //                 stacked: true,
-                    //                 display: false,
-                    //                 gridLines: {
-                    //                     display: false
-                    //                 }
-                    //             }],
-                    //             yAxes: [{
-                    //                 barThickness: 100,
-                    //                 stacked: true,
-                    //                 display: false,
-                    //                 gridLines: {
-                    //                     display: false
-                    //                 }
-                    //             }]
-                    //         }
-                    //     }
-                    // });
-                    //
-                    // row_8 = $(row_8).toggleClass("pb-3");
+                    let colors = ['#008000','#7CFC00','#FFFF00',
+                                  '#FFD700','#FFA500','#FF4500',
+                                  '#8B0000','#C71585','#FF00FF',
+                                  '#800080','#4B0082','#0000CD',
+                                  '#0000FF','#4169E1','#00BFFF'].reverse();
+                    let entries = [];
+                    let sizes = [];
+                    let percentages = [];
+                    let data = [];
+
+                    repo_languages.forEach(lang => {
+                        entries.push(lang.language);
+                        sizes.push(lang.sizeOfCode);
+                    });
+
+                    let totalSize = sizes.reduce((x,y) => x + y, 0);
+
+                    sizes.forEach(x => {
+                        let percentage = (x/totalSize * 100).toFixed(2);
+                        if (percentage > 0.00){
+                            percentages.push(percentage);
+                        }
+                    });
+
+                    for (let i = 0; i < percentages.length; i++){
+                        data.push({"label":entries[i],
+                                   "data":[percentages[i]],
+                                   "backgroundColor":colors[i],
+                                   "hoverBackgroundColor":colors[i],
+                                   "borderColor":"#303000",
+                                   "borderWidth":1,
+                                   "barThickness":25});
+                    }
+
+                    let ctx = result.find("#repo-"+repo_id+"-chart");
+
+                    Chart.defaults.global.defaultFontFamily = "Trebuchet MS";
+
+                    let repo_chart = new Chart(ctx, {
+                        type: 'horizontalBar',
+                        data: {
+                            labels: ["Languages"],
+                            datasets: data
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            legend: {
+                                display: false
+                            },
+                            scales: {
+                                xAxes: [{
+                                    stacked: true,
+                                    display: false,
+                                    ticks: {
+                                        beginAtZero: true
+                                    },
+                                    gridLines: {
+                                        display: true
+                                    }
+                                }],
+                                yAxes: [{
+                                    stacked: true,
+                                    display: false,
+                                    ticks: {
+                                        beginAtZero: true
+                                    },
+                                    gridLines: {
+                                        display: false
+                                    }
+                                }]
+                            }
+                        }
+                    });
+
+                    row_8 = $(row_8).toggleClass("pb-3");
                 }
 
                 let row_9 = '<div class="row mw-100 mx-3 border border-top-0"></div>';
-                let row_9_col_1 = '<div class="col-auto d-flex flex-wrap align-items-center align-content-between justify-content-end pr-1"></div>';
+                let row_9_col_1 = '<div class="col-auto d-flex flex-wrap align-items-center align-content-between justify-content-start pr-1"></div>';
                 let row_9_col_2 = '<div class="col d-flex flex-wrap align-items-center align-content-between justify-content-start pl-1"></div>';
 
                 if (repo_labels.length > 0){

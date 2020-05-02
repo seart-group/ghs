@@ -4,7 +4,7 @@ html,body {
     height: 100%;
 }
 
-h1,h2,h3,h4,h5,a,p,blockquote,pre,button,input,label {
+h1,h2,h3,h4,h5,a,p,blockquote,pre,button,input,label,span {
     font-family: "Trebuchet MS", "Lucida Grande", "Lucida Sans Unicode", "Lucida Sans", Tahoma, sans-serif;
     font-style: normal;
     font-variant: normal;
