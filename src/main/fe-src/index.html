@@ -1,20 +1,20 @@
 <!doctype html>
 <html lang="en">
     <head>
-        <!-- Required meta tags -->
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
         <meta name="description" content="GitHub Search Engine App, USI 2020 Bachelor Project">
         <meta name="author" content="Ozren Dabić">
         <link rel="icon" type="image/png" href="public/img/logo-32.png">
-        <!-- Bootstrap CSS -->
+
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.8.0/css/bootstrap-datepicker.min.css" />
-        <link rel="stylesheet" type="text/css" href="public/img/icomoon/style.css">
+        <link rel="stylesheet" type="text/css" href="public/img/octicons/style.css">
+        <link rel="stylesheet" type="text/css" href="public/img/languages/style.css">
         <link rel="stylesheet" type="text/css" href="main.css">
-        <!-- Scripts -->
+
         <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.8.0/js/bootstrap-datepicker.min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-3-typeahead/4.0.2/bootstrap3-typeahead.min.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.3/dist/Chart.min.js"></script>
@@ -126,7 +126,7 @@
                     <div class="p-3 row">
                         <div class="col-8">
                             <div class="input-group">
-                                <input type="text" id="name" name="name" class="form-control rounded-0 bg-lgray border-secondary border-left-0 border-top-0 border-right-0" placeholder="Repository name" pattern="[A-Za-z0-9-_.]*" title="Only letters, numbers, dash, underscore and dot characters are allowed here!">
+                                <input type="text" id="name" name="name" class="form-control rounded-0 bg-lgray border-secondary border-left-0 border-top-0 border-right-0" placeholder="Repository name" pattern="[A-Za-z0-9-/_.]*" title="Only letters, numbers, dash, underscore and dot characters are allowed here!">
                                 <div class="input-group-append">
                                     <button type="button" id="match" name="nameEquals" value="false" class="btn btn-outline-secondary rounded-0 border-left-0 border-top-0 border-right-0 bg-lgray" data-toggle="dropdown">
                                         Matching <i class="fa fa-angle-down fa-lg"></i>
@@ -147,7 +147,7 @@
                             <input id="license" name="license" class="form-control rounded-0 border-secondary border-top-0 border-left-0 border-right-0 bg-lgray" value="" type="text" placeholder="License" pattern="[A-Za-z0-9-.*/\s]*" title="Please use only existing GitHub licenses">
                         </div>
                         <div class="col-4">
-                            <input id="label" name="label" class="form-control rounded-0 border-secondary border-top-0 border-left-0 border-right-0 bg-lgray" value="" type="text" placeholder="Uses Label" pattern="[A-Za-z0-9-.:*/?\s]*" title="Please avoid using non-alphanumeric characters">
+                            <input id="label" name="label" class="form-control rounded-0 border-secondary border-top-0 border-left-0 border-right-0 bg-lgray" value="" type="text" placeholder="Uses Label" pattern="[A-Za-z0-9-_.:<>='*@/?!#\s\(\)]*" title="Please avoid characters like quotes">
                         </div>
                     </div>
                     <div class="px-3 pt-3 row text-left">
@@ -476,36 +476,9 @@
                         <span class="fa fa-file-excel-o"></span>
                     </a>
                 </div>
-                <div id="results-container-items" class="w-75 bg-llgray border border-top-0 border-bottom-0 justify-content-center">
-                    <div>
-                        <div class="row mw-100 py-3 mx-3 border">
-                            <div class="col-8 d-flex align-items-center justify-content-start">
-                                <span class="pr-1 fa-fw icon-repo" title="Repository"></span>
-<!--                                <span class="pr-1 icon-repo-forked" title="Fork"></span>-->
-<!--                                <span class="pr-1 icon-archive" title="Archived"></span>-->
-                                <a href="https://github.com/dabico/CloudShare" target="_blank" class="text-dark rowsublabel">
-                                    dabico/CloudShare
-                                </a>
-                            </div>
-                            <div class="col-4 d-flex justify-content-end">
-                                <div class="ml-1 d-flex align-items-center"><i class="mx-1 icon-eye" title="Watchers"></i><span>1600</span></div>
-                                <div class="mx-1 d-flex align-items-center"><i class="mx-1 icon-star" title="Stargazers"></i><span>1216</span></div>
-                                <div class="mr-1 d-flex align-items-center"><i class="mx-1 icon-repo-forked" title="Forks"></i><span>16</span></div>
-                            </div>
-                            <div class="col-md-auto d-flex align-items-center justify-content-start">
-                                <span class="pr-1 icon-law" title="License"></span><span>Do What The F*ck You Want To Public License</span>
-                            </div>
-                            <div class="col d-flex align-items-center justify-content-end">
-                                <div class="ml-1 d-flex align-items-center"><i class="mx-1 icon-git-commit" title="Commits"></i><span>23000</span></div>
-                                <div class="mx-1 d-flex align-items-center"><i class="mx-1 icon-git-branch" title="Branches"></i><span>12</span></div>
-                                <div class="mx-1 d-flex align-items-center"><i class="mx-1 icon-tag" title="Releases"></i><span>101</span></div>
-                                <div class="mr-1 d-flex align-items-center"><i class="mx-1 icon-organization" title="Contributors"></i><span>1111</span></div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                <div id="results-container-items" class="w-75 bg-llgray border border-top-0 border-bottom-0 justify-content-center"></div>
                 <div id="results-container-footer" class="row w-75 bg-llgray border border-top-0 justify-content-center">
-                    <button type="button" id="nextButton" class="w-100 btn btn-outline-secondary bg-llgray rounded-0 border-0 text-center">
+                    <button type="button" id="next-button" class="w-100 btn btn-outline-secondary bg-llgray rounded-0 border-0 text-center">
                         <span class="fa fa-lg fa-angle-down"></span>
                         Show More
                         <span class="fa fa-lg fa-angle-down"></span>
@@ -520,8 +493,8 @@
             </div>
         </footer>
 
-        <!-- Optional JavaScript -->
-        <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+        <a id="back-to-top" href="#" class="btn btn-outline-secondary border-0 rounded-0 bg-lgray back-to-top" role="button"><i class="fa fa-chevron-up"></i></a>
+
         <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
         <script>
@@ -614,8 +587,8 @@
                 return "rgb(" + c + "," + c + "," + c + ")";
             }
 
-            let languages = [];
-            let values = [];
+            let supported_languages = [];
+            let num_of_repos = [];
             let colors = [];
 
             fetch("http://localhost:8080/r/stats").then(response => {
@@ -623,8 +596,8 @@
                     let i = 0;
                     let items = data.items;
                     items.forEach(obj => {
-                        languages.push(obj.name);
-                        values.push(obj.value);
+                        supported_languages.push(obj.name);
+                        num_of_repos.push(obj.value);
                         colors.push(dynamicColors(i,items.length));
                         i++;
                     });
@@ -637,10 +610,10 @@
             let config = {
                 type: 'bar',
                 data: {
-                    labels: languages,
+                    labels: supported_languages,
                     datasets: [{
                         label: '# of repos',
-                        data: values,
+                        data: num_of_repos,
                         backgroundColor: colors,
                         hoverBackgroundColor: colors
                     }]
@@ -747,6 +720,285 @@
             });
         </script>
         <script>
+            function formatBytes(bytes, decimals = 2) {
+                if (bytes === 0) return '0 B';
+                const k = 1024;
+                const dm = decimals < 0 ? 0 : decimals;
+                const sizes = ['B', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
+                const i = Math.floor(Math.log(bytes) / Math.log(k));
+                return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i];
+            }
+
+            function appendResult(item) {
+                let repo_id = item.id;
+                let repo_name = item.name;
+                let repo_isFork = item.isFork;
+                let repo_commits = item.commits;
+                let repo_branches = item.branches;
+                let repo_defaultBranch = item.defaultBranch;
+                let repo_releases = item.releases;
+                let repo_contributors = item.contributors;
+                let repo_license = item.license;
+                let repo_watchers = item.watchers;
+                let repo_stargazers = item.stargazers;
+                let repo_forks = item.forks;
+                let repo_size = formatBytes(item.size);
+                let repo_createdAt = item.createdAt.replace("T"," ").slice(0,19);
+                let repo_pushedAt = item.pushedAt.replace("T"," ").slice(0,19);
+                let repo_updatedAt = item.updatedAt.replace("T"," ").slice(0,19);
+                let repo_homepage = item.homepage;
+                let repo_mainLanguage = item.mainLanguage;
+                let repo_totalIssues = item.totalIssues;
+                let repo_openIssues = item.openIssues;
+                let repo_totalPullRequests = item.totalPullRequests;
+                let repo_openPullRequests = item.openPullRequests;
+                let repo_lastCommit = item.lastCommit.replace("T"," ").slice(0,19);
+                let repo_lastCommitSHA = item.lastCommitSHA;
+                let repo_hasWiki = item.hasWiki;
+                let repo_isArchived = item.isArchived;
+                let repo_languages = item.languages;
+                let repo_labels = item.labels;
+
+                let result = '<div id="repo-'+repo_id+'" class="pb-3"></div>';
+
+                let row_1 = '<div class="row mw-100 pt-3 mx-3 border border-bottom-0"></div>';
+                let row_1_col_1 = '<div class="col d-flex align-items-center justify-content-start">'+
+                                  '<span class="mx-1 fa-2x lang-'+repo_mainLanguage.toLowerCase()+'" title="'+
+                                   repo_mainLanguage+' Repository"></span>'+
+                                  '<a href="https://github.com/'+repo_name+'" target="_blank" class="mx-1 text-dark rowsublabel">'+
+                                   repo_name + '</a></div>';
+                let row_1_col_2 = '<div class="col d-flex align-items-center justify-content-end"></div>';
+
+                if (repo_isArchived) {
+                    let archive_span = '<span class="mx-1 icon-archive" title="Archived"></span>';
+                    row_1_col_2 = $(row_1_col_2).append(archive_span);
+                }
+
+                if (repo_isFork){
+                    let fork_span = '<span class="mx-1 icon-repo-forked" title="Fork Project"></span>';
+                    row_1_col_2 = $(row_1_col_2).append(fork_span);
+                }
+
+                if (repo_hasWiki){
+                    let wiki_span = '<span class="mx-1 icon-book" title="Has Wiki"></span>';
+                    row_1_col_2 = $(row_1_col_2).append(wiki_span);
+                }
+
+                if (repo_homepage !== null && (!repo_homepage.isEmpty())){
+                    let globe_span = '<a href="'+repo_homepage+
+                                     '" target="_blank" class="text-dark" style="text-decoration: none">'+
+                                     '<span class="mx-1 fa fa-home" title="External Homepage"></span></a>';
+                    row_1_col_2 = $(row_1_col_2).append(globe_span);
+                }
+
+                row_1 = $(row_1).append(row_1_col_1,row_1_col_2);
+                result = $(result).append(row_1);
+
+                if (repo_license !== null){
+                    let row_2 = '<div class="row mw-100 pt-3 mx-3 border border-top-0 border-bottom-0">'+
+                                '<div class="col d-flex justify-content-start">'+
+                                '<div class="col d-flex align-items-center justify-content-start px-0">'+
+                                '<i class="mx-1 icon-law" title="License"></i>'+
+                                '<span>License: '+repo_license+'</span></div></div></div>';
+                    result = $(result).append(row_2);
+                }
+
+                let row_3 = '<div class="row mw-100 pt-3 mx-3 border border-top-0 border-bottom-0">'+
+                            '<div class="col d-flex justify-content-start">'+
+                            '<div class="col-auto d-flex align-items-center justify-content-start pl-0">'+
+                            '<i class="mx-1 icon-git-branch" title="Default Branch"></i>'+
+                            '<span>Default Branch: '+repo_defaultBranch+'</span></div></div></div>'+
+                            '<div class="row mw-100 pt-3 mx-3 border border-top-0 border-bottom-0">'+
+                            '<div class="col d-flex justify-content-start">'+
+                            '<div class="col-auto d-flex align-items-center justify-content-start pl-0">'+
+                            '<i class="mx-1 fa fa-hashtag" title="Last Commit SHA"></i>'+
+                            '<span>Last Commit SHA: '+repo_lastCommitSHA+'</span></div></div></div>';
+
+                result = $(result).append(row_3);
+
+                let row_4 = '<div class="row mw-100 pt-3 mx-3 border border-top-0 border-bottom-0">'+
+                            '<div class="col d-flex justify-content-between">'+
+                            '<div class="col d-flex align-items-center justify-content-start pl-0">'+
+                            '<i class="mx-1 icon-file-code" title="Total Size"></i><span>Total Size: '+repo_size+'</span></div>'+
+                            '<div class="col d-flex align-items-center justify-content-start">'+
+                            '<i class="mx-1 icon-eye" title="Watchers"></i><span>Watchers: '+repo_watchers+'</span></div>'+
+                            '<div class="col d-flex align-items-center justify-content-start">'+
+                            '<i class="mx-1 icon-star" title="Stargazers"></i><span>Stars: '+repo_stargazers+'</span></div>'+
+                            '<div class="col d-flex align-items-center justify-content-start pr-0">'+
+                            '<i class="mx-1 icon-repo-forked" title="Forks"></i><span>Forks: '+repo_forks+'</span></div>'+
+                            '</div></div>';
+
+                result = $(result).append(row_4);
+
+                let row_5 = '<div class="row mw-100 pt-3 mx-3 border border-top-0 border-bottom-0">'+
+                            '<div class="col d-flex justify-content-between">'+
+                            '<div class="col d-flex align-items-center justify-content-start pl-0">'+
+                            '<i class="mx-1 icon-git-commit" title="Commits"></i><span>Commits: '+repo_commits+'</span></div>'+
+                            '<div class="col d-flex align-items-center justify-content-start">'+
+                            '<i class="mx-1 icon-git-branch" title="Branches"></i><span>Branches: '+repo_branches+'</span></div>'+
+                            '<div class="col d-flex align-items-center justify-content-start">'+
+                            '<i class="mx-1 icon-tag" title="Releases"></i><span>Releases: '+repo_releases+'</span></div>'+
+                            '<div class="col d-flex align-items-center justify-content-start pr-0">'+
+                            '<i class="mx-1 icon-organization" title="Contributors"></i><span>Contributors: '+repo_contributors+'</span></div>'+
+                            '</div></div>';
+
+                result = $(result).append(row_5);
+
+                let row_6 = '<div class="row mw-100 pt-3 mx-3 border border-top-0 border-bottom-0">'+
+                            '<div class="col d-flex justify-content-between">'+
+                            '<div class="col d-flex align-items-center justify-content-start pl-0">'+
+                            '<i class="mx-1 icon-issue-opened icon-red" title="Open Issues"></i><span>Open Issues: '+repo_openIssues+'</span></div>'+
+                            '<div class="col d-flex align-items-center justify-content-start">'+
+                            '<i class="mx-1 icon-issue-opened" title="Total Issues"></i><span>Total Issues: '+repo_totalIssues+'</span></div>'+
+                            '<div class="col d-flex align-items-center justify-content-start">'+
+                            '<i class="mx-1 icon-git-pull-request icon-red" title="Open Pull Requests"></i><span>Open Pull Reqs: '+repo_openPullRequests+'</span></div>'+
+                            '<div class="col d-flex align-items-center justify-content-start pr-0">'+
+                            '<i class="mx-1 icon-git-pull-request" title="Total Pull Requests"></i><span>Total Pull Reqs: '+repo_totalPullRequests+'</span></div>'+
+                            '</div></div>';
+
+                result = $(result).append(row_6);
+
+                let row_7 = '<div class="row mw-100 py-3 mx-3 border border-top-0 border-bottom-0">'+
+                            '<div class="col d-flex justify-content-between">'+
+                            '<div class="col d-flex align-items-center justify-content-start pl-0">'+
+                            '<i class="mx-1 icon-repo-template" title="Date Created"></i><span>'+repo_createdAt+'</span></div>'+
+                            '<div class="col d-flex align-items-center justify-content-start">'+
+                            '<i class="mx-1 icon-pencil" title="Last Updated"></i><span>'+repo_updatedAt+'</span></div>'+
+                            '<div class="col d-flex align-items-center justify-content-start">'+
+                            '<i class="mx-1 icon-repo-push" title="Last Pushed"></i><span>'+repo_pushedAt+'</span></div>'+
+                            '<div class="col d-flex align-items-center justify-content-start pr-0">'+
+                            '<i class="mx-1 icon-diff" title="Last Commit"></i><span>'+repo_lastCommit+'</span></div>'+
+                            '</div></div>';
+
+                result = $(result).append(row_7);
+
+                let row_8 = '<div class="row mw-100 mx-3 border border-top-0 border-bottom-0"></div>';
+                let row_8_col = '<div class="col d-flex justify-content-between"></div>';
+                let row_8_col_col = '<div class="col d-flex align-items-center justify-content-center chart-container px-0"></div>';
+
+                if (repo_languages.length > 0){
+                    // Doesn't work for some reason... Makes item disappear, and causes some undefined behaviour
+
+                    // row_8_col_col = $(row_8_col_col).append('<canvas id="repo-'+repo_id+'-chart"></canvas>');
+                    // row_8_col = $(row_8_col).append(row_8_col_col);
+                    // row_8 = $(row_8).append(row_8_col);
+                    // result = $(result).append(row_8);
+                    //
+                    // let colors = ['#008000','#7CFC00','#FFFF00',
+                    //               '#FFD700','#FFA500','#FF4500',
+                    //               '#8B0000','#C71585','#FF00FF',
+                    //               '#800080','#4B0082','#0000CD',
+                    //               '#0000FF','#4169E1','#00BFFF'];
+                    // let entries = [];
+                    // let sizes = [];
+                    // let percentages = [];
+                    // let data = [];
+                    //
+                    // repo_languages.forEach(lang => {
+                    //     entries.push(lang.language);
+                    //     sizes.push(lang.sizeOfCode);
+                    // });
+                    //
+                    // let totalSize = sizes.reduce((x,y) => x + y, 0);
+                    //
+                    // sizes.forEach(x => {
+                    //     percentages.push((x/totalSize * 100).toFixed(2));
+                    // });
+                    //
+                    // for (let i = 0; i < percentages.length; i++){
+                    //     data.push({"label":entries[i],"data":[percentages[i]],"backgroundColor":colors[i]});
+                    // }
+                    //
+                    // let ctx = document.getElementById('repo-'+repo_id+'-chart');
+                    //
+                    // Chart.defaults.global.defaultFontFamily = "Trebuchet MS";
+                    //
+                    // let repo_chart = new Chart(ctx, {
+                    //     type: 'horizontalBar',
+                    //     data: {
+                    //         labels: [],
+                    //         datasets: data
+                    //     },
+                    //     options: {
+                    //         responsive: true,
+                    //         maintainAspectRatio: false,
+                    //         legend: {
+                    //             display: false
+                    //         },
+                    //         scales: {
+                    //             xAxes: [{
+                    //                 stacked: true,
+                    //                 display: false,
+                    //                 gridLines: {
+                    //                     display: false
+                    //                 }
+                    //             }],
+                    //             yAxes: [{
+                    //                 barThickness: 100,
+                    //                 stacked: true,
+                    //                 display: false,
+                    //                 gridLines: {
+                    //                     display: false
+                    //                 }
+                    //             }]
+                    //         }
+                    //     }
+                    // });
+                    //
+                    // row_8 = $(row_8).toggleClass("pb-3");
+                }
+
+                let row_9 = '<div class="row mw-100 mx-3 border border-top-0"></div>';
+                let row_9_col_1 = '<div class="col-auto d-flex flex-wrap align-items-center align-content-between justify-content-end pr-1"></div>';
+                let row_9_col_2 = '<div class="col d-flex flex-wrap align-items-center align-content-between justify-content-start pl-1"></div>';
+
+                if (repo_labels.length > 0){
+                    row_9_col_1 = $(row_9_col_1).append('<span class="mx-1">Tags:</span>');
+                    repo_labels.forEach(label => {
+                        row_9_col_2 = $(row_9_col_2).append('<span class="badge badge-dark m-1">'+label.label+'</span>');
+                    });
+                    row_9 = $(row_9).toggleClass("pb-3");
+                }
+
+                row_9 = $(row_9).append(row_9_col_1,row_9_col_2);
+                result = $(result).append(row_9);
+
+                $('#results-container-items').append(result);
+            }
+
+            function retrieve(url) {
+                fetch(url).then(response => {
+                    return response.json();
+                }).then(data => {
+                    let items    = data.items;
+                    let next     = data.next;
+                    let download = data.download;
+
+                    if (download !== null){
+                        $('#download-button').attr('href',download);
+                    } else {
+                        $('#download-button').addClass("disabled");
+                    }
+
+                    if (items.length > 0){
+                        items.forEach(item => appendResult(item));
+                    } else {
+                        let no_items = '<div><div class="row mw-100 py-3 mx-3">'+
+                                       '<div class="col d-flex justify-content-center">'+
+                                       '<div class="col d-flex align-items-center justify-content-center px-0">'+
+                                       '<i class="mx-1 fa fa-frown-o"></i><span>No Results</span></div></div></div></div>';
+
+                        $('#results-container-items').append(no_items);
+                    }
+
+                    if (next !== null){
+                        $('#next-button').attr('onclick','retrieve("'+next+'")')
+                    } else {
+                        $('#next-button').addClass("d-none");
+                    }
+                }).catch(_ => {})
+            }
+
             function submitQuery() {
                 let name = document.getElementById("name").value;
                 let nameEquals = document.getElementById("match").value;
@@ -786,191 +1038,100 @@
                 let hasLicense = document.getElementById("hasLicense").checked;
 
                 let search_base = "http://localhost:8080/r/search?";
-                let download_base = "http://localhost:8080/r/search/download?";
 
                 search_base += "nameEquals=" + nameEquals;
-                download_base += "nameEquals=" + nameEquals;
                 search_base += "&onlyForks=" + onlyForks;
-                download_base += "&onlyForks=" + onlyForks;
                 search_base += "&excludeForks=" + excludeForks;
-                download_base += "&excludeForks=" + excludeForks;
                 search_base += "&hasIssues=" + hasIssues;
-                download_base += "&hasIssues=" + hasIssues;
                 search_base += "&hasPulls=" + hasPulls;
-                download_base += "&hasPulls=" + hasPulls;
                 search_base += "&hasWiki=" + hasWiki;
-                download_base += "&hasWiki=" + hasWiki;
                 search_base += "&hasLicense=" + hasLicense;
-                download_base += "&hasLicense=" + hasLicense;
 
-                if (!name.isEmpty()){
-                    search_base += "&name=" + name;
-                    download_base += "&name=" + name;
-                }
+                if (!name.isEmpty()){ search_base += "&name=" + name; }
+                if (!language.isEmpty()){ search_base += "&language=" + language; }
+                if (!label.isEmpty()){ search_base += "&label=" + label; }
+                if (!license.isEmpty()){ search_base += "&license=" + license; }
+                if (!commitsMin.isEmpty()){ search_base += "&commitsMin=" + commitsMin; }
+                if (!commitsMax.isEmpty()){ search_base += "&commitsMax=" + commitsMax; }
+                if (!contributorsMin.isEmpty()){ search_base += "&contributorsMin=" + contributorsMin; }
+                if (!contributorsMax.isEmpty()){ search_base += "&contributorsMax=" + contributorsMax; }
+                if (!issuesMin.isEmpty()){ search_base += "&issuesMin=" + issuesMin; }
+                if (!issuesMax.isEmpty()){ search_base += "&issuesMax=" + issuesMax; }
+                if (!pullsMin.isEmpty()){ search_base += "&pullsMin=" + pullsMin; }
+                if (!pullsMax.isEmpty()){ search_base += "&pullsMax=" + pullsMax; }
+                if (!branchesMin.isEmpty()){ search_base += "&branchesMin=" + branchesMin; }
+                if (!branchesMax.isEmpty()){ search_base += "&branchesMax=" + branchesMax; }
+                if (!releasesMin.isEmpty()){ search_base += "&releasesMin=" + releasesMin; }
+                if (!releasesMax.isEmpty()){ search_base += "&releasesMax=" + releasesMax; }
+                if (!starsMin.isEmpty()){ search_base += "&starsMin=" + starsMin; }
+                if (!starsMax.isEmpty()){ search_base += "&starsMax=" + starsMax; }
+                if (!watchersMin.isEmpty()){ search_base += "&watchersMin=" + watchersMin; }
+                if (!watchersMax.isEmpty()){ search_base += "&watchersMax=" + watchersMax; }
+                if (!forksMin.isEmpty()){ search_base += "&forksMin=" + forksMin; }
+                if (!forksMax.isEmpty()){ search_base += "&forksMax=" + forksMax; }
+                if (!createdMin.isEmpty()){ search_base += "&createdMin=" + createdMin; }
+                if (!createdMax.isEmpty()){ search_base += "&createdMax=" + createdMax; }
+                if (!committedMin.isEmpty()){ search_base += "&committedMin=" + committedMin; }
+                if (!committedMax.isEmpty()){ search_base += "&committedMax=" + committedMax; }
 
-                if (!language.isEmpty()){
-                    search_base += "&language=" + language;
-                    download_base += "&language=" + language;
-                }
-
-                if (!label.isEmpty()){
-                    search_base += "&label=" + label;
-                    download_base += "&label=" + label;
-                }
-
-                if (!license.isEmpty()){
-                    search_base += "&license=" + license;
-                    download_base += "&license=" + license;
-                }
-
-                if (!commitsMin.isEmpty()){
-                    search_base += "&commitsMin=" + commitsMin;
-                    download_base += "&commitsMin=" + commitsMin;
-                }
-
-                if (!commitsMax.isEmpty()){
-                    search_base += "&commitsMax=" + commitsMax;
-                    download_base += "&commitsMax=" + commitsMax;
-                }
-
-                if (!contributorsMin.isEmpty()){
-                    search_base += "&contributorsMin=" + contributorsMin;
-                    download_base += "&contributorsMin=" + contributorsMin;
-                }
-
-                if (!contributorsMax.isEmpty()){
-                    search_base += "&contributorsMax=" + contributorsMax;
-                    download_base += "&contributorsMax=" + contributorsMax;
-                }
-
-                if (!issuesMin.isEmpty()){
-                    search_base += "&issuesMin=" + issuesMin;
-                    download_base += "&issuesMin=" + issuesMin;
-                }
-
-                if (!issuesMax.isEmpty()){
-                    search_base += "&issuesMax=" + issuesMax;
-                    download_base += "&issuesMax=" + issuesMax;
-                }
-
-                if (!pullsMin.isEmpty()){
-                    search_base += "&pullsMin=" + pullsMin;
-                    download_base += "&pullsMin=" + pullsMin;
-                }
-
-                if (!pullsMax.isEmpty()){
-                    search_base += "&pullsMax=" + pullsMax;
-                    download_base += "&pullsMax=" + pullsMax;
-                }
-
-                if (!branchesMin.isEmpty()){
-                    search_base += "&branchesMin=" + branchesMin;
-                    download_base += "&branchesMin=" + branchesMin;
-                }
-
-                if (!branchesMax.isEmpty()){
-                    search_base += "&branchesMax=" + branchesMax;
-                    download_base += "&branchesMax=" + branchesMax;
-                }
-
-                if (!releasesMin.isEmpty()){
-                    search_base += "&releasesMin=" + releasesMin;
-                    download_base += "&releasesMin=" + releasesMin;
-                }
-
-                if (!releasesMax.isEmpty()){
-                    search_base += "&releasesMax=" + releasesMax;
-                    download_base += "&releasesMax=" + releasesMax;
-                }
-
-                if (!starsMin.isEmpty()){
-                    search_base += "&starsMin=" + starsMin;
-                    download_base += "&starsMin=" + starsMin;
-                }
-
-                if (!starsMax.isEmpty()){
-                    search_base += "&starsMax=" + starsMax;
-                    download_base += "&starsMax=" + starsMax;
-                }
-
-                if (!watchersMin.isEmpty()){
-                    search_base += "&watchersMin=" + watchersMin;
-                    download_base += "&watchersMin=" + watchersMin;
-                }
-
-                if (!watchersMax.isEmpty()){
-                    search_base += "&watchersMax=" + watchersMax;
-                    download_base += "&watchersMax=" + watchersMax;
-                }
-
-                if (!forksMin.isEmpty()){
-                    search_base += "&forksMin=" + forksMin;
-                    download_base += "&forksMin=" + forksMin;
-                }
-
-                if (!forksMax.isEmpty()){
-                    search_base += "&forksMax=" + forksMax;
-                    download_base += "&forksMax=" + forksMax;
-                }
-
-                if (!createdMin.isEmpty()){
-                    search_base += "&createdMin=" + createdMin;
-                    download_base += "&createdMin=" + createdMin;
-                }
-
-                if (!createdMax.isEmpty()){
-                    search_base += "&createdMax=" + createdMax;
-                    download_base += "&createdMax=" + createdMax;
-                }
-
-                if (!committedMin.isEmpty()){
-                    search_base += "&committedMin=" + committedMin;
-                    download_base += "&committedMin=" + committedMin;
-                }
-
-                if (!committedMax.isEmpty()){
-                    search_base += "&committedMax=" + committedMax;
-                    download_base += "&committedMax=" + committedMax;
-                }
-
-                console.log(encodeURI(search_base));
-                console.log(encodeURI(download_base));
+                retrieve(encodeURI(search_base));
             }
 
             $('#form').submit(function () {
                 submitQuery();
+                $('#form-container').toggleClass('d-none');
+                $('#results-container').toggleClass('d-none');
                 return false;
             });
 
-            $('#submit-button').click(function () {
-                $('#form-container').toggleClass('d-none');
-                $('#results-container').toggleClass('d-none');
-            });
-
             $('#back-button').click(function () {
+                $("#form").get(0).reset();
                 $('#form-container').toggleClass('d-none');
                 $('#results-container').toggleClass('d-none');
-            });
-
-            $(document).on("keydown", "form", function(event) {
-                return event.key !== "Enter";
+                $('#download-button').attr('href','');
+                $('#download-button').removeClass("disabled");
+                $('#next-button').attr('onclick','');
+                $('#next-button').removeClass("d-none");
+                $('#results-container-items').empty();
             });
         </script>
         <script>
-            window.onload = function() {
-                let inputs = document.getElementsByTagName("input");
-                for (let i = 0; i < inputs.length; i++) {
-                    let input = inputs[i];
-                    input.onmouseover = function() {
-                        this.setAttribute("original-title", this.title);
-                        this.title = "";
-                    };
-                    input.onmouseout = function() {
-                        this.title = this.getAttribute("original-title");
-                        this.setAttribute("original-title", "");
-                    };
-                }
-            };
+            // $(document).on("keydown", "form", function(event) {
+            //     return event.key !== "Enter";
+            // });
+
+            // window.onload = function() {
+            //     let inputs = document.getElementsByTagName("input");
+            //     for (let i = 0; i < inputs.length; i++) {
+            //         let input = inputs[i];
+            //         input.onmouseover = function() {
+            //             this.setAttribute("original-title", this.title);
+            //             this.title = "";
+            //         };
+            //         input.onmouseout = function() {
+            //             this.title = this.getAttribute("original-title");
+            //             this.setAttribute("original-title", "");
+            //         };
+            //     }
+            // };
+        </script>
+        <script>
+            $(document).ready(function(){
+                $(window).scroll(function () {
+                    if ($(this).scrollTop() > 500) {
+                        $('#back-to-top').fadeIn();
+                    } else {
+                        $('#back-to-top').fadeOut();
+                    }
+                });
+
+                $('#back-to-top').click(function () {
+                    $('body,html').animate({
+                        scrollTop: 0
+                    }, 400);
+                    return false;
+                });
+            });
         </script>
     </body>
 </html>

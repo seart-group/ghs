@@ -85,6 +85,13 @@ input:focus:invalid {
     border-width:2px !important;
 }
 
+.back-to-top {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    display: none;
+}
+
 .pr-4-5 {
     padding-right: 36px !important;
 }
@@ -128,6 +135,10 @@ a.dropdown-item {
     overflow-y: auto;
 }
 
+.fa-home {
+    font-size: 1.3em;
+}
+
 .form-check label {
     display: inline-block;
     padding-right: 10px;
@@ -140,6 +151,14 @@ a.dropdown-item {
 
 .form-check label span {
     vertical-align: middle;
+}
+
+.icon-red {
+    color: #721c24;
+}
+
+.icon-green {
+    color: #165724;
 }
 
 .input-group-btn-vertical {
