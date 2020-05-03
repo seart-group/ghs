@@ -85,16 +85,25 @@ public class GitRepoServiceImpl implements GitRepoService {
         GitRepoDtoListPaginated repoDtoListPaginated = GitRepoDtoListPaginated.builder().build();
         repoDtoListPaginated.setItems(repoDtos);
         repoDtoListPaginated.setTotalItems(repos.size());
+        if (page > 0){
+            String prev = linkTo(methodOn(GitRepoController.class)
+                    .searchRepos(name, nameEquals, language, license, label, commitsMin, commitsMax, contributorsMin, contributorsMax,
+                            issuesMin, issuesMax, pullsMin, pullsMax, branchesMin, branchesMax, releasesMin, releasesMax,
+                            starsMin, starsMax, watchersMin, watchersMax, forksMin, forksMax, createdMin, createdMax,
+                            committedMin, committedMax, excludeForks, onlyForks, hasIssues, hasPulls, hasWiki, hasLicense,
+                            page - 1, pageSize)).toString().split("\\{")[0];
+            repoDtoListPaginated.setPrev(prev);
+        }
         if (pageSize == repos.size()){
             String next = linkTo(methodOn(GitRepoController.class)
                     .searchRepos(name, nameEquals, language, license, label, commitsMin, commitsMax, contributorsMin, contributorsMax,
                                  issuesMin, issuesMax, pullsMin, pullsMax, branchesMin, branchesMax, releasesMin, releasesMax,
                                  starsMin, starsMax, watchersMin, watchersMax, forksMin, forksMax, createdMin, createdMax,
                                  committedMin, committedMax, excludeForks, onlyForks, hasIssues, hasPulls, hasWiki, hasLicense,
-                                 ++page, pageSize)).toString().split("\\{")[0];
+                                 page + 1, pageSize)).toString().split("\\{")[0];
             repoDtoListPaginated.setNext(next);
         }
-        if (repoDtos.size() > 0){
+        if (repos.size() > 0){
             String download = linkTo(methodOn(GitRepoController.class)
                     .downloadRepos(name,nameEquals,language,license,label,commitsMin,commitsMax,contributorsMin,
                             contributorsMax,issuesMin,issuesMax,pullsMin,pullsMax,branchesMin,branchesMax,releasesMin,

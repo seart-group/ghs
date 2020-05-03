@@ -9,6 +9,7 @@ import java.util.List;
 @Setter
 @Builder
 public class GitRepoDtoListPaginated {
+    String prev;
     String next;
     String download;
     int totalItems;
