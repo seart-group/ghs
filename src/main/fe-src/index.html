@@ -767,7 +767,7 @@
                                    repo_mainLanguage+' Repository"></span>'+
                                   '<a href="https://github.com/'+repo_name+'" target="_blank" class="mx-1 text-dark rowsublabel">'+
                                    repo_name + '</a></div>';
-                let row_1_col_2 = '<div class="col d-flex align-items-center justify-content-end"></div>';
+                let row_1_col_2 = '<div class="col-auto d-flex align-items-center justify-content-end"></div>';
 
                 if (repo_isArchived) {
                     let archive_span = '<span class="mx-1 icon-archive" title="Archived"></span>';
@@ -877,25 +877,15 @@
                 result = $(result).append(row_7);
 
                 let row_8 = '<div class="row mw-100 mx-3 border border-top-0 border-bottom-0"></div>';
-                let row_8_col = '<div class="col d-flex justify-content-between"></div>';
-                let row_8_col_col = '<div class="col d-flex align-items-center justify-content-center chart-container px-0" style="position: relative; height: 45px"></div>';
+                let row_8_col_1 = '<div class="col-1-5 d-flex flex-wrap align-items-center align-content-between justify-content-start pr-1"></div>';
+                let row_8_col_2 = '<div class="col d-flex flex-wrap align-items-center align-content-between justify-content-start pl-1"></div>';
 
                 if (repo_languages.length > 1){
-                    // TODO Fix problem with displaying the
-                    row_8_col_col = $(row_8_col_col).append('<canvas id="repo-'+repo_id+'-chart"></canvas>');
-                    row_8_col = $(row_8_col).append(row_8_col_col);
-                    row_8 = $(row_8).append(row_8_col);
-                    result = $(result).append(row_8);
+                    row_8_col_1 = $(row_8_col_1).append('<span class="mx-1">Languages:</span>');
 
-                    let colors = ['#008000','#7CFC00','#FFFF00',
-                                  '#FFD700','#FFA500','#FF4500',
-                                  '#8B0000','#C71585','#FF00FF',
-                                  '#800080','#4B0082','#0000CD',
-                                  '#0000FF','#4169E1','#00BFFF'].reverse();
                     let entries = [];
                     let sizes = [];
                     let percentages = [];
-                    let data = [];
 
                     repo_languages.forEach(lang => {
                         entries.push(lang.language);
@@ -907,66 +897,25 @@
                     sizes.forEach(x => {
                         let percentage = (x/totalSize * 100).toFixed(2);
                         if (percentage > 0.00){
-                            percentages.push(percentage);
+                            percentages.push(percentage + "%");
+                        } else {
+                            percentages.push("< 0.00%")
                         }
                     });
 
                     for (let i = 0; i < percentages.length; i++){
-                        data.push({"label":entries[i],
-                                   "data":[percentages[i]],
-                                   "backgroundColor":colors[i],
-                                   "hoverBackgroundColor":colors[i],
-                                   "borderColor":"#303000",
-                                   "borderWidth":1,
-                                   "barThickness":25});
+                        row_8_col_2 = $(row_8_col_2).append('<span class="badge badge-dark m-1">'+entries[i]+
+                                                            ': '+percentages[i]+'</span>');
                     }
 
-                    let ctx = result.find("#repo-"+repo_id+"-chart");
-
-                    Chart.defaults.global.defaultFontFamily = "Trebuchet MS";
-
-                    let repo_chart = new Chart(ctx, {
-                        type: 'horizontalBar',
-                        data: {
-                            labels: ["Languages"],
-                            datasets: data
-                        },
-                        options: {
-                            responsive: true,
-                            maintainAspectRatio: false,
-                            legend: {
-                                display: false
-                            },
-                            scales: {
-                                xAxes: [{
-                                    stacked: true,
-                                    display: false,
-                                    ticks: {
-                                        beginAtZero: true
-                                    },
-                                    gridLines: {
-                                        display: true
-                                    }
-                                }],
-                                yAxes: [{
-                                    stacked: true,
-                                    display: false,
-                                    ticks: {
-                                        beginAtZero: true
-                                    },
-                                    gridLines: {
-                                        display: false
-                                    }
-                                }]
-                            }
-                        }
-                    });
-
-                    row_8 = $(row_8).toggleClass("pb-3");
+                    row_8 = $(row_8).toggleClass("py-3");
                 }
 
+                row_8 = $(row_8).append(row_8_col_1,row_8_col_2);
+                result = $(result).append(row_8);
+
                 let row_9 = '<div class="row mw-100 mx-3 border border-top-0"></div>';
-                let row_9_col_1 = '<div class="col-auto d-flex flex-wrap align-items-center align-content-between justify-content-start pr-1"></div>';
+                let row_9_col_1 = '<div class="col-1-5 d-flex flex-wrap align-items-center align-content-between justify-content-start pr-1"></div>';
                 let row_9_col_2 = '<div class="col d-flex flex-wrap align-items-center align-content-between justify-content-start pl-1"></div>';
 
                 if (repo_labels.length > 0){

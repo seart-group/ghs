@@ -92,8 +92,13 @@ input:focus:invalid {
     display: none;
 }
 
-.pr-4-5 {
-    padding-right: 36px !important;
+.col-1-5 {
+    flex: 0 0 10%;
+    max-width: 10%;
+    position: relative;
+    width: 100%;
+    padding-right: 15px;
+    padding-left: 15px;
 }
 
 .bg-dgray {
@@ -243,4 +248,8 @@ h3.navbar-brand {
 ul.typeahead {
     width: inherit;
     border-radius: 0;
+}
+
+.pr-4-5 {
+    padding-right: 36px !important;
 }
