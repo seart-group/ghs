@@ -477,12 +477,19 @@
                     </a>
                 </div>
                 <div id="results-container-items" class="w-75 bg-llgray border border-top-0 border-bottom-0 justify-content-center"></div>
-                <div id="results-container-footer" class="row w-75 bg-llgray border border-top-0 justify-content-center">
-                    <button type="button" id="next-button" class="w-100 btn btn-outline-secondary bg-llgray rounded-0 border-0 text-center">
-                        <span class="fa fa-lg fa-angle-down"></span>
-                        Show More
-                        <span class="fa fa-lg fa-angle-down"></span>
-                    </button>
+                <div id="results-container-footer" class="row w-75 pt-3 bg-llgray border border-top-0">
+                    <div class="col px-0 d-flex align-items-center justify-content-start">
+                        <button type="button" id="prev-button" class="btn btn-outline-secondary bg-llgray rounded-0 border-0 text-center d-none">
+                            <span class="fa fa-lg fa-angle-left"></span>
+                            Prev
+                        </button>
+                    </div>
+                    <div class="col px-0 d-flex align-items-center justify-content-end">
+                        <button type="button" id="next-button" class="btn btn-outline-secondary bg-llgray rounded-0 border-0 text-center d-none">
+                            Next
+                            <span class="fa fa-lg fa-angle-right"></span>
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -545,6 +552,15 @@
                 let onlyForks = document.getElementsByName("onlyForks")[0];
                 if (excludeForks.checked === true && onlyForks.checked === true){
                     onlyForks.checked = false;
+                }
+            }
+
+            function toggleButtonText(buttonId) {
+                let button = document.getElementById(buttonId);
+                if (button.innerHTML === "Show Details") {
+                    button.innerHTML = "Hide Details";
+                } else {
+                    button.innerHTML = "Show Details";
                 }
             }
         </script>
@@ -759,9 +775,11 @@
                 let repo_languages = item.languages.sort((x,y) => (x.sizeOfCode > y.sizeOfCode) ? -1 : 1);
                 let repo_labels = item.labels;
 
-                let result = '<div id="repo-'+repo_id+'" class="pb-3"></div>';
+                let result = '<div id="repo-'+repo_id+'" class="pt-3"></div>';
 
-                let row_1 = '<div class="row mw-100 pt-3 mx-3 border border-bottom-0"></div>';
+                let collapse = '<div id="repo-'+repo_id+'-collapse" class="collapse"></div>';
+
+                let row_1 = '<div class="row mw-100 pt-3 mx-3 border border-bottom-0 bg-lgray"></div>';
                 let row_1_col_1 = '<div class="col d-flex align-items-center justify-content-start">'+
                                   '<span class="mx-1 fa-2x lang-'+repo_mainLanguage.toLowerCase()+'" title="'+
                                    repo_mainLanguage+' Repository"></span>'+
@@ -794,32 +812,10 @@
                 row_1 = $(row_1).append(row_1_col_1,row_1_col_2);
                 result = $(result).append(row_1);
 
-                if (repo_license !== null){
-                    let row_2 = '<div class="row mw-100 pt-3 mx-3 border border-top-0 border-bottom-0">'+
-                                '<div class="col d-flex justify-content-start">'+
-                                '<div class="col d-flex align-items-center justify-content-start px-0">'+
-                                '<i class="mx-1 icon-law" title="License"></i>'+
-                                '<span>License: '+repo_license+'</span></div></div></div>';
-                    result = $(result).append(row_2);
-                }
-
-                let row_3 = '<div class="row mw-100 pt-3 mx-3 border border-top-0 border-bottom-0">'+
-                            '<div class="col d-flex justify-content-start">'+
-                            '<div class="col-auto d-flex align-items-center justify-content-start pl-0">'+
-                            '<i class="mx-1 icon-git-branch" title="Default Branch"></i>'+
-                            '<span>Default Branch: '+repo_defaultBranch+'</span></div></div></div>'+
-                            '<div class="row mw-100 pt-3 mx-3 border border-top-0 border-bottom-0">'+
-                            '<div class="col d-flex justify-content-start">'+
-                            '<div class="col-auto d-flex align-items-center justify-content-start pl-0">'+
-                            '<i class="mx-1 fa fa-hashtag" title="Last Commit SHA"></i>'+
-                            '<span>Last Commit SHA: '+repo_lastCommitSHA+'</span></div></div></div>';
-
-                result = $(result).append(row_3);
-
-                let row_4 = '<div class="row mw-100 pt-3 mx-3 border border-top-0 border-bottom-0">'+
+                let row_2 = '<div class="row mw-100 pt-3 mx-3 border border-top-0 border-bottom-0 bg-lgray">'+
                             '<div class="col d-flex justify-content-between">'+
                             '<div class="col d-flex align-items-center justify-content-start pl-0">'+
-                            '<i class="mx-1 icon-file-code" title="Total Size"></i><span>Total Size: '+repo_size+'</span></div>'+
+                            '<i class="mx-1 icon-git-commit" title="Commits"></i><span>Commits: '+repo_commits+'</span></div>'+
                             '<div class="col d-flex align-items-center justify-content-start">'+
                             '<i class="mx-1 icon-eye" title="Watchers"></i><span>Watchers: '+repo_watchers+'</span></div>'+
                             '<div class="col d-flex align-items-center justify-content-start">'+
@@ -828,57 +824,79 @@
                             '<i class="mx-1 icon-repo-forked" title="Forks"></i><span>Forks: '+repo_forks+'</span></div>'+
                             '</div></div>';
 
-                result = $(result).append(row_4);
+                result = $(result).append(row_2);
 
-                let row_5 = '<div class="row mw-100 pt-3 mx-3 border border-top-0 border-bottom-0">'+
+                let row_3 = '<div class="row mw-100 pt-3 mx-3 border border-top-0 border-bottom-0 bg-lgray">'+
                             '<div class="col d-flex justify-content-between">'+
                             '<div class="col d-flex align-items-center justify-content-start pl-0">'+
-                            '<i class="mx-1 icon-git-commit" title="Commits"></i><span>Commits: '+repo_commits+'</span></div>'+
-                            '<div class="col d-flex align-items-center justify-content-start">'+
                             '<i class="mx-1 icon-git-branch" title="Branches"></i><span>Branches: '+repo_branches+'</span></div>'+
                             '<div class="col d-flex align-items-center justify-content-start">'+
-                            '<i class="mx-1 icon-tag" title="Releases"></i><span>Releases: '+repo_releases+'</span></div>'+
-                            '<div class="col d-flex align-items-center justify-content-start pr-0">'+
                             '<i class="mx-1 icon-organization" title="Contributors"></i><span>Contributors: '+repo_contributors+'</span></div>'+
-                            '</div></div>';
-
-                result = $(result).append(row_5);
-
-                let row_6 = '<div class="row mw-100 pt-3 mx-3 border border-top-0 border-bottom-0">'+
-                            '<div class="col d-flex justify-content-between">'+
-                            '<div class="col d-flex align-items-center justify-content-start pl-0">'+
-                            '<i class="mx-1 icon-issue-opened icon-red" title="Open Issues"></i><span>Open Issues: '+repo_openIssues+'</span></div>'+
                             '<div class="col d-flex align-items-center justify-content-start">'+
                             '<i class="mx-1 icon-issue-opened" title="Total Issues"></i><span>Total Issues: '+repo_totalIssues+'</span></div>'+
-                            '<div class="col d-flex align-items-center justify-content-start">'+
-                            '<i class="mx-1 icon-git-pull-request icon-red" title="Open Pull Requests"></i><span>Open Pull Reqs: '+repo_openPullRequests+'</span></div>'+
                             '<div class="col d-flex align-items-center justify-content-start pr-0">'+
                             '<i class="mx-1 icon-git-pull-request" title="Total Pull Requests"></i><span>Total Pull Reqs: '+repo_totalPullRequests+'</span></div>'+
                             '</div></div>';
 
-                result = $(result).append(row_6);
+                result = $(result).append(row_3);
 
-                let row_7 = '<div class="row mw-100 py-3 mx-3 border border-top-0 border-bottom-0">'+
+                let row_4 = '<div class="row mw-100 pt-3 mx-3 border border-top-0 border-bottom-0 bg-lgray">'+
+                            '<div class="col d-flex justify-content-between">'+
+                            '<div class="col d-flex align-items-center justify-content-start pl-0">'+
+                            '<i class="mx-1 icon-file-code" title="Total Size"></i><span>Total Size: '+repo_size+'</span></div>'+
+                            '<div class="col d-flex align-items-center justify-content-start">'+
+                            '<i class="mx-1 icon-tag" title="Releases"></i><span>Releases: '+repo_releases+'</span></div>'+
+                            '<div class="col d-flex align-items-center justify-content-start">'+
+                            '<i class="mx-1 icon-issue-opened icon-red" title="Open Issues"></i><span>Open Issues: '+repo_openIssues+'</span></div>'+
+                            '<div class="col d-flex align-items-center justify-content-start pr-0">'+
+                            '<i class="mx-1 icon-git-pull-request icon-red" title="Open Pull Requests"></i><span>Open Pull Reqs: '+repo_openPullRequests+'</span></div>'+
+                            '</div></div>';
+
+                collapse = $(collapse).append(row_4);
+
+                let row_5 = '<div class="row mw-100 pt-3 mx-3 border border-top-0 border-bottom-0 bg-lgray">'+
                             '<div class="col d-flex justify-content-between">'+
                             '<div class="col d-flex align-items-center justify-content-start pl-0">'+
                             '<i class="mx-1 icon-repo-template" title="Date Created"></i>'+
-                            '<span title="'+repo_createdAt.slice(0,19)+'">Created: '+repo_createdAt.slice(0,10)+'</span></div>'+
+                            '<span>Created:</span><span title="'+repo_createdAt.slice(0,19)+'"> '+repo_createdAt.slice(0,10)+'</span></div>'+
                             '<div class="col d-flex align-items-center justify-content-start">'+
                             '<i class="mx-1 icon-pencil" title="Date Updated"></i>'+
-                            '<span title="'+repo_updatedAt.slice(0,19)+'">Updated: '+repo_updatedAt.slice(0,10)+'</span></div>'+
+                            '<span>Updated:</span><span title="'+repo_updatedAt.slice(0,19)+'"> '+repo_updatedAt.slice(0,10)+'</span></div>'+
                             '<div class="col d-flex align-items-center justify-content-start">'+
                             '<i class="mx-1 icon-repo-push" title="Date Last Pushed"></i>'+
-                            '<span title="'+repo_pushedAt.slice(0,19)+'">Last Push: '+repo_pushedAt.slice(0,10)+'</span></div>'+
+                            '<span">Last Push:</span><span title="'+repo_pushedAt.slice(0,19)+'"> '+repo_pushedAt.slice(0,10)+'</span></div>'+
                             '<div class="col d-flex align-items-center justify-content-start pr-0">'+
                             '<i class="mx-1 icon-diff" title="Last Commit Date"></i>'+
-                            '<span title="'+repo_lastCommit.slice(0,19)+'">Last Commit: '+repo_lastCommit.slice(0,10)+'</span></div>'+
+                            '<span>Last Commit:</span><span title="'+repo_lastCommit.slice(0,19)+'"> '+repo_lastCommit.slice(0,10)+'</span></div>'+
                             '</div></div>';
 
-                result = $(result).append(row_7);
+                collapse = $(collapse).append(row_5);
 
-                let row_8 = '<div class="row mw-100 mx-3 border border-top-0 border-bottom-0"></div>';
-                let row_8_col_1 = '<div class="col-1-5 d-flex flex-wrap align-items-center align-content-between justify-content-start pr-1"></div>';
-                let row_8_col_2 = '<div class="col d-flex flex-wrap align-items-center align-content-between justify-content-start pl-1"></div>';
+                if (repo_license !== null){
+                    let row_6 = '<div class="row mw-100 pt-3 mx-3 border border-top-0 border-bottom-0 bg-lgray">'+
+                                '<div class="col d-flex justify-content-start">'+
+                                '<div class="col d-flex align-items-center justify-content-start px-0">'+
+                                '<i class="mx-1 icon-law" title="License"></i>'+
+                                '<span>License: '+repo_license+'</span></div></div></div>';
+                    collapse = $(collapse).append(row_6);
+                }
+
+                let row_7 = '<div class="row mw-100 pt-3 mx-3 border border-top-0 border-bottom-0 bg-lgray">'+
+                            '<div class="col d-flex justify-content-start">'+
+                            '<div class="col-auto d-flex align-items-center justify-content-start pl-0">'+
+                            '<i class="mx-1 fa fa-hashtag" title="Last Commit SHA"></i>'+
+                            '<span>Last Commit SHA: '+repo_lastCommitSHA+'</span></div></div></div>'+
+                            '<div class="row mw-100 pt-3 mx-3 border border-top-0 border-bottom-0 bg-lgray">'+
+                            '<div class="col d-flex justify-content-start">'+
+                            '<div class="col-auto d-flex align-items-center justify-content-start pl-0">'+
+                            '<i class="mx-1 icon-git-branch" title="Default Branch"></i>'+
+                            '<span>Default Branch: '+repo_defaultBranch+'</span></div></div></div>';
+
+                collapse = $(collapse).append(row_7);
+
+                let row_8 = '<div class="row mw-100 mx-3 border border-top-0 border-bottom-0 bg-lgray"></div>';
+                let row_8_col_1 = '<div class="col-12 mr-0 d-flex flex-wrap align-items-center align-content-between justify-content-start"></div>';
+                let row_8_col_2 = '<div class="col-12 d-flex flex-wrap align-items-center align-content-between justify-content-start"></div>';
 
                 if (repo_languages.length > 1){
                     row_8_col_1 = $(row_8_col_1).append('<span class="mx-1">Languages:</span>');
@@ -896,10 +914,10 @@
 
                     sizes.forEach(x => {
                         let percentage = (x/totalSize * 100).toFixed(2);
-                        if (percentage > 0.00){
+                        if (percentage !== "0.00"){
                             percentages.push(percentage + "%");
                         } else {
-                            percentages.push("< 0.00%")
+                            percentages.push("< 0.01%")
                         }
                     });
 
@@ -908,26 +926,40 @@
                                                             ': '+percentages[i]+'</span>');
                     }
 
-                    row_8 = $(row_8).toggleClass("py-3");
+                    row_8 = $(row_8).addClass("py-3");
+                    row_8 = $(row_8).addClass("border-bottom-0");
                 }
 
                 row_8 = $(row_8).append(row_8_col_1,row_8_col_2);
-                result = $(result).append(row_8);
+                collapse = $(collapse).append(row_8);
 
-                let row_9 = '<div class="row mw-100 mx-3 border border-top-0"></div>';
-                let row_9_col_1 = '<div class="col-1-5 d-flex flex-wrap align-items-center align-content-between justify-content-start pr-1"></div>';
-                let row_9_col_2 = '<div class="col d-flex flex-wrap align-items-center align-content-between justify-content-start pl-1"></div>';
+                let row_9 = '<div class="row mw-100 mx-3 border border-top-0 border-bottom-0 bg-lgray"></div>';
+                let row_9_col_1 = '<div class="col-12 mr-0 d-flex flex-wrap align-items-center align-content-between justify-content-start"></div>';
+                let row_9_col_2 = '<div class="col-12 d-flex flex-wrap align-items-center align-content-between justify-content-start"></div>';
 
                 if (repo_labels.length > 0){
                     row_9_col_1 = $(row_9_col_1).append('<span class="mx-1">Tags:</span>');
                     repo_labels.forEach(label => {
                         row_9_col_2 = $(row_9_col_2).append('<span class="badge badge-dark m-1">'+label.label+'</span>');
                     });
-                    row_9 = $(row_9).toggleClass("pb-3");
+                    row_9 = $(row_9).addClass("pb-3");
+                    row_9 = $(row_9).addClass("border-bottom-0");
                 }
 
                 row_9 = $(row_9).append(row_9_col_1,row_9_col_2);
-                result = $(result).append(row_9);
+                collapse = $(collapse).append(row_9);
+                result = $(result).append(collapse);
+
+                let row_10 = '<div class="row mw-100 pt-3 mx-3 border border-top-0 bg-lgray">'+
+                             '<div class="col d-flex flex-wrap align-items-center align-content-between justify-content-start px-0">'+
+                             '<button type="button" id="repo-'+repo_id+'-toggle" '+
+                             'class="w-100 btn btn-outline-secondary bg-lgray rounded-0 border-0 text-center" '+
+                             'data-toggle="collapse" data-target="#repo-'+repo_id+'-collapse" aria-expanded="false" '+
+                             'aria-controls="repo-'+repo_id+'-collapse" '+
+                             'onclick="toggleButtonText(\'repo-'+repo_id+'-toggle\')">'+
+                             'Show Details</button></div></div>';
+
+                result = $(result).append(row_10);
 
                 $('#results-container-items').append(result);
             }
@@ -937,6 +969,7 @@
                     return response.json();
                 }).then(data => {
                     let items    = data.items;
+                    let prev     = data.prev;
                     let next     = data.next;
                     let download = data.download;
 
@@ -945,6 +978,8 @@
                     } else {
                         $('#download-button').addClass("disabled");
                     }
+
+                    $('#results-container-items').empty();
 
                     if (items.length > 0){
                         items.forEach(item => appendResult(item));
@@ -957,12 +992,28 @@
                         $('#results-container-items').append(no_items);
                     }
 
+                    if (prev !== null){
+                        $('#prev-button').removeClass("d-none");
+                        $('#prev-button').attr('onclick','retrieve("'+prev+'")')
+                    } else {
+                        $('#prev-button').addClass("d-none");
+                    }
+
                     if (next !== null){
+                        $('#next-button').removeClass("d-none");
                         $('#next-button').attr('onclick','retrieve("'+next+'")')
                     } else {
                         $('#next-button').addClass("d-none");
                     }
-                }).catch(_ => {})
+                }).catch(_ => {
+                    let connect_err = '<div><div class="row mw-100 py-3 mx-3">'+
+                                      '<div class="col d-flex justify-content-center">'+
+                                      '<div class="col d-flex align-items-center justify-content-center px-0">'+
+                                      '<i class="mx-1 fa fa-frown-o"></i><span>'+
+                                      'Error connecting to GSE server</span></div></div></div></div>';
+
+                    $('#results-container-items').append(connect_err);
+                })
             }
 
             function submitQuery() {
@@ -1056,9 +1107,10 @@
                 $('#results-container').toggleClass('d-none');
                 $('#download-button').attr('href','');
                 $('#download-button').removeClass("disabled");
+                $('#prev-button').attr('onclick','');
+                $('#prev-button').addClass("d-none");
                 $('#next-button').attr('onclick','');
-                $('#next-button').removeClass("d-none");
-                $('#results-container-items').empty();
+                $('#next-button').addClass("d-none");
             });
         </script>
         <script>
@@ -1092,6 +1144,20 @@
                 });
 
                 $('#back-to-top').click(function () {
+                    $('body,html').animate({
+                        scrollTop: 0
+                    }, 400);
+                    return false;
+                });
+
+                $('#prev-button').click(function () {
+                    $('body,html').animate({
+                        scrollTop: 0
+                    }, 400);
+                    return false;
+                });
+
+                $('#next-button').click(function () {
                     $('body,html').animate({
                         scrollTop: 0
                     }, 400);
