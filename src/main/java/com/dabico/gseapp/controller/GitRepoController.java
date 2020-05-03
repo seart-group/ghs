@@ -63,7 +63,7 @@ public class GitRepoController {
             @RequestParam(required = false, defaultValue = "false") Boolean hasWiki,
             @RequestParam(required = false, defaultValue = "false") Boolean hasLicense,
             @RequestParam(required = false, defaultValue = "0") Integer page,
-            @RequestParam(required = false, defaultValue = "30") Integer pageSize
+            @RequestParam(required = false, defaultValue = "20") Integer pageSize
     ){
         GitRepoDtoListPaginated results = gitRepoService.advancedSearch(name, nameEquals, language, license, label,
                                                                         commitsMin, commitsMax, contributorsMin, contributorsMax,
