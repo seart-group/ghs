@@ -171,7 +171,7 @@ public class GitRepoRepositoryImpl implements GitRepoRepositoryCustom {
         }
 
         if (created.isLowerBound()){
-            qb.where("date(r.created_at) >= (:createdMin)",Operator.AND);
+            qb.where("date(r.createdAt) >= (:createdMin)",Operator.AND);
         } else if (created.isUpperBound()){
             qb.where("date(r.createdAt) <= (:createdMax)",Operator.AND);
         } else if (created.isBound()){
