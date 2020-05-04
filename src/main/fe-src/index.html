@@ -116,7 +116,7 @@
         </div>
 
         <div id="page-content" class="py-5">
-            <div id="form-container" class="row justify-content-center text-center">
+            <div id="form-container" class="row mw-100 justify-content-center text-center">
                 <form id="form" autocomplete="off" class="w-75 bg-llgray-transparent border bg-tra">
                     <div class="px-3 pt-3 row text-left">
                         <div class="col-12">
@@ -465,16 +465,24 @@
                     </div>
                 </form>
             </div>
-            <div id="results-container" class="d-none row justify-content-center text-center">
+            <div id="results-container" class="d-none row mw-100 justify-content-center text-center">
                 <div id="results-container-header" class="row w-75 bg-llgray border border-bottom-0 justify-content-between">
-                    <button id="back-button" class="btn btn-outline-secondary bg-llgray rounded-0 border-0">
-                        <span class="fa fa-angle-left"></span>
-                        Back
-                    </button>
-                    <a id="download-button" href="" target="_blank" class="btn btn-outline-secondary bg-llgray rounded-0 border-0">
-                        Download
-                        <span class="fa fa-file-excel-o"></span>
-                    </a>
+                    <div class="col px-0 d-flex align-items-center justify-content-start">
+                        <button id="back-button" class="btn btn-outline-secondary bg-llgray rounded-0 border-0">
+                            <span class="fa fa-angle-left"></span>
+                            Back
+                        </button>
+                    </div>
+                    <div class="col px-0 d-flex align-items-center justify-content-end">
+                        <a id="raw-button" href="" target="_blank" class="btn btn-outline-secondary bg-llgray rounded-0 border-0">
+                            Download JSON
+                            <span class="fa fa-file-text-o"></span>
+                        </a>
+                        <a id="download-button" href="" target="_blank" class="btn btn-outline-secondary bg-llgray rounded-0 border-0">
+                            Download CSV
+                            <span class="fa fa-file-excel-o"></span>
+                        </a>
+                    </div>
                 </div>
                 <div id="results-container-items" class="w-75 bg-llgray border border-top-0 border-bottom-0 justify-content-center"></div>
                 <div id="results-container-footer" class="row w-75 pt-3 bg-llgray border border-top-0">
@@ -858,16 +866,16 @@
                             '<div class="col d-flex justify-content-between">'+
                             '<div class="col d-flex align-items-center justify-content-start pl-0">'+
                             '<i class="mx-1 icon-repo-template" title="Date Created"></i>'+
-                            '<span>Created:</span><span title="'+repo_createdAt.slice(0,19)+'"> '+repo_createdAt.slice(0,10)+'</span></div>'+
+                            '<span>Created: <span title="'+repo_createdAt.slice(0,19)+'"> '+repo_createdAt.slice(0,10)+'</span></span></div>'+
                             '<div class="col d-flex align-items-center justify-content-start">'+
                             '<i class="mx-1 icon-pencil" title="Date Updated"></i>'+
-                            '<span>Updated:</span><span title="'+repo_updatedAt.slice(0,19)+'"> '+repo_updatedAt.slice(0,10)+'</span></div>'+
+                            '<span>Updated: <span title="'+repo_updatedAt.slice(0,19)+'"> '+repo_updatedAt.slice(0,10)+'</span></span></div>'+
                             '<div class="col d-flex align-items-center justify-content-start">'+
                             '<i class="mx-1 icon-repo-push" title="Date Last Pushed"></i>'+
-                            '<span">Last Push:</span><span title="'+repo_pushedAt.slice(0,19)+'"> '+repo_pushedAt.slice(0,10)+'</span></div>'+
+                            '<span>Last Push: <span title="'+repo_pushedAt.slice(0,19)+'"> '+repo_pushedAt.slice(0,10)+'</span></span></div>'+
                             '<div class="col d-flex align-items-center justify-content-start pr-0">'+
                             '<i class="mx-1 icon-diff" title="Last Commit Date"></i>'+
-                            '<span>Last Commit:</span><span title="'+repo_lastCommit.slice(0,19)+'"> '+repo_lastCommit.slice(0,10)+'</span></div>'+
+                            '<span>Last Commit: <span title="'+repo_lastCommit.slice(0,19)+'"> '+repo_lastCommit.slice(0,10)+'</span></span></div>'+
                             '</div></div>';
 
                 collapse = $(collapse).append(row_5);
@@ -971,10 +979,17 @@
                     let items    = data.items;
                     let prev     = data.prev;
                     let next     = data.next;
-                    let download = data.download;
+                    let csvLink  = data.csvLink;
+                    let jsonLink = data.jsonLink;
 
-                    if (download !== null){
-                        $('#download-button').attr('href',download);
+                    if (jsonLink !== null){
+                        $('#raw-button').attr('href',jsonLink);
+                    } else {
+                        $('#raw-button').addClass("disabled");
+                    }
+
+                    if (csvLink !== null){
+                        $('#download-button').attr('href',csvLink);
                     } else {
                         $('#download-button').addClass("disabled");
                     }
@@ -1105,6 +1120,8 @@
                 $("#form").get(0).reset();
                 $('#form-container').toggleClass('d-none');
                 $('#results-container').toggleClass('d-none');
+                $('#raw-button').attr('href','');
+                $('#raw-button').removeClass("disabled");
                 $('#download-button').attr('href','');
                 $('#download-button').removeClass("disabled");
                 $('#prev-button').attr('onclick','');

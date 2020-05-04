@@ -11,7 +11,8 @@ import java.util.List;
 public class GitRepoDtoListPaginated {
     String prev;
     String next;
-    String download;
+    String csvLink;
+    String jsonLink;
     int totalItems;
     @Builder.Default
     List<GitRepoDto> items = new ArrayList<>();

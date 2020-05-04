@@ -1,7 +1,11 @@
 package com.dabico.gseapp.controller;
 
+import com.dabico.gseapp.converter.GitRepoConverter;
+import com.dabico.gseapp.dto.GitRepoDtoList;
 import com.dabico.gseapp.dto.GitRepoDtoListPaginated;
 import com.dabico.gseapp.service.GitRepoService;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.opencsv.CSVWriter;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -17,7 +21,10 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.persistence.EntityNotFoundException;
 import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.Date;
+import java.util.List;
 
 @RestController
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
@@ -26,6 +33,7 @@ public class GitRepoController {
     static final Logger logger = LoggerFactory.getLogger(GitRepoController.class);
 
     GitRepoService gitRepoService;
+    GitRepoConverter gitRepoConverter;
 
     @GetMapping("/r/search")
     public ResponseEntity<?> searchRepos(
@@ -78,10 +86,10 @@ public class GitRepoController {
     }
 
     @GetMapping(
-            value = "/r/search/download",
+            value = "/r/download/csv",
             produces = "text/csv"
     )
-    public ResponseEntity<?> downloadRepos(
+    public ResponseEntity<?> downloadCSV(
             @RequestParam(required = false, defaultValue = "") String name,
             @RequestParam(required = false, defaultValue = "false") Boolean nameEquals,
             @RequestParam(required = false, defaultValue = "") String language,
@@ -116,17 +124,86 @@ public class GitRepoController {
             @RequestParam(required = false, defaultValue = "false") Boolean hasWiki,
             @RequestParam(required = false, defaultValue = "false") Boolean hasLicense
     ){
-        File file = gitRepoService.download(name, nameEquals, language, license, label, commitsMin, commitsMax,
-                                                 contributorsMin, contributorsMax, issuesMin, issuesMax, pullsMin,
-                                                 pullsMax, branchesMin, branchesMax, releasesMin, releasesMax, starsMin,
-                                                 starsMax, watchersMin, watchersMax, forksMin, forksMax, createdMin,
-                                                 createdMax, committedMin, committedMax, excludeForks, onlyForks,
-                                                 hasIssues, hasPulls, hasWiki, hasLicense);
+        GitRepoDtoList repoDtos = gitRepoService.advancedSearch(name, nameEquals, language, license, label, commitsMin,
+                                                                commitsMax, contributorsMin, contributorsMax, issuesMin,
+                                                                issuesMax, pullsMin, pullsMax, branchesMin, branchesMax,
+                                                                releasesMin, releasesMax, starsMin, starsMax, watchersMin,
+                                                                watchersMax, forksMin, forksMax, createdMin, createdMax,
+                                                                committedMin, committedMax, excludeForks, onlyForks,
+                                                                hasIssues, hasPulls, hasWiki, hasLicense);
+
+        File csv = new File("src/main/resources/temp/results.csv");
+        try {
+            CSVWriter writer = new CSVWriter(new FileWriter(csv.getAbsolutePath()));
+            List<String[]> rows = gitRepoConverter.repoDtoListToCSVRowList(repoDtos);
+            writer.writeAll(rows);
+            writer.close();
+        } catch (IOException ignored){}
+
         return ResponseEntity.ok()
                              .header("Content-Disposition", "attachment; filename=results.csv")
-                             .contentLength(file.length())
+                             .contentLength(csv.length())
                              .contentType(MediaType.parseMediaType("text/csv"))
-                             .body(new FileSystemResource(file));
+                             .body(new FileSystemResource(csv));
+    }
+
+    @GetMapping(
+            value = "/r/download/json",
+            produces = "text/plain"
+    )
+    public ResponseEntity<?> downloadJSON(
+            @RequestParam(required = false, defaultValue = "") String name,
+            @RequestParam(required = false, defaultValue = "false") Boolean nameEquals,
+            @RequestParam(required = false, defaultValue = "") String language,
+            @RequestParam(required = false, defaultValue = "") String license,
+            @RequestParam(required = false, defaultValue = "") String label,
+            @RequestParam(required = false) Long commitsMin,
+            @RequestParam(required = false) Long commitsMax,
+            @RequestParam(required = false) Long contributorsMin,
+            @RequestParam(required = false) Long contributorsMax,
+            @RequestParam(required = false) Long issuesMin,
+            @RequestParam(required = false) Long issuesMax,
+            @RequestParam(required = false) Long pullsMin,
+            @RequestParam(required = false) Long pullsMax,
+            @RequestParam(required = false) Long branchesMin,
+            @RequestParam(required = false) Long branchesMax,
+            @RequestParam(required = false) Long releasesMin,
+            @RequestParam(required = false) Long releasesMax,
+            @RequestParam(required = false) Long starsMin,
+            @RequestParam(required = false) Long starsMax,
+            @RequestParam(required = false) Long watchersMin,
+            @RequestParam(required = false) Long watchersMax,
+            @RequestParam(required = false) Long forksMin,
+            @RequestParam(required = false) Long forksMax,
+            @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Date createdMin,
+            @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Date createdMax,
+            @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Date committedMin,
+            @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Date committedMax,
+            @RequestParam(required = false, defaultValue = "false") Boolean excludeForks,
+            @RequestParam(required = false, defaultValue = "false") Boolean onlyForks,
+            @RequestParam(required = false, defaultValue = "false") Boolean hasIssues,
+            @RequestParam(required = false, defaultValue = "false") Boolean hasPulls,
+            @RequestParam(required = false, defaultValue = "false") Boolean hasWiki,
+            @RequestParam(required = false, defaultValue = "false") Boolean hasLicense
+    ){
+        GitRepoDtoList repoDtos = gitRepoService.advancedSearch(name, nameEquals, language, license, label, commitsMin,
+                                                                commitsMax, contributorsMin, contributorsMax, issuesMin,
+                                                                issuesMax, pullsMin, pullsMax, branchesMin, branchesMax,
+                                                                releasesMin, releasesMax, starsMin, starsMax, watchersMin,
+                                                                watchersMax, forksMin, forksMax, createdMin, createdMax,
+                                                                committedMin, committedMax, excludeForks, onlyForks,
+                                                                hasIssues, hasPulls, hasWiki, hasLicense);
+        File json = new File("src/main/resources/temp/results.json");
+        ObjectMapper om = new ObjectMapper();
+        try {
+            om.writeValue(json,repoDtos);
+        } catch (IOException ignored){}
+
+        return ResponseEntity.ok()
+                             .header("Content-Disposition", "attachment; filename=results.json")
+                             .contentLength(json.length())
+                             .contentType(MediaType.parseMediaType("text/plain"))
+                             .body(new FileSystemResource(json));
     }
 
     @GetMapping("/r/{repoId}")

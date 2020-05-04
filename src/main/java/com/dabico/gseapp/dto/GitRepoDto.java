@@ -2,9 +2,7 @@ package com.dabico.gseapp.dto;
 
 import lombok.*;
 
-import java.util.Date;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 @Getter
 @Setter
@@ -37,7 +35,7 @@ public class GitRepoDto {
     Boolean hasWiki;
     Boolean isArchived;
     @Builder.Default
-    Set<GitRepoLanguageDto> languages = new HashSet<>();
+    List<GitRepoLanguageDto> languages = new ArrayList<>();
     @Builder.Default
-    Set<GitRepoLabelDto> labels = new HashSet<>();
+    List<GitRepoLabelDto> labels = new ArrayList<>();
 }

@@ -1,6 +1,7 @@
 package com.dabico.gseapp.converter;
 
 import com.dabico.gseapp.dto.GitRepoDto;
+import com.dabico.gseapp.dto.GitRepoDtoList;
 import com.dabico.gseapp.dto.GitRepoLabelDto;
 import com.dabico.gseapp.dto.GitRepoLanguageDto;
 import com.dabico.gseapp.github.GitHubPageCrawlerService;
@@ -120,13 +121,13 @@ public class GitRepoConverter {
         return repos.stream().map(this::repoToRepoDto).collect(Collectors.toList());
     }
 
-    public List<String[]> repoListToCSVRowList(List<GitRepo> repos){
-        List<String[]> results = repos.stream().map(this::repoToCSVRow).collect(Collectors.toList());
+    public List<String[]> repoDtoListToCSVRowList(GitRepoDtoList repos){
+        List<String[]> results = repos.getItems().stream().map(this::repoDtoToCSVRow).collect(Collectors.toList());
         String[] header = new String[]{"name","fork project","commits","branches","default branch","releases",
                                        "contributors","license","watchers","stargazers","forks","size","created",
                                        "pushed","updated","homepage","main language","total issues","open issues",
                                        "total pull requests","open pull requests","last commit","last commit SHA",
-                                       "has wiki","is archived"};
+                                       "has wiki","is archived","languages","labels"};
         results.add(0, header);
         return results;
     }
@@ -170,41 +171,59 @@ public class GitRepoConverter {
                 .build();
     }
 
-    public String[] repoToCSVRow(GitRepo repo){
-        Long commits = repo.getCommits();
-        Long branches = repo.getBranches();
-        Long releases = repo.getReleases();
-        Long contributors = repo.getContributors();
-        Long watchers = repo.getWatchers();
-        Date lastCommit = repo.getLastCommit();
-        String lastCommitSHA = repo.getLastCommitSHA();
+    public String[] repoDtoToCSVRow(GitRepoDto repoDto){
+        Long commits = repoDto.getCommits();
+        Long branches = repoDto.getBranches();
+        Long releases = repoDto.getReleases();
+        Long contributors = repoDto.getContributors();
+        Long watchers = repoDto.getWatchers();
+        Date lastCommit = repoDto.getLastCommit();
+        String lastCommitSHA = repoDto.getLastCommitSHA();
+        List<GitRepoLanguageDto> languages = repoDto.getLanguages();
+        List<GitRepoLabelDto> labels = repoDto.getLabels();
 
-        String[] attributes = new String[25];
-        attributes[0]  = repo.getName();
-        attributes[1]  = repo.getIsFork().toString();
+        String[] attributes = new String[27];
+        attributes[0]  = repoDto.getName();
+        attributes[1]  = repoDto.getIsFork().toString();
         attributes[2]  = (commits > -1) ? commits.toString() : "?";
         attributes[3]  = (branches > -1) ? branches.toString() : "?";
-        attributes[4]  = repo.getDefaultBranch();
+        attributes[4]  = repoDto.getDefaultBranch();
         attributes[5]  = (releases > -1) ? releases.toString() : "?";
         attributes[6]  = (contributors > -2) ? ((contributors > -1) ? contributors.toString() : "?") : "∞";
-        attributes[7]  = repo.getLicense();
+        attributes[7]  = repoDto.getLicense();
         attributes[8]  = (watchers > -1) ? watchers.toString() : "?";
-        attributes[9]  = repo.getStargazers().toString();
-        attributes[10] = repo.getForks().toString();
-        attributes[11] = repo.getSize().toString();
-        attributes[12] = repo.getCreatedAt().toString();
-        attributes[13] = repo.getPushedAt().toString();
-        attributes[14] = repo.getUpdatedAt().toString();
-        attributes[15] = repo.getHomepage();
-        attributes[16] = repo.getMainLanguage();
-        attributes[17] = repo.getTotalIssues().toString();
-        attributes[18] = repo.getOpenIssues().toString();
-        attributes[19] = repo.getTotalPullRequests().toString();
-        attributes[20] = repo.getOpenPullRequests().toString();
+        attributes[9]  = repoDto.getStargazers().toString();
+        attributes[10] = repoDto.getForks().toString();
+        attributes[11] = repoDto.getSize().toString();
+        attributes[12] = repoDto.getCreatedAt().toString();
+        attributes[13] = repoDto.getPushedAt().toString();
+        attributes[14] = repoDto.getUpdatedAt().toString();
+        attributes[15] = repoDto.getHomepage();
+        attributes[16] = repoDto.getMainLanguage();
+        attributes[17] = repoDto.getTotalIssues().toString();
+        attributes[18] = repoDto.getOpenIssues().toString();
+        attributes[19] = repoDto.getTotalPullRequests().toString();
+        attributes[20] = repoDto.getOpenPullRequests().toString();
         attributes[21] = (lastCommit != null) ? lastCommit.toString() : "?";
         attributes[22] = (lastCommitSHA != null) ? lastCommitSHA : "?";
-        attributes[23] = repo.getHasWiki().toString();
-        attributes[24] = repo.getIsArchived().toString();
+        attributes[23] = repoDto.getHasWiki().toString();
+        attributes[24] = repoDto.getIsArchived().toString();
+        attributes[25] = "";
+        for (int i = 0; i < languages.size(); ++i){
+            if (i == 0){
+                attributes[25] += languages.get(i).getLanguage();
+            } else {
+                attributes[25] += ","+languages.get(i).getLanguage();
+            }
+        }
+        attributes[26] = "";
+        for (int i = 0; i < labels.size(); ++i){
+            if (i == 0){
+                attributes[26] += labels.get(i).getLabel();
+            } else {
+                attributes[26] += ","+labels.get(i).getLabel();
+            }
+        }
         return attributes;
     }
 
