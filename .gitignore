@@ -2,6 +2,9 @@
 !.mvn/wrapper/maven-wrapper.jar
 .DS_Store
 
+### RESOURCES ###
+/src/main/resources/temp/
+
 ### STS ###
 .apt_generated
 .classpath
