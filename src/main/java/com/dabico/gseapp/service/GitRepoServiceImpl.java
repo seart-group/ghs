@@ -150,7 +150,15 @@ public class GitRepoServiceImpl implements GitRepoService {
                             createdMax,committedMin,committedMax,excludeForks,onlyForks,hasIssues,hasPulls,hasWiki,
                             hasLicense)).toString().split("\\{")[0];
             repoDtoListPaginated.setJsonLink(jsonDownloadLink);
+            String xmlDownloadLink = linkTo(methodOn(GitRepoController.class)
+                    .downloadXML(name,nameEquals,language,license,label,commitsMin,commitsMax,contributorsMin,
+                            contributorsMax,issuesMin,issuesMax,pullsMin,pullsMax,branchesMin,branchesMax,releasesMin,
+                            releasesMax,starsMin,starsMax,watchersMin,watchersMax,forksMin,forksMax,createdMin,
+                            createdMax,committedMin,committedMax,excludeForks,onlyForks,hasIssues,hasPulls,hasWiki,
+                            hasLicense)).toString().split("\\{")[0];
+            repoDtoListPaginated.setXmlLink(xmlDownloadLink);
         }
+
         return repoDtoListPaginated;
     }
 

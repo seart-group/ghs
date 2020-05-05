@@ -15,6 +15,7 @@ public class GitRepoDtoListPaginated {
     String last;
     String csvLink;
     String jsonLink;
+    String xmlLink;
     long totalItems;
     long page;
     @Builder.Default

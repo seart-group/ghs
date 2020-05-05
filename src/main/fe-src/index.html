@@ -478,6 +478,10 @@
                             Download JSON
                             <span class="fa fa-file-text-o"></span>
                         </a>
+                        <a id="xml-button" href="" target="_blank" class="btn btn-outline-secondary bg-llgray rounded-0 border-0">
+                            Download XML
+                            <span class="fa fa-file-code-o"></span>
+                        </a>
                         <a id="download-button" href="" target="_blank" class="btn btn-outline-secondary bg-llgray rounded-0 border-0">
                             Download CSV
                             <span class="fa fa-file-excel-o"></span>
@@ -992,12 +996,19 @@
                     let page       = data.page;
                     let csvLink    = data.csvLink;
                     let jsonLink   = data.jsonLink;
+                    let xmlLink    = data.xmlLink;
                     let totalItems = data.totalItems;
 
                     if (jsonLink !== null){
                         $('#raw-button').attr('href',jsonLink);
                     } else {
                         $('#raw-button').addClass("disabled");
+                    }
+
+                    if (xmlLink !== null){
+                        $('#xml-button').attr('href',xmlLink);
+                    } else {
+                        $('#xml-button').addClass("disabled");
                     }
 
                     if (csvLink !== null){
@@ -1064,6 +1075,7 @@
                                       '</div></div></div>';
 
                     $('#raw-button').addClass("disabled");
+                    $('#xml-button').addClass("disabled");
                     $('#download-button').addClass("disabled");
                     $('#results-container-items').append(connect_err);
                 })
@@ -1161,6 +1173,8 @@
                 $('#results-container').toggleClass('d-none');
                 $('#raw-button').attr('href','');
                 $('#raw-button').removeClass("disabled");
+                $('#xml-button').attr('href','');
+                $('#xml-button').removeClass("disabled");
                 $('#download-button').attr('href','');
                 $('#download-button').removeClass("disabled");
                 $('#first-button').attr('onclick','');

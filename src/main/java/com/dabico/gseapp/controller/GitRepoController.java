@@ -5,6 +5,7 @@ import com.dabico.gseapp.dto.GitRepoDtoList;
 import com.dabico.gseapp.dto.GitRepoDtoListPaginated;
 import com.dabico.gseapp.service.GitRepoService;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import com.opencsv.CSVWriter;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -204,6 +205,65 @@ public class GitRepoController {
                              .contentLength(json.length())
                              .contentType(MediaType.parseMediaType("text/plain"))
                              .body(new FileSystemResource(json));
+    }
+
+    @GetMapping(
+            value = "/r/download/xml",
+            produces = "text/xml"
+    )
+    public ResponseEntity<?> downloadXML(
+            @RequestParam(required = false, defaultValue = "") String name,
+            @RequestParam(required = false, defaultValue = "false") Boolean nameEquals,
+            @RequestParam(required = false, defaultValue = "") String language,
+            @RequestParam(required = false, defaultValue = "") String license,
+            @RequestParam(required = false, defaultValue = "") String label,
+            @RequestParam(required = false) Long commitsMin,
+            @RequestParam(required = false) Long commitsMax,
+            @RequestParam(required = false) Long contributorsMin,
+            @RequestParam(required = false) Long contributorsMax,
+            @RequestParam(required = false) Long issuesMin,
+            @RequestParam(required = false) Long issuesMax,
+            @RequestParam(required = false) Long pullsMin,
+            @RequestParam(required = false) Long pullsMax,
+            @RequestParam(required = false) Long branchesMin,
+            @RequestParam(required = false) Long branchesMax,
+            @RequestParam(required = false) Long releasesMin,
+            @RequestParam(required = false) Long releasesMax,
+            @RequestParam(required = false) Long starsMin,
+            @RequestParam(required = false) Long starsMax,
+            @RequestParam(required = false) Long watchersMin,
+            @RequestParam(required = false) Long watchersMax,
+            @RequestParam(required = false) Long forksMin,
+            @RequestParam(required = false) Long forksMax,
+            @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Date createdMin,
+            @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Date createdMax,
+            @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Date committedMin,
+            @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Date committedMax,
+            @RequestParam(required = false, defaultValue = "false") Boolean excludeForks,
+            @RequestParam(required = false, defaultValue = "false") Boolean onlyForks,
+            @RequestParam(required = false, defaultValue = "false") Boolean hasIssues,
+            @RequestParam(required = false, defaultValue = "false") Boolean hasPulls,
+            @RequestParam(required = false, defaultValue = "false") Boolean hasWiki,
+            @RequestParam(required = false, defaultValue = "false") Boolean hasLicense
+    ){
+        GitRepoDtoList repoDtos = gitRepoService.advancedSearch(name, nameEquals, language, license, label, commitsMin,
+                                                                commitsMax, contributorsMin, contributorsMax, issuesMin,
+                                                                issuesMax, pullsMin, pullsMax, branchesMin, branchesMax,
+                                                                releasesMin, releasesMax, starsMin, starsMax, watchersMin,
+                                                                watchersMax, forksMin, forksMax, createdMin, createdMax,
+                                                                committedMin, committedMax, excludeForks, onlyForks,
+                                                                hasIssues, hasPulls, hasWiki, hasLicense);
+        File xml = new File("src/main/resources/temp/results.xml");
+        XmlMapper xmlm = new XmlMapper();
+        try {
+            xmlm.writeValue(xml,repoDtos);
+        } catch (IOException ignored){}
+
+        return ResponseEntity.ok()
+                .header("Content-Disposition", "attachment; filename=results.xml")
+                .contentLength(xml.length())
+                .contentType(MediaType.parseMediaType("text/xml"))
+                .body(new FileSystemResource(xml));
     }
 
     @GetMapping("/r/{repoId}")
