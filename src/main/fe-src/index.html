@@ -487,6 +487,10 @@
                 <div id="results-container-items" class="w-75 bg-llgray border border-top-0 border-bottom-0 justify-content-center"></div>
                 <div id="results-container-footer" class="row w-75 pt-3 bg-llgray border border-top-0">
                     <div class="col px-0 d-flex align-items-center justify-content-start">
+                        <button type="button" id="first-button" class="btn btn-outline-secondary bg-llgray rounded-0 border-0 text-center d-none">
+                            <span class="fa fa-lg fa-angle-double-left"></span>
+                            First
+                        </button>
                         <button type="button" id="prev-button" class="btn btn-outline-secondary bg-llgray rounded-0 border-0 text-center d-none">
                             <span class="fa fa-lg fa-angle-left"></span>
                             Prev
@@ -496,6 +500,10 @@
                         <button type="button" id="next-button" class="btn btn-outline-secondary bg-llgray rounded-0 border-0 text-center d-none">
                             Next
                             <span class="fa fa-lg fa-angle-right"></span>
+                        </button>
+                        <button type="button" id="last-button" class="btn btn-outline-secondary bg-llgray rounded-0 border-0 text-center d-none">
+                            Last
+                            <span class="fa fa-lg fa-angle-double-right"></span>
                         </button>
                     </div>
                 </div>
@@ -977,8 +985,11 @@
                     return response.json();
                 }).then(data => {
                     let items      = data.items;
+                    let first      = data.first;
                     let prev       = data.prev;
                     let next       = data.next;
+                    let last       = data.last;
+                    let page       = data.page;
                     let csvLink    = data.csvLink;
                     let jsonLink   = data.jsonLink;
                     let totalItems = data.totalItems;
@@ -999,9 +1010,11 @@
 
                     if (totalItems > 0){
                         let count = '<div><div class="row mw-100 pt-3 mx-3">'+
-                                    '<div class="col d-flex justify-content-center">'+
-                                    '<div class="col d-flex align-items-center justify-content-center px-0">'+
-                                    '<span>Results: '+totalItems+'</span></div></div></div></div>';
+                                    '<div class="col d-flex align-items-center justify-content-start px-0">'+
+                                    '<span class="text-secondary">Results: '+totalItems+'</span></div>'+
+                                    '<div class="col d-flex align-items-center justify-content-end px-0">'+
+                                    '<span class="text-secondary">Page: '+page+'</span></div>'+
+                                    '</div></div>';
                         $('#results-container-items').append(count);
                     }
 
@@ -1009,11 +1022,18 @@
                         items.forEach(item => appendResult(item));
                     } else {
                         let no_items = '<div><div class="row mw-100 py-3 mx-3">'+
-                                       '<div class="col d-flex justify-content-center">'+
                                        '<div class="col d-flex align-items-center justify-content-center px-0">'+
-                                       '<i class="mx-1 fa fa-frown-o"></i><span>No Results</span></div></div></div></div>';
+                                       '<i class="mx-1 fa fa-frown-o" style="color: #6c757d"></i>'+
+                                       '<span class="text-secondary">No Results</span></div></div></div>';
 
                         $('#results-container-items').append(no_items);
+                    }
+
+                    if (first !== null){
+                        $('#first-button').removeClass("d-none");
+                        $('#first-button').attr('onclick','retrieve("'+first+'")')
+                    } else {
+                        $('#first-button').addClass("d-none");
                     }
 
                     if (prev !== null){
@@ -1029,13 +1049,22 @@
                     } else {
                         $('#next-button').addClass("d-none");
                     }
+
+                    if (last !== null){
+                        $('#last-button').removeClass("d-none");
+                        $('#last-button').attr('onclick','retrieve("'+last+'")')
+                    } else {
+                        $('#last-button').addClass("d-none");
+                    }
                 }).catch(_ => {
                     let connect_err = '<div><div class="row mw-100 py-3 mx-3">'+
-                                      '<div class="col d-flex justify-content-center">'+
                                       '<div class="col d-flex align-items-center justify-content-center px-0">'+
-                                      '<i class="mx-1 fa fa-frown-o"></i><span>'+
-                                      'Error connecting to GSE server</span></div></div></div></div>';
+                                      '<i class="mx-1 fa fa-frown-o" style="color: #6c757d"></i>'+
+                                      '<span class="text-secondary">Error connecting to DEVINTA server</span>'+
+                                      '</div></div></div>';
 
+                    $('#raw-button').addClass("disabled");
+                    $('#download-button').addClass("disabled");
                     $('#results-container-items').append(connect_err);
                 })
             }
@@ -1120,6 +1149,7 @@
 
             $('#form').submit(function () {
                 submitQuery();
+                $('body,html').animate({ scrollTop: 0 }, 400);
                 $('#form-container').toggleClass('d-none');
                 $('#results-container').toggleClass('d-none');
                 return false;
@@ -1133,10 +1163,14 @@
                 $('#raw-button').removeClass("disabled");
                 $('#download-button').attr('href','');
                 $('#download-button').removeClass("disabled");
+                $('#first-button').attr('onclick','');
+                $('#first-button').addClass("d-none");
                 $('#prev-button').attr('onclick','');
                 $('#prev-button').addClass("d-none");
                 $('#next-button').attr('onclick','');
                 $('#next-button').addClass("d-none");
+                $('#last-button').attr('onclick','');
+                $('#last-button').addClass("d-none");
             });
         </script>
         <script>
@@ -1170,23 +1204,27 @@
                 });
 
                 $('#back-to-top').click(function () {
-                    $('body,html').animate({
-                        scrollTop: 0
-                    }, 400);
+                    $('body,html').animate({ scrollTop: 0 }, 400);
+                    return false;
+                });
+
+                $('#first-button').click(function () {
+                    $('body,html').animate({ scrollTop: 0 }, 400);
                     return false;
                 });
 
                 $('#prev-button').click(function () {
-                    $('body,html').animate({
-                        scrollTop: 0
-                    }, 400);
+                    $('body,html').animate({ scrollTop: 0 }, 400);
                     return false;
                 });
 
                 $('#next-button').click(function () {
-                    $('body,html').animate({
-                        scrollTop: 0
-                    }, 400);
+                    $('body,html').animate({ scrollTop: 0 }, 400);
+                    return false;
+                });
+
+                $('#last-button').click(function () {
+                    $('body,html').animate({ scrollTop: 0 }, 400);
                     return false;
                 });
             });

@@ -90,6 +90,8 @@ public class GitRepoServiceImpl implements GitRepoService {
                                                                  contributors,issues,pulls,branches,releases,
                                                                  stars,watchers,forks,created,committed,excludeForks,
                                                                  onlyForks,hasIssues,hasPulls,hasWiki,hasLicense);
+        int lastPage = (int) (totalResults/pageSize);
+        if (totalResults % pageSize == 0){ lastPage -= 1; }
         for (GitRepoDto repoDto : repoDtos){
             repoDto.setLabels(new ArrayList<>(findRepoLabels(repoDto.getId())));
             repoDto.setLanguages(new ArrayList<>(findRepoLanguages(repoDto.getId())));
@@ -98,14 +100,22 @@ public class GitRepoServiceImpl implements GitRepoService {
         GitRepoDtoListPaginated repoDtoListPaginated = GitRepoDtoListPaginated.builder().build();
         repoDtoListPaginated.setItems(repoDtos);
         repoDtoListPaginated.setTotalItems(totalResults);
+        repoDtoListPaginated.setPage(page+1);
         if (page > 0){
             String prev = linkTo(methodOn(GitRepoController.class)
-                    .searchRepos(name, nameEquals, language, license, label, commitsMin, commitsMax, contributorsMin, contributorsMax,
-                            issuesMin, issuesMax, pullsMin, pullsMax, branchesMin, branchesMax, releasesMin, releasesMax,
-                            starsMin, starsMax, watchersMin, watchersMax, forksMin, forksMax, createdMin, createdMax,
-                            committedMin, committedMax, excludeForks, onlyForks, hasIssues, hasPulls, hasWiki, hasLicense,
-                            page - 1, pageSize)).toString().split("\\{")[0];
+                    .searchRepos(name,nameEquals,language,license,label,commitsMin,commitsMax,contributorsMin,
+                                 contributorsMax,issuesMin,issuesMax,pullsMin,pullsMax,branchesMin,branchesMax,
+                                 releasesMin,releasesMax,starsMin,starsMax,watchersMin,watchersMax,forksMin,forksMax,
+                                 createdMin,createdMax,committedMin,committedMax,excludeForks,onlyForks,hasIssues,
+                                 hasPulls,hasWiki,hasLicense,page - 1,pageSize)).toString().split("\\{")[0];
             repoDtoListPaginated.setPrev(prev);
+            String first = linkTo(methodOn(GitRepoController.class)
+                    .searchRepos(name,nameEquals,language,license,label,commitsMin,commitsMax,contributorsMin,
+                                 contributorsMax,issuesMin,issuesMax,pullsMin,pullsMax,branchesMin,branchesMax,
+                                 releasesMin,releasesMax,starsMin,starsMax, watchersMin,watchersMax,forksMin,forksMax,
+                                 createdMin,createdMax,committedMin,committedMax,excludeForks,onlyForks,hasIssues,
+                                 hasPulls,hasWiki,hasLicense,0, pageSize)).toString().split("\\{")[0];
+            repoDtoListPaginated.setFirst(first);
         }
         if (pageSize == repos.size()){
             String next = linkTo(methodOn(GitRepoController.class)
@@ -116,7 +126,16 @@ public class GitRepoServiceImpl implements GitRepoService {
                                  page + 1, pageSize)).toString().split("\\{")[0];
             repoDtoListPaginated.setNext(next);
         }
-        if (repos.size() > 0){
+        if (page < lastPage){
+            String last = linkTo(methodOn(GitRepoController.class)
+                    .searchRepos(name,nameEquals,language,license,label,commitsMin,commitsMax,contributorsMin,
+                                 contributorsMax,issuesMin,issuesMax,pullsMin,pullsMax,branchesMin,branchesMax,
+                                 releasesMin,releasesMax,starsMin,starsMax,watchersMin,watchersMax,forksMin,forksMax,
+                                 createdMin,createdMax,committedMin,committedMax,excludeForks,onlyForks,hasIssues,
+                                 hasPulls,hasWiki,hasLicense,lastPage,pageSize)).toString().split("\\{")[0];
+            repoDtoListPaginated.setLast(last);
+        }
+        if (totalResults > 0){
             String csvDownloadLink = linkTo(methodOn(GitRepoController.class)
                     .downloadCSV(name,nameEquals,language,license,label,commitsMin,commitsMax,contributorsMin,
                             contributorsMax,issuesMin,issuesMax,pullsMin,pullsMax,branchesMin,branchesMax,releasesMin,
