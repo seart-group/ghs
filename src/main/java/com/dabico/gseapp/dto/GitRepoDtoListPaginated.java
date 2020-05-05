@@ -13,7 +13,7 @@ public class GitRepoDtoListPaginated {
     String next;
     String csvLink;
     String jsonLink;
-    int totalItems;
+    long totalItems;
     @Builder.Default
     List<GitRepoDto> items = new ArrayList<>();
 }

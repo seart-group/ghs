@@ -976,11 +976,12 @@
                 fetch(url).then(response => {
                     return response.json();
                 }).then(data => {
-                    let items    = data.items;
-                    let prev     = data.prev;
-                    let next     = data.next;
-                    let csvLink  = data.csvLink;
-                    let jsonLink = data.jsonLink;
+                    let items      = data.items;
+                    let prev       = data.prev;
+                    let next       = data.next;
+                    let csvLink    = data.csvLink;
+                    let jsonLink   = data.jsonLink;
+                    let totalItems = data.totalItems;
 
                     if (jsonLink !== null){
                         $('#raw-button').attr('href',jsonLink);
@@ -995,6 +996,14 @@
                     }
 
                     $('#results-container-items').empty();
+
+                    if (totalItems > 0){
+                        let count = '<div><div class="row mw-100 pt-3 mx-3">'+
+                                    '<div class="col d-flex justify-content-center">'+
+                                    '<div class="col d-flex align-items-center justify-content-center px-0">'+
+                                    '<span>Results: '+totalItems+'</span></div></div></div></div>';
+                        $('#results-container-items').append(count);
+                    }
 
                     if (items.length > 0){
                         items.forEach(item => appendResult(item));
