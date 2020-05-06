@@ -4,6 +4,7 @@ import com.dabico.gseapp.converter.GitRepoConverter;
 import com.dabico.gseapp.dto.GitRepoDtoList;
 import com.dabico.gseapp.dto.GitRepoDtoListPaginated;
 import com.dabico.gseapp.service.GitRepoService;
+import com.dabico.gseapp.util.FileSystemResourceCustom;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import com.opencsv.CSVWriter;
@@ -13,7 +14,6 @@ import lombok.experimental.FieldDefaults;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.FileSystemResource;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -151,7 +151,7 @@ public class GitRepoController {
                              .header("Content-Disposition", "attachment; filename=results.csv")
                              .contentLength(csv.length())
                              .contentType(MediaType.parseMediaType("text/csv"))
-                             .body(new FileSystemResource(csv));
+                             .body(new FileSystemResourceCustom(csv));
     }
 
     @GetMapping(
@@ -215,7 +215,7 @@ public class GitRepoController {
                              .header("Content-Disposition", "attachment; filename=results.json")
                              .contentLength(json.length())
                              .contentType(MediaType.parseMediaType("text/plain"))
-                             .body(new FileSystemResource(json));
+                             .body(new FileSystemResourceCustom(json));
     }
 
     @GetMapping(
@@ -279,7 +279,7 @@ public class GitRepoController {
                              .header("Content-Disposition", "attachment; filename=results.xml")
                              .contentLength(xml.length())
                              .contentType(MediaType.parseMediaType("text/xml"))
-                             .body(new FileSystemResource(xml));
+                             .body(new FileSystemResourceCustom(xml));
     }
 
     @GetMapping("/r/{repoId}")
