@@ -142,7 +142,10 @@ public class GitRepoController {
             List<String[]> rows = gitRepoConverter.repoDtoListToCSVRowList(repoDtos);
             writer.writeAll(rows);
             writer.close();
-        } catch (IOException ignored){}
+        } catch (IOException ex){
+            logger.error(ex.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
 
         return ResponseEntity.ok()
                              .header("Content-Disposition", "attachment; filename=results.csv")
@@ -203,7 +206,10 @@ public class GitRepoController {
         om.setDateFormat(df);
         try {
             om.writeValue(json,repoDtos);
-        } catch (IOException ignored){}
+        } catch (IOException ex){
+            logger.error(ex.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
 
         return ResponseEntity.ok()
                              .header("Content-Disposition", "attachment; filename=results.json")
@@ -264,7 +270,10 @@ public class GitRepoController {
         xmlm.setDateFormat(df);
         try {
             xmlm.writeValue(xml,repoDtos);
-        } catch (IOException ignored){}
+        } catch (IOException ex){
+            logger.error(ex.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
 
         return ResponseEntity.ok()
                              .header("Content-Disposition", "attachment; filename=results.xml")
