@@ -253,3 +253,7 @@ ul.typeahead {
 .pr-4-5 {
     padding-right: 36px !important;
 }
+
+.w-60 {
+    width: 60% !important;
+}

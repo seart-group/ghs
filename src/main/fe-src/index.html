@@ -117,7 +117,7 @@
 
         <div id="page-content" class="py-5">
             <div id="form-container" class="row mw-100 justify-content-center text-center">
-                <form id="form" autocomplete="off" class="w-75 bg-llgray-transparent border bg-tra">
+                <form id="form" autocomplete="off" class="w-75 bg-llgray-transparent border">
                     <div class="px-3 pt-3 row text-left">
                         <div class="col-12">
                             <h1 class="rowlabel">General</h1>
@@ -499,6 +499,12 @@
                             <span class="fa fa-lg fa-angle-left"></span>
                             Prev
                         </button>
+                    </div>
+                    <div class="col px-0 d-flex align-items-center justify-content-center">
+                        <form id="go-form" autocomplete="off" class="w-60 bg-llgray border-0 input-group">
+                            <input type="text" id="page" name="page" class="form-control rounded-0 bg-llgray border-0 d-none" placeholder="Jump to page..." pattern="[1-9]\d*" title="Only positive integers are allowed here!">
+                            <button type="submit" id="go-button" class="btn btn-outline-secondary bg-llgray rounded-0 border-0 text-center d-none">Go!</button>
+                        </form>
                     </div>
                     <div class="col px-0 d-flex align-items-center justify-content-end">
                         <button type="button" id="next-button" class="btn btn-outline-secondary bg-llgray rounded-0 border-0 text-center d-none">
@@ -994,30 +1000,33 @@
                     let next       = data.next;
                     let last       = data.last;
                     let page       = data.page;
+                    let base       = data.base;
                     let csvLink    = data.csvLink;
                     let jsonLink   = data.jsonLink;
                     let xmlLink    = data.xmlLink;
                     let totalItems = data.totalItems;
+                    let totalPages = data.totalPages;
 
                     if (jsonLink !== null){
                         $('#raw-button').attr('href',jsonLink);
                     } else {
-                        $('#raw-button').addClass("disabled");
+                        $('#raw-button').addClass('disabled');
                     }
 
                     if (xmlLink !== null){
                         $('#xml-button').attr('href',xmlLink);
                     } else {
-                        $('#xml-button').addClass("disabled");
+                        $('#xml-button').addClass('disabled');
                     }
 
                     if (csvLink !== null){
                         $('#download-button').attr('href',csvLink);
                     } else {
-                        $('#download-button').addClass("disabled");
+                        $('#download-button').addClass('disabled');
                     }
 
                     $('#results-container-items').empty();
+                    $('#page').val('');
 
                     if (totalItems > 0){
                         let count = '<div><div class="row mw-100 pt-3 mx-3">'+
@@ -1030,8 +1039,16 @@
                     }
 
                     if (items.length > 0){
+                        if (totalPages > 1){
+                            $('#page').removeClass('d-none');
+                            $('#go-button').removeClass('d-none');
+                            $('#go-button').attr('base-url',base);
+                            $('#go-button').attr('page-limit',totalPages)
+                        }
                         items.forEach(item => appendResult(item));
                     } else {
+                        $('#page').addClass("d-none");
+                        $('#go-button').addClass("d-none");
                         let no_items = '<div><div class="row mw-100 py-3 mx-3">'+
                                        '<div class="col d-flex align-items-center justify-content-center px-0">'+
                                        '<i class="mx-1 fa fa-frown-o" style="color: #6c757d"></i>'+
@@ -1041,31 +1058,31 @@
                     }
 
                     if (first !== null){
-                        $('#first-button').removeClass("d-none");
+                        $('#first-button').removeClass('d-none');
                         $('#first-button').attr('onclick','retrieve("'+first+'")')
                     } else {
-                        $('#first-button').addClass("d-none");
+                        $('#first-button').addClass('d-none');
                     }
 
                     if (prev !== null){
-                        $('#prev-button').removeClass("d-none");
+                        $('#prev-button').removeClass('d-none');
                         $('#prev-button').attr('onclick','retrieve("'+prev+'")')
                     } else {
-                        $('#prev-button').addClass("d-none");
+                        $('#prev-button').addClass('d-none');
                     }
 
                     if (next !== null){
-                        $('#next-button').removeClass("d-none");
+                        $('#next-button').removeClass('d-none');
                         $('#next-button').attr('onclick','retrieve("'+next+'")')
                     } else {
-                        $('#next-button').addClass("d-none");
+                        $('#next-button').addClass('d-none');
                     }
 
                     if (last !== null){
-                        $('#last-button').removeClass("d-none");
+                        $('#last-button').removeClass('d-none');
                         $('#last-button').attr('onclick','retrieve("'+last+'")')
                     } else {
-                        $('#last-button').addClass("d-none");
+                        $('#last-button').addClass('d-none');
                     }
                 }).catch(_ => {
                     let connect_err = '<div><div class="row mw-100 py-3 mx-3">'+
@@ -1074,12 +1091,31 @@
                                       '<span class="text-secondary">Error connecting to DEVINTA server</span>'+
                                       '</div></div></div>';
 
-                    $('#raw-button').addClass("disabled");
-                    $('#xml-button').addClass("disabled");
-                    $('#download-button').addClass("disabled");
+                    $('#raw-button').addClass('disabled');
+                    $('#xml-button').addClass('disabled');
+                    $('#download-button').addClass('disabled');
+                    $('#results-container-items').empty();
                     $('#results-container-items').append(connect_err);
                 })
             }
+
+            function jumpToPage(base_url) {
+                let page = parseInt(document.getElementById('page').value);
+                if (isNaN(page)){ return false; }
+                let page_limit = parseInt(document.getElementById('go-button').getAttribute('page-limit'));
+                $('body,html').animate({ scrollTop: 0 }, 400);
+                if (page < page_limit){
+                    retrieve(base_url+'&page='+(page - 1)+'&pageSize=20');
+                } else {
+                    retrieve(base_url+'&page='+(page_limit - 1)+'&pageSize=20');
+                }
+            }
+
+            $('#go-form').submit(function () {
+                let base_url = document.getElementById('go-button').getAttribute('base-url');
+                jumpToPage(base_url);
+                return false;
+            });
 
             function submitQuery() {
                 let name = document.getElementById("name").value;
@@ -1172,19 +1208,24 @@
                 $('#form-container').toggleClass('d-none');
                 $('#results-container').toggleClass('d-none');
                 $('#raw-button').attr('href','');
-                $('#raw-button').removeClass("disabled");
+                $('#raw-button').removeClass('disabled');
                 $('#xml-button').attr('href','');
-                $('#xml-button').removeClass("disabled");
+                $('#xml-button').removeClass('disabled');
                 $('#download-button').attr('href','');
-                $('#download-button').removeClass("disabled");
+                $('#download-button').removeClass('disabled');
                 $('#first-button').attr('onclick','');
-                $('#first-button').addClass("d-none");
+                $('#first-button').addClass('d-none');
                 $('#prev-button').attr('onclick','');
-                $('#prev-button').addClass("d-none");
+                $('#prev-button').addClass('d-none');
                 $('#next-button').attr('onclick','');
-                $('#next-button').addClass("d-none");
+                $('#next-button').addClass('d-none');
                 $('#last-button').attr('onclick','');
-                $('#last-button').addClass("d-none");
+                $('#last-button').addClass('d-none');
+                $('#page').addClass('d-none');
+                $('#page').val('');
+                $('#go-button').addClass('d-none');
+                $('#go-button').attr('base-url','');
+                $('#go-button').attr('page-limit','');
             });
         </script>
         <script>
