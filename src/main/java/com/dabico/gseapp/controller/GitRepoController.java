@@ -24,6 +24,7 @@ import javax.persistence.EntityNotFoundException;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
@@ -32,6 +33,7 @@ import java.util.List;
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
 public class GitRepoController {
     static final Logger logger = LoggerFactory.getLogger(GitRepoController.class);
+    static final SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
 
     GitRepoService gitRepoService;
     GitRepoConverter gitRepoConverter;
@@ -196,6 +198,7 @@ public class GitRepoController {
                                                                 hasIssues, hasPulls, hasWiki, hasLicense);
         File json = new File("src/main/resources/temp/results.json");
         ObjectMapper om = new ObjectMapper();
+        om.setDateFormat(df);
         try {
             om.writeValue(json,repoDtos);
         } catch (IOException ignored){}
@@ -255,15 +258,16 @@ public class GitRepoController {
                                                                 hasIssues, hasPulls, hasWiki, hasLicense);
         File xml = new File("src/main/resources/temp/results.xml");
         XmlMapper xmlm = new XmlMapper();
+        xmlm.setDateFormat(df);
         try {
             xmlm.writeValue(xml,repoDtos);
         } catch (IOException ignored){}
 
         return ResponseEntity.ok()
-                .header("Content-Disposition", "attachment; filename=results.xml")
-                .contentLength(xml.length())
-                .contentType(MediaType.parseMediaType("text/xml"))
-                .body(new FileSystemResource(xml));
+                             .header("Content-Disposition", "attachment; filename=results.xml")
+                             .contentLength(xml.length())
+                             .contentType(MediaType.parseMediaType("text/xml"))
+                             .body(new FileSystemResource(xml));
     }
 
     @GetMapping("/r/{repoId}")
