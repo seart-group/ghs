@@ -34,7 +34,15 @@ import java.util.List;
 public class GitRepoController {
     static final Logger logger = LoggerFactory.getLogger(GitRepoController.class);
     static final String filePath = "src/main/resources/temp/";
-    static final SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+    static final ObjectMapper om;
+    static final XmlMapper xmlm;
+    static {
+        SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+        om = new ObjectMapper();
+        om.setDateFormat(df);
+        xmlm = new XmlMapper();
+        xmlm.setDateFormat(df);
+    }
 
     GitRepoService gitRepoService;
     GitRepoConverter gitRepoConverter;
@@ -202,8 +210,6 @@ public class GitRepoController {
                                                                 hasIssues, hasPulls, hasWiki, hasLicense);
         String fileName = "results-"+System.currentTimeMillis()+".json";
         File json = new File(filePath+fileName);
-        ObjectMapper om = new ObjectMapper();
-        om.setDateFormat(df);
         try {
             om.writeValue(json,repoDtos);
         } catch (IOException ex){
@@ -266,8 +272,6 @@ public class GitRepoController {
                                                                 hasIssues, hasPulls, hasWiki, hasLicense);
         String fileName = "results-"+System.currentTimeMillis()+".xml";
         File xml = new File(filePath+fileName);
-        XmlMapper xmlm = new XmlMapper();
-        xmlm.setDateFormat(df);
         try {
             xmlm.writeValue(xml,repoDtos);
         } catch (IOException ex){
