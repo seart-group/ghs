@@ -33,6 +33,7 @@ import java.util.List;
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
 public class GitRepoController {
     static final Logger logger = LoggerFactory.getLogger(GitRepoController.class);
+    static final String filePath = "src/main/resources/temp/";
     static final SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
 
     GitRepoService gitRepoService;
@@ -134,8 +135,8 @@ public class GitRepoController {
                                                                 watchersMax, forksMin, forksMax, createdMin, createdMax,
                                                                 committedMin, committedMax, excludeForks, onlyForks,
                                                                 hasIssues, hasPulls, hasWiki, hasLicense);
-
-        File csv = new File("src/main/resources/temp/results.csv");
+        String fileName = "results-"+System.currentTimeMillis()+".csv";
+        File csv = new File(filePath+fileName);
         try {
             CSVWriter writer = new CSVWriter(new FileWriter(csv.getAbsolutePath()));
             List<String[]> rows = gitRepoConverter.repoDtoListToCSVRowList(repoDtos);
@@ -196,7 +197,8 @@ public class GitRepoController {
                                                                 watchersMax, forksMin, forksMax, createdMin, createdMax,
                                                                 committedMin, committedMax, excludeForks, onlyForks,
                                                                 hasIssues, hasPulls, hasWiki, hasLicense);
-        File json = new File("src/main/resources/temp/results.json");
+        String fileName = "results-"+System.currentTimeMillis()+".json";
+        File json = new File(filePath+fileName);
         ObjectMapper om = new ObjectMapper();
         om.setDateFormat(df);
         try {
@@ -256,7 +258,8 @@ public class GitRepoController {
                                                                 watchersMax, forksMin, forksMax, createdMin, createdMax,
                                                                 committedMin, committedMax, excludeForks, onlyForks,
                                                                 hasIssues, hasPulls, hasWiki, hasLicense);
-        File xml = new File("src/main/resources/temp/results.xml");
+        String fileName = "results-"+System.currentTimeMillis()+".xml";
+        File xml = new File(filePath+fileName);
         XmlMapper xmlm = new XmlMapper();
         xmlm.setDateFormat(df);
         try {
