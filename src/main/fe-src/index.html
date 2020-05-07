@@ -792,11 +792,11 @@
                 let repo_id = item.id;
                 let repo_name = item.name;
                 let repo_isFork = item.isFork;
-                let repo_commits = item.commits;
-                let repo_branches = item.branches;
+                let repo_commits = (item.commits < 0) ? '?' : item.commits;
+                let repo_branches = (item.branches < 0) ? '?' : item.branches;
                 let repo_defaultBranch = item.defaultBranch;
-                let repo_releases = item.releases;
-                let repo_contributors = item.contributors;
+                let repo_releases = (item.releases < 0) ? '?' : item.releases;
+                let repo_contributors = (item.contributors < 0) ? '?' : item.contributors;
                 let repo_license = item.license;
                 let repo_watchers = item.watchers;
                 let repo_stargazers = item.stargazers;
@@ -811,7 +811,7 @@
                 let repo_openIssues = item.openIssues;
                 let repo_totalPullRequests = item.totalPullRequests;
                 let repo_openPullRequests = item.openPullRequests;
-                let repo_lastCommit = item.lastCommit.replace("T"," ");
+                let repo_lastCommit = (item.lastCommit === null) ? item.lastCommit : item.lastCommit.replace("T"," ");
                 let repo_lastCommitSHA = item.lastCommitSHA;
                 let repo_hasWiki = item.hasWiki;
                 let repo_isArchived = item.isArchived;
@@ -910,7 +910,7 @@
                             '<span>Last Push: <span title="'+repo_pushedAt.slice(0,19)+'"> '+repo_pushedAt.slice(0,10)+'</span></span></div>'+
                             '<div class="col d-flex align-items-center justify-content-start pr-0">'+
                             '<i class="mx-1 icon-diff" title="Last Commit Date"></i>'+
-                            '<span>Last Commit: <span title="'+repo_lastCommit.slice(0,19)+'"> '+repo_lastCommit.slice(0,10)+'</span></span></div>'+
+                            '<span>Last Commit: <span title="'+((repo_lastCommit !== null) ? repo_lastCommit.slice(0,19) : '')+'"> '+((repo_lastCommit !== null) ? repo_lastCommit.slice(0,10) : '?')+'</span></span></div>'+
                             '</div></div>';
 
                 collapse = $(collapse).append(row_5);
@@ -924,16 +924,21 @@
                     collapse = $(collapse).append(row_6);
                 }
 
-                let row_7 = '<div class="row mw-100 pt-3 mx-3 border border-top-0 border-bottom-0 bg-lgray">'+
-                            '<div class="col d-flex justify-content-start">'+
-                            '<div class="col-auto d-flex align-items-center justify-content-start pl-0">'+
-                            '<i class="mx-1 fa fa-hashtag" title="Last Commit SHA"></i>'+
-                            '<span>Last Commit SHA: '+repo_lastCommitSHA+'</span></div></div></div>'+
-                            '<div class="row mw-100 pt-3 mx-3 border border-top-0 border-bottom-0 bg-lgray">'+
-                            '<div class="col d-flex justify-content-start">'+
-                            '<div class="col-auto d-flex align-items-center justify-content-start pl-0">'+
-                            '<i class="mx-1 icon-git-branch" title="Default Branch"></i>'+
-                            '<span>Default Branch: '+repo_defaultBranch+'</span></div></div></div>';
+                let row_7 = '';
+
+                if (repo_lastCommitSHA !== null){
+                    row_7 += '<div class="row mw-100 pt-3 mx-3 border border-top-0 border-bottom-0 bg-lgray">'+
+                             '<div class="col d-flex justify-content-start">'+
+                             '<div class="col-auto d-flex align-items-center justify-content-start pl-0">'+
+                             '<i class="mx-1 fa fa-hashtag" title="Last Commit SHA"></i>'+
+                             '<span>Last Commit SHA: '+repo_lastCommitSHA+'</span></div></div></div>';
+                }
+
+                row_7 += '<div class="row mw-100 pt-3 mx-3 border border-top-0 border-bottom-0 bg-lgray">'+
+                         '<div class="col d-flex justify-content-start">'+
+                         '<div class="col-auto d-flex align-items-center justify-content-start pl-0">'+
+                         '<i class="mx-1 icon-git-branch" title="Default Branch"></i>'+
+                         '<span>Default Branch: '+repo_defaultBranch+'</span></div></div></div>';
 
                 collapse = $(collapse).append(row_7);
 
@@ -1101,7 +1106,8 @@
                     } else {
                         $('#last-button').addClass('d-none');
                     }
-                }).catch(_ => {
+                }).catch(err => {
+                    console.log(err);
                     let connect_err = '<div><div class="row mw-100 py-3 mx-3">'+
                                       '<div class="col d-flex align-items-center justify-content-center px-0">'+
                                       '<i class="mx-1 fa fa-frown-o" style="color: #6c757d"></i>'+
