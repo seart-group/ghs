@@ -143,14 +143,14 @@
                     <div class="p-3 row">
                         <div class="col-8">
                             <div class="input-group">
-                                <input type="text" id="name" name="name" class="form-control rounded-0 bg-lgray border-secondary border-left-0 border-top-0 border-right-0" placeholder="Repository name" pattern="[A-Za-z0-9-/_.]*" title="Only letters, numbers, dash, underscore and dot characters are allowed here!">
+                                <input type="text" id="name" name="name" class="form-control rounded-0 bg-lgray border-secondary border-left-0 border-top-0 border-right-0" placeholder="Search by keyword in name" pattern="[A-Za-z0-9-/_.]{0,140}" title="Max length: 140, with allowed characters: A-Z a-z 0-9 - / _ .">
                                 <div class="input-group-append">
                                     <button type="button" id="match" name="nameEquals" value="false" class="btn btn-outline-secondary rounded-0 border-left-0 border-top-0 border-right-0 bg-lgray" data-toggle="dropdown">
-                                        Matching <i class="fa fa-angle-down fa-lg"></i>
+                                        Contains <i class="fa fa-angle-down fa-lg"></i>
                                     </button>
                                     <div class="dropdown-menu dropdown-menu-right rounded-0">
-                                        <a class="dropdown-item" onclick="changeToContains()">Contains</a>
-                                        <a class="dropdown-item" onclick="changeToEquals()">Equals</a>
+                                        <a class="dropdown-item" onclick="toggleNameEquality(false)">Contains</a>
+                                        <a class="dropdown-item" onclick="toggleNameEquality(true)">Equals</a>
                                     </div>
                                 </div>
                             </div>
@@ -552,16 +552,21 @@
                 return (this.length === 0 || !this.trim());
             };
 
-            function changeToContains() {
+            function toggleNameEquality(bool_val) {
+                let input  = document.getElementById("name");
                 let button = document.getElementById("match");
-                button.value = false;
-                button.innerHTML = "Contains <i class=\"fa fa-angle-down fa-lg\"></i>";
-            }
-
-            function changeToEquals() {
-                let button = document.getElementById("match");
-                button.value = true;
-                button.innerHTML = "Equals <i class=\"fa fa-angle-down fa-lg\"></i>";
+                button.value = bool_val;
+                if (bool_val){
+                    input.setAttribute("placeholder","Search by full repository name");
+                    input.setAttribute("pattern","[A-Za-z0-9-_.]{1,39}\/[A-Za-z0-9-_.]{1,100}");
+                    input.setAttribute("title","Must follow format of: username/reponame, max lengths 39 and 100 respectively");
+                    button.innerHTML = "Equals <i class=\"fa fa-angle-down fa-lg\"></i>";
+                } else {
+                    input.setAttribute("placeholder","Search by keyword in name");
+                    input.setAttribute("pattern","[A-Za-z0-9-/_.]{0,140}");
+                    input.setAttribute("title","Max length: 140, with allowed characters: A-Z a-z 0-9 - / _ .");
+                    button.innerHTML = "Contains <i class=\"fa fa-angle-down fa-lg\"></i>";
+                }
             }
 
             function increment(elementId) {
@@ -572,7 +577,7 @@
                 }
                 document.getElementById(elementId).value = value;
             }
-            //TODO Prevent min value > max value
+
             function decrement(elementId) {
                 let value = parseInt(document.getElementById(elementId).value);
                 value = isNaN(value) ? 0 : value;
