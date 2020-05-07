@@ -69,6 +69,22 @@ public class GitHubPageCrawlerService {
 
     private void mineProjectPage() throws IOException {
         Document document = Jsoup.connect(repoURL).userAgent("Mozilla").followRedirects(false).get();
+
+        try {
+            watchers = parseLong(normalizeNumberString(document.select(watchersReg).first().attr("aria-label").split(" ")[0]));
+        } catch (NullPointerException ex1){
+            try {
+                watchers = parseLong(normalizeNumberString(document.select(watchersAlt).first().attr("aria-label").split(" ")[0]));
+            } catch (NullPointerException ex2){
+                watchers = mineWatchersSelenium();
+            }
+        }
+
+        if (document.select("h3:contains(This repository is empty.)").first() != null){
+            logger.info("This repository is empty!");
+            return;
+        }
+
         try {
             commits  = parseLong(normalizeNumberString(document.select(commitsReg).first().html()));
         } catch (NullPointerException ignored) {
@@ -106,16 +122,6 @@ public class GitHubPageCrawlerService {
                 contributors = -1;
             }
         }
-
-        try {
-            watchers = parseLong(normalizeNumberString(document.select(watchersReg).first().attr("aria-label").split(" ")[0]));
-        } catch (NullPointerException ex1){
-            try {
-                watchers = parseLong(normalizeNumberString(document.select(watchersAlt).first().attr("aria-label").split(" ")[0]));
-            } catch (NullPointerException ex2){
-                watchers = mineWatchersSelenium();
-            }
-        }
     }
 
     private void mineIssuesPage() throws IOException {
@@ -136,6 +142,8 @@ public class GitHubPageCrawlerService {
 
     private void mineCommitsPage() throws IOException {
         Document document = Jsoup.connect(repoURL + "/commits").userAgent("Mozilla").followRedirects(false).get();
+        if (document.select("h3:contains(This repository is empty.)").first() != null){ return; }
+
         try {
             lastCommit = fromGitDateString(document.select(commitDateReg).first().attr("datetime"));
             lastCommitSHA = document.select(commitSHAReg).attr("value");
