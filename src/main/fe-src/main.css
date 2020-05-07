@@ -189,6 +189,25 @@ a.dropdown-item {
     left: 4px;
 }
 
+.input-secondary:hover:not(:focus) {
+    cursor: pointer;
+    color: #fff;
+    background-color: #6c757d;
+    border-color: #6c757d;
+}
+
+.input-secondary::-webkit-input-placeholder {
+    color: #6D757D;
+}
+
+.input-secondary:hover::-webkit-input-placeholder {
+    color: white;
+}
+
+.input-secondary:hover:focus::-webkit-input-placeholder {
+    color: #6D757D;
+}
+
 .modal-dialog {
     overflow-y: initial !important
 }
