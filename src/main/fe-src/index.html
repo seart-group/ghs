@@ -37,18 +37,18 @@
             </button>
             <div class="collapse navbar-collapse py-3 pl-3" id="main-navigation">
                 <ul class="navbar-nav">
-                    <li class="nav-item"><a class="nav-link" data-toggle="modal" data-target="#statsModal">Stats</a></li>
-                    <li class="nav-item"><a class="nav-link" data-toggle="modal" data-target="#instructionsModal">Instructions</a></li>
-                    <li class="nav-item"><a class="nav-link" data-toggle="modal" data-target="#howitworksModal">How It Works</a></li>
+                    <li class="nav-item"><a class="nav-link" data-toggle="modal" data-target="#stats-modal">Stats</a></li>
+                    <li class="nav-item"><a class="nav-link" data-toggle="modal" data-target="#instructions-modal">Instructions</a></li>
+                    <li class="nav-item"><a class="nav-link" data-toggle="modal" data-target="#how-it-works-modal">How It Works</a></li>
                 </ul>
             </div>
         </nav>
 
-        <div class="modal fade" id="statsModal" tabindex="-1" role="dialog" aria-labelledby="statsModalTitle" aria-hidden="true">
+        <div class="modal fade" id="stats-modal" tabindex="-1" role="dialog" aria-labelledby="stats-modal-title" aria-hidden="true">
             <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-lg" role="document">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title" id="statsModalTitle">Stats</h5>
+                        <h5 class="modal-title" id="stats-modal-title">Stats</h5>
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                             <span aria-hidden="true">&times;</span>
                         </button>
@@ -61,11 +61,11 @@
                 </div>
             </div>
         </div>
-        <div class="modal fade" id="instructionsModal" tabindex="-1" role="dialog" aria-labelledby="instructionsModalTitle" aria-hidden="true">
+        <div class="modal fade" id="instructions-modal" tabindex="-1" role="dialog" aria-labelledby="instructions-modal-title" aria-hidden="true">
             <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-lg" role="document">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title" id="instructionsModalTitle">Instructions</h5>
+                        <h5 class="modal-title" id="instructions-modal-title">Instructions</h5>
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                             <span aria-hidden="true">&times;</span>
                         </button>
@@ -88,11 +88,11 @@
                 </div>
             </div>
         </div>
-        <div class="modal fade" id="howitworksModal" tabindex="-1" role="dialog" aria-labelledby="howitworksModalTitle" aria-hidden="true">
+        <div class="modal fade" id="how-it-works-modal" tabindex="-1" role="dialog" aria-labelledby="how-it-works-modal-title" aria-hidden="true">
             <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-lg" role="document">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title" id="howitworksModalTitle">How It Works</h5>
+                        <h5 class="modal-title" id="how-it-works-modal-title">How It Works</h5>
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                             <span aria-hidden="true">&times;</span>
                         </button>
@@ -115,11 +115,11 @@
                 </div>
             </div>
         </div>
-        <div class="modal fade" id="downloadModal" tabindex="-1" role="dialog" aria-labelledby="downloadModalTitle" aria-hidden="true">
+        <div class="modal fade" id="download-modal" tabindex="-1" role="dialog" aria-labelledby="download-modal-title" aria-hidden="true">
             <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-lg" role="document">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title" id="downloadModalTitle">Downloading...</h5>
+                        <h5 class="modal-title" id="download-modal-title">Downloading...</h5>
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                             <span aria-hidden="true">&times;</span>
                         </button>
@@ -492,15 +492,15 @@
                         </button>
                     </div>
                     <div class="col px-0 d-flex align-items-center justify-content-end">
-                        <a id="raw-button" href="" target="_parent" onclick="$('#downloadModal').modal('show');" class="btn btn-outline-secondary bg-llgray rounded-0 border-0">
+                        <a id="raw-button" href="" target="_parent" onclick="$('#download-modal').modal('show');" class="btn btn-outline-secondary bg-llgray rounded-0 border-0">
                             Download JSON
                             <span class="fa fa-file-text-o"></span>
                         </a>
-                        <a id="xml-button" href="" target="_parent" onclick="$('#downloadModal').modal('show');" class="btn btn-outline-secondary bg-llgray rounded-0 border-0">
+                        <a id="xml-button" href="" target="_parent" onclick="$('#download-modal').modal('show');" class="btn btn-outline-secondary bg-llgray rounded-0 border-0">
                             Download XML
                             <span class="fa fa-file-code-o"></span>
                         </a>
-                        <a id="download-button" href="" target="_parent" onclick="$('#downloadModal').modal('show');" class="btn btn-outline-secondary bg-llgray rounded-0 border-0">
+                        <a id="download-button" href="" target="_parent" onclick="$('#download-modal').modal('show');" class="btn btn-outline-secondary bg-llgray rounded-0 border-0">
                             Download CSV
                             <span class="fa fa-file-excel-o"></span>
                         </a>
