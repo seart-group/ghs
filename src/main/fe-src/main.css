@@ -208,6 +208,10 @@ a.dropdown-item {
     color: #6D757D;
 }
 
+.modal-content  {
+    border-radius: 0 !important;
+}
+
 .modal-dialog {
     overflow-y: initial !important
 }
