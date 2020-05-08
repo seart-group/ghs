@@ -657,15 +657,15 @@
             let colors = [];
 
             fetch("http://localhost:8080/r/stats").then(response => {
-                response.json().then(data => {
-                    let i = 0;
-                    let items = data.items;
-                    items.forEach(obj => {
-                        supported_languages.push(obj.name);
-                        num_of_repos.push(obj.value);
-                        colors.push(dynamicColors(i,items.length));
-                        i++;
-                    });
+                return response.json();
+            }).then(data => {
+                let i = 0;
+                let items = data.items;
+                items.forEach(obj => {
+                    supported_languages.push(obj.name);
+                    num_of_repos.push(obj.value);
+                    colors.push(dynamicColors(i,items.length));
+                    i++;
                 });
             }).catch(_ => {});
 
@@ -711,28 +711,26 @@
             new Chart(ctx,config);
         </script>
         <script>
+            let $label = $('#label');
+            let $language = $('#language');
+            let $license = $('#license');
+
+            function generateOptions(dataset) {
+                return { showHintOnFocus: true, source: dataset, items: 10, minLength: 2 }
+            }
+
             fetch("http://localhost:8080/r/labels").then(response => {
-                response.json().then(data => {
-                    let labels = data.items;
-                    $('#label').typeahead({
-                        showHintOnFocus: true,
-                        source: labels,
-                        items: 10,
-                        minLength: 2
-                    });
-                });
+                return response.json();
+            }).then(data => {
+                let labels = data.items;
+                $label.typeahead(generateOptions(labels));
             }).catch(_ => {});
 
             fetch("http://localhost:8080/l").then(response => {
-                response.json().then(data => {
-                    let languages = data.items;
-                    $('#language').typeahead({
-                        showHintOnFocus: true,
-                        source: languages,
-                        items: 10,
-                        minLength: 2
-                    });
-                });
+                return response.json();
+            }).then(data => {
+                let languages = data.items;
+                $language.typeahead(generateOptions(languages));
             }).catch(_ => {});
 
             let licenses = [
@@ -774,12 +772,7 @@
                 "Other"
             ];
 
-            $('#license').typeahead({
-                showHintOnFocus: true,
-                source: licenses,
-                items: 10,
-                minLength: 2
-            });
+            $license.typeahead(generateOptions(licenses));
         </script>
         <script>
             $('.modal').on('show.bs.modal', function () {
@@ -787,6 +780,27 @@
             });
         </script>
         <script>
+            let $document = $(document);
+            let $window = $(window);
+
+            let $back_to_top = $('#back-to-top');
+            let $back_button = $('#back-button');
+            let $raw_button = $('#raw-button');
+            let $xml_button = $('#xml-button');
+            let $download_button = $('#download-button');
+            let $first_button = $('#first-button');
+            let $prev_button = $('#prev-button');
+            let $next_button = $('#next-button');
+            let $last_button = $('#last-button');
+            let $page = $('#page');
+            let $go_form = $('#go-form');
+            let $go_button = $('#go-button');
+            let $results_container = $('#results-container');
+            let $results_container_items = $('#results-container-items');
+            let $form = $('#form');
+            let $form_container = $('#form-container');
+            let $body_html = $('body,html');
+
             function formatBytes(bytes, decimals = 2) {
                 if (bytes === 0) return '0 B';
                 const k = 1024;
@@ -1017,7 +1031,7 @@
 
                 result = $(result).append(row_10);
 
-                $('#results-container-items').append(result);
+                $results_container_items.append(result);
             }
 
             function retrieve(url) {
@@ -1038,25 +1052,25 @@
                     let totalPages = data.totalPages;
 
                     if (jsonLink !== null){
-                        $('#raw-button').attr('href',jsonLink);
+                        $raw_button.attr('href',jsonLink);
                     } else {
-                        $('#raw-button').addClass('disabled');
+                        $raw_button.addClass('disabled');
                     }
 
                     if (xmlLink !== null){
-                        $('#xml-button').attr('href',xmlLink);
+                        $xml_button.attr('href',xmlLink);
                     } else {
-                        $('#xml-button').addClass('disabled');
+                        $xml_button.addClass('disabled');
                     }
 
                     if (csvLink !== null){
-                        $('#download-button').attr('href',csvLink);
+                        $download_button.attr('href',csvLink);
                     } else {
-                        $('#download-button').addClass('disabled');
+                        $download_button.addClass('disabled');
                     }
 
-                    $('#results-container-items').empty();
-                    $('#page').val('');
+                    $results_container_items.empty();
+                    $page.val('');
 
                     if (totalItems > 0){
                         let count = '<div><div class="row mw-100 pt-3 mx-3">'+
@@ -1065,51 +1079,51 @@
                                     '<div class="col d-flex align-items-center justify-content-end px-0">'+
                                     '<span class="text-secondary">Page: '+page+'</span></div>'+
                                     '</div></div>';
-                        $('#results-container-items').append(count);
+                        $results_container_items.append(count);
                         if (totalPages > 1){
-                            $('#page').removeClass('d-none');
-                            $('#go-button').removeClass('d-none');
-                            $('#go-button').attr('base-url',base);
-                            $('#go-button').attr('page-limit',totalPages)
+                            $page.removeClass('d-none');
+                            $go_button.removeClass('d-none');
+                            $go_button.attr('base-url',base);
+                            $go_button.attr('page-limit',totalPages)
                         }
                         items.forEach(item => appendResult(item));
                     } else {
-                        $('#page').addClass("d-none");
-                        $('#go-button').addClass("d-none");
+                        $page.addClass("d-none");
+                        $go_button.addClass("d-none");
                         let no_items = '<div><div class="row mw-100 py-3 mx-3">'+
                                        '<div class="col d-flex align-items-center justify-content-center px-0">'+
                                        '<i class="mx-1 fa fa-frown-o" style="color: #6c757d"></i>'+
                                        '<span class="text-secondary">No Results</span></div></div></div>';
 
-                        $('#results-container-items').append(no_items);
+                        $results_container_items.append(no_items);
                     }
 
                     if (first !== null){
-                        $('#first-button').removeClass('d-none');
-                        $('#first-button').attr('onclick','retrieve("'+first+'")')
+                        $first_button.removeClass('d-none');
+                        $first_button.attr('onclick','retrieve("'+first+'")')
                     } else {
-                        $('#first-button').addClass('d-none');
+                        $first_button.addClass('d-none');
                     }
 
                     if (prev !== null){
-                        $('#prev-button').removeClass('d-none');
-                        $('#prev-button').attr('onclick','retrieve("'+prev+'")')
+                        $prev_button.removeClass('d-none');
+                        $prev_button.attr('onclick','retrieve("'+prev+'")')
                     } else {
-                        $('#prev-button').addClass('d-none');
+                        $prev_button.addClass('d-none');
                     }
 
                     if (next !== null){
-                        $('#next-button').removeClass('d-none');
-                        $('#next-button').attr('onclick','retrieve("'+next+'")')
+                        $next_button.removeClass('d-none');
+                        $next_button.attr('onclick','retrieve("'+next+'")')
                     } else {
-                        $('#next-button').addClass('d-none');
+                        $next_button.addClass('d-none');
                     }
 
                     if (last !== null){
-                        $('#last-button').removeClass('d-none');
-                        $('#last-button').attr('onclick','retrieve("'+last+'")')
+                        $last_button.removeClass('d-none');
+                        $last_button.attr('onclick','retrieve("'+last+'")')
                     } else {
-                        $('#last-button').addClass('d-none');
+                        $last_button.addClass('d-none');
                     }
                 }).catch(err => {
                     console.log(err);
@@ -1119,19 +1133,19 @@
                                       '<span class="text-secondary">Error connecting to DEVINTA server</span>'+
                                       '</div></div></div>';
 
-                    $('#raw-button').addClass('disabled');
-                    $('#xml-button').addClass('disabled');
-                    $('#download-button').addClass('disabled');
-                    $('#results-container-items').empty();
-                    $('#results-container-items').append(connect_err);
+                    $raw_button.addClass('disabled');
+                    $xml_button.addClass('disabled');
+                    $download_button.addClass('disabled');
+                    $results_container_items.empty();
+                    $results_container_items.append(connect_err);
                 })
             }
 
             function jumpToPage(base_url) {
-                let page = parseInt(document.getElementById('page').value);
+                let page = parseInt($page.val());
                 if (isNaN(page)){ return false; }
-                let page_limit = parseInt(document.getElementById('go-button').getAttribute('page-limit'));
-                $('body,html').animate({ scrollTop: 0 }, 400);
+                let page_limit = parseInt($go_button.attr('page-limit'));
+                $body_html.animate({ scrollTop: 0 }, 400);
                 if (page < page_limit){
                     retrieve(base_url+'&page='+(page - 1)+'&pageSize=20');
                 } else {
@@ -1139,8 +1153,8 @@
                 }
             }
 
-            $('#go-form').submit(function () {
-                let base_url = document.getElementById('go-button').getAttribute('base-url');
+            $go_form.submit(function () {
+                let base_url = $go_button.attr('base-url');
                 jumpToPage(base_url);
                 return false;
             });
@@ -1223,63 +1237,43 @@
                 retrieve(encodeURI(search_base));
             }
 
-            $('#form').submit(function () {
+            $form.submit(function () {
                 submitQuery();
-                $('body,html').animate({ scrollTop: 0 }, 400);
-                $('#form-container').toggleClass('d-none');
-                $('#results-container').toggleClass('d-none');
+                $body_html.animate({ scrollTop: 0 }, 400);
+                $form_container.toggleClass('d-none');
+                $results_container.toggleClass('d-none');
                 return false;
             });
 
-            $('#back-button').click(function () {
-                $("#form").get(0).reset();
-                $('#form-container').toggleClass('d-none');
-                $('#results-container').toggleClass('d-none');
-                $('#results-container-items').empty();
-                $('#raw-button').attr('href','');
-                $('#raw-button').removeClass('disabled');
-                $('#xml-button').attr('href','');
-                $('#xml-button').removeClass('disabled');
-                $('#download-button').attr('href','');
-                $('#download-button').removeClass('disabled');
-                $('#first-button').attr('onclick','');
-                $('#first-button').addClass('d-none');
-                $('#prev-button').attr('onclick','');
-                $('#prev-button').addClass('d-none');
-                $('#next-button').attr('onclick','');
-                $('#next-button').addClass('d-none');
-                $('#last-button').attr('onclick','');
-                $('#last-button').addClass('d-none');
-                $('#page').addClass('d-none');
-                $('#page').val('');
-                $('#go-button').addClass('d-none');
-                $('#go-button').attr('base-url','');
-                $('#go-button').attr('page-limit','');
+            $back_button.click(function () {
+                $form.get(0).reset();
+                $form_container.toggleClass('d-none');
+                $results_container.toggleClass('d-none');
+                $results_container_items.empty();
+                $raw_button.attr('href','');
+                $raw_button.removeClass('disabled');
+                $xml_button.attr('href','');
+                $xml_button.removeClass('disabled');
+                $download_button.attr('href','');
+                $download_button.removeClass('disabled');
+                $first_button.attr('onclick','');
+                $first_button.addClass('d-none');
+                $prev_button.attr('onclick','');
+                $prev_button.addClass('d-none');
+                $next_button.attr('onclick','');
+                $next_button.addClass('d-none');
+                $last_button.attr('onclick','');
+                $last_button.addClass('d-none');
+                $page.addClass('d-none');
+                $page.val('');
+                $go_button.addClass('d-none');
+                $go_button.attr('base-url','');
+                $go_button.attr('page-limit','');
             });
         </script>
         <script>
-            // $(document).on("keydown", "form", function(event) {
-            //     return event.key !== "Enter";
-            // });
-
-            // window.onload = function() {
-            //     let inputs = document.getElementsByTagName("input");
-            //     for (let i = 0; i < inputs.length; i++) {
-            //         let input = inputs[i];
-            //         input.onmouseover = function() {
-            //             this.setAttribute("original-title", this.title);
-            //             this.title = "";
-            //         };
-            //         input.onmouseout = function() {
-            //             this.title = this.getAttribute("original-title");
-            //             this.setAttribute("original-title", "");
-            //         };
-            //     }
-            // };
-        </script>
-        <script>
-            $(document).ready(function(){
-                $(window).scroll(function () {
+            $document.ready(function(){
+                $window.scroll(function () {
                     if ($(this).scrollTop() > 500) {
                         $('#back-to-top').fadeIn();
                     } else {
@@ -1287,28 +1281,28 @@
                     }
                 });
 
-                $('#back-to-top').click(function () {
-                    $('body,html').animate({ scrollTop: 0 }, 400);
+                $back_to_top.click(function () {
+                    $body_html.animate({ scrollTop: 0 }, 400);
                     return false;
                 });
 
-                $('#first-button').click(function () {
-                    $('body,html').animate({ scrollTop: 0 }, 400);
+                $first_button.click(function () {
+                    $body_html.animate({ scrollTop: 0 }, 400);
                     return false;
                 });
 
-                $('#prev-button').click(function () {
-                    $('body,html').animate({ scrollTop: 0 }, 400);
+                $prev_button.click(function () {
+                    $body_html.animate({ scrollTop: 0 }, 400);
                     return false;
                 });
 
-                $('#next-button').click(function () {
-                    $('body,html').animate({ scrollTop: 0 }, 400);
+                $next_button.click(function () {
+                    $body_html.animate({ scrollTop: 0 }, 400);
                     return false;
                 });
 
-                $('#last-button').click(function () {
-                    $('body,html').animate({ scrollTop: 0 }, 400);
+                $last_button.click(function () {
+                    $body_html.animate({ scrollTop: 0 }, 400);
                     return false;
                 });
             });
