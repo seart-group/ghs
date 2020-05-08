@@ -32,6 +32,7 @@ public interface GitRepoService {
     GitRepo createOrUpdateRepo(GitRepo repo);
     StringList getAllLabels();
     StringList getAllLanguages();
+    StringList getAllLicenses();
     StringLongDtoList getAllLanguageStatistics();
     StringLongDtoList getMainLanguageStatistics();
     void createUpdateLabels(GitRepo repo, List<GitRepoLabel> labels);

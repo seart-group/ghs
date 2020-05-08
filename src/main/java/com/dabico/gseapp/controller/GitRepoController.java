@@ -305,4 +305,9 @@ public class GitRepoController {
     public ResponseEntity<?> getAllLanguages(){
         return ResponseEntity.ok(gitRepoService.getAllLanguages());
     }
+
+    @GetMapping("/r/licenses")
+    public ResponseEntity<?> getAllLicenses() {
+        return ResponseEntity.ok(gitRepoService.getAllLicenses());
+    }
 }
