@@ -1064,9 +1064,6 @@
                                     '<span class="text-secondary">Page: '+page+'</span></div>'+
                                     '</div></div>';
                         $('#results-container-items').append(count);
-                    }
-
-                    if (items.length > 0){
                         if (totalPages > 1){
                             $('#page').removeClass('d-none');
                             $('#go-button').removeClass('d-none');
@@ -1236,6 +1233,7 @@
                 $("#form").get(0).reset();
                 $('#form-container').toggleClass('d-none');
                 $('#results-container').toggleClass('d-none');
+                $('#results-container-items').empty();
                 $('#raw-button').attr('href','');
                 $('#raw-button').removeClass('disabled');
                 $('#xml-button').attr('href','');
