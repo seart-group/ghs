@@ -5,7 +5,7 @@
 
 	<groupId>com.example</groupId>
 	<artifactId>gse-application</artifactId>
-	<version>0.9.3</version>
+	<version>0.9.7</version>
 	<packaging>jar</packaging>
 
 	<name>GitHub Search Engine</name>
@@ -179,6 +179,14 @@
                     <target>12</target>
                 </configuration>
             </plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-resources-plugin</artifactId>
+				<version>3.1.0</version>
+				<configuration>
+					<includeEmptyDirs>true</includeEmptyDirs>
+				</configuration>
+			</plugin>
 			<plugin>
 				<groupId>org.jetbrains.kotlin</groupId>
 				<artifactId>kotlin-maven-plugin</artifactId>
