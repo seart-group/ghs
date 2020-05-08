@@ -614,6 +614,15 @@
             }
         </script>
         <script>
+            let $btn_created_min = $('#btnCreatedMin');
+            let $btn_created_max = $('#btnCreatedMax');
+            let $created_min = $('#createdMin');
+            let $created_max = $('#createdMax');
+            let $btn_committed_min = $('#btnCommittedMin');
+            let $btn_committed_max = $('#btnCommittedMax');
+            let $committed_min = $('#committedMin');
+            let $committed_max = $('#committedMax');
+
             function localToUTC(date) {
                 let localDateMS = date.getTime();
                 let localOffsetMS = date.getTimezoneOffset() * 60000;
@@ -629,21 +638,21 @@
                 showWeekDays: false,
                 startDate: '2008/01/01'
             };
-            $('#btnCreatedMin').datepicker(options).on('changeDate', function(ev) {
-                $('#btnCreatedMin').datepicker('hide');
-                $('#createdMin').val(localToUTC(ev.date));
+            $btn_created_min.datepicker(options).on('changeDate', function(ev) {
+                $btn_created_min.datepicker('hide');
+                $created_min.val(localToUTC(ev.date));
             });
-            $('#btnCreatedMax').datepicker(options).on('changeDate', function(ev) {
-                $('#btnCreatedMax').datepicker('hide');
-                $('#createdMax').val(localToUTC(ev.date));
+            $btn_created_max.datepicker(options).on('changeDate', function(ev) {
+                $btn_created_max.datepicker('hide');
+                $created_max.val(localToUTC(ev.date));
             });
-            $('#btnCommittedMin').datepicker(options).on('changeDate', function(ev) {
-                $('#btnCommittedMin').datepicker('hide');
-                $('#committedMin').val(localToUTC(ev.date));
+            $btn_committed_min.datepicker(options).on('changeDate', function(ev) {
+                $btn_committed_min.datepicker('hide');
+                $committed_min.val(localToUTC(ev.date));
             });
-            $('#btnCommittedMax').datepicker(options).on('changeDate', function(ev) {
-                $('#btnCommittedMax').datepicker('hide');
-                $('#committedMax').val(localToUTC(ev.date));
+            $btn_committed_max.datepicker(options).on('changeDate', function(ev) {
+                $btn_committed_max.datepicker('hide');
+                $committed_max.val(localToUTC(ev.date));
             });
         </script>
         <script>
