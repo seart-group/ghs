@@ -8,6 +8,7 @@ import com.dabico.gseapp.github.GitHubPageCrawlerService;
 import com.dabico.gseapp.model.GitRepo;
 import com.dabico.gseapp.model.GitRepoLabel;
 import com.dabico.gseapp.model.GitRepoLanguage;
+import com.dabico.gseapp.util.PropertiesExtractor;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import lombok.AccessLevel;
@@ -42,7 +43,16 @@ public class GitRepoConverter {
 
     @Autowired
     public GitRepoConverter(){
-        String driverPath = new ClassPathResource("src/main/resources/chromedriver").getPath();
+        ClassPathResource chromedriverResource;
+        String OS = PropertiesExtractor.getCurrentOS();
+        if (OS.contains("win")){
+            chromedriverResource = new ClassPathResource("src/main/resources/selenium/windows/chromedriver");
+        } else if (OS.contains("mac")){
+            chromedriverResource = new ClassPathResource("src/main/resources/selenium/macos/chromedriver");
+        } else {
+            chromedriverResource = new ClassPathResource("src/main/resources/selenium/linux/chromedriver");
+        }
+        String driverPath = chromedriverResource.getPath();
         System.setProperty("webdriver.chrome.driver", driverPath);
         System.setProperty("webdriver.chrome.silentOutput", "true");
         DesiredCapabilities capabilities = new DesiredCapabilities();

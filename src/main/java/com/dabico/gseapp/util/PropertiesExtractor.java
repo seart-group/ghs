@@ -31,4 +31,8 @@ public class PropertiesExtractor {
             return null;
         }
     }
+
+    public static String getCurrentOS(){
+        return System.getProperty("os.name").toLowerCase();
+    }
 }
