@@ -1,0 +1,31 @@
+version: '3'
+volumes:
+  dbdata:
+
+services:
+  mysql:
+    image: mysql
+    container_name: gse-database
+    volumes:
+      - .docker:/docker-entrypoint-initdb.d
+      - dbdata:/var/lib/mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: 9ijn8uhb7ygv
+      MYSQL_DATABASE: gse
+      MYSQL_USER: gseadmin
+      MYSQL_PASSWORD: Lugano2020
+      TZ: UTC
+    ports:
+      - "3306:3306"
+  gse-app:
+    build: ./
+    expose:
+      - "8080"
+    ports:
+      - "8080:8080"
+    environment:
+      WAIT_HOSTS: mysql:3306
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/gse?serverTimezone=UTC&useLegacyDatetimeCode=false&useUnicode=yes&characterEncoding=UTF-8
+      SPRING_FLYWAY__URL: jdbc:mysql://mysql:3306/gse?serverTimezone=UTC&useLegacyDatetimeCode=false&useUnicode=yes&characterEncoding=UTF-8
+    depends_on:
+      - mysql

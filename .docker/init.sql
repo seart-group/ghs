@@ -1,0 +1,3 @@
+DROP DATABASE IF EXISTS gse;
+CREATE DATABASE gse CHARACTER SET utf8 COLLATE utf8_bin;
+GRANT ALL ON gse.* to 'gseadmin'@'%';
