@@ -43,16 +43,16 @@ public class GitRepoConverter {
 
     @Autowired
     public GitRepoConverter(){
-        ClassPathResource chromedriverResource;
+        String chromedriverResourcePath = "src/main/resources/selenium";
         String OS = PropertiesExtractor.getCurrentOS();
         if (OS.contains("win")){
-            chromedriverResource = new ClassPathResource("src/main/resources/selenium/windows/chromedriver");
+            chromedriverResourcePath += "/windows/chromedriver.exe";
         } else if (OS.contains("mac")){
-            chromedriverResource = new ClassPathResource("src/main/resources/selenium/macos/chromedriver");
+            chromedriverResourcePath += "/macos/chromedriver";
         } else {
-            chromedriverResource = new ClassPathResource("src/main/resources/selenium/linux/chromedriver");
+            chromedriverResourcePath += "/linux/chromedriver";
         }
-        String driverPath = chromedriverResource.getPath();
+        String driverPath = new ClassPathResource(chromedriverResourcePath).getPath();
         System.setProperty("webdriver.chrome.driver", driverPath);
         System.setProperty("webdriver.chrome.silentOutput", "true");
         DesiredCapabilities capabilities = new DesiredCapabilities();
