@@ -19,6 +19,7 @@ services:
       - "3306:3306"
   gse-app:
     build: ./
+    container_name: gse-application
     expose:
       - "8080"
     ports:
