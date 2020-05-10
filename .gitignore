@@ -3,16 +3,17 @@
 .DS_Store
 
 ### REPORT ###
-report/*.aux
-report/*.bbl
-report/*.blg
-report/*.lof
-report/*.log
-report/*.lot
-report/*.out
-report/*.pdf
-report/*.synctex.gz
-report/*.toc
+/out/
+/report/*.aux
+/report/*.bbl
+/report/*.blg
+/report/*.lof
+/report/*.log
+/report/*.lot
+/report/*.out
+/report/*.pdf
+/report/*.synctex.gz
+/report/*.toc
 
 ### STS ###
 .apt_generated
