@@ -750,8 +750,10 @@
             }).catch(_ => {});
         </script>
         <script>
-            $('.modal').on('show.bs.modal', function () {
-                $('.modal-body').animate({ scrollTop: 0 }, 'fast');
+            let $modal = $('.modal');
+            let $modal_body = $('.modal-body');
+            $modal.on('show.bs.modal', function () {
+                $modal_body.animate({ scrollTop: 0 }, 'fast');
             });
         </script>
         <script>
