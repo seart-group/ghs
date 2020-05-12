@@ -589,18 +589,16 @@
             }
             
             function checkOnlyForked() {
-                //TODO change to get by id
-                let excludeForks = document.getElementsByName("excludeForks")[0];
-                let onlyForks = document.getElementsByName("onlyForks")[0];
+                let excludeForks = document.getElementById("exclude-forks");
+                let onlyForks = document.getElementById("only-forks");
                 if (onlyForks.checked && excludeForks.checked){
                     excludeForks.checked = false;
                 }
             }
 
             function checkExcludeForked() {
-                //TODO change to get by id
-                let excludeForks = document.getElementsByName("excludeForks")[0];
-                let onlyForks = document.getElementsByName("onlyForks")[0];
+                let excludeForks = document.getElementById("exclude-forks");
+                let onlyForks = document.getElementById("only-forks");
                 if (excludeForks.checked && onlyForks.checked){
                     onlyForks.checked = false;
                 }
