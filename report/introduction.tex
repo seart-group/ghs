@@ -1,5 +1,48 @@
 \chapter{Introduction}
 
-\input{aux/si-blurb}
+\section{Software Repository Mining}
 
-\lipsum[1-20]
+The field of mining software repositories (MSR) is an active and flourishing research area.
+By analysing the statistical data of version control repositories, researchers can unveil interesting patterns that permeate throughout many open source projects, and formulate new empirical knowledge, either about existing software or software engineering practices in general.
+
+For example, by studying project commits, we can identify faulty code components often subject to bug-fixing activities.
+This knowledge can be further used to devise defect prediction approaches (techniques able to identify code components likely to be affected by bugs), as well as to train deep learning models capable of not only identifying, but also automatically recommending proper fixes for buggy code.
+
+However, in order for any of these analyses to take place, an initial sample of open source projects must be taken.
+This selection is usually based on general repository characteristics, which include, but aren't limited to: popularity statistics (the number of watchers, stars and forks a repository has), statistics related to project scope (the size of code, amount of commits made and code branches), or even how well maintained a project is (whether it has many open issues, whether it is updated frequently and how many direct contributors it has).
+Usually metrics such as low commit and contributor counts are good indicators of "toy projects", repositories that researchers generally tend to avoid, due to a lack of useful information that can be extracted.
+
+\section{Popular Tools and Their Limitations}
+
+\subsection{GitHub's Official Tools}
+
+GitHub is nowadays the primary source for code studies.
+GitHub itself provides two different options for searching projects:
+\begin{enumerate}
+    \item GitHub's Advanced Search;
+    \item The GitHub's Application Programming Interface (API)\@.
+\end{enumerate}
+Unfortunately both leave much to be desired, as selecting the list of projects to analyse requires substantial effort.
+While it is indeed possible to select projects using these tools, the following sections will focus on highlighting some of the biggest limitations that these tools have.
+
+\subsubsection{Advanced Search}
+
+Let us first dissect the online advanced search.
+In it's current state, it is probably the least preferred method of sampling projects.
+The search interface itself is not intuitive, requiring a certain degree of familiarity with the specific syntax that it uses for expressing parameters and values.
+For example: In order to retrieve all Java repositories with 100 to 1000 stars, the user has to type:
+\begin{verbatim}
+stars:100..1000 language:Java
+\end{verbatim}
+Into the search input.
+The overall amount of results obtained for broad queries is limited to only the first 1000 results.
+Furthermore, the information displayed in the results themselves is also disappointing, limited to only the repository name, number of stars, main language, license, and the date of the last update.
+Any further information about individual repositories can only be obtained by navigating to the main page of a repository, and even then, some information like the exact date and time of the last commit or the exact number of forks are only obtainable through unconventional\footnote{What I specifically mean by "unconventional", is that due to the fact that pages round up the figures for stats like stars and forks if the numbers are sufficiently large, the only way of exacting the exact numbers is by looking at certain attributes in the web-page elements, which is equally annoying and time-consuming if done manually for every repository.} means.
+To top it all off, there is currently no way of exporting the result list into any kind of file, meaning that a great amount of labor is required to sample repositories using only the advanced search.
+
+\subsubsection{Search API}
+
+Although an improvement on the aforementioned search technique, GitHub's API has both similar, as well as some of it's own distinct limitations that make it far from an optimal method for retrieving repositories.
+Unlike the advanced search, Representational State Transfer (REST) requests made to the search API are returned in JavaScript Object Notation (JSON), meaning that the search results are easier to process and store.
+The repository-specific information returned is also a massive improvement, with far more descriptive data present for every search item.
+The result size, although once again limited to a thousand repositories per query, is made more easily navigable with 100 results spanning 10 pages, as opposed to the website's 10 results per 100 pages.
