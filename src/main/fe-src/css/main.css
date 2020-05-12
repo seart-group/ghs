@@ -73,7 +73,7 @@ input:focus:invalid {
 
 #page-content {
     flex: 1 0 auto;
-    background-image: url("public/img/logo-bg.png");
+    background-image: url("../public/img/logo-bg.png");
     background-size: 200px;
     background-position: bottom right;
     background-repeat: no-repeat;
