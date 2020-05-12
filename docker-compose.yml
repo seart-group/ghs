@@ -20,6 +20,7 @@ services:
   gse-app:
     build: ./
     container_name: gse-application
+    restart: on-failure:5
     expose:
       - "8080"
     ports:
