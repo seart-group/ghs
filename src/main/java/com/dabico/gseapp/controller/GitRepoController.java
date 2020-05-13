@@ -33,7 +33,7 @@ import java.util.List;
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
 public class GitRepoController {
     static final Logger logger = LoggerFactory.getLogger(GitRepoController.class);
-    static final String filePath = "src/main/resources/temp/";
+    static final String filePath = "temp/";
     static final ObjectMapper om;
     static final XmlMapper xmlm;
     static {
