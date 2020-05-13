@@ -43,7 +43,7 @@ public class GitRepoConverter {
     @Autowired
     public GitRepoConverter(){
         String chromedriverResourcePath = "src/main/resources/selenium";
-        String OS = System.getProperty("os.name").toLowerCase();;
+        String OS = System.getProperty("os.name").toLowerCase();
         if (OS.contains("win")){
             chromedriverResourcePath += "/windows/chromedriver.exe";
         } else if (OS.contains("mac")){
