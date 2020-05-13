@@ -42,7 +42,13 @@ To top it all off, there is currently no way of exporting the result list into a
 
 \subsubsection{Search API}
 
-Although an improvement on the aforementioned search technique, GitHub's API has both similar, as well as some of it's own distinct limitations that make it far from an optimal method for retrieving repositories.
+The Search API is arguably the superior official method of sampling GitHub repositories.
 Unlike the advanced search, Representational State Transfer (REST) requests made to the search API are returned in JavaScript Object Notation (JSON), meaning that the search results are easier to process and store.
-The repository-specific information returned is also a massive improvement, with far more descriptive data present for every search item.
+Repository-specific information returned is also an improvement, with far more descriptive data present for every search item.
 The result size, although once again limited to a thousand repositories per query, is made more easily navigable with 100 results spanning 10 pages, as opposed to the website's 10 results per 100 pages.
+
+Although an improvement on the previously dissected advanced search, GitHub's API has a fair share of it's own distinct limitations that make it far from an optimal method for retrieving repositories.
+While it does offer more detailed results, it does not include all the useful repository statistics, even some that can regularly be found on the website.
+Number of contributors, commits, releases, branches and forks are all omitted from the individual search results.
+It also does not offer any solution for searching broad queries.
+Any API request with more than a thousand results returned has to be broken up into multiple sub-requests if the full result set is to be obtained.
