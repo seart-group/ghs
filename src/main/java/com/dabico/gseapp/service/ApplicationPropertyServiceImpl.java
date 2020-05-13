@@ -1,6 +1,5 @@
 package com.dabico.gseapp.service;
 
-import com.dabico.gseapp.util.PropertiesExtractor;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
@@ -15,13 +14,12 @@ import java.util.Date;
 @Service
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class ApplicationPropertyServiceImpl implements ApplicationPropertyService {
-    private static PropertiesExtractor propertiesExtractor = new PropertiesExtractor();
-
     @Value(value = "${app.crawl.enabled}")
     Boolean enabled;
 
     @Value(value = "${app.crawl.scheduling}")
     Long scheduling;
 
-    Date startDate = PropertiesExtractor.getStartDate();
+    @Value("#{new java.text.SimpleDateFormat(\"yyyy-MM-dd'T'HH:mm:ss\").parse(\"${app.crawl.startdate}\")}")
+    Date startDate;
 }
