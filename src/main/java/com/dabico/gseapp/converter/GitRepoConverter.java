@@ -8,7 +8,6 @@ import com.dabico.gseapp.github.GitHubPageCrawlerService;
 import com.dabico.gseapp.model.GitRepo;
 import com.dabico.gseapp.model.GitRepoLabel;
 import com.dabico.gseapp.model.GitRepoLanguage;
-import com.dabico.gseapp.util.PropertiesExtractor;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import lombok.AccessLevel;
@@ -44,7 +43,7 @@ public class GitRepoConverter {
     @Autowired
     public GitRepoConverter(){
         String chromedriverResourcePath = "src/main/resources/selenium";
-        String OS = PropertiesExtractor.getCurrentOS();
+        String OS = System.getProperty("os.name").toLowerCase();;
         if (OS.contains("win")){
             chromedriverResourcePath += "/windows/chromedriver.exe";
         } else if (OS.contains("mac")){
