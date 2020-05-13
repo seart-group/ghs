@@ -68,11 +68,6 @@ public class GitRepoConverter {
         this.driver = new ChromeDriver(service,options);
     }
 
-    public void quitDriver(){
-        this.driver.close();
-        this.driver.quit();
-    }
-
     public GitRepo jsonToGitRepo(JsonObject json,String language) throws IOException,InterruptedException {
         String repositoryURL = json.get("html_url").getAsString();
         WebDriverWait webDriverWait = new WebDriverWait(driver, Duration.ofSeconds(30));
