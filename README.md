@@ -121,3 +121,11 @@ Here's a list of arguments supported by the application:
   - Description: "Beginning of time". Basically the earliest supported date for crawling repos, if no crawl jobs were previously performed. Formatted as a yyyy-MM-ddTHH:MM:SS string.
   
 Note that although there are other parameters, I strongly recommend you **DON'T** override them.
+
+## Dockerisation
+
+To dockerise the application, I have opted to use three containers: one for the database, one for supplying the front end files, and one for the spring application itself. To deploy the application, simply run the following:
+```
+docker-compose up
+```
+Docker compose will take care of the rest. The command essentially starts the `mysql`, `gse-app` and `gse-fe` services in that particular sequence. Three containers will start: `gse-application`, `gse-database` and `gse-frontend`. The compose configuration `docker-compose.yml` is configured to automatically run scripts to import the previous backup of the database.

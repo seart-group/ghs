@@ -1,0 +1,6 @@
+FROM nginx
+
+COPY default.conf etc/nginx/conf.d/default.conf
+COPY src/main/fe-src /usr/share/nginx/html
+
+EXPOSE 3030
