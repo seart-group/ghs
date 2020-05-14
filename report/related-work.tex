@@ -1,0 +1,74 @@
+\chapter{Popular Tools and Their Limitations}
+
+\section{GitHub's Official Tools}
+
+GitHub itself provides two different options for searching projects:
+\begin{enumerate}
+    \item GitHub's Advanced Search;
+    \item The GitHub's Application Programming Interface (API).
+\end{enumerate}
+Unfortunately both leave much to be desired, as selecting the list of projects to analyse requires substantial effort.
+While it is indeed possible to select projects using these tools, the following sections will focus on highlighting some of the biggest limitations that these particular services have.
+
+\subsection{Advanced Search}
+
+Let us first dissect the online Advanced Search on GitHub's website.
+In it's current state, it is probably the least preferred method of sampling projects.
+The search interface itself is not entirely intuitive, requiring a certain degree of familiarity with the specific syntax that it uses for constructing search queries.
+For example: In order to retrieve all Java repositories with 100 to 1000 stars, the user has to type the following into the search input:
+\begin{verbatim}
+    stars:100..1000 language:Java
+\end{verbatim}
+The overall amount of results obtained for broad queries is limited to only the first 1000 results.
+Furthermore, the information displayed in the results themselves is also disappointing, with only the repository name, number of stars, main language, license, and the date of the last update being provided.
+Any further information about individual repositories can only be obtained by navigating to the main page of a repository, and even then, some information like the exact date and time of the last commit or the exact number of forks are only obtainable through unconventional
+\footnote{GitHub's front end may not always display the exact numbers for stats like forks and branches.
+Such stats are rounded up if their numbers are sufficiently high.
+While it is still possible to find this data, buried in certain web-page element attributes, it is equally annoying and time-consuming to manually locate these stats for every repository.} means.
+To top it all off, there is currently no way of exporting the result list into any kind of file, meaning that a great amount of labor is required to sample repositories, solely through the use of the advanced search.
+
+\newpage
+\subsection{Search API}
+
+The Search API is arguably the superior official method of sampling GitHub repositories.
+Unlike the advanced search, Representational State Transfer (REST) requests made to the search API are returned in JavaScript Object Notation (JSON), making the search results easier to process and store.
+Repository-specific information provided is also an improvement, with far more descriptive data present for every search item.
+The result size, although once again limited to a thousand repositories per query, is made more easily navigable with a maximum of 100 results spanning 10 pages, as opposed to the website's 10 results per 100 pages.
+
+Although an improvement on the previously discussed advanced search, GitHub's API has a fair share of it's own distinct limitations that make it far from an optimal method for retrieving repositories.
+While it does offer more detailed results, it does not include all the useful repository statistics, even some that can regularly be found on the website.
+Number of contributors, commits, releases, branches and forks are all omitted from the individual search results.
+It also does not offer any solution for searching broad queries.
+Any API request with more than a thousand results returned has to be broken up into multiple sub-requests if the full result set is to be obtained.
+Furthermore, certain key data such as repository labels and languages are not immediately provided in the initial search result set.
+To acquire such data, further requests to the API have to be submitted, for each individual repository.
+
+If it wasn't obvious by now, using GitHub's services without any automation is rather tedious.
+
+\section{Third-party Tools}
+
+Although GitHub's tools possess significant drawbacks, there are several decent community-made alternatives for sampling project repositories.
+Arguably two of the most popular are:
+\begin{enumerate}
+    \item GH Archive
+    \item GHTorrent
+\end{enumerate}
+
+\subsection{GH Archive}
+
+In Ilya Grigorik's own words: ``GH Archive is a project to record the public GitHub activity, archive it, and make it easily accessible for further analysis''. %Citation?
+While this particular project is suited for observing GitHub's traffic and trends, it's not as useful when it comes to sampling repositories.
+
+Let's say we want to sample all the Java projects from 2012.
+In order to do so, we have to look at all the activity spanning that period.
+Since GH Archive keeps records of activity on an hourly basis, this means that in order to sample all repositories created in the aforementioned time frame, we have to observe all repositories linked to ``Create'' events from each hour, of each day, of each month of the year.
+This translates to scanning roughly 8.6 thousand files for created events.
+If that weren't enough, the amount of data you have with respect to these repositories is underwhelming, as each ``Created'' event only details the most basic of details, like the repository name, owner and master branch.
+To acquire more statistics related to individual repositories, a researcher has to look at other events related to that repository that took place post-creation, and update the repository stats accordingly.
+As you can already imagine, this is an overwhelming amount of data to process to acquire otherwise readily available statistics.
+
+With all things considered, it's due to how GH Archive stores information about GitHub that makes it ill-suited for sampling repositories.
+
+\subsection{GHTorrent}
+
+While GH Archive focuses on documenting GitHub's event stream, GHTorrent continuously the GitHub's API to collect all information present on the site, storing it both in relational and non-relational databases. %Cite this?
