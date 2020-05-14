@@ -1,7 +1,9 @@
 FROM markhobson/maven-chrome:jdk-13
 
-WORKDIR /usr/local/
+COPY temp /usr/local/temp
+COPY selenium /usr/local/selenium
+COPY target /usr/local/target
 
-COPY . .
+WORKDIR /usr/local/
 
 ENTRYPOINT ["/bin/bash", "-c", "sleep 30 && java -jar target/gse-application-0.9.7.jar"]
