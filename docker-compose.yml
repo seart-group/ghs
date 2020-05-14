@@ -17,6 +17,17 @@ services:
       TZ: UTC
     ports:
       - "3306:3306"
+  gse-fe:
+    image: nginx
+    container_name: gse-frontend
+    restart: on-failure:5
+    ports:
+      - "3030:3030"
+    volumes:
+      - ./default.conf:/etc/nginx/conf.d/default.conf:ro
+      - ./src/main/fe-src:/usr/share/nginx/html:ro
+    depends_on:
+      - gse-app
   gse-app:
     image: 'gitlab.reveal.si.usi.ch:60090/students/2020/ozren-dabic/github-search-engine:latest'
     container_name: gse-application
