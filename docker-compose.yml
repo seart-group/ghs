@@ -23,9 +23,6 @@ services:
     restart: on-failure:5
     ports:
       - "3030:3030"
-    volumes:
-      - ./default.conf:/etc/nginx/conf.d/default.conf:ro
-      - ./src/main/fe-src:/usr/share/nginx/html:ro
     depends_on:
       - gse-app
   gse-app:
