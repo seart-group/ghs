@@ -18,7 +18,7 @@ services:
     ports:
       - "3306:3306"
   gse-app:
-    build: ./
+    image: 'gitlab.reveal.si.usi.ch:60090/students/2020/ozren-dabic/github-search-engine:latest'
     container_name: gse-application
     restart: on-failure:5
     expose:
