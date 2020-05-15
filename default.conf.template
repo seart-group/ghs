@@ -8,6 +8,15 @@ server {
   location / {
     root   /usr/share/nginx/html;
     index  index.html index.htm;
+    sub_filter_once off;
+    sub_filter_types text/html application/javascript;
+    sub_filter "http://localhost:8080" "http://$http_host/api";
+  }
+
+  location /api/ {
+    rewrite /api/(.*) /$1  break;
+    proxy_pass http://${API_HOST}:${API_PORT};
+    proxy_set_header Host $http_host;
   }
 
   #error_page  404              /404.html;
