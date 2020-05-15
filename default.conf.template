@@ -20,7 +20,7 @@ server {
 
     sub_filter_once off;
     sub_filter_types text/html application/javascript application/json;
-    sub_filter "http://127.0.0.1:3030" "http://$http_host/api";
+    sub_filter "http://$http_host" "http://$http_host/api";
   }
 
   #error_page  404              /404.html;
