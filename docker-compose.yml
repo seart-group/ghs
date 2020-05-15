@@ -15,9 +15,13 @@ services:
       MYSQL_USER: gseadmin
       MYSQL_PASSWORD: Lugano2020
       TZ: UTC
-    ports:
-      - "3306:3306"
+#    ports:
+#      - "3306:3306"
+
   gse-fe:
+    build:
+      context: ./
+      dockerfile: Dockerfile.fe
     image: 'gitlab.reveal.si.usi.ch:60090/students/2020/ozren-dabic/github-search-engine/frontend'
     container_name: gse-frontend
     restart: on-failure:5
@@ -25,14 +29,18 @@ services:
       - "3030:3030"
     depends_on:
       - gse-app
+
   gse-app:
+    build:
+       context: ./
+       dockerfile: Dockerfile.be
     image: 'gitlab.reveal.si.usi.ch:60090/students/2020/ozren-dabic/github-search-engine/backend'
     container_name: gse-application
     restart: on-failure:5
-    expose:
-      - "8080"
-    ports:
-      - "8080:8080"
+#    expose:
+#      - "8080"
+#    ports:
+#      - "8080:8080"
     environment:
       WAIT_HOSTS: mysql:3306
       SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/gse?serverTimezone=UTC&useLegacyDatetimeCode=false&useUnicode=yes&characterEncoding=UTF-8
