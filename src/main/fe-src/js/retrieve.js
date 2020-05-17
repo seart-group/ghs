@@ -211,30 +211,32 @@ function retrieve(url) {
             $results_container_items.append(no_items);
         }
 
+        $loading_modal.modal("hide");
+
         if (first !== null){
             $first_button.removeClass('d-none');
-            $first_button.attr('onclick','retrieve("'+first+'")')
+            $first_button.attr('onclick','changePage("'+first+'")')
         } else {
             $first_button.addClass('d-none');
         }
 
         if (prev !== null){
             $prev_button.removeClass('d-none');
-            $prev_button.attr('onclick','retrieve("'+prev+'")')
+            $prev_button.attr('onclick','changePage("'+prev+'")')
         } else {
             $prev_button.addClass('d-none');
         }
 
         if (next !== null){
             $next_button.removeClass('d-none');
-            $next_button.attr('onclick','retrieve("'+next+'")')
+            $next_button.attr('onclick','changePage("'+next+'")')
         } else {
             $next_button.addClass('d-none');
         }
 
         if (last !== null){
             $last_button.removeClass('d-none');
-            $last_button.attr('onclick','retrieve("'+last+'")')
+            $last_button.attr('onclick','changePage("'+last+'")')
         } else {
             $last_button.addClass('d-none');
         }
@@ -261,7 +263,13 @@ function jumpToPage(base_url) {
     }
 }
 
+function changePage(url){
+    $loading_modal.modal("show");
+    retrieve(url);
+}
+
 $go_form.submit(function () {
+    $loading_modal.modal("show");
     let base_url = $go_button.attr('base-url');
     jumpToPage(base_url);
     return false;
@@ -346,6 +354,7 @@ function submitQuery() {
 }
 
 $form.submit(function () {
+    $loading_modal.modal("show");
     submitQuery();
     $body_html.animate({ scrollTop: 0 }, 400);
     $form_container.toggleClass('d-none');
