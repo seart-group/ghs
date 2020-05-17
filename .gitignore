@@ -14,6 +14,7 @@
 /report/*.pdf
 /report/*.synctex.gz
 /report/*.toc
+/report/*.dvi
 
 ### STS ###
 .apt_generated
