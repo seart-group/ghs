@@ -1,7 +1,59 @@
-\chapter{Project Requirements, Analysis and Timeline}
+\chapter{Project Requirements and Timeline}
 
-\section{Implementation Challenges}
+\section{Goals}
 
-\section{Technologies Chosen}
+Having outlined the issues of existing tools, it became apparent that in order to address them, our finished product needs to:
+
+\begin{itemize}
+    \item Use a combination of GitHub's API and front-end mining to acquire all the publicly available information on the site;
+    \item Present all the mined repository information in a clear and concise manner;
+    \item Offer an intuitive and easy to use web interface (UI) for querying;
+    \item Provide the user with immediate access to the full set of the search results;
+    \item Allow the user to export the entire search result set.
+\end{itemize}
+
+While most of these demands are somewhat easy to meet, their success heavily depends on how the mining algorithm and application back-end (database schema and API) are implemented.
+The exact implementation details will be discussed in the upcoming chapter.
+
+\section{Tools and Technologies Used}
+
+It was decided at during the early stages of the project that the back-end was to be written in Java, using the popular Spring Boot Framework.
+Seeing as though it is one of the most commonly used and well-documented frameworks for back-end web development, using it only made sense.
+Additional plugins necessary for the implementation consisted of:
+\begin{itemize}
+    \item Java Persistence API (JPA)\footnote{\url{https://www.oracle.com/java/technologies/persistence-jsp.html}} for managing the relational schema;
+    \item Hibernate\footnote{\url{https://hibernate.org}} as the object-relational mapping (ORM) tool;
+    \item Flyway\footnote{\url{https://flywaydb.org/documentation/plugins/springboot}} for performing database migrations;
+    \item Jsoup\footnote{\url{https://jsoup.org}} and Selenium\footnote{\url{https://www.selenium.dev}} for web-page mining;
+    \item OkHttp3\footnote{\url{https://square.github.io/okhttp}} for making HyperText Transfer Protocol (HTTP) requests to the GitHub API;
+    \item Jackson\footnote{\url{https://github.com/FasterXML/jackson}} and OpenCSV\footnote{\url{http://opencsv.sourceforge.net}} for converting the data into text-based formats;
+    \item Lombok\footnote{\url{https://projectlombok.org}} to ease development by reducing the amount of ``boilerplate code'' \footnote{\url{https://en.wikipedia.org/wiki/Boilerplate_code}}.
+\end{itemize}
+
+While I was given more freedom to choose any framework for developing the front-end, my supervisor advised me to ``keep it simple'' and use the popular Bootstrap framework.
+Although I had limited knowledge of said framework, using it significantly eased development due to its overall accessibility.
+While it did offer a plethora of functionalities out of the box, several additional widgets were used to enhance the user experience:
+\begin{itemize}
+    \item Bootstrap-datepicker\footnote{\url{https://github.com/uxsolutions/bootstrap-datepicker}} for easier date selection in date inputs;
+    \item Chart.js\footnote{\url{https://www.chartjs.org}} to better display statistical data;
+    \item Typeahead.js\footnote{\url{https://github.com/bassjobsen/Bootstrap-3-Typeahead}} for input suggestions;
+    \item Font Awesome\footnote{\url{https://fontawesome.com}} and GitHub Octicons\footnote{\url{https://primer.style/octicons}} for more icon options.
+\end{itemize}
+
+Although the initial suggestion was to deploy the application in a single Docker container, it was easier to write a compose configuration and deploy each of its major components (front-end, back-end and database) in their own respective containers. The three containers include:
+\begin{itemize}
+    \item A database container, which based on the \textit{mysql}\footnote{\url{https://hub.docker.com/_/mysql}} image hosts the application database;
+    \item An application container, which based on a \textit{maven-chrome}\footnote{\url{markhobson/maven-chrome
+    }} image hosts the application back-end;
+    \item A front-end container, which based on an \textit{nginx}\footnote{\url{https://hub.docker.com/_/nginx}} image supplies the client with the web page HTML\@.
+\end{itemize}
 
 \section{Development Timeline}
+
+The development of the project can be broken up into several month-log phases:
+\begin{enumerate}
+    \item Phase ``zero'', spanning from mid to late February, was the preparation phase. It was during this time that the project description and study materials were provided to me.
+    \item Phase one, spanning the month of March and first week of April was dedicated to the development of the application back-end. Everything, from the crawling algorithm, to the database schema and application API was done in this period.
+    \item Phase two, spanning the rest of April and the first week of May, was dedicated to the implementation of the front-end web interface.
+    \item Phase three, spanning the remainder of the timeline, was dedicated to the deployment, and writing the report.
+\end{enumerate}

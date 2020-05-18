@@ -15,6 +15,7 @@
 /report/*.synctex.gz
 /report/*.toc
 /report/*.dvi
+/report/*.synctex(busy)
 
 ### STS ###
 .apt_generated

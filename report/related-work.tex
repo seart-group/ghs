@@ -4,8 +4,8 @@
 
 GitHub itself provides two different options for searching projects:
 \begin{enumerate}
-    \item GitHub's Advanced Search\footnote{https://github.com/search/advanced};
-    \item The GitHub API\footnote{https://developer.github.com/v3}\@.
+    \item GitHub's Advanced Search\footnote{\url{https://github.com/search/advanced}};
+    \item The GitHub API\footnote{\url{https://developer.github.com/v3}}\@.
 \end{enumerate}
 Unfortunately both leave much to be desired, as merely selecting projects to analyse requires substantial effort.
 While it is indeed possible to sample projects using these tools, the following sections will focus on highlighting some of the biggest limitations that these particular services have.
@@ -51,8 +51,8 @@ It's also due to the disparity between information that the two services provide
 Although GitHub's tools possess significant drawbacks, there are several decent community-made alternatives for sampling project repositories.
 Arguably two of the most popular are:
 \begin{enumerate}
-    \item GH Archive\footnote{https://www.gharchive.org};
-    \item GHTorrent\footnote{https://ghtorrent.org}.
+    \item GH Archive\footnote{\url{https://www.gharchive.org}};
+    \item GHTorrent\footnote{\url{https://ghtorrent.org}}.
 \end{enumerate}
 
 \subsection{GH Archive}
@@ -78,4 +78,4 @@ Even though it offers the greatest depth in terms of mined information and no li
 Since the mined information is supplied in form of MySQL database dumps, one must first study the relational structure of the GHTorrent's database before even attempting to access the information through queries.
 Even with knowledge of the database and retrieval queries outlined, certain third-party tools may be required in order to export the retrieved data.
 While the native MySQL implementation allows results to be exported as a comma-separated value (CSV) file, other data formats may require processing implementations or additional third-party applications.
-Since all the data it's data is from the GitHub API, GHTorrent stores a relational representation of the response, meaning that information not returned by the API (such as the aforementioned number of total commits of a repository, or even number of branches and releases) can be retrieved, but only through additional querying.
+Since all the data it's data is from the GitHub API, GHTorrent stores a relational representation of the response, meaning that information not returned by the API (such as the aforementioned number of total commits of a repository, or even number of branches and releases) can not be retrieved.
