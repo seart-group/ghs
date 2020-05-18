@@ -1,0 +1,22 @@
+\chapter{Implementation}
+
+\section{Application Architecture}
+
+\section{Relational Schema}
+
+\section{The Mining Algorithm}
+
+The mining algorithm is the core of our search engine.
+In broad terms, the miner is responsible for mining all the public projects written in a certain language, from a set of languages supported by the app.
+Once all the repositories have been mined for one specific language, the miner moves on to the next one.
+It's important to note that the miner currently prioritises repositories consisting predominantly of code written in more popular languages such as JavaScript, Python and C++.
+
+The mining algorithm works as follows:
+\begin{itemize}
+    \item It first looks at the \textit{CrawlJob} table of the database. Since that table indicates the date up to which repositories were mined for a particular language, it uses that information to limit the crawl interval. If no prior ``crawl jobs'' exist, then \textit{January 1st 2008} is chosen as the starting date for the mine, selecting one of the supported languages to crawl first. However if there were prior ``crawl jobs'' for particular languages, then the crawler would simply resume crawling from the date it has acquired information to so far. Although the crawling interval lower bound would either be the start of 2008 or the date that data was mined up to so far, the upper bound would always be the time at which the crawl job was started.
+    \item The application then makes a call to the GitHub API, requesting all public projects (fork projects included) created within the aforementioned time interval of a language. By analysing GitHub's response:
+    \begin{itemize}
+        \item If the number of repositories returned matching this criteria is greater than 1000, then the time interval is split in half, and the API call is repeated for each of the new intervals;
+        \item If the number of repositories returned matching this criteria is less than or equal to 1000, then we iterate over each of the results, making additional API calls to retrieve the labels and languages of each of the repositories, as well as scraping the repository web pages for any of the data not obtainable by the API\@. Once all the auxiliary data has been acquired, the date value for the crawl job table for that language is updated to the interval upper bound.
+    \end{itemize}
+\end{itemize}
