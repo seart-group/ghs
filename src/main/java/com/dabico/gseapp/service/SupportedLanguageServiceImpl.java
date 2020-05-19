@@ -1,8 +1,8 @@
 package com.dabico.gseapp.service;
 
 import com.dabico.gseapp.converter.SupportedLanguageConverter;
+import com.dabico.gseapp.dto.StringList;
 import com.dabico.gseapp.dto.SupportedLanguageDto;
-import com.dabico.gseapp.dto.SupportedLanguageDtoList;
 import com.dabico.gseapp.model.SupportedLanguage;
 import com.dabico.gseapp.repository.SupportedLanguageRepository;
 import lombok.AccessLevel;
@@ -11,6 +11,7 @@ import lombok.experimental.FieldDefaults;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -22,10 +23,11 @@ public class SupportedLanguageServiceImpl implements SupportedLanguageService {
     SupportedLanguageConverter supportedLanguageConverter;
 
     @Override
-    public SupportedLanguageDtoList getAll(){
+    public StringList getAll(){
         List<SupportedLanguage> languages = supportedLanguageRepository.findAll();
-        List<SupportedLanguageDto> dtos = supportedLanguageConverter.fromLanguagesToLanguagesDto(languages);
-        return SupportedLanguageDtoList.builder().items(dtos).build();
+        List<String> languagesNames = new ArrayList<>();
+        languages.forEach(language -> languagesNames.add(language.getName()));
+        return StringList.builder().items(languagesNames).build();
     }
 
     @Override

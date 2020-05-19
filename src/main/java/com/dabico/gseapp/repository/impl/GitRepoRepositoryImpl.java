@@ -28,6 +28,23 @@ public class GitRepoRepositoryImpl implements GitRepoRepositoryCustom {
 
     EntityManager entityManager;
 
+    public Long countResults(String name, Boolean nameEquals, String language, String license, String label,
+                             LongInterval commits, LongInterval contributors, LongInterval issues, LongInterval pulls,
+                             LongInterval branches, LongInterval releases, LongInterval stars, LongInterval watchers,
+                             LongInterval forks, DateInterval created, DateInterval committed, Boolean excludeForks,
+                             Boolean onlyForks, Boolean hasIssues, Boolean hasPulls, Boolean hasWiki,
+                             Boolean hasLicense)
+    {
+        TypedQuery<Long> counter = constructCounter(name,nameEquals,language,license,label,commits,contributors,issues,
+                                                    pulls,branches,releases,stars,watchers,forks,created,committed,
+                                                    excludeForks,onlyForks,hasIssues,hasPulls,hasWiki,hasLicense);
+        Map<String,Object> parameters = constructParameterMap(name,nameEquals,language,license,label,commits,
+                                                              contributors,issues,pulls,branches,releases,stars,
+                                                              watchers,forks,created,committed);
+        parameters.keySet().forEach(k -> counter.setParameter(k, parameters.get(k)));
+        return counter.getSingleResult();
+    }
+
     public List<GitRepo> advancedSearch(String name, Boolean nameEquals, String language, String license, String label,
                                         LongInterval commits, LongInterval contributors, LongInterval issues,
                                         LongInterval pulls, LongInterval branches, LongInterval releases,
@@ -39,7 +56,7 @@ public class GitRepoRepositoryImpl implements GitRepoRepositoryCustom {
         TypedQuery<GitRepo> query = constructQuery(name,nameEquals,language,license,label,commits,contributors,issues,
                                                    pulls,branches,releases,stars,watchers,forks,created,committed,
                                                    excludeForks,onlyForks,hasIssues,hasPulls,hasWiki,hasLicense);
-        Map<String,Object> parameters = constructParams(name,nameEquals,language,license,label,commits,contributors,issues,
+        Map<String,Object> parameters = constructParameterMap(name,nameEquals,language,license,label,commits,contributors,issues,
                                                         pulls,branches,releases,stars,watchers,forks,created,committed);
         query.setFirstResult(pageable.getPageSize() * pageable.getPageNumber());
         query.setMaxResults(pageable.getPageSize());
@@ -58,10 +75,26 @@ public class GitRepoRepositoryImpl implements GitRepoRepositoryCustom {
         TypedQuery<GitRepo> query = constructQuery(name,nameEquals,language,license,label,commits,contributors,issues,
                                                    pulls,branches,releases,stars,watchers,forks,created,committed,
                                                    excludeForks,onlyForks,hasIssues,hasPulls,hasWiki,hasLicense);
-        Map<String,Object> parameters = constructParams(name,nameEquals,language,license,label,commits,contributors,issues,
+        Map<String,Object> parameters = constructParameterMap(name,nameEquals,language,license,label,commits,contributors,issues,
                                                         pulls,branches,releases,stars,watchers,forks,created,committed);
         parameters.keySet().forEach(k -> query.setParameter(k, parameters.get(k)));
         return query.getResultList();
+    }
+
+    private TypedQuery<Long> constructCounter(String name, Boolean nameEquals, String language, String license,
+                                              String label, LongInterval commits, LongInterval contributors,
+                                              LongInterval issues, LongInterval pulls, LongInterval branches,
+                                              LongInterval releases, LongInterval stars, LongInterval watchers,
+                                              LongInterval forks, DateInterval created, DateInterval committed,
+                                              Boolean excludeForks, Boolean onlyForks, Boolean hasIssues,
+                                              Boolean hasPulls, Boolean hasWiki, Boolean hasLicense)
+    {
+        JPAQueryBuilder qb = constructQueryParameters(name,nameEquals,language,license,label, commits, contributors,
+                                                      issues,pulls,branches,releases,stars,watchers,forks,created,
+                                                      committed,excludeForks,onlyForks,hasIssues,hasPulls,hasWiki,
+                                                      hasLicense);
+        qb.select("count(distinct r)",false);
+        return entityManager.createQuery(qb.build(), Long.class);
     }
 
     private TypedQuery<GitRepo> constructQuery(String name, Boolean nameEquals, String language, String license,
@@ -72,11 +105,26 @@ public class GitRepoRepositoryImpl implements GitRepoRepositoryCustom {
                                                Boolean excludeForks, Boolean onlyForks, Boolean hasIssues,
                                                Boolean hasPulls, Boolean hasWiki, Boolean hasLicense)
     {
-        JPAQueryBuilder qb = new JPAQueryBuilder();
+        JPAQueryBuilder qb = constructQueryParameters(name,nameEquals,language,license,label, commits, contributors,
+                                                      issues,pulls,branches,releases,stars,watchers,forks,created,
+                                                      committed,excludeForks,onlyForks,hasIssues,hasPulls,hasWiki,
+                                                      hasLicense);
         qb.select("r",true);
+        qb.orderBy("r.name");
+        return entityManager.createQuery(qb.build(), GitRepo.class);
+    }
+
+    private JPAQueryBuilder constructQueryParameters(String name, Boolean nameEquals, String language, String license,
+                                                     String label, LongInterval commits, LongInterval contributors,
+                                                     LongInterval issues, LongInterval pulls, LongInterval branches,
+                                                     LongInterval releases, LongInterval stars, LongInterval watchers,
+                                                     LongInterval forks, DateInterval created, DateInterval committed,
+                                                     Boolean excludeForks, Boolean onlyForks, Boolean hasIssues,
+                                                     Boolean hasPulls, Boolean hasWiki, Boolean hasLicense)
+    {
+        JPAQueryBuilder qb = new JPAQueryBuilder();
         qb.from("GitRepo", "r");
         qb.join("GitRepoLabel", "rl", "r.id = rl.repo.id" , Join.LEFT);
-        qb.orderBy("r.name");
 
         if (StringUtils.isNotBlank(name)){
             if (nameEquals){
@@ -171,7 +219,7 @@ public class GitRepoRepositoryImpl implements GitRepoRepositoryCustom {
         }
 
         if (created.isLowerBound()){
-            qb.where("date(r.created_at) >= (:createdMin)",Operator.AND);
+            qb.where("date(r.createdAt) >= (:createdMin)",Operator.AND);
         } else if (created.isUpperBound()){
             qb.where("date(r.createdAt) <= (:createdMax)",Operator.AND);
         } else if (created.isBound()){
@@ -210,14 +258,14 @@ public class GitRepoRepositoryImpl implements GitRepoRepositoryCustom {
             qb.where("r.license is not null",Operator.AND);
         }
 
-        return entityManager.createQuery(qb.build(), GitRepo.class);
+        return qb;
     }
 
-    private Map<String,Object> constructParams(String name, Boolean nameEquals, String language, String license,
-                                               String label, LongInterval commits, LongInterval contributors,
-                                               LongInterval issues, LongInterval pulls, LongInterval branches,
-                                               LongInterval releases, LongInterval stars, LongInterval watchers,
-                                               LongInterval forks, DateInterval created, DateInterval committed)
+    private Map<String,Object> constructParameterMap(String name, Boolean nameEquals, String language, String license,
+                                                     String label, LongInterval commits, LongInterval contributors,
+                                                     LongInterval issues, LongInterval pulls, LongInterval branches,
+                                                     LongInterval releases, LongInterval stars, LongInterval watchers,
+                                                     LongInterval forks, DateInterval created, DateInterval committed)
     {
         Map<String,Object> parameters = new HashMap<>();
 

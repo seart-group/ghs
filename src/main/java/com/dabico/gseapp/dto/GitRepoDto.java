@@ -1,10 +1,10 @@
 package com.dabico.gseapp.dto;
 
+import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlElementWrapper;
+import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
 import lombok.*;
 
-import java.util.Date;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 @Getter
 @Setter
@@ -37,7 +37,11 @@ public class GitRepoDto {
     Boolean hasWiki;
     Boolean isArchived;
     @Builder.Default
-    Set<GitRepoLanguageDto> languages = new HashSet<>();
+    @JacksonXmlElementWrapper(localName = "GitRepoLanguages")
+    @JacksonXmlProperty(localName = "GitRepoLanguage")
+    List<GitRepoLanguageDto> languages = new ArrayList<>();
     @Builder.Default
-    Set<GitRepoLabelDto> labels = new HashSet<>();
+    @JacksonXmlElementWrapper(localName = "GitRepoLabels")
+    @JacksonXmlProperty(localName = "GitRepoLabel")
+    List<GitRepoLabelDto> labels = new ArrayList<>();
 }

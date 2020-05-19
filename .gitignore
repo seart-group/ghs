@@ -2,6 +2,21 @@
 !.mvn/wrapper/maven-wrapper.jar
 .DS_Store
 
+### REPORT ###
+/out/
+/report/*.aux
+/report/*.bbl
+/report/*.blg
+/report/*.lof
+/report/*.log
+/report/*.lot
+/report/*.out
+/report/*.pdf
+/report/*.synctex.gz
+/report/*.toc
+/report/*.dvi
+/report/*.synctex(busy)
+
 ### STS ###
 .apt_generated
 .classpath
