@@ -33,7 +33,7 @@ public class CrawlProjectsJob {
 
     static final Logger logger = LoggerFactory.getLogger(CrawlProjectsJob.class);
 
-    static Long defaultRetryPeriod = 3600000L;
+    static Long defaultRetryPeriod = 900000L;
 
     List<DateInterval> requestQueue = new ArrayList<>();
     List<String> accessTokens = new ArrayList<>();

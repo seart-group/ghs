@@ -1,0 +1,15 @@
+FROM nginx
+
+COPY default.conf.template etc/nginx/conf.d/default.conf.template
+COPY src/main/fe-src /usr/share/nginx/html
+
+EXPOSE 3030
+
+ENV API_HOST gse-application
+ENV API_PORT 8080
+
+COPY fe-entrypoint.sh /
+RUN chmod 777 /fe-entrypoint.sh
+
+ENTRYPOINT ["/fe-entrypoint.sh"]
+CMD ["nginx", "-g", "daemon off;"]

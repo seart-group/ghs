@@ -1,0 +1,566 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+        <meta name="description" content="GitHub Search Engine App, USI 2020 Bachelor Project">
+        <meta name="author" content="Ozren Dabić">
+        <link rel="icon" type="image/png" href="public/img/logo-32.png">
+
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.8.0/css/bootstrap-datepicker.min.css" />
+        <link rel="stylesheet" type="text/css" href="public/icons/octicons/style.css">
+        <link rel="stylesheet" type="text/css" href="public/icons/languages/style.css">
+        <link rel="stylesheet" type="text/css" href="css/scroll.css">
+        <link rel="stylesheet" type="text/css" href="css/main.css">
+
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.8.0/js/bootstrap-datepicker.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-3-typeahead/4.0.2/bootstrap3-typeahead.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.3/dist/Chart.min.js"></script>
+        <title>GitHub Search</title>
+    </head>
+
+    <body class="d-flex flex-column">
+        <nav class="navbar navbar-expand-md py-0 d-flex align-items-start">
+            <div>
+                <div style="height: 80px">
+                    <h1 class="navbar-brand pr-4-5">DEVINTA</h1>
+                </div>
+                <div class="text-right" style="height: 30px">
+                    <h3 class="navbar-brand text-lgray">GitHub Search</h3>
+                </div>
+            </div>
+            <button class="navbar-toggler navbar-dark" type="button" data-toggle="collapse" data-target="#main-navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse py-3 pl-3" id="main-navigation">
+                <ul class="navbar-nav">
+                    <li class="nav-item"><a class="nav-link" data-toggle="modal" data-target="#stats-modal">Stats</a></li>
+                    <li class="nav-item"><a class="nav-link" data-toggle="modal" data-target="#instructions-modal">Instructions</a></li>
+                    <li class="nav-item"><a class="nav-link" data-toggle="modal" data-target="#how-it-works-modal">How It Works</a></li>
+                </ul>
+            </div>
+        </nav>
+
+        <div class="modal fade" id="stats-modal" tabindex="-1" role="dialog" aria-labelledby="stats-modal-title" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-lg" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="stats-modal-title">Stats</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="chart-container w-100">
+                            <canvas id="myChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="modal fade" id="instructions-modal" tabindex="-1" role="dialog" aria-labelledby="instructions-modal-title" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-lg" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="instructions-modal-title">Instructions</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="w-100">
+                            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Integer enim neque volutpat ac tincidunt vitae semper quis lectus. Tellus in metus vulputate eu scelerisque felis imperdiet. Amet risus nullam eget felis. Imperdiet nulla malesuada pellentesque elit eget gravida cum. Cras adipiscing enim eu turpis egestas pretium aenean pharetra. In massa tempor nec feugiat nisl. Pretium fusce id velit ut tortor. Consequat id porta nibh venenatis cras sed. Ultricies mi eget mauris pharetra et ultrices neque ornare. Nunc congue nisi vitae suscipit tellus mauris a diam. Diam quam nulla porttitor massa id neque.
+
+                                Posuere urna nec tincidunt praesent semper feugiat. Venenatis cras sed felis eget velit aliquet sagittis id. A lacus vestibulum sed arcu non. Nisl condimentum id venenatis a condimentum vitae. Ipsum faucibus vitae aliquet nec ullamcorper. Donec ultrices tincidunt arcu non sodales neque. Hendrerit dolor magna eget est. Eget duis at tellus at urna condimentum mattis. Ornare suspendisse sed nisi lacus. Non consectetur a erat nam at lectus urna duis. Lorem dolor sed viverra ipsum nunc aliquet bibendum enim. Blandit volutpat maecenas volutpat blandit aliquam. Blandit aliquam etiam erat velit. Neque egestas congue quisque egestas diam in arcu. Turpis egestas sed tempus urna et pharetra. Ullamcorper malesuada proin libero nunc consequat interdum varius sit. Purus viverra accumsan in nisl nisi. Dictum fusce ut placerat orci nulla pellentesque dignissim enim sit. Nunc mattis enim ut tellus elementum sagittis vitae et leo. Ipsum a arcu cursus vitae congue mauris rhoncus aenean vel.
+
+                                Massa vitae tortor condimentum lacinia quis vel eros. Hendrerit gravida rutrum quisque non tellus orci ac auctor augue. Lorem dolor sed viverra ipsum nunc aliquet bibendum. Amet mauris commodo quis imperdiet massa tincidunt nunc pulvinar sapien. Scelerisque varius morbi enim nunc faucibus a. Vel elit scelerisque mauris pellentesque pulvinar pellentesque. Donec pretium vulputate sapien nec sagittis aliquam malesuada bibendum arcu. Aenean vel elit scelerisque mauris. Magna eget est lorem ipsum dolor sit amet. Eget est lorem ipsum dolor. Mi in nulla posuere sollicitudin aliquam ultrices sagittis orci a. Tincidunt augue interdum velit euismod in pellentesque massa placerat. Ut aliquam purus sit amet luctus venenatis lectus magna fringilla. Auctor augue mauris augue neque gravida in. Massa massa ultricies mi quis hendrerit dolor. A erat nam at lectus urna duis. Pharetra diam sit amet nisl. Tempor id eu nisl nunc mi. Ultricies tristique nulla aliquet enim tortor at auctor.
+
+                                Pharetra et ultrices neque ornare. Suspendisse sed nisi lacus sed. Vestibulum lectus mauris ultrices eros in cursus turpis massa. Elementum sagittis vitae et leo duis ut. Odio euismod lacinia at quis risus sed vulputate odio ut. Feugiat nibh sed pulvinar proin gravida hendrerit lectus a. Varius duis at consectetur lorem donec massa sapien faucibus. Aliquam id diam maecenas ultricies. Morbi tempus iaculis urna id volutpat lacus laoreet non. A arcu cursus vitae congue mauris rhoncus aenean vel elit. Neque convallis a cras semper auctor neque. Eu volutpat odio facilisis mauris sit. Leo vel fringilla est ullamcorper eget nulla. Aenean euismod elementum nisi quis. Aliquet nibh praesent tristique magna sit.
+
+                                Commodo sed egestas egestas fringilla phasellus. Massa vitae tortor condimentum lacinia quis vel eros. Sodales ut etiam sit amet nisl purus. Consectetur adipiscing elit pellentesque habitant morbi tristique. Ut porttitor leo a diam sollicitudin tempor id eu nisl. Varius sit amet mattis vulputate enim nulla aliquet. Et odio pellentesque diam volutpat commodo sed egestas egestas. Nisl purus in mollis nunc sed id semper risus. Id leo in vitae turpis massa. Placerat orci nulla pellentesque dignissim enim. Vulputate dignissim suspendisse in est ante in nibh mauris cursus. Adipiscing vitae proin sagittis nisl rhoncus mattis rhoncus urna neque. Risus commodo viverra maecenas accumsan lacus. Commodo ullamcorper a lacus vestibulum sed arcu non odio euismod. Id neque aliquam vestibulum morbi blandit cursus risus at. Rhoncus urna neque viverra justo nec.
+
+                                Consequat ac felis donec et odio pellentesque. Platea dictumst vestibulum rhoncus est pellentesque elit ullamcorper dignissim. Luctus venenatis lectus magna fringilla urna porttitor rhoncus dolor. Penatibus et magnis dis parturient montes nascetur ridiculus. Amet nulla facilisi morbi tempus iaculis urna id volutpat. Bibendum arcu vitae elementum curabitur. Lorem dolor sed viverra ipsum. In nibh mauris cursus mattis molestie a. Felis donec et odio pellentesque diam volutpat. Nec feugiat nisl pretium fusce id velit. Lorem donec massa sapien faucibus et molestie ac. Sit amet est placerat in. Eget mi proin sed libero enim sed. Euismod quis viverra nibh cras pulvinar mattis nunc sed blandit. In egestas erat imperdiet sed euismod. Dolor purus non enim praesent elementum facilisis leo. Tellus orci ac auctor augue mauris.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="modal fade" id="how-it-works-modal" tabindex="-1" role="dialog" aria-labelledby="how-it-works-modal-title" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-lg" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="how-it-works-modal-title">How It Works</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="w-100">
+                            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Integer enim neque volutpat ac tincidunt vitae semper quis lectus. Tellus in metus vulputate eu scelerisque felis imperdiet. Amet risus nullam eget felis. Imperdiet nulla malesuada pellentesque elit eget gravida cum. Cras adipiscing enim eu turpis egestas pretium aenean pharetra. In massa tempor nec feugiat nisl. Pretium fusce id velit ut tortor. Consequat id porta nibh venenatis cras sed. Ultricies mi eget mauris pharetra et ultrices neque ornare. Nunc congue nisi vitae suscipit tellus mauris a diam. Diam quam nulla porttitor massa id neque.
+
+                                Posuere urna nec tincidunt praesent semper feugiat. Venenatis cras sed felis eget velit aliquet sagittis id. A lacus vestibulum sed arcu non. Nisl condimentum id venenatis a condimentum vitae. Ipsum faucibus vitae aliquet nec ullamcorper. Donec ultrices tincidunt arcu non sodales neque. Hendrerit dolor magna eget est. Eget duis at tellus at urna condimentum mattis. Ornare suspendisse sed nisi lacus. Non consectetur a erat nam at lectus urna duis. Lorem dolor sed viverra ipsum nunc aliquet bibendum enim. Blandit volutpat maecenas volutpat blandit aliquam. Blandit aliquam etiam erat velit. Neque egestas congue quisque egestas diam in arcu. Turpis egestas sed tempus urna et pharetra. Ullamcorper malesuada proin libero nunc consequat interdum varius sit. Purus viverra accumsan in nisl nisi. Dictum fusce ut placerat orci nulla pellentesque dignissim enim sit. Nunc mattis enim ut tellus elementum sagittis vitae et leo. Ipsum a arcu cursus vitae congue mauris rhoncus aenean vel.
+
+                                Massa vitae tortor condimentum lacinia quis vel eros. Hendrerit gravida rutrum quisque non tellus orci ac auctor augue. Lorem dolor sed viverra ipsum nunc aliquet bibendum. Amet mauris commodo quis imperdiet massa tincidunt nunc pulvinar sapien. Scelerisque varius morbi enim nunc faucibus a. Vel elit scelerisque mauris pellentesque pulvinar pellentesque. Donec pretium vulputate sapien nec sagittis aliquam malesuada bibendum arcu. Aenean vel elit scelerisque mauris. Magna eget est lorem ipsum dolor sit amet. Eget est lorem ipsum dolor. Mi in nulla posuere sollicitudin aliquam ultrices sagittis orci a. Tincidunt augue interdum velit euismod in pellentesque massa placerat. Ut aliquam purus sit amet luctus venenatis lectus magna fringilla. Auctor augue mauris augue neque gravida in. Massa massa ultricies mi quis hendrerit dolor. A erat nam at lectus urna duis. Pharetra diam sit amet nisl. Tempor id eu nisl nunc mi. Ultricies tristique nulla aliquet enim tortor at auctor.
+
+                                Pharetra et ultrices neque ornare. Suspendisse sed nisi lacus sed. Vestibulum lectus mauris ultrices eros in cursus turpis massa. Elementum sagittis vitae et leo duis ut. Odio euismod lacinia at quis risus sed vulputate odio ut. Feugiat nibh sed pulvinar proin gravida hendrerit lectus a. Varius duis at consectetur lorem donec massa sapien faucibus. Aliquam id diam maecenas ultricies. Morbi tempus iaculis urna id volutpat lacus laoreet non. A arcu cursus vitae congue mauris rhoncus aenean vel elit. Neque convallis a cras semper auctor neque. Eu volutpat odio facilisis mauris sit. Leo vel fringilla est ullamcorper eget nulla. Aenean euismod elementum nisi quis. Aliquet nibh praesent tristique magna sit.
+
+                                Commodo sed egestas egestas fringilla phasellus. Massa vitae tortor condimentum lacinia quis vel eros. Sodales ut etiam sit amet nisl purus. Consectetur adipiscing elit pellentesque habitant morbi tristique. Ut porttitor leo a diam sollicitudin tempor id eu nisl. Varius sit amet mattis vulputate enim nulla aliquet. Et odio pellentesque diam volutpat commodo sed egestas egestas. Nisl purus in mollis nunc sed id semper risus. Id leo in vitae turpis massa. Placerat orci nulla pellentesque dignissim enim. Vulputate dignissim suspendisse in est ante in nibh mauris cursus. Adipiscing vitae proin sagittis nisl rhoncus mattis rhoncus urna neque. Risus commodo viverra maecenas accumsan lacus. Commodo ullamcorper a lacus vestibulum sed arcu non odio euismod. Id neque aliquam vestibulum morbi blandit cursus risus at. Rhoncus urna neque viverra justo nec.
+
+                                Consequat ac felis donec et odio pellentesque. Platea dictumst vestibulum rhoncus est pellentesque elit ullamcorper dignissim. Luctus venenatis lectus magna fringilla urna porttitor rhoncus dolor. Penatibus et magnis dis parturient montes nascetur ridiculus. Amet nulla facilisi morbi tempus iaculis urna id volutpat. Bibendum arcu vitae elementum curabitur. Lorem dolor sed viverra ipsum. In nibh mauris cursus mattis molestie a. Felis donec et odio pellentesque diam volutpat. Nec feugiat nisl pretium fusce id velit. Lorem donec massa sapien faucibus et molestie ac. Sit amet est placerat in. Eget mi proin sed libero enim sed. Euismod quis viverra nibh cras pulvinar mattis nunc sed blandit. In egestas erat imperdiet sed euismod. Dolor purus non enim praesent elementum facilisis leo. Tellus orci ac auctor augue mauris.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="modal fade" id="download-modal" tabindex="-1" role="dialog" aria-labelledby="download-modal-title" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-lg" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="download-modal-title">Downloading...</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="w-100">
+                            <p>Your download has started. Please be patient, as it may take a while for our backend to generate your result file.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="modal" id="loading-modal" tabindex="-1" role="dialog" aria-labelledby="loading-modal-title" aria-hidden="true" data-backdrop="static" data-keyboard="false">
+            <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-lg justify-content-center text-center" role="document">
+                <div class="modal-content w-15">
+                    <h5 class="modal-title p-2" id="loading-modal-title">Loading...</h5>
+                </div>
+            </div>
+        </div>
+
+        <div id="page-content" class="py-5">
+            <div id="form-container" class="row mw-100 justify-content-center text-center">
+                <form id="form" autocomplete="off" class="w-75 bg-llgray-transparent border">
+                    <div class="px-3 pt-3 row text-left">
+                        <div class="col-12">
+                            <h1 class="rowlabel">General</h1>
+                        </div>
+                    </div>
+                    <div class="p-3 row">
+                        <div class="col-8">
+                            <div class="input-group">
+                                <input type="text" id="name" name="name" class="form-control rounded-0 bg-lgray border-secondary border-left-0 border-top-0 border-right-0" placeholder="Search by keyword in name" pattern="[A-Za-z0-9-/_.]{0,140}" title="Max length: 140, with allowed characters: A-Z a-z 0-9 - / _ .">
+                                <div class="input-group-append">
+                                    <button type="button" id="match" name="nameEquals" value="false" class="btn btn-outline-secondary rounded-0 border-left-0 border-top-0 border-right-0 bg-lgray" data-toggle="dropdown">
+                                        Contains <i class="fa fa-angle-down fa-lg"></i>
+                                    </button>
+                                    <div class="dropdown-menu dropdown-menu-right rounded-0">
+                                        <a class="dropdown-item" onclick="toggleNameEquality(false)">Contains</a>
+                                        <a class="dropdown-item" onclick="toggleNameEquality(true)">Equals</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-4">
+                            <input id="language" name="language" class="form-control rounded-0 border-secondary border-top-0 border-left-0 border-right-0 bg-lgray" value="" type="text" placeholder="Language" pattern="[A-Za-z]*" title="Only letters are allowed here!">
+                        </div>
+                    </div>
+                    <div class="px-3 pb-3 row">
+                        <div class="col-8">
+                            <input id="license" name="license" class="form-control rounded-0 border-secondary border-top-0 border-left-0 border-right-0 bg-lgray" value="" type="text" placeholder="License" pattern="[A-Za-z0-9-.*/\s]*" title="Please use only existing GitHub licenses">
+                        </div>
+                        <div class="col-4">
+                            <input id="label" name="label" class="form-control rounded-0 border-secondary border-top-0 border-left-0 border-right-0 bg-lgray" value="" type="text" placeholder="Uses Label" pattern="[A-Za-z0-9-_.:<>='*@/?!#\s\(\)]*" title="Please avoid characters like double quotes">
+                        </div>
+                    </div>
+                    <div class="px-3 pt-3 row text-left">
+                        <div class="col-8">
+                            <h1 class="rowlabel">History and Activity</h1>
+                        </div>
+                        <div class="col-4">
+                            <h1 class="rowlabel">Date-based Filters</h1>
+                        </div>
+                    </div>
+                    <div class="px-3 pt-3 row text-left">
+                        <div class="col-4">
+                            <h2 class="rowsublabel">Number of commits</h2>
+                        </div>
+                        <div class="col-4">
+                            <h2 class="rowsublabel">Number of contributors</h2>
+                        </div>
+                        <div class="col-4">
+                            <h2 class="rowsublabel">Created at</h2>
+                        </div>
+                    </div>
+                    <div class="px-3 pb-3 pt-1 row">
+                        <div class="col-2">
+                            <div class="input-group">
+                                <input type="text" id="commits-min" name="commitsMin" class="form-control input-number bg-lgray border-secondary border-left-0 border-top-0 border-right-0 rounded-0" value="" min="0" max="9223372036854775807" placeholder="min" pattern="0|([1-9][0-9]*)" title="Only non-negative integers are allowed here!">
+                                <span class="input-group-btn input-group-btn-vertical">
+                                    <button class="btn btn-number btn-outline-secondary bg-lgray rounded-0 border-0" type="button" onclick="increment('commits-min')"><i class="fa fa-angle-up"></i></button>
+                                    <button class="btn btn-number btn-outline-secondary bg-lgray border-secondary border-left-0 border-top-0 border-right-0 rounded-0" type="button" onclick="decrement('commits-min')"><i class="fa fa-angle-down"></i></button>
+                                </span>
+                            </div>
+                        </div>
+                        <div class="col-2">
+                            <div class="input-group">
+                                <input type="text" id="commits-max" name="commitsMax" class="form-control input-number bg-lgray border-secondary border-left-0 border-top-0 border-right-0 rounded-0" value="" min="0" max="9223372036854775807" placeholder="max" pattern="0|([1-9][0-9]*)" title="Only non-negative integers are allowed here!">
+                                <span class="input-group-btn input-group-btn-vertical">
+                                        <button class="btn btn-number btn-outline-secondary bg-lgray rounded-0 border-0" type="button" onclick="increment('commits-max')"><i class="fa fa-angle-up"></i></button>
+                                        <button class="btn btn-number btn-outline-secondary bg-lgray border-secondary border-left-0 border-top-0 border-right-0 rounded-0" type="button" onclick="decrement('commits-max')"><i class="fa fa-angle-down"></i></button>
+                                    </span>
+                            </div>
+                        </div>
+                        <div class="col-2">
+                            <div class="input-group">
+                                <input type="text" id="contributors-min" name="contributorsMin" class="form-control input-number bg-lgray border-secondary border-left-0 border-top-0 border-right-0 rounded-0" value="" min="0" max="9223372036854775807" placeholder="min" pattern="0|([1-9][0-9]*)" title="Only non-negative integers are allowed here!">
+                                <span class="input-group-btn input-group-btn-vertical">
+                                    <button class="btn btn-number btn-outline-secondary bg-lgray rounded-0 border-0" type="button" onclick="increment('contributors-min')"><i class="fa fa-angle-up"></i></button>
+                                    <button class="btn btn-number btn-outline-secondary bg-lgray border-secondary border-left-0 border-top-0 border-right-0 rounded-0" type="button" onclick="decrement('contributors-min')"><i class="fa fa-angle-down"></i></button>
+                                </span>
+                            </div>
+                        </div>
+                        <div class="col-2">
+                            <div class="input-group">
+                                <input type="text" id="contributors-max" name="contributorsMax" class="form-control input-number bg-lgray border-secondary border-left-0 border-top-0 border-right-0 rounded-0" value="" min="0" max="9223372036854775807" placeholder="max" pattern="0|([1-9][0-9]*)" title="Only non-negative integers are allowed here!">
+                                <span class="input-group-btn input-group-btn-vertical">
+                                    <button class="btn btn-number btn-outline-secondary bg-lgray rounded-0 border-0" type="button" onclick="increment('contributors-max')"><i class="fa fa-angle-up"></i></button>
+                                    <button class="btn btn-number btn-outline-secondary bg-lgray border-secondary border-left-0 border-top-0 border-right-0 rounded-0" type="button" onclick="decrement('contributors-max')"><i class="fa fa-angle-down"></i></button>
+                                </span>
+                            </div>
+                        </div>
+                        <div class="col-2">
+                            <div class="input-group date" data-date-format="yyyy-mm-dd">
+                                <input type="text" id="created-min" name="createdMin" class="form-control input-number bg-lgray border-secondary border-left-0 border-top-0 border-right-0 rounded-0" value="" placeholder="after" pattern="(((20)[0-9]{2}[\-.](0[13578]|1[02])[\-.](0[1-9]|[12][0-9]|3[01]))|(20)[0-9]{2}[\-.](0[469]|11)[\-.](0[1-9]|[12][0-9]|30)|(20)[0-9]{2}[\-.](02)[\-.](0[1-9]|1[0-9]|2[0-8])|(((20)(04|08|[2468][048]|[13579][26]))|2000)[\-.](02)[\-.]29){0,1}" title="Make sure your date is formatted as: YYYY-MM-DD">
+                                <span class="input-group-btn">
+                                    <button type="button" id="btn-created-min" class="btn btn-number btn-outline-secondary rounded-0 border-left-0 border-top-0 border-right-0 bg-lgray">
+                                        <span class="fa fa-calendar-o"></span>
+                                    </button>
+                                </span>
+                            </div>
+                        </div>
+                        <div class="col-2">
+                            <div class="input-group date" data-date-format="yyyy-mm-dd">
+                                <input type="text" id="created-max" name="createdMax" class="form-control input-number bg-lgray border-secondary border-left-0 border-top-0 border-right-0 rounded-0" value="" placeholder="before" pattern="(((20)[0-9]{2}[\-.](0[13578]|1[02])[\-.](0[1-9]|[12][0-9]|3[01]))|(20)[0-9]{2}[\-.](0[469]|11)[\-.](0[1-9]|[12][0-9]|30)|(20)[0-9]{2}[\-.](02)[\-.](0[1-9]|1[0-9]|2[0-8])|(((20)(04|08|[2468][048]|[13579][26]))|2000)[\-.](02)[\-.]29){0,1}" title="Make sure your date is formatted as: YYYY-MM-DD">
+                                <span class="input-group-btn">
+                                    <button type="button" id="btn-created-max" class="btn btn-number btn-outline-secondary rounded-0 border-left-0 border-top-0 border-right-0 bg-lgray">
+                                        <span class="fa fa-calendar-o"></span>
+                                    </button>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="px-3 row text-left">
+                        <div class="col-4">
+                            <h2 class="rowsublabel">Number of issues</h2>
+                        </div>
+                        <div class="col-4">
+                            <h2 class="rowsublabel">Number of pull requests</h2>
+                        </div>
+                        <div class="col-4">
+                            <h2 class="rowsublabel">Last commit at</h2>
+                        </div>
+                    </div>
+                    <div class="px-3 pb-3 pt-1 row">
+                        <div class="col-2">
+                            <div class="input-group">
+                                <input type="text" id="issues-min" name="issuesMin" class="form-control input-number bg-lgray border-secondary border-left-0 border-top-0 border-right-0 rounded-0" value="" min="0" max="9223372036854775807" placeholder="min" pattern="0|([1-9][0-9]*)" title="Only non-negative integers are allowed here!">
+                                <span class="input-group-btn input-group-btn-vertical">
+                                    <button class="btn btn-number btn-outline-secondary bg-lgray rounded-0 border-0" type="button" onclick="increment('issues-min')"><i class="fa fa-angle-up"></i></button>
+                                    <button class="btn btn-number btn-outline-secondary bg-lgray border-secondary border-left-0 border-top-0 border-right-0 rounded-0" type="button" onclick="decrement('issues-min')"><i class="fa fa-angle-down"></i></button>
+                                </span>
+                            </div>
+                        </div>
+                        <div class="col-2">
+                            <div class="input-group">
+                                <input type="text" id="issues-max" name="issuesMax" class="form-control input-number bg-lgray border-secondary border-left-0 border-top-0 border-right-0 rounded-0" value="" min="0" max="9223372036854775807" placeholder="max" pattern="0|([1-9][0-9]*)" title="Only non-negative integers are allowed here!">
+                                <span class="input-group-btn input-group-btn-vertical">
+                                    <button class="btn btn-number btn-outline-secondary bg-lgray rounded-0 border-0" type="button" onclick="increment('issues-max')"><i class="fa fa-angle-up"></i></button>
+                                    <button class="btn btn-number btn-outline-secondary bg-lgray border-secondary border-left-0 border-top-0 border-right-0 rounded-0" type="button" onclick="decrement('issues-max')"><i class="fa fa-angle-down"></i></button>
+                                </span>
+                            </div>
+                        </div>
+                        <div class="col-2">
+                            <div class="input-group">
+                                <input type="text" id="pulls-min" name="pullsMin" class="form-control input-number bg-lgray border-secondary border-left-0 border-top-0 border-right-0 rounded-0" value="" min="0" max="9223372036854775807" placeholder="min" pattern="0|([1-9][0-9]*)" title="Only non-negative integers are allowed here!">
+                                <span class="input-group-btn input-group-btn-vertical">
+                                    <button class="btn btn-number btn-outline-secondary bg-lgray rounded-0 border-0" type="button" onclick="increment('pulls-min')"><i class="fa fa-angle-up"></i></button>
+                                    <button class="btn btn-number btn-outline-secondary bg-lgray border-secondary border-left-0 border-top-0 border-right-0 rounded-0" type="button" onclick="decrement('pulls-min')"><i class="fa fa-angle-down"></i></button>
+                                </span>
+                            </div>
+                        </div>
+                        <div class="col-2">
+                            <div class="input-group">
+                                <input type="text" id="pulls-max" name="pullsMax" class="form-control input-number bg-lgray border-secondary border-left-0 border-top-0 border-right-0 rounded-0" value="" min="0" max="9223372036854775807" placeholder="max" pattern="0|([1-9][0-9]*)" title="Only non-negative integers are allowed here!">
+                                <span class="input-group-btn input-group-btn-vertical">
+                                    <button class="btn btn-number btn-outline-secondary bg-lgray rounded-0 border-0" type="button" onclick="increment('pulls-max')"><i class="fa fa-angle-up"></i></button>
+                                    <button class="btn btn-number btn-outline-secondary bg-lgray border-secondary border-left-0 border-top-0 border-right-0 rounded-0" type="button" onclick="decrement('pulls-max')"><i class="fa fa-angle-down"></i></button>
+                                </span>
+                            </div>
+                        </div>
+                        <div class="col-2">
+                            <div class="input-group date" data-date-format="yyyy-mm-dd">
+                                <input type="text" id="committed-min" name="committedMin" class="form-control input-number bg-lgray border-secondary border-left-0 border-top-0 border-right-0 rounded-0" value="" placeholder="after" pattern="(((20)[0-9]{2}[\-.](0[13578]|1[02])[\-.](0[1-9]|[12][0-9]|3[01]))|(20)[0-9]{2}[\-.](0[469]|11)[\-.](0[1-9]|[12][0-9]|30)|(20)[0-9]{2}[\-.](02)[\-.](0[1-9]|1[0-9]|2[0-8])|(((20)(04|08|[2468][048]|[13579][26]))|2000)[\-.](02)[\-.]29){0,1}" title="Make sure your date is formatted as: YYYY-MM-DD">
+                                <span class="input-group-btn">
+                                    <button type="button" id="btn-committed-min" class="btn btn-number btn-outline-secondary rounded-0 border-left-0 border-top-0 border-right-0 bg-lgray">
+                                        <span class="fa fa-calendar-o"></span>
+                                    </button>
+                                </span>
+                            </div>
+                        </div>
+                        <div class="col-2">
+                            <div class="input-group date" data-date-format="yyyy-mm-dd">
+                                <input type="text" id="committed-max" name="committedMax" class="form-control input-number bg-lgray border-secondary border-left-0 border-top-0 border-right-0 rounded-0" value="" placeholder="before" pattern="(((20)[0-9]{2}[\-.](0[13578]|1[02])[\-.](0[1-9]|[12][0-9]|3[01]))|(20)[0-9]{2}[\-.](0[469]|11)[\-.](0[1-9]|[12][0-9]|30)|(20)[0-9]{2}[\-.](02)[\-.](0[1-9]|1[0-9]|2[0-8])|(((20)(04|08|[2468][048]|[13579][26]))|2000)[\-.](02)[\-.]29){0,1}" title="Make sure your date is formatted as: YYYY-MM-DD">
+                                <span class="input-group-btn">
+                                    <button type="button" id="btn-committed-max" class="btn btn-number btn-outline-secondary rounded-0 border-left-0 border-top-0 border-right-0 bg-lgray">
+                                        <span class="fa fa-calendar-o"></span>
+                                    </button>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="px-3 row text-left">
+                        <div class="col-4">
+                            <h2 class="rowsublabel">Number of branches</h2>
+                        </div>
+                        <div class="col-4">
+                            <h2 class="rowsublabel">Number of releases</h2>
+                        </div>
+                    </div>
+                    <div class="px-3 pb-3 pt-1 row">
+                        <div class="col-2">
+                            <div class="input-group">
+                                <input type="text" id="branches-min" name="branchesMin" class="form-control input-number bg-lgray border-secondary border-left-0 border-top-0 border-right-0 rounded-0" value="" min="0" max="9223372036854775807" placeholder="min" pattern="0|([1-9][0-9]*)" title="Only non-negative integers are allowed here!">
+                                <span class="input-group-btn input-group-btn-vertical">
+                                    <button class="btn btn-number btn-outline-secondary bg-lgray rounded-0 border-0" type="button" onclick="increment('branches-min')"><i class="fa fa-angle-up"></i></button>
+                                    <button class="btn btn-number btn-outline-secondary bg-lgray border-secondary border-left-0 border-top-0 border-right-0 rounded-0" type="button" onclick="decrement('branches-min')"><i class="fa fa-angle-down"></i></button>
+                                </span>
+                            </div>
+                        </div>
+                        <div class="col-2">
+                            <div class="input-group">
+                                <input type="text" id="branches-max" name="branchesMax" class="form-control input-number bg-lgray border-secondary border-left-0 border-top-0 border-right-0 rounded-0" value="" min="0" max="9223372036854775807" placeholder="max" pattern="0|([1-9][0-9]*)" title="Only non-negative integers are allowed here!">
+                                <span class="input-group-btn input-group-btn-vertical">
+                                    <button class="btn btn-number btn-outline-secondary bg-lgray rounded-0 border-0" type="button" onclick="increment('branches-max')"><i class="fa fa-angle-up"></i></button>
+                                    <button class="btn btn-number btn-outline-secondary bg-lgray border-secondary border-left-0 border-top-0 border-right-0 rounded-0" type="button" onclick="decrement('branches-max')"><i class="fa fa-angle-down"></i></button>
+                                </span>
+                            </div>
+                        </div>
+                        <div class="col-2">
+                            <div class="input-group">
+                                <input type="text" id="releases-min" name="releasesMin" class="form-control input-number bg-lgray border-secondary border-left-0 border-top-0 border-right-0 rounded-0" value="" min="0" max="9223372036854775807" placeholder="min" pattern="0|([1-9][0-9]*)" title="Only non-negative integers are allowed here!">
+                                <span class="input-group-btn input-group-btn-vertical">
+                                    <button class="btn btn-number btn-outline-secondary bg-lgray rounded-0 border-0" type="button" onclick="increment('releases-min')"><i class="fa fa-angle-up"></i></button>
+                                    <button class="btn btn-number btn-outline-secondary bg-lgray border-secondary border-left-0 border-top-0 border-right-0 rounded-0" type="button" onclick="decrement('releases-min')"><i class="fa fa-angle-down"></i></button>
+                                </span>
+                            </div>
+                        </div>
+                        <div class="col-2">
+                            <div class="input-group">
+                                <input type="text" id="releases-max" name="releasesMax" class="form-control input-number bg-lgray border-secondary border-left-0 border-top-0 border-right-0 rounded-0" value="" min="0" max="9223372036854775807" placeholder="max" pattern="0|([1-9][0-9]*)" title="Only non-negative integers are allowed here!">
+                                <span class="input-group-btn input-group-btn-vertical">
+                                    <button class="btn btn-number btn-outline-secondary bg-lgray rounded-0 border-0" type="button" onclick="increment('releases-max')"><i class="fa fa-angle-up"></i></button>
+                                    <button class="btn btn-number btn-outline-secondary bg-lgray border-secondary border-left-0 border-top-0 border-right-0 rounded-0" type="button" onclick="decrement('releases-max')"><i class="fa fa-angle-down"></i></button>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="p-3 row text-left">
+                        <div class="col-8">
+                            <h1 class="rowlabel">Popularity Filters</h1>
+                        </div>
+                        <div class="col-4">
+                            <h1 class="rowlabel">Additional Filters</h1>
+                        </div>
+                    </div>
+                    <div class="px-3 row text-left">
+                        <div class="col-4">
+                            <h2 class="rowsublabel">Number of stars</h2>
+                        </div>
+                        <div class="col-4">
+                            <h2 class="rowsublabel">Number of watchers</h2>
+                        </div>
+                        <div class="col-4">
+                            <div class="form-check text-left">
+                                <label class="form-check-label">
+                                    <input type="checkbox" class="form-check-input" id="only-forks" name="onlyForks" onchange="checkOnlyForked()"><span>Only Forked Projects</span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="px-3 row">
+                        <div class="col-2">
+                            <div class="input-group">
+                                <input type="text" id="stars-min" name="starsMin" class="form-control input-number bg-lgray border-secondary border-left-0 border-top-0 border-right-0 rounded-0" value="" min="0" max="9223372036854775807" placeholder="min" pattern="0|([1-9][0-9]*)" title="Only non-negative integers are allowed here!">
+                                <span class="input-group-btn input-group-btn-vertical">
+                                    <button class="btn btn-number btn-outline-secondary bg-lgray rounded-0 border-0" type="button" onclick="increment('stars-min')"><i class="fa fa-angle-up"></i></button>
+                                    <button class="btn btn-number btn-outline-secondary bg-lgray border-secondary border-left-0 border-top-0 border-right-0 rounded-0" type="button" onclick="decrement('stars-min')"><i class="fa fa-angle-down"></i></button>
+                                </span>
+                            </div>
+                        </div>
+                        <div class="col-2">
+                            <div class="input-group">
+                                <input type="text" id="stars-max" name="starsMax" class="form-control input-number bg-lgray border-secondary border-left-0 border-top-0 border-right-0 rounded-0" value="" min="0" max="9007199254740991" placeholder="max" pattern="0|([1-9][0-9]*)" title="Only non-negative integers are allowed here!">
+                                <span class="input-group-btn input-group-btn-vertical">
+                                    <button class="btn btn-number btn-outline-secondary bg-lgray rounded-0 border-0" type="button" onclick="increment('stars-max')"><i class="fa fa-angle-up"></i></button>
+                                    <button class="btn btn-number btn-outline-secondary bg-lgray border-secondary border-left-0 border-top-0 border-right-0 rounded-0" type="button" onclick="decrement('stars-max')"><i class="fa fa-angle-down"></i></button>
+                                </span>
+                            </div>
+                        </div>
+                        <div class="col-2">
+                            <div class="input-group">
+                                <input type="text" id="watchers-min" name="watchersMin" class="form-control input-number bg-lgray border-secondary border-left-0 border-top-0 border-right-0 rounded-0" value="" min="0" max="9223372036854775807" placeholder="min" pattern="0|([1-9][0-9]*)" title="Only non-negative integers are allowed here!">
+                                <span class="input-group-btn input-group-btn-vertical">
+                                    <button class="btn btn-number btn-outline-secondary bg-lgray rounded-0 border-0" type="button" onclick="increment('watchers-min')"><i class="fa fa-angle-up"></i></button>
+                                    <button class="btn btn-number btn-outline-secondary bg-lgray border-secondary border-left-0 border-top-0 border-right-0 rounded-0" type="button" onclick="decrement('watchers-min')"><i class="fa fa-angle-down"></i></button>
+                                </span>
+                            </div>
+                        </div>
+                        <div class="col-2">
+                            <div class="input-group">
+                                <input type="text" id="watchers-max" name="watchersMax" class="form-control input-number bg-lgray border-secondary border-left-0 border-top-0 border-right-0 rounded-0" value="" min="0" max="9223372036854775807" placeholder="max" pattern="0|([1-9][0-9]*)" title="Only non-negative integers are allowed here!">
+                                <span class="input-group-btn input-group-btn-vertical">
+                                    <button class="btn btn-number btn-outline-secondary bg-lgray rounded-0 border-0" type="button" onclick="increment('watchers-max')"><i class="fa fa-angle-up"></i></button>
+                                    <button class="btn btn-number btn-outline-secondary bg-lgray border-secondary border-left-0 border-top-0 border-right-0 rounded-0" type="button" onclick="decrement('watchers-max')"><i class="fa fa-angle-down"></i></button>
+                                </span>
+                            </div>
+                        </div>
+                        <div class="col-4">
+                            <div class="form-check text-left">
+                                <label class="form-check-label">
+                                    <input type="checkbox" class="form-check-input" id="exclude-forks" name="excludeForks" onchange="checkExcludeForked()"><span>Exclude Forked Projects</span>
+                                </label>
+                            </div>
+                            <div class="form-check text-left">
+                                <label class="form-check-label">
+                                    <input type="checkbox" class="form-check-input" id="has-issues" name="hasIssues"><span>Has Open Issues</span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="px-3 row text-left">
+                        <div class="col-4">
+                            <h2 class="rowsublabel">Number of forks</h2>
+                        </div>
+                        <div class="col-4"></div>
+                        <div class="col-4">
+                            <div class="form-check text-left">
+                                <label class="form-check-label">
+                                    <input type="checkbox" class="form-check-input" id="has-pulls" name="hasPulls"><span>Has Open Pull Requests</span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="px-3 pb-3 row">
+                        <div class="col-2">
+                            <div class="input-group">
+                                <input type="text" id="forks-min" name="forksMin" class="form-control input-number bg-lgray border-secondary border-left-0 border-top-0 border-right-0 rounded-0" value="" min="0" max="9223372036854775807" placeholder="min" pattern="0|([1-9][0-9]*)" title="Only non-negative integers are allowed here!">
+                                <span class="input-group-btn input-group-btn-vertical">
+                                    <button class="btn btn-number btn-outline-secondary bg-lgray rounded-0 border-0" type="button" onclick="increment('forks-min')"><i class="fa fa-angle-up"></i></button>
+                                    <button class="btn btn-number btn-outline-secondary bg-lgray border-secondary border-left-0 border-top-0 border-right-0 rounded-0" type="button" onclick="decrement('forks-min')"><i class="fa fa-angle-down"></i></button>
+                                </span>
+                            </div>
+                        </div>
+                        <div class="col-2">
+                            <div class="input-group">
+                                <input type="text" id="forks-max" name="forksMax" class="form-control input-number bg-lgray border-secondary border-left-0 border-top-0 border-right-0 rounded-0" value="" min="0" max="9223372036854775807" placeholder="max" pattern="0|([1-9][0-9]*)" title="Only non-negative integers are allowed here!">
+                                <span class="input-group-btn input-group-btn-vertical">
+                                    <button class="btn btn-number btn-outline-secondary bg-lgray rounded-0 border-0" type="button" onclick="increment('forks-max')"><i class="fa fa-angle-up"></i></button>
+                                    <button class="btn btn-number btn-outline-secondary bg-lgray border-secondary border-left-0 border-top-0 border-right-0 rounded-0" type="button" onclick="decrement('forks-max')"><i class="fa fa-angle-down"></i></button>
+                                </span>
+                            </div>
+                        </div>
+                        <div class="col-4">
+                            <button id="submit-button" type="submit" class="w-50 btn btn-secondary border-dark b-2 text-center mh-100">Search</button>
+                        </div>
+                        <div class="col-4">
+                            <div class="form-check text-left">
+                                <label class="form-check-label">
+                                    <input type="checkbox" class="form-check-input" id="has-wiki" name="hasWiki"><span>Has Wiki</span>
+                                </label>
+                            </div>
+                            <div class="form-check text-left">
+                                <label class="form-check-label">
+                                    <input type="checkbox" class="form-check-input" id="has-license" name="hasLicense"><span>Has License</span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div id="results-container" class="d-none row mw-100 justify-content-center text-center">
+                <div id="results-container-header" class="row w-75 bg-llgray border border-bottom-0 justify-content-between">
+                    <div class="col px-0 d-flex align-items-center justify-content-start">
+                        <button id="back-button" class="btn btn-outline-secondary bg-llgray rounded-0 border-0">
+                            <span class="fa fa-angle-left"></span>
+                            Back
+                        </button>
+                    </div>
+                    <div class="col px-0 d-flex align-items-center justify-content-end">
+                        <a id="raw-button" href="" target="_parent" onclick="$('#download-modal').modal('show');" class="btn btn-outline-secondary bg-llgray rounded-0 border-0">
+                            Download JSON
+                            <span class="fa fa-file-text-o"></span>
+                        </a>
+                        <a id="xml-button" href="" target="_parent" onclick="$('#download-modal').modal('show');" class="btn btn-outline-secondary bg-llgray rounded-0 border-0">
+                            Download XML
+                            <span class="fa fa-file-code-o"></span>
+                        </a>
+                        <a id="download-button" href="" target="_parent" onclick="$('#download-modal').modal('show');" class="btn btn-outline-secondary bg-llgray rounded-0 border-0">
+                            Download CSV
+                            <span class="fa fa-file-excel-o"></span>
+                        </a>
+                    </div>
+                </div>
+                <div id="results-container-items" class="w-75 bg-llgray border border-top-0 border-bottom-0 justify-content-center"></div>
+                <div id="results-container-footer" class="row w-75 pt-3 bg-llgray border border-top-0">
+                    <div class="col px-0 d-flex align-items-center justify-content-start">
+                        <button type="button" id="first-button" class="btn btn-outline-secondary bg-llgray rounded-0 border-0 text-center d-none">
+                            <span class="fa fa-lg fa-angle-double-left"></span>
+                            First
+                        </button>
+                        <button type="button" id="prev-button" class="btn btn-outline-secondary bg-llgray rounded-0 border-0 text-center d-none">
+                            <span class="fa fa-lg fa-angle-left"></span>
+                            Prev
+                        </button>
+                    </div>
+                    <div class="col px-0 d-flex align-items-center justify-content-center">
+                        <form id="go-form" autocomplete="off" class="w-60 bg-llgray border-0 input-group">
+                            <input type="text" id="page" name="page" class="form-control input-secondary rounded-0 bg-llgray border-0 d-none" placeholder="Jump to page..." pattern="[1-9]\d*" title="Only positive integers are allowed here!">
+                            <button type="submit" id="go-button" class="btn btn-outline-secondary bg-llgray rounded-0 border-0 text-center d-none">Go!</button>
+                        </form>
+                    </div>
+                    <div class="col px-0 d-flex align-items-center justify-content-end">
+                        <button type="button" id="next-button" class="btn btn-outline-secondary bg-llgray rounded-0 border-0 text-center d-none">
+                            Next
+                            <span class="fa fa-lg fa-angle-right"></span>
+                        </button>
+                        <button type="button" id="last-button" class="btn btn-outline-secondary bg-llgray rounded-0 border-0 text-center d-none">
+                            Last
+                            <span class="fa fa-lg fa-angle-double-right"></span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <footer id="sticky-footer" class="py-3 px-3 bg-white">
+            <div class="text-left">
+                <p class="text-gray">Created by: <a href="https://www.linkedin.com/in/dabico" target="_blank">Ozren Dabić</a>, <a href="https://www.inf.usi.ch/phd/aghajani" target="_blank">Emad Aghajani</a>, <a href="https://www.inf.usi.ch/faculty/bavota" target="_blank">Gabriele Bavota</a></p>
+            </div>
+        </footer>
+
+        <a id="back-to-top" href="#" class="btn btn-outline-secondary border-0 rounded-0 bg-lgray back-to-top" role="button"><i class="fa fa-chevron-up"></i></a>
+
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+        <script src="js/selectors.js"></script>
+        <script src="js/general.js"></script>
+        <script src="js/datepicker.js"></script>
+        <script src="js/chart.js"></script>
+        <script src="js/typeahead.js"></script>
+        <script src="js/retrieve.js"></script>
+        <script src="js/scroll.js"></script>
+    </body>
+</html>
