@@ -143,7 +143,7 @@ public class GitRepoRepositoryImpl implements GitRepoRepositoryCustom {
         }
 
         if (StringUtils.isNoneBlank(label)){
-            qb.where("rl.label = (:label)", Operator.AND);
+            qb.where("lower(rl.label) = lower(:label)", Operator.AND);
         }
 
         if (commits.isLowerBound()){

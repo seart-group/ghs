@@ -3,37 +3,40 @@
 \section{Software Repository Mining}
 
 The field of mining software repositories (MSR) is an active and flourishing research area.
-By analysing the statistical data of version control repositories, researchers can unveil interesting patterns that permeate throughout many open source projects, and formulate new empirical knowledge, either about existing software or software engineering practices in general.
+By analysing the statistical data of version control repositories, researchers can unveil interesting patterns that permeate throughout many open source projects, and formulate new empirical knowledge, either about existing software or software engineering practices in general~\cite{MSR}.
 
 For example, by studying project commits, we can identify faulty code components often subject to bug-fixing activities.
-This knowledge can be further used to devise defect prediction approaches (techniques able to identify code components likely to be affected by bugs), as well as to train deep learning models capable of not only identifying, but also automatically recommending proper fixes for buggy code.
+This knowledge can be further used to devise defect prediction approaches (techniques able to identify code components likely to be affected by bugs)~\cite{DEFECT1,DEFECT2}, as well as to train deep learning models capable of not only identifying, but also automatically recommending proper fixes for buggy code~\cite{BUGFIX}.
 
 However, in order for any of these analyses to take place, an initial sample of open source projects must be taken.
-This selection is usually based on general repository characteristics, which include, but aren't limited to: popularity statistics (the number of watchers, stars and forks a repository has), statistics related to project scope (the size of code, amount of commits made and code branches), how well maintained a project is (whether it is updated frequently and how many direct contributors it has), or even how well documented it is (whether it has many open issues, or a project wiki).
-Usually metrics such as low commit and contributor counts are good indicators of "toy projects", repositories that researchers generally tend to avoid, due to a lack of useful information that can be extracted.
+This selection is usually based on general repository characteristics, which include, but are not limited to: popularity statistics (the number of watchers, stars and forks a repository has), statistics related to project scope (the size of code, amount of commits made and code branches), how well maintained a project is (whether it is updated frequently and how many direct contributors it has), or even how well documented it is (whether it has many open issues, or a project wiki).
+In general, researchers tend to restrict themselves to bigger projects, written in popular languages, with active and lengthy development histories~\cite{PDSSE}.
+Metrics such as low commit and contributor counts are good indicators of ``toy projects'', repositories that researchers generally tend to avoid, due to a lack of useful information that can be extracted.
 
-GitHub is nowadays the primary source for code studies. Although there are many different methods and tools for sampling public projects, most of them possess several noticeable drawbacks that make the selection process unnecessarily complex. These limitations usually boil down to:
+GitHub is nowadays the primary source for code studies.
+Although there are many different tools and techniques for sampling public projects, most of them possess several noticeable drawbacks that make the selection process unnecessarily complex.
+These limitations usually boil down to:
 \begin{enumerate}
-    \item The data is accessible only in smaller quantities (Number of repositories obtainable in a single request, query, command, etc is severely limited or in some cases broken up into multiple files);
+    \item A single request/query does not give full access to all the repositories that meet the specified quality criteria (multiple requests/queries are usually needed, with the additional complexity of not being able to deal with redundant results);
     \item Incomplete or obfuscated information about individual search results (i.e.\ certain key descriptors like the number of stars or forks for a particular repository are not included in the result set);
-    \item Not easily operable or user-friendly (Additional technical knowledge is required to set up or use the service. The service itself may not even have a user interface).
+    \item Not easily operable or user-friendly (Additional technical knowledge is required to set up or use the service. The service itself may not even have a user interface, or may ever require other applications to access the data all together).
 \end{enumerate}
 
 \newpage
 
 We propose a tool to overcome these limitations.
-In particular, our tool: the GitHub Search Engine, would allow researchers to sample repositories based on a variety of statistical criteria.
+In particular, our tool: the DEVINTA GitHub Repository Search Engine, would allow researchers to sample repositories based on a variety of statistical criteria, such as the number of stars, main language, date created, tags, etc.
 This search engine tool would not only allow the users to browse desired types of repositories, but also download full result lists in various file formats fit for use in other applications.
 In order to provide all repositories and their related data to the user, the application will have to continuously submit requests to mine GitHub's Application Programming Interface (API), as well as scrape the front-end web pages of each mined repository.
 To ensure the integrity of data stored, the crawling algorithm would also have to periodically check for any repositories that have recently been updated, and update the database entries accordingly.
-
-\mbox{}\\
+\\\\
+\noindent
 The following chapters will discuss:
 \begin{enumerate}
-    \item GitHub repository sampling tools and techniques currently at the researchers' disposal, as well as all their shortcomings;
-    \item The project goals, strategies chosen to meet these goals and development timeline;
-    \item The design of the back-end;
+    \item \hyperref[ch:2]{Tools currently in use for GitHub repository sampling};
+    \item \hyperref[ch:3]{The project goals, strategies chosen to meet these goals and development timeline};
+    \item \hyperref[ch:4]{The design of the back-end};
     \item The design of the front-end;
-    \item The deployment strategy;
+    \item The deployment strategy; and
     \item Future improvements to the delivered product.
 \end{enumerate}
