@@ -1,13 +1,13 @@
-\chapter{Implementation}
+\chapter{Implementation}\label{ch:4}
 
-\section{Application Architecture}
+The following sections will discuss the application implementation in more detail.
+It will cover the relational schema chosen for storing the repository information in the database, the mining algorithm with which the application retrieves the repository data from the GitHub API and repository web-pages, and lastly the components that make up the architecture of the application.
 
-\newpage
 \section{Relational Schema}
 
-In order to design the relational schema for the database, we first have to pose the question: what information is relevant to a repository?
-Immediately things like the repository name or number of commits come to mind.
-Although the introduction only briefly skimmed over some examples of useful data, there are other kinds of metrics based on which researchers may want to limit their selection.
+In order to design the relational schema for the database, we first have to pose the question: What information is relevant to a repository?
+Some of the obvious ones include details like the repository name or number of stars, and commits come to mind.
+Although the introduction only briefly skimmed over some examples of useful data, there are other kinds of characteristics, based on which researchers may want to limit their selection.
 The following is a list of all the data that we have chosen to mine for repositories, as well as an explanation on why they are key characteristics of a project:
 \begin{itemize}
     \item \textit{The full repository name, formatted as:} \code{user/repo_name}
@@ -26,9 +26,23 @@ The following is a list of all the data that we have chosen to mine for reposito
     \\The watchers of a public repository are users who have asked to be notified of activity in a repository, but have not become collaborators~\cite{METRICSWATCHERS}. Watchers can be interpreted as an extension to contributors. Although not contributing to projects in a direct way, they tend to be engaged in the discussions surrounding its development, some even going so far as to becoming future contributors~\cite{WATCHERS14}.
     \item \textit{The number of stars.}
     \\Stars were introduced in 2012 as an alternative way of keeping track of interesting projects without receiving notifications~\cite{STARS}. In essence, a project's star count is attributed to its notoriety on the platform. Given how the default sorting order for both the Advanced Search and API is by stars, projects with higher star counts appear first in searches, making them more popular.
+    \item \textit{Project size}
+    \\A lot of the aforementioned project characteristics were linked to the symbolic size of the project: how well known it is within the community, and how much the community cares about it. It is equally as important to take the literal size of a project, as in the amount of physical space its files take up. It should be of no surprise that big projects have more files, and take up more space as a result.
+    \item \textit{Date of creation, last update, last commit and last push}
+    \\Filtering by created date allows researchers to focus exclusively on repositories from a restricted time frame, while dates such as the date of last update or commit provide a good indication into whether a project is still active, or if it has been abandoned.
+    \item \textit{The total set of languages in a project}
+    \\As important as the predominant language is, some studies may also require a complete overview of all languages present in a project.
+    \item \textit{The main programming language of a project.}
+    \\While repositories tend to house a variety of files written in different languages, a project usually tends have the highest files from a certain language. Such a language, with the highest degree of presence in a project is ofter referred to as the \textit{main language} of that project. Some studies, such as those focusing on correlating the language of a project with its code quality~\cite{QUALITY}, are dependant on the ability to filter projects based on the predominant language.
+    \item \textit{The project labels}
+    \item \textit{The number of issues: both open and total}
+    \item \textit{The number of pull requests: both open and total}
+    \item \textit{Whether the project has a wiki}
+    \item \textit{Whether the project is archived}
+    \\Archived projects
 \end{itemize}
 
-%TODO Comments on auxiliary data like branch name, commit SHA, homepage, license...
+%TODO Comments on auxiliary data like branch name (useful for accessing files in the repository/studies that focus on the main branch: ), last commit SHA (data up to that commit, useful for the users of the dataset), homepage (just generally useful), license (projects with specifict types of liceses: https://dl.acm.org/doi/10.1145/3180155.3180221)...
 
 \begin{figure}[ht!]
     \centering
@@ -43,7 +57,8 @@ The mining algorithm is the core of our search engine.
 In broad terms, the miner is responsible for mining all the public projects written in a certain language, from a set of languages supported by the app.
 Once all the repositories have been mined for one specific language, the miner moves on to the next one.
 It's important to note that the miner currently prioritises repositories consisting predominantly of code written in more popular languages such as JavaScript, Python and C++.
-
+\\\\
+\noindent
 The mining algorithm works as follows:
 \begin{itemize}
     \item It first looks at the \textit{CrawlJob} table of the database. Since that table indicates the date up to which repositories were mined for a particular language, it uses that information to limit the crawl interval. If no prior ``crawl jobs'' exist, then \textit{January 1st 2008} is chosen as the starting date for the mine, selecting one of the supported languages to crawl first. However if there were prior ``crawl jobs'' for particular languages, then the crawler would simply resume crawling from the date it has acquired information to so far. Although the crawling interval lower bound would either be the start of 2008 or the date that data was mined up to so far, the upper bound would always be the time at which the crawl job was started.
@@ -53,3 +68,5 @@ The mining algorithm works as follows:
         \item If the number of repositories returned matching this criteria is less than or equal to 1000, then we iterate over each of the results, making additional API calls to retrieve the labels and languages of each of the repositories, as well as scraping the repository web pages for any of the data not obtainable by the API\@. Once all the auxiliary data has been acquired, the date value for the crawl job table for that language is updated to the interval upper bound.
     \end{itemize}
 \end{itemize}
+
+\section{Application Architecture}
