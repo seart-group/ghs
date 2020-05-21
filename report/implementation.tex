@@ -15,7 +15,7 @@ The following is a list of all the data that we have chosen to mine for reposito
     \item \textit{An indication as to whether a project is a fork of an existing project.}
     \\Forking is central to the Git ecosystem. However in some cases, researchers may want to exclude forks when sampling, as they contain little to no modifications made on the original. Due to how easily they can be created, ``forks with no changes'' may not harbor any useful information to a study, and only serve to bloat a dataset~\cite{FORKS}. On the other hand, researchers may also want to limit the study to only forks of a popular project, with the goal of observing which features of the original may have changed across various forks.
     \item \textit{The number of commits.}
-    \\The number of commits is by far the most commonly observed attribute for determining the scope of a project, as they equate to checkpoints in development. It is very common for ``toy projects'' or repositories misusing GitHub as an online storage service to have a low number of commits, which is why they should be filtered out during selection.
+    \\The number of commits is by far the most commonly observed attribute for determining the scope of a project, as they equate to checkpoints in development. It is very common for inactive or small personal projects (which comprises the majority of projects on GitHub~\cite{COMMITS}) to have a low number of commits, which is why they should be filtered out in selection.
     \item \textit{The number of branches.}
     \\Branches represent several lines in development of a software project~\cite{GIT}. They too are good indicators of project scope, as most serious projects use more than the single default branch.
     \item \textit{The number of releases.}
@@ -34,20 +34,38 @@ The following is a list of all the data that we have chosen to mine for reposito
     \\As important as the predominant language is, some studies may also require a complete overview of all languages present in a project.
     \item \textit{The main programming language of a project.}
     \\While repositories tend to house a variety of files written in different languages, a project usually tends have the highest files from a certain language. Such a language, with the highest degree of presence in a project is ofter referred to as the \textit{main language} of that project. Some studies, such as those focusing on correlating the language of a project with its code quality~\cite{QUALITY}, are dependant on the ability to filter projects based on the predominant language.
-    \item \textit{The project labels}
     \item \textit{The number of issues: both open and total}
+    \\Issues are community-launched and collaborator-moderated discussion threads, aimed at addressing project limitations and suggesting changes~\cite{GITHUBHELP}. Studies centered on analysing issues, such as those analysing issue comments~\cite{ISSUES}, require selecting repositories that have either open or closed issues, which is why keeping track of the number of issues in a repository helps with sampling.
     \item \textit{The number of pull requests: both open and total}
-    \item \textit{Whether the project has a wiki}
+    \\Pull requests are changes proposed to a repository by project contributors, which through their dedicated discussion threads, are either accepted or rejected by the core development team~\cite{GITHUBHELP}. Studies focusing on analysing aspects of pulls, such as those analysing the characteristics of accepted and rejected pull requests~\cite{PULLS}, require a sample of repositories that have them.
+    \item \textit{The project labels}
+    \\Labels are descriptive tags assigned to issues and pull requests for classification purposes~\cite{LABELS}. Filtering repositories by the labels they use allow the researcher to focus on projects that have bugs, that lack documentation for a part of their code, or projects that are reaching out to the community for help with issues.
+    \item \textit{Project license}
+    \\While on the surface mining the licensing information of a project makes sense for bookkeeping purposes, said data may be of use to researchers as well. Several studies were conducted with respect to repository licensing, examples include the effect of licensing bugs on the projects that use them~\cite{LICENSEBUGS}, along with how certain license usage and changes in one project effects other projects depending on them~\cite{LICENSECHANGE}.
     \item \textit{Whether the project is archived}
-    \\Archived projects
+    \\Project archiving was introduced as a means of signalling to users that the project is discontinued and that it is no longer maintained by its authors and collaborators~\cite{ARCHIVINGREPOS}.
+    \item \textit{Whether the project has a wiki}
+    \\Wikis are pages dedicated to hosting the documentation of a project~\cite{WIKIS}. The presence of a wiki may indicate that a project is well documented. While this can be an indication, it isn't a guarantee since some wikis may just be empty.
 \end{itemize}
 
-%TODO Comments on auxiliary data like branch name (useful for accessing files in the repository/studies that focus on the main branch: ), last commit SHA (data up to that commit, useful for the users of the dataset), homepage (just generally useful), license (projects with specifict types of liceses: https://dl.acm.org/doi/10.1145/3180155.3180221)...
+\noindent
+The following information, although not subject to many studies, is useful for bookkeeping:
 
+\begin{itemize}
+    \item \textit{The name of the default project branch}
+    \item \textit{The external project homepage}
+    \item \textit{The secure hash algorithm (SHA) hash of the last commit}
+\end{itemize}
+
+\noindent
+The relational schema of the application database used to store the previously described information is shown in Figure~\ref{fig:1}.
+
+\newpage
 \begin{figure}[ht!]
     \centering
-    \includegraphics[width=0.7\linewidth]{relational}
+    \includegraphics[width=0.75\linewidth]{relational}
     \caption{The relational schema of the database}
+    \label{fig:1}
 \end{figure}
 
 \newpage

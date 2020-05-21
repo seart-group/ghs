@@ -82,7 +82,8 @@ While GH Archive focuses on documenting GitHub's event stream, GHTorrent continu
 Even though it offers the largest dataset of mined information and no limitations to the amount of data a user can retrieve, it inherits a massive flaw from the very API that it mines.
 Since GHTorrent stores a relational representation of the responses obtained from the GitHub API, then any information not returned by the API (such as the aforementioned number of total commits of a repository, or even number of branches and releases) can not be retrieved.
 
-Furthermore, it suffers from an issue which inhibits its accessibility: it is limited by MySQL\@.
-Since the mined information is supplied in form of MySQL database dumps, one must first study the relational structure of the GHTorrent's database before even attempting to access the information through queries.
-Even with knowledge of the database and retrieval queries outlined, certain third-party tools may be required in order to export the retrieved data.
-While the native MySQL implementation allows results to be exported as a comma-separated value (CSV) file, other export options may require additional processing implementations or third-party applications.
+Furthermore, it suffers from an issue which inhibits its accessibility.
+GitHub-related information mined by GHTorrent is supplied to researchers as large MySQL and CSV database dumps~\cite{GHTDUMPS}.
+To access this information, one must first download compressed archives of these dumps, and then follow special procedures to restore the database backups~\cite{GHTRESTORE}.
+With the database set up, a researcher now has to study its relational structure~\cite{GHTSCHEMA} in order to outline queries for accessing the stored information related to repositories.
+While the native MySQL implementation allows querying results to be exported as a comma-separated value (CSV) file, other export options may require additional processing implementations or third-party applications.
