@@ -6,16 +6,15 @@ It will cover the relational schema chosen for storing the repository informatio
 \section{Relational Schema}
 
 In order to design the relational schema for the database, we first have to pose the question: What information is relevant to a repository?
-Some of the obvious ones include details like the repository name or number of stars, and commits come to mind.
-Although the introduction only briefly skimmed over some examples of useful data, there are other kinds of characteristics, based on which researchers may want to limit their selection.
-The following is a list of all the data that we have chosen to mine for repositories, as well as an explanation on why they are key characteristics of a project:
+Although the introduction only briefly skimmed over some examples of useful data, there are many other characteristics based on which researchers may want to limit their selection.
+The following is a list of all the data that we have chosen to mine for repositories, as well as explanations on why said data may be valuable to researchers:
 \begin{itemize}
     \item \textit{The full repository name, formatted as:} \code{user/repo_name}
-    \\Multiple repositories from different owners can have the same name (which makes sense to accommodate forks), but a single user can't create multiple repositories of the same name.
+    \\The identifier of a repository. While multiple repositories from different owners can have the same name (which makes sense to accommodate forks), a single user can't create multiple repositories of the same name.
     \item \textit{An indication as to whether a project is a fork of an existing project.}
-    \\Forking is central to the Git ecosystem. However in some cases, researchers may want to exclude forks when sampling, as they contain little to no modifications made on the original. Due to how easily they can be created, ``forks with no changes'' may not harbor any useful information to a study, and only serve to bloat a dataset~\cite{FORKS}. On the other hand, researchers may also want to limit the study to only forks of a popular project, with the goal of observing which features of the original may have changed across various forks.
+    \\Forking is central to the Git ecosystem. However in some cases, researchers may want to exclude forks when sampling, as they contain little to no modifications made on the original. Due to how easily they can be created, ``forks with no changes'' may not harbor any useful information to a study, and only serve to bloat a dataset~\cite{FORKS}. On the other hand, researchers may also want to limit the study to only forks of a popular project.
     \item \textit{The number of commits.}
-    \\The number of commits is by far the most commonly observed attribute for determining the scope of a project, as they equate to checkpoints in development. It is very common for inactive or small personal projects (which comprises the majority of projects on GitHub~\cite{COMMITS}) to have a low number of commits, which is why they should be filtered out in selection.
+    \\The number of commits is by far the most commonly observed attribute for determining the scope of a project, as they equate to checkpoints in development. It is very common for inactive or small personal projects (which comprises the majority of projects on GitHub~\cite{COMMITS}) to have a low number of commits.
     \item \textit{The number of branches.}
     \\Branches represent several lines in development of a software project~\cite{GIT}. They too are good indicators of project scope, as most serious projects use more than the single default branch.
     \item \textit{The number of releases.}
@@ -27,15 +26,15 @@ The following is a list of all the data that we have chosen to mine for reposito
     \item \textit{The number of stars.}
     \\Stars were introduced in 2012 as an alternative way of keeping track of interesting projects without receiving notifications~\cite{STARS}. In essence, a project's star count is attributed to its notoriety on the platform. Given how the default sorting order for both the Advanced Search and API is by stars, projects with higher star counts appear first in searches, making them more popular.
     \item \textit{Project size}
-    \\A lot of the aforementioned project characteristics were linked to the symbolic size of the project: how well known it is within the community, and how much the community cares about it. It is equally as important to take the literal size of a project, as in the amount of physical space its files take up. It should be of no surprise that big projects have more files, and take up more space as a result.
+    \\A lot of the aforementioned project characteristics were linked to the symbolic size of the project: how well known it is within the community, and how much the community cares about it. It is equally as important to take the literal size of a project, as in the amount of physical space its files take up.
     \item \textit{Date of creation, last update, last commit and last push}
     \\Filtering by created date allows researchers to focus exclusively on repositories from a restricted time frame, while dates such as the date of last update or commit provide a good indication into whether a project is still active, or if it has been abandoned.
-    \item \textit{The total set of languages in a project}
+    \item \textit{The total set of programming languages in a project}
     \\As important as the predominant language is, some studies may also require a complete overview of all languages present in a project.
     \item \textit{The main programming language of a project.}
     \\While repositories tend to house a variety of files written in different languages, a project usually tends have the highest files from a certain language. Such a language, with the highest degree of presence in a project is ofter referred to as the \textit{main language} of that project. Some studies, such as those focusing on correlating the language of a project with its code quality~\cite{QUALITY}, are dependant on the ability to filter projects based on the predominant language.
     \item \textit{The number of issues: both open and total}
-    \\Issues are community-launched and collaborator-moderated discussion threads, aimed at addressing project limitations and suggesting changes~\cite{GITHUBHELP}. Studies centered on analysing issues, such as those analysing issue comments~\cite{ISSUES}, require selecting repositories that have either open or closed issues, which is why keeping track of the number of issues in a repository helps with sampling.
+    \\Issues are community-launched and collaborator-moderated discussion threads, aimed at addressing project limitations and suggesting changes~\cite{GITHUBHELP}. Studies centered on analysing issues, such as those analysing issue comments~\cite{ISSUES}, require selecting repositories that have either open or closed issues.
     \item \textit{The number of pull requests: both open and total}
     \\Pull requests are changes proposed to a repository by project contributors, which through their dedicated discussion threads, are either accepted or rejected by the core development team~\cite{GITHUBHELP}. Studies focusing on analysing aspects of pulls, such as those analysing the characteristics of accepted and rejected pull requests~\cite{PULLS}, require a sample of repositories that have them.
     \item \textit{The project labels}
@@ -45,11 +44,11 @@ The following is a list of all the data that we have chosen to mine for reposito
     \item \textit{Whether the project is archived}
     \\Project archiving was introduced as a means of signalling to users that the project is discontinued and that it is no longer maintained by its authors and collaborators~\cite{ARCHIVINGREPOS}.
     \item \textit{Whether the project has a wiki}
-    \\Wikis are pages dedicated to hosting the documentation of a project~\cite{WIKIS}. The presence of a wiki may indicate that a project is well documented. While this can be an indication, it isn't a guarantee since some wikis may just be empty.
+    \\Wikis are pages dedicated to hosting the documentation of a project~\cite{WIKIS}. The presence of a wiki may indicate that a project is well documented. While this can be an indication, it is not a guarantee, since some wikis may just be empty.
 \end{itemize}
 
 \noindent
-The following information, although not subject to many studies, is useful for bookkeeping:
+Although not subject to many studies, the following information is useful for bookkeeping:
 
 \begin{itemize}
     \item \textit{The name of the default project branch}
@@ -57,13 +56,33 @@ The following information, although not subject to many studies, is useful for b
     \item \textit{The secure hash algorithm (SHA) hash of the last commit}
 \end{itemize}
 
-\noindent
-The relational schema of the application database used to store the previously described information is shown in Figure~\ref{fig:1}.
-
 \newpage
-\begin{figure}[ht!]
+
+\noindent
+Having outlined the information relevant to a repository, the following schema (shown in Figure~\ref{fig:1}) has been constructed for the database:
+
+\begin{itemize}
+    \item \code{repo}
+    \\Table dedicated to storing all the statistical information (excluding the labels and languages) related to a repository. This includes everything from the repository \code{name}, whether the repository is a fork of an existing repository (\code{is_fork}), whether the repository \code{is_archived}, whether its wiki is enabled (\code{has_wiki}), the \code{main_language} of a repository, the name of the \code{default_branch}, the assigned repository \code{license}, the external project \code{homepage}, the \code{size} of the repository in bytes, the date of creation, last update, last commit and last push (\code{created_at}, \code{updated_at}, \code{committed_at} and \code{pushed_at} respectively), the number of \code{branches}, \code{releases}, \code{contributors}, \code{watchers}, \code{stargazers}, \code{forks}, \code{total_issues}, \code{open_issues}, \code{total_pull_requests} and \code{open_pull_requests}.
+    %The \code{crawled} column is used only for debugging purposes, and signifies the date and time at which the record has been created.
+    \item \code{repo_language}
+    \\Given that each repository can have anywhere between no languages (in the case of empty repositories) and many languages, it was necessary to separate repository languages into a dedicated table, and link it to the repository table via a many-to-one relationship. Each row of this table stores a reference to a repository (\code{repo_id}), the name of the language that repository uses (\code{repo_language_name}), and the cumulative file size in bytes for that particular language (\code{size_of_code}).
+    \\Keep in mind that the \code{main_language} of a repository is also present in this table. While \code{repo} only keeps the name of the \code{main_language}, \code{repo_label} also stores the size the language takes up.
+    \item \code{repo_label}
+    \\As is the case with languages, a repository can have many labels, or no labels at all. Each row of this table stores a reference to a repository (\code{repo_id}) and the name of the label said repository uses (\code{repo_label_name}).
+    \item \code{access_token}
+    \\Table dedicated to storing the access tokens for the miner, which are required to use the GitHub API\@. The original idea was to use multiple tokens during mining, and switch out tokens whenever their request rate limit was exceeded. This idea was scrapped due to GitHub easily detecting when multiple tokens were associated to an IP address, and suspending the accounts linked to these tokens.
+    \item \code{supported_language}
+    \\Responsible for storing the languages which will be mined by the application.
+    \item \code{crawl_job}
+    \\Responsible for keeping track of the mining progress for each of the supported languages. Every \code{crawl_job} is mapped to exactly one \code{supported_language}. The \code{crawled} column stores the lower bound of the date and time interval up to which the repositories have been mined for a language, while the upper bound of the interval is the beginning of 2008\footnote{The start of the year during which GitHub was founded was chosen as the lower bound for repository mining.}. If there is no entry for a specific language, then no repositories have been mined for that language.
+\end{itemize}
+
+Note that the \code{crawled} column of \code{repo}, \code{repo_label} and \code{repo_language}, as well as the \code{added} column of \code{crawl_job} and \code{supported_languages} were only used for debugging purposes, and represent the date and time at which the database records were created.
+
+\begin{figure}[h!]
     \centering
-    \includegraphics[width=0.75\linewidth]{relational}
+    \includegraphics[width=0.7\linewidth]{relational}
     \caption{The relational schema of the database}
     \label{fig:1}
 \end{figure}
@@ -72,19 +91,35 @@ The relational schema of the application database used to store the previously d
 \section{The Mining Algorithm}
 
 The mining algorithm is the core of our search engine.
-In broad terms, the miner is responsible for mining all the public projects written in a certain language, from a set of languages supported by the app.
-Once all the repositories have been mined for one specific language, the miner moves on to the next one.
-It's important to note that the miner currently prioritises repositories consisting predominantly of code written in more popular languages such as JavaScript, Python and C++.
-\\\\
-\noindent
+In broad terms, the miner is responsible for mining all the public projects written in certain languages, from oldest to newest created.
+It is important to note that the miner currently prioritises repositories consisting predominantly of code written in more popular languages, which include: Java, Kotlin, C, C++, Python, JavaScript and TypeScript.
+Since mining is sequentially performed for each language, all the repositories of one language have to be mined before moving to the next one.
 The mining algorithm works as follows:
-\begin{itemize}
-    \item It first looks at the \textit{CrawlJob} table of the database. Since that table indicates the date up to which repositories were mined for a particular language, it uses that information to limit the crawl interval. If no prior ``crawl jobs'' exist, then \textit{January 1st 2008} is chosen as the starting date for the mine, selecting one of the supported languages to crawl first. However if there were prior ``crawl jobs'' for particular languages, then the crawler would simply resume crawling from the date it has acquired information to so far. Although the crawling interval lower bound would either be the start of 2008 or the date that data was mined up to so far, the upper bound would always be the time at which the crawl job was started.
-    \item The application then makes a call to the GitHub API, requesting all public projects (fork projects included) created within the aforementioned time interval of a language. By analysing GitHub's response:
-    \begin{itemize}
-        \item If the number of repositories returned matching this criteria is greater than 1000, then the time interval is split in half, and the API call is repeated for each of the new intervals;
-        \item If the number of repositories returned matching this criteria is less than or equal to 1000, then we iterate over each of the results, making additional API calls to retrieve the labels and languages of each of the repositories, as well as scraping the repository web pages for any of the data not obtainable by the API\@. Once all the auxiliary data has been acquired, the date value for the crawl job table for that language is updated to the interval upper bound.
-    \end{itemize}
-\end{itemize}
 
+The application retrieves the list of all supported languages from the \code{supported_language} table.
+For each language, the application then checks if any prior mining has been conducted for said language, by looking at its associated record in the \code{crawl_job} table.
+If no prior mining was conducted for the language, the application mines all repositories created between January 1st 2008 and two hours before the mining process was started\footnote{Due to the fact that it takes time for GitHub's internal database to sync newly created projects, its best to avoid mining anything created within the past 2 hours.}.
+Conversely, the mining is resumed from the date indicated in the database, and the application mines all repositories created and updated\footnote{The reason as to why we need to mine repositories updated in that time frame, is to account for any changes to records already existing in the application database.} between that date and two hours before the mining process was started.
+
+Having selected a time interval for mining a language, there may be more repositories than can be retrieved by the GitHub API\@.
+To work around this issue, if a time interval has too many results, then we split it into more manageable chunks.
+Interval mining is performed in the following manner:
+\begin{enumerate}
+    \item A ``request stack'' is defined, used for storing future mining intervals. The first element of the data structure will always be the broad mining interval of a language, described previously in more detail.
+    \item We take a date interval from the top of the stack. Said interval is passed to a GitHub API call, requesting all projects and associated forks of a certain language created during that time. If the stack is empty, then the crawl is finished.
+    \item Depending on the number of total results returned in the response:
+    \begin{enumerate}
+        \item If the number of results is greater than 1000, then the time interval is split in half, and the two new intervals are pushed to the stack\footnote{In order to ensure that the newly obtained intervals are sequentially traversed, the second interval is pushed first followed by the first interval.}. Go back to 2.
+        \item Otherwise, we iterate over the result list. For each result:
+        \begin{enumerate}
+            \item Scrape the missing information from the repository web-page, and save the full record to the database.
+            \item Using the GitHub API, retrieve the repository labels, and save them to the
+            \\database.
+            \item Using the GitHub API, retrieve the repository languages, and save them to the database.
+        \end{enumerate}
+        \item After iterating through all the results, go back to 2.
+    \end{enumerate}
+\end{enumerate}
+
+\newpage
 \section{Application Architecture}
