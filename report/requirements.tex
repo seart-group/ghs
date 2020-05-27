@@ -43,8 +43,7 @@ While it did offer a plethora of functionalities out of the box, several additio
 Although the initial suggestion was to deploy the application in a single Docker container, it was easier to write a compose configuration and deploy each of its major components (front-end, back-end and database) in their own respective containers. The three containers include:
 \begin{itemize}
     \item A database container, which based on the \textit{mysql}\footnote{\url{https://hub.docker.com/_/mysql}} image hosts the application database;
-    \item An application container, which based on a \textit{maven-chrome}\footnote{\url{markhobson/maven-chrome
-    }} image hosts the application back-end;
+    \item An application container, which based on a \textit{maven-chrome}\footnote{\url{https://hub.docker.com/r/markhobson/maven-chrome}} image hosts the application back-end;
     \item A front-end container, which based on an \textit{nginx}\footnote{\url{https://hub.docker.com/_/nginx}} image supplies the client with the web page HTML\@.
 \end{itemize}
 
