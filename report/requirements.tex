@@ -9,7 +9,7 @@ Having outlined the issues of existing tools, it became apparent that in order t
     \item Present all the mined repository information in a clear and concise manner;
     \item Offer an intuitive and easy to use user interface (UI) for querying;
     \item Provide the user with immediate access to the full set of the search results;
-    \item Allow the user to export the entire search result set.
+    \item Allow the user to export the entire search result set in an easy-to-parse format.
 \end{itemize}
 
 While most of these demands are somewhat easy to meet, their success heavily depends on how the mining algorithm and application back-end (database schema and API) are implemented.
@@ -18,8 +18,7 @@ The exact implementation details will be discussed in the upcoming chapter.
 \section{Tools and Technologies Used}
 
 It was decided at during the early stages of the project that the back-end was to be written in Java, using the popular Spring Boot Framework.
-Seeing as though it is one of the most commonly used and well-documented frameworks for back-end web development, using it only made sense.
-Additional plugins necessary for the implementation consisted of:
+The latter is one of the most commonly used and well-documented frameworks for back-end web development. Additional plugins necessary for the implementation were:
 \begin{itemize}
     \item Java Persistence API (JPA)\footnote{\url{https://www.oracle.com/java/technologies/persistence-jsp.html}} for managing the relational schema;
     \item Hibernate\footnote{\url{https://hibernate.org}} as the object-relational mapping (ORM) tool;
@@ -51,7 +50,7 @@ Although the initial suggestion was to deploy the application in a single Docker
 \newpage
 \section{Development Timeline}
 
-The development of the project can be broken up into several month-log phases:
+The development of the project can be broken up into several month-long phases:
 \begin{enumerate}
     \item Phase ``zero'', spanning from mid to late February, was the preparation phase. It was during this time that the project description and study materials were sent by the supervisor.
     \item Phase one, spanning the month of March and first week of April was dedicated to the development of the application back-end. Everything, from the crawling algorithm, to the database schema and application API was done in this period.
