@@ -135,17 +135,29 @@ A full overview of the system can be seen in Figure~\ref{fig:2}.
 
 \subsection{GitHub API Service}
 
-The API Service is a component dedicated entirely to making REST requests to the GitHub API\@.
+The API Service is a component dedicated entirely to making REST requests to the GitHub Core and Search APIs.
 It is exclusively used by the miner, which provides it with mining-specific arguments, such as time intervals to mine, the name of the language whose repositories we wish to mine, and the access tokens required to authenticate the requests.
-All obtained responses are passed directly back to the miner for further processing, decision-making and storage.
+All of the aforementioned requests are performed through a single OkHttp Client instance, created on application startup.
+Obtained responses are passed directly back to the miner for further processing, decision-making and storage.
 Supported methods of the GitHub API layer include:
 \begin{enumerate}
     \item Verifying if an access token has not exceeded its request limit;
-    \item Retrieving repositories and associated forks written in a specified language, created or updated during a certain time period;
-    \item Retrieving the labels of a repository; and
-    \item Retrieving the languages of a repository.
+    \item Retrieving a set of repositories and associated forks written in a specified language, created or updated during a certain time period;
+    \item Retrieving the labels of a specific repository; and
+    \item Retrieving the languages of a specific repository.
 \end{enumerate}
-All of the aforementioned requests are performed through a single OkHttp Client, instantiated on application startup.
+
+The latter of the three retrieval methods are core to the function of the miner.
+Repository retrieval method is used when crawling intervals, while the methods for retrieving labels and languages are invoked when iterating over the repository result set.
+This is due to the fact that for each mined repository, we also have to mine its associated labels and languages.
+Comparing the usage of the methods, every call to the repository retrieval method may results in up to 1000 calls to the label and language retrieval methods.
+In terms of GitHub's rate limits, this does not present an issue, as the API limits repository set retrieval and repository label/language retrieval to 1800 and 5000 authenticated requests per hour respectively~\cite{APISEARCH,RATELIMIT}.
+
+The token verification procedure on the other hand sees no active usage.
+It was originally intended for use in token switching during mining.
+If a token was to exceed its allowed limit of requests, the miner would have to wait until the request rates replenish (which GitHub does on an hourly basis).
+To circumvent this, the method was supposed to verify if a token has to be replaced with a fresh one from the database.
+However, given the current mining speed of the application (which is roughly 600 repositories per hour), token switching is not necessary, as the usage rates are replenished before they can even be fully spent.
 
 \subsection{GitHub Web Page Crawler Service}
 
@@ -204,6 +216,7 @@ By wrapping information into DTOs, we allow the server to send multiple chunks o
 An example of this would be the advanced search methods.
 Apart from serving a singular search result page to the client, the DTOs returned by the advanced search also carry auxiliary information, such as file download links, the total number of results and pages, as well as the links to the next, previous, first and last pages.
 
+\newpage
 \subsection{REST Controllers}
 
 In order for the application to communicate with clients, it must possess a layer to accept front-end requests, retrieve the desired information through the repository service layer, and return the information to the client, which the client processes and presents to the user. We split the application's RESTful services into two categories:
