@@ -1,0 +1,32 @@
+\chapter{Conclusion}\label{ch:6}
+
+\section{Results}
+
+\section{Future Improvements}
+
+\subsection{Interval Mining Parallelization}
+
+The use of multiple parallelized miners would significantly increase the overall performance of the mining algorithm.
+Parallelism allows the application to mine multiple languages at once, or even multiple intervals for a single language.
+Using concurrent threads also allows the miner to create dedicated threads for mining new data, as well as threads dedicated to keeping mined data up to date.
+
+Although multiple miner threads perform better than a single one, they do introduce their own issues into the mix.
+Due to GitHub's host IP to token association, multiple miners on one machine would not be able to mine for long before being invalidated by GitHub's back-end.
+They would not only have to use their own tokens, but also be placed on their own machines, or use IP masks and proxies to avoid detection.
+Since each miner would access the same database information, we also have to employ resource locks to avoid conflicts.
+All usable access tokens are kept in the same database table, and the application has to keep track of currently used tokens.
+
+Furthermore, there are several consistency issues that would require a rework of how the app keeps track of language mining.
+Crawl jobs currently only keep track of the lower mining bound.
+The coverage for a language therefore starts from \textit{2008-01-01} up to the date stored in the database.
+By employing parallel mining processes, the application would have to take into account when later mining jobs finish before previously stared ones.
+For example let us say that the application mines three sequential intervals for a language: A, B and C\@.
+If the interval B is mined before A, the current crawl job would schema would not be able to store that the B interval has been mined, without also assuming that A was mined as well.
+Such assumptions should not be made lightly, as sudden internet connection or GitHub server failures can cause the process to prematurely end.
+The solution is to keep track of both the interval start date, as well as the end date.
+Once the application finishes crawling an interval, it checks which interval it can merge it to in the database.
+This would however be more costly compared to how the application currently updates crawl coverage information.
+
+\subsection{Result Exporting}
+
+%The application currently exports
