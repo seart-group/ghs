@@ -1,6 +1,6 @@
-\chapter{Implementation}\label{ch:4}
+\chapter{Back-end Implementation}\label{ch:4}
 
-The following sections will discuss the application implementation in more detail.
+The following sections will discuss the server implementation in more detail.
 It will cover the relational schema chosen for storing the repository information in the database, the mining algorithm with which the application retrieves the repository data from the GitHub API and repository web-pages, and lastly the components that make up the architecture of the application.
 
 \section{Relational Schema}
@@ -232,7 +232,7 @@ In order for the application to communicate with clients, it must possess a laye
         \item A method for retrieving all licenses encountered throughout mining.
         \item A method for retrieving language related statistics, such as the amount of mined repositories for each language.
     \end{itemize}
-    The last 4 methods are not directly accessible by the user, but are instead automatically invoked by the front-end on page load, either for pre-fetching autocomplete suggestions, or the mining statistics for the statistics graph.
+    The last 4 methods are not directly accessible by the user, but are instead automatically invoked by the front-end on page load, either for pre-fetching autocomplete suggestions, or the mining progress for the statistics graph.
     \item Controllers used for administrative, debugging and maintenance purposes.
     \\Unlike the previous set of methods, these methods are not accessible to the pubic. Only the project developers and maintainers working on the project should have repository write privileges. Furthermore, there are also certain database entries that should only be accessible to the project collaborators. With that being said, administrative controller methods include:
     \begin{itemize}
