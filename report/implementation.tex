@@ -1,24 +1,24 @@
 \chapter{Back-end Implementation}\label{ch:4}
 
-The following sections will discuss the server implementation in more detail.
-It will cover the relational schema chosen for storing the repository information in the database, the mining algorithm with which the application retrieves the repository data from the GitHub API and repository web-pages, and lastly the components that make up the architecture of the application.
+The following sections will present the implementation of our tool in more detail.
+It will cover the relational schema chosen for storing the repository information in the database, the mining algorithm with which the application retrieves the repository data from the GitHub API and repository web-pages and, lastly, the components that make up the architecture of the application.
 
 \section{Relational Schema}
 
-In order to design the relational schema for the database, we first have to pose the question: What information is relevant to a repository?
+In order to design the relational schema for the database, we first have to pose the question: \emph{Which information is relevant to select software repositories for MSR studies?}
 Although the introduction only briefly skimmed over some examples of useful data, there are many other characteristics based on which researchers may want to limit their selection.
 The following is a list of all the data that we have chosen to mine for repositories, as well as explanations on why said data may be valuable to researchers:
 \begin{itemize}
     \item \textit{The full repository name, formatted as:} \code{user_name/repo_name}
-    \\The identifier of a repository. While multiple repositories from different owners can have the same name (which makes sense to accommodate forks), a single user can't create multiple repositories of the same name.
+    \\The identifier of a repository. While multiple repositories from different owners can have the same name (which makes sense to accommodate forks), a single user cannot create multiple repositories with the same name..
     \item \textit{An indication as to whether a project is a fork of an existing project.}
-    \\Forking is central to the Git ecosystem. However in some cases, researchers may want to exclude forks when sampling, as they contain little to no modifications made on the original. Due to how easily they can be created, ``forks with no changes'' may not harbor any useful information to a study, and only serve to bloat a dataset~\cite{FORKS}. On the other hand, researchers may also want to limit the study to only forks of a popular project.
+    \\Forking is central to the Git ecosystem. However in some cases, researchers may want to exclude forks when sampling, as they contain little to no modifications made to the forked project. Due to how easily they can be created, ``forks with no changes'' may not harbor any useful information to a study, and only serve to bloat a dataset~\cite{FORKS}. On the other hand, researchers may also want to limit the study to only forks of a popular project, with the goal of observing which features of the forked projects may have changed across various forks or, more in general, to answer specific research questions about forks.
     \item \textit{The number of commits.}
     \\The number of commits is by far the most commonly observed attribute for determining the scope of a project, as they equate to checkpoints in development. It is very common for inactive or small personal projects (which comprises the majority of projects on GitHub~\cite{COMMITS}) to have a low number of commits.
     \item \textit{The number of branches.}
-    \\Branches represent several lines in development of a software project~\cite{GIT}. They too are good indicators of project scope, as most serious projects use more than the single default branch.
+    \\Branches represent several lines in development of a software project~\cite{GIT}. They too are good indicators of project scope, as more serious projects generally use more than the single default branch.
     \item \textit{The number of releases.}
-    \\Releases are GitHub's method of packaging and providing software to users~\cite{GITHUBHELP}. Due to the feature being mostly utilised in bigger projects, the number of releases can also be used as a filter for determining how ``big'' a project is.
+    \\Releases are GitHub's method of packaging and providing software to users~\cite{GITHUBHELP}. Such a selection criterion is particularly useful for studies focusing on release-level analysis (e.g., on automatically generating release notes).
     \item \textit{The number of contributors.}
     \\As the name suggests, project contributors are GitHub users who have contributed to a project, albeit not as part of the core development team~\cite{GITHUBHELP}. A high contributor count in a public repository is a good indication of how much the community is engaged in a project. It should be of no surprise that personal projects tend not to have high contributor counts.
     \item \textit{The number of watchers.}
@@ -26,23 +26,23 @@ The following is a list of all the data that we have chosen to mine for reposito
     \item \textit{The number of stars.}
     \\Stars were introduced in 2012 as an alternative way of keeping track of interesting projects without receiving notifications~\cite{STARS}. In essence, a project's star count is attributed to its notoriety on the platform. Given how the default sorting order for both the Advanced Search and API is by stars, projects with higher star counts appear first in searches, making them more popular.
     \item \textit{Project size}
-    \\A lot of the aforementioned project characteristics were linked to the symbolic size of the project: how well known it is within the community, and how much the community cares about it. It is equally as important to take the literal size of a project, as in the amount of physical space its files take up.
+    \\A lot of the aforementioned project characteristics were linked to the symbolic size of the project: how well-known it is within the community, and how much the community cares about it. It is also as important to take the literal size of a project, as in the amount of physical space its files take up.
     \item \textit{Date of creation, last update, last commit and last push}
     \\Filtering by created date allows researchers to focus exclusively on repositories from a restricted time frame, while dates such as the date of last update or commit provide a good indication into whether a project is still active, or if it has been abandoned.
     \item \textit{The total set of programming languages in a project}
     \\As important as the predominant language is, some studies may also require a complete overview of all languages present in a project.
     \item \textit{The main programming language of a project.}
-    \\While repositories tend to house a variety of files written in different languages, a project usually tends have the highest files from a certain language. Such a language, with the highest degree of presence in a project is ofter referred to as the \textit{main language} of that project. Some studies, such as those focusing on correlating the language of a project with its code quality~\cite{QUALITY}, are dependant on the ability to filter projects based on the predominant language.
+    \\While repositories tend to house a variety of files written in different languages, a project usually tends to have the majority of its files written in a specific language. Such a language with the highest degree of presence in a project is ofter referred to as the \textit{main language} of that project. Some studies, such as those focusing on correlating the language of a project with its code quality~\cite{QUALITY}, are dependent on the ability to filter projects based on the predominant language.
     \item \textit{The number of issues: both open and total}
     \\Issues are community-launched and collaborator-moderated discussion threads, aimed at addressing project limitations and suggesting changes~\cite{GITHUBHELP}. Studies centered on analysing issues, such as those analysing issue comments~\cite{ISSUES}, require selecting repositories that have either open or closed issues.
     \item \textit{The number of pull requests: both open and total}
     \\Pull requests are changes proposed to a repository by project contributors, which through their dedicated discussion threads, are either accepted or rejected by the core development team~\cite{GITHUBHELP}. Studies focusing on analysing aspects of pulls, such as those analysing the characteristics of accepted and rejected pull requests~\cite{PULLS}, require a sample of repositories that have them.
     \item \textit{The project labels}
-    \\Labels are descriptive tags assigned to issues and pull requests for classification purposes~\cite{LABELS}. Filtering repositories by the labels they use allow the researcher to focus on projects that have bugs, that lack documentation for a part of their code, or projects that are reaching out to the community for help with issues.
+    \\Labels are descriptive tags assigned to issues and pull requests for classification purposes~\cite{LABELS}. Filtering repositories by the labels they use allow the researcher to focus on specific development activities, such as code refactoring and documentation issues.
     \item \textit{Project license}
     \\While on the surface mining the licensing information of a project makes sense for bookkeeping purposes, said data may be of use to researchers as well. Several studies were conducted with respect to repository licensing, examples include the effect of licensing bugs on the projects that use them~\cite{LICENSEBUGS}, along with how certain license usage and changes in one project effects other projects depending on them~\cite{LICENSECHANGE}.
     \item \textit{Whether the project is archived}
-    \\Project archiving was introduced as a means of signalling to users that the project is discontinued and that it is no longer maintained by its authors and collaborators~\cite{ARCHIVINGREPOS}.
+    \\Project archiving was introduced as a means of signalling to users that the project is discontinued and that it is no longer maintained by its authors and collaborators~\cite{ARCHIVINGREPOS}. Researchers can use this information to filter out inactive projects from samples they wish to study.
     \item \textit{Whether the project has a wiki}
     \\Wikis are pages dedicated to hosting the documentation of a project~\cite{WIKIS}. The presence of a wiki may indicate that a project is well documented. While this can be an indication, it is not a guarantee, since some wikis may just be empty.
 \end{itemize}
@@ -125,6 +125,8 @@ Interval mining is performed in the following manner:
 
 This following section will explore the architecture of the application server, as well as how each of the components interact to create a cohesive system.
 A full overview of the system can be seen in Figure~\ref{fig:2}.
+Since the previous sections were exclusively dedicated to the mining algorithm and database structure, there is not much need to talk about their components.
+The following sections will however focus on the GitHub API Service, GitHub Web-page Crawler Service, Database Services and the REST Controllers.
 
 \begin{figure}[h!]
     \centering
@@ -201,20 +203,21 @@ The former should only be used in case the desired information could not be retr
 \subsection{Database Services}
 
 To further modularise the application code, I opted to use a service layer when storing, modifying or retrieving data from the database.
-
-This service layer is primarily used by the miner for storing and modifying mined repositories.
-Each repository retrieved is mapped to an entity representation, before being passed on to service layer.
-The service layer houses all the logic necessary to determine if the object needs to be stored into a fresh record, or if an existing database record has to be modified.
+This service layer is used by other components for retrieving, storing and modifying database information.
+Take the repository miner for example.
+Each repository retrieved is mapped to an entity representation, before being passed to service layer.
+The service layer houses all the logic necessary to both determine if the object needs to be stored as a new database record, or if an existing record has to be modified.
 
 The REST Controllers also communicate with the Service layer, as they are directly in charge of presenting data from the database to the client.
-Whenever a client makes a request, the controller method handling the request invokes a dedicated service layer access method.
-It then returns the data obtained from the service layer back to the client.
-Furthermore, there are also controller methods not exposed to the client, usable by administrators and maintainers for modifying certain database records, in particular related to supported languages, access tokens, and crawl jobs.
+Whenever a client makes a request, the controller method handling the request invokes a dedicated service layer method to access the information.
+The service then returns the obtained data back to the requesting controller, which in turn propagates the data to the client.
+Furthermore, there are also controller methods not exposed to the client that use database services to modify records.
+These are only intended for use by the project maintainers.
 
 It is important to note that the Repository Service layer heavily utilises Data Transfer Objects (DTOs)\footnote{\url{https://en.wikipedia.org/wiki/Data_transfer_object}} when communicating with other components.
 By wrapping information into DTOs, we allow the server to send multiple chunks of information in one response.
 An example of this would be the advanced search methods.
-Apart from serving a singular search result page to the client, the DTOs returned by the advanced search also carry auxiliary information, such as file download links, the total number of results and pages, as well as the links to the next, previous, first and last pages.
+Apart from serving a page of results to the client, the DTOs returned by the advanced search also carry auxiliary information, such as file download links, the total number of results and pages, as well as the links to the next, previous, first and last pages.
 
 \newpage
 \subsection{REST Controllers}
@@ -223,7 +226,9 @@ In order for the application to communicate with clients, it must possess a laye
 
 \begin{itemize}
     \item Controller methods used for accessing data related to mined repositories.
-    \\These methods are directly used by the front-end for retrieving information from the database, with the purpose of presenting it to the user. Front-end accessible methods only support GET requests, meaning that the client has no inherent write access to the database. These methods include:
+    \\These methods are directly used by the front-end for retrieving information from the database, with the purpose of presenting it to the user.
+    Front-end accessible methods only support GET requests, meaning that the client has no inherent write access to the database.
+    These methods include:
     \begin{itemize}
         \item A method for retrieving a paginated list of mined repositories based on specified parameters.
         \item A method for retrieving a full result list of mined repositories based on specified parameters, either as a CSV, XML or JSON file.
@@ -232,12 +237,15 @@ In order for the application to communicate with clients, it must possess a laye
         \item A method for retrieving all licenses encountered throughout mining.
         \item A method for retrieving language related statistics, such as the amount of mined repositories for each language.
     \end{itemize}
-    The last 4 methods are not directly accessible by the user, but are instead automatically invoked by the front-end on page load, either for pre-fetching autocomplete suggestions, or the mining progress for the statistics graph.
+    The last 4 methods are not directly accessible by the user, but are instead automatically invoked by the front-end on page load, either for pre-fetching typeahead suggestions, or the mining progress for the statistics graph.
     \item Controllers used for administrative, debugging and maintenance purposes.
-    \\Unlike the previous set of methods, these methods are not accessible to the pubic. Only the project developers and maintainers working on the project should have repository write privileges. Furthermore, there are also certain database entries that should only be accessible to the project collaborators. With that being said, administrative controller methods include:
+    \\Unlike the previous set of methods, these methods are not accessible to the pubic.
+    Only the project developers and maintainers working on the project should have repository write privileges.
+    Furthermore, there are also certain database entries that should only be accessible to the project collaborators.
+    With that being said, administrative controller methods include:
     \begin{itemize}
         \item Methods used for retrieving, adding, and deleting access tokens used by the miner.
         \item Methods used for adding and deleting supported languages.
-        \item Methods used for retrieving the mining progress of all the languages.
+        \item Methods used for retrieving and modifying the mining progress of all the languages.
     \end{itemize}
 \end{itemize}
