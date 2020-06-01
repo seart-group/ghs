@@ -1,25 +1,27 @@
 \chapter{Implementation}\label{ch:4}
 
-The following sections will discuss the application implementation in more detail.
-It will cover the relational schema chosen for storing the repository information in the database, the mining algorithm with which the application retrieves the repository data from the GitHub API and repository web-pages, and lastly the components that make up the architecture of the application.
+The following sections will present the implementation of our tool in more detail.
+It will cover the relational schema chosen for storing the repository information in the database, the mining algorithm with which the application retrieves the repository data from the GitHub API and repository web-pages and, lastly, the components that make up the architecture of the application.
 
 \section{Relational Schema}
 
-In order to design the relational schema for the database, we first have to pose the question: What information is relevant to a repository?
-Some of the obvious ones include details like the repository name or number of stars, and commits come to mind.
-Although the introduction only briefly skimmed over some examples of useful data, there are other kinds of characteristics, based on which researchers may want to limit their selection.
-The following is a list of all the data that we have chosen to mine for repositories, as well as an explanation on why they are key characteristics of a project:
+\textcolor{red}{Add a sentence to reference figure 4.1}
+
+In order to design the relational schema for the database, we have to answer the following question: \emph{Which information is relevant to select software repositories for MSR studies?}
+Some of the obvious ones include details like the repository name, number of stars, and number of commits in the change history.
+Although the introduction only briefly skimmed over some examples of useful data, there are other kinds of projects characteristics based on which researchers may want to select the study sample.
+The following is a list of all the data that we have chosen to mine for each repository, as well as an explanation on why they are key characteristics of a project:
 \begin{itemize}
     \item \textit{The full repository name, formatted as:} \code{user/repo_name}
-    \\Multiple repositories from different owners can have the same name (which makes sense to accommodate forks), but a single user can't create multiple repositories of the same name.
+    \\Multiple repositories from different owners can have the same name (which makes sense to accommodate forks), but a single user cannot create multiple repositories with the same name.
     \item \textit{An indication as to whether a project is a fork of an existing project.}
-    \\Forking is central to the Git ecosystem. However in some cases, researchers may want to exclude forks when sampling, as they contain little to no modifications made on the original. Due to how easily they can be created, ``forks with no changes'' may not harbor any useful information to a study, and only serve to bloat a dataset~\cite{FORKS}. On the other hand, researchers may also want to limit the study to only forks of a popular project, with the goal of observing which features of the original may have changed across various forks.
+    \\Forking is central to the Git ecosystem. However in some cases, researchers may want to exclude forks when sampling, as they contain little to no modifications made to the forked project. Due to how easily they can be created, ``forks with no changes'' may not harbor any useful information to a study, and only serve to bloat a dataset~\cite{FORKS}. On the other hand, researchers may also want to limit the study to only forks of a popular project, with the goal of observing which features of the forked projects may have changed across various forks or, more in general, to answer specific research questions about forks.
     \item \textit{The number of commits.}
     \\The number of commits is by far the most commonly observed attribute for determining the scope of a project, as they equate to checkpoints in development. It is very common for ``toy projects'' or repositories misusing GitHub as an online storage service to have a low number of commits, which is why they should be filtered out during selection.
     \item \textit{The number of branches.}
-    \\Branches represent several lines in development of a software project~\cite{GIT}. They too are good indicators of project scope, as most serious projects use more than the single default branch.
+    \\Branches represent several lines in development of a software project~\cite{GIT}. They too are good indicators of project scope, as more serious projects generally use more than the single default branch.
     \item \textit{The number of releases.}
-    \\Releases are GitHub's method of packaging and providing software to users~\cite{GITHUBHELP}. Due to the feature being mostly utilised in bigger projects, the number of releases can also be used as a filter for determining how ``big'' a project is.
+    \\Releases are GitHub's method of packaging and providing software to users~\cite{GITHUBHELP}. Such a selection criterion is particularly useful for studies focusing on release-level anaysis (e.g., on automatically generating release notes). 
     \item \textit{The number of contributors.}
     \\As the name suggests, project contributors are GitHub users who have contributed to a project, albeit not as part of the core development team~\cite{GITHUBHELP}. A high contributor count in a public repository is a good indication of how much the community is engaged in a project. It should be of no surprise that personal projects tend not to have high contributor counts.
     \item \textit{The number of watchers.}
@@ -27,18 +29,18 @@ The following is a list of all the data that we have chosen to mine for reposito
     \item \textit{The number of stars.}
     \\Stars were introduced in 2012 as an alternative way of keeping track of interesting projects without receiving notifications~\cite{STARS}. In essence, a project's star count is attributed to its notoriety on the platform. Given how the default sorting order for both the Advanced Search and API is by stars, projects with higher star counts appear first in searches, making them more popular.
     \item \textit{Project size}
-    \\A lot of the aforementioned project characteristics were linked to the symbolic size of the project: how well known it is within the community, and how much the community cares about it. It is equally as important to take the literal size of a project, as in the amount of physical space its files take up. It should be of no surprise that big projects have more files, and take up more space as a result.
+    \\A lot of the aforementioned project characteristics were linked to the symbolic size of the project: how well-known it is within the community, and how much the community cares about it. It is also important to take the literal size of a project, as in the amount of physical space its files take up. It should be of no surprise that big projects have more files, and take up more space as a result.
     \item \textit{Date of creation, last update, last commit and last push}
     \\Filtering by created date allows researchers to focus exclusively on repositories from a restricted time frame, while dates such as the date of last update or commit provide a good indication into whether a project is still active, or if it has been abandoned.
     \item \textit{The total set of languages in a project}
     \\As important as the predominant language is, some studies may also require a complete overview of all languages present in a project.
     \item \textit{The main programming language of a project.}
-    \\While repositories tend to house a variety of files written in different languages, a project usually tends have the highest files from a certain language. Such a language, with the highest degree of presence in a project is ofter referred to as the \textit{main language} of that project. Some studies, such as those focusing on correlating the language of a project with its code quality~\cite{QUALITY}, are dependant on the ability to filter projects based on the predominant language.
-    \item \textit{The project labels}
-    \item \textit{The number of issues: both open and total}
-    \item \textit{The number of pull requests: both open and total}
-    \item \textit{Whether the project has a wiki}
-    \item \textit{Whether the project is archived}
+    \\While repositories tend to house a variety of files written in different languages, a project usually tends to have the majority of its files written in a specific language. Such a language with the highest degree of presence in a project is ofter referred to as the \textit{main language} of that project. Some studies, such as those focusing on correlating the language of a project with its code quality~\cite{QUALITY}, are dependent on the ability to filter projects based on the predominant language.
+    \item \textit{The project labels} \textcolor{red}{Useful if researchers want to study specific development activities (e.g., refactoring, documentation issues). They can look for repos using related labels.}
+    \item \textit{The number of issues: both open and total} \textcolor{red}{Useful if the research focuses on bugs, also useful to identify bug-fixing commits by linking issues and commits.}
+    \item \textit{The number of pull requests: both open and total} \textcolor{red}{To study code review activities}
+    \item \textit{Whether the project has a wiki} \textcolor{red}{Documentation-related studies}
+    \item \textit{Whether the project is archived} \textcolor{red}{To exclude inactive projects}
     \\Archived projects
 \end{itemize}
 
@@ -61,7 +63,7 @@ It's important to note that the miner currently prioritises repositories consist
 \noindent
 The mining algorithm works as follows:
 \begin{itemize}
-    \item It first looks at the \textit{CrawlJob} table of the database. Since that table indicates the date up to which repositories were mined for a particular language, it uses that information to limit the crawl interval. If no prior ``crawl jobs'' exist, then \textit{January 1st 2008} is chosen as the starting date for the mine, selecting one of the supported languages to crawl first. However if there were prior ``crawl jobs'' for particular languages, then the crawler would simply resume crawling from the date it has acquired information to so far. Although the crawling interval lower bound would either be the start of 2008 or the date that data was mined up to so far, the upper bound would always be the time at which the crawl job was started.
+    \item It first looks at the \textit{CrawlJob} table of the database. Since that table indicates the date up to which repositories were mined for a particular language, it uses that information to limit the crawl interval. If no prior ``crawl jobs'' exists, then \textit{January 1st 2008} is chosen as the starting date for the mine, selecting one of the supported languages to crawl first. However if there were prior ``crawl jobs'' for particular languages, then the crawler would simply resume crawling from the date it has acquired information to so far. Although the crawling interval lower bound would either be the start of 2008 or the date that data was mined up to so far, the upper bound would always be the time at which the crawl job was started.
     \item The application then makes a call to the GitHub API, requesting all public projects (fork projects included) created within the aforementioned time interval of a language. By analysing GitHub's response:
     \begin{itemize}
         \item If the number of repositories returned matching this criteria is greater than 1000, then the time interval is split in half, and the API call is repeated for each of the new intervals;
