@@ -1,8 +1,6 @@
 \chapter{Introduction}
 
-\section{Software Repository Mining}
-
-The field of mining software repositories (MSR) is an active and flourishing research area.
+The field of Mining Software Repositories is an active and flourishing research area.
 By analysing the statistical data of version control repositories, researchers can unveil interesting patterns that permeate throughout many open source projects, and formulate new empirical knowledge, either about existing software or software engineering practices in general~\cite{MSR}.
 
 For example, by studying project commits, we can identify faulty code components often subject to bug-fixing activities.
@@ -27,7 +25,7 @@ These limitations usually boil down to:
 We propose a tool to overcome these limitations.
 In particular, our tool: the DEVINTA GitHub Repository Search Engine, would allow researchers to sample repositories based on a variety of statistical criteria, such as the number of stars, main language, date created, tags, etc.
 This search engine tool would not only allow the users to browse desired types of repositories, but also download full result lists in various file formats fit for use in other applications.
-In order to provide all repositories and their related data to the user, the application will have to continuously submit requests to mine GitHub's Application Programming Interface (API), as well as scrape the front-end web pages of each mined repository.
+In order to provide all repositories and their related data to the user, the application will have to continuously submit requests to mine GitHub's API, as well as scrape the front-end web pages of each mined repository.
 To ensure the integrity of data stored, the crawling algorithm would also have to periodically check for any repositories that have recently been updated, and update the database entries accordingly.
 \\\\
 \noindent
@@ -36,7 +34,6 @@ The following chapters will discuss:
     \item \hyperref[ch:2]{Tools currently in use for GitHub repository sampling};
     \item \hyperref[ch:3]{The project goals, strategies chosen to meet these goals and development timeline};
     \item \hyperref[ch:4]{The design of the back-end};
-    \item The design of the front-end;
-    \item The deployment strategy; and
-    \item Future improvements to the delivered product.
+    \item \hyperref[ch:5]{The design of the front-end}; and
+    \item \hyperref[ch:6]{Future improvements to the delivered product}.
 \end{enumerate}

@@ -6,13 +6,13 @@
 \usepackage{lipsum}
 \usepackage{mathpazo}
 \usepackage{listings}
-
-\graphicspath{{figures/}}
+\usepackage{wrapfig}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%	NEW COMMANDS %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+\apptocmd{\thebibliography}{\raggedright}{}{}
 \NewDocumentCommand{\code}{v}{\texttt{\textcolor{black}{#1}}}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -27,7 +27,7 @@
 %%%	THESIS INFORMATION %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\thesistitle{GitHub Repository Search Engine}
+\thesistitle{GitHub Repository\\\\Search Engine}
 
 %\thesissubtitle{Web application used to retrieve, store and present projects from GitHub}
 
@@ -40,7 +40,7 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \begin{document}
-
+\scrollmode
 \frontmatter
 \pagestyle{plain}
 
@@ -86,6 +86,10 @@
 
 \input{implementation}
 
+\input{user-interface}
+
+\input{conclusion}
+
 %\appendix
 
 %\input{appendix1}
@@ -97,5 +101,5 @@
 \newpage
 \bibliographystyle{unsrt}
 \bibliography{biblio}
-
+\batchmode
 \end{document}
