@@ -208,6 +208,14 @@ a.dropdown-item {
     color: #6D757D;
 }
 
+.list-inner {
+    list-style-type: lower-alpha;
+}
+
+.list-inner-inner {
+    list-style-type: lower-roman;
+}
+
 .modal-content  {
     border-radius: 0 !important;
 }
