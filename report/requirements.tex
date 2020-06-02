@@ -26,10 +26,10 @@ The latter is one of the most commonly used and well-documented frameworks for b
     \item Jsoup\footnote{\url{https://jsoup.org}} and Selenium\footnote{\url{https://www.selenium.dev}} for web-page mining;
     \item OkHttp3\footnote{\url{https://square.github.io/okhttp}} for making HyperText Transfer Protocol (HTTP) requests to the GitHub API;
     \item Jackson\footnote{\url{https://github.com/FasterXML/jackson}} and OpenCSV\footnote{\url{http://opencsv.sourceforge.net}} for converting the data into text-based formats;
-    \item Lombok\footnote{\url{https://projectlombok.org}} to ease development by reducing the amount of ``boilerplate code'' \footnote{\url{https://en.wikipedia.org/wiki/Boilerplate_code}}.
+    \item Lombok\footnote{\url{https://projectlombok.org}} to ease development by reducing the amount of ``boilerplate code''\footnote{\url{https://en.wikipedia.org/wiki/Boilerplate_code}}.
 \end{itemize}
 
-While I was given more freedom to choose any framework for developing the front-end, my supervisor advised me to ``keep it simple'' and use the popular Bootstrap framework.
+While I was given more freedom to choose any framework for developing the front-end, my supervisor advised me to ``keep it simple'' and use the popular Bootstrap\footnote{\url{https://getbootstrap.com/}} framework.
 Although I had limited knowledge of said framework, using it significantly eased development due to its overall accessibility.
 While it did offer a plethora of functionalities out of the box, several additional widgets were used to enhance the user experience:
 \begin{itemize}
@@ -42,8 +42,7 @@ While it did offer a plethora of functionalities out of the box, several additio
 Although the initial suggestion was to deploy the application in a single Docker container, it was easier to write a compose configuration and deploy each of its major components (front-end, back-end and database) in their own respective containers. The three containers include:
 \begin{itemize}
     \item A database container, which based on the \textit{mysql}\footnote{\url{https://hub.docker.com/_/mysql}} image hosts the application database;
-    \item An application container, which based on a \textit{maven-chrome}\footnote{\url{markhobson/maven-chrome
-    }} image hosts the application back-end;
+    \item An application container, which based on a \textit{maven-chrome}\footnote{\url{https://hub.docker.com/r/markhobson/maven-chrome}} image hosts the application back-end;
     \item A front-end container, which based on an \textit{nginx}\footnote{\url{https://hub.docker.com/_/nginx}} image supplies the client with the web page HTML\@.
 \end{itemize}
 
@@ -55,5 +54,5 @@ The development of the project can be broken up into several month-long phases:
     \item Phase ``zero'', spanning from mid to late February, was the preparation phase. It was during this time that the project description and study materials were sent by the supervisor.
     \item Phase one, spanning the month of March and first week of April was dedicated to the development of the application back-end. Everything, from the crawling algorithm, to the database schema and application API was done in this period.
     \item Phase two, spanning the rest of April and the first week of May, was dedicated to the implementation of the front-end web interface.
-    \item Phase three, spanning the remainder of the timeline, was dedicated to the deployment, and this report.
+    \item Phase three, spanning the remainder of the timeline, was dedicated to the deployment, final adjustments to existing components, and this report.
 \end{enumerate}

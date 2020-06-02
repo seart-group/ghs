@@ -8,7 +8,7 @@ This chapter covers both tools provided to the community by GitHub themselves, a
 GitHub itself provides two different options for searching projects:
 \begin{enumerate}
     \item GitHub's Advanced Search\footnote{\url{https://github.com/search/advanced}};
-    \item The GitHub API\footnote{\url{https://developer.github.com/v3}}\@.
+    \item The GitHub API\footnote{\url{https://developer.github.com/v3}}.
 \end{enumerate}
 Unfortunately both leave much to be desired, as merely selecting projects to analyse requires substantial effort.
 While it is indeed possible to sample projects using these tools, the following sections will focus on highlighting some of the biggest limitations that these particular services have.
@@ -16,7 +16,7 @@ While it is indeed possible to sample projects using these tools, the following 
 \subsection{Advanced Search}
 
 Let us first dissect the online Advanced Search on GitHub's website.
-Although the interface itself aids in constructing search queries through the use of separate inputs, it does require a certain degree of familiarity with its specific syntax in order to be utilised properly.
+Although the interface itself aids in constructing search queries through the use of separate inputs, it does require a certain degree of familiarity with its specific syntax~\cite{HELPSEARCH} in order to be utilised properly.
 For example: In order to retrieve all Java repositories with 100 to 1000 stars, the user has to type the following into the search input:
 \begin{verbatim}
     stars:100..1000 language:Java
@@ -34,7 +34,7 @@ Although web-scraping tools can be used to automate the information retrieval pr
 The Search API is arguably the superior official method of sampling GitHub repositories.
 Unlike the advanced search, Representational State Transfer (REST) requests made to the search API are returned in JavaScript Object Notation (JSON), making the search results easier to process and store.
 Repository-specific information provided is also an improvement, with far more descriptive data present for every search item.
-The result size, although once again limited to a thousand repositories per query, is made more easily navigable with a maximum of 100 results spanning 10 pages, as opposed to the website's 10 results per 100 pages.
+The result size, although once again limited to a thousand repositories per query, is made more easily navigable with a maximum of 100 results spanning 10 pages, as opposed to the website's 10 results per 100 pages~\cite{APISEARCH}.
 
 Although an improvement on the previously discussed advanced search, GitHub's API has a fair share of it's own distinct limitations that make it far from an optimal method for retrieving repositories.
 While it does offer more detailed results, it does not include all the useful repository statistics, even some that can regularly be found on the website.
@@ -59,24 +59,31 @@ Arguably two of the most popular are:
 \subsection{GH Archive}
 
 In project owner Ilya Grigorik's own words: ``GH Archive is a project to record the public GitHub activity, archive it, and make it easily accessible for further analysis''~\cite{GHA}.
-While this particular project is useful for observing GitHub's traffic and trends, it's rather ill-suited when it comes to sampling repositories.
+While this particular project is useful for observing GitHub's traffic and trends, it is rather ill-suited when it comes to sampling repositories.
 
-Let's say we want to sample all the Java projects from 2012.
+GHArchive mines the GitHub event stream through the use of webhooks.
+These webhooks return public events along with their metadata~\cite{APIWEBHOOKS}.
+Examples of such events include: a user creating a repository, a repository gaining a new watcher, an issue being opened or closed, a release being published etc.
+
+Lets say we want to sample all the Java projects from 2012.
 In order to do so, we have to look at all the activity spanning that period.
 Since GH Archive keeps records of activity on an hourly basis, this means that in order to sample all repositories created in the outlined time frame, we have to observe all repositories linked to ``create'' events from each hour, of each day, of each month of the year.
 This translates to scanning roughly 8.6 thousand files for said events.
-If that weren't enough, the amount of data obtained with respect to these repositories is underwhelming, as each ``create'' event only displays the most basic of details, such as the repository name, owner and master branch.
+If that were not enough, the amount of data obtained with respect to these repositories is underwhelming, as each ``create'' event only displays the most basic of details, such as the repository name, owner and master branch.
 To acquire more statistics related to individual repositories, a researcher has to look at other events linked to that repository, that took place between its creation and the present, and update the repository statistics accordingly.
 As you can already imagine, this is an overwhelming amount of data to process, just to acquire otherwise readily available statistics.
 
-With all things considered, it's due to the type of information GH Archive stores that makes it ill-suited for sampling repositories.
+With all things considered, it is due to the type of information GH Archive stores that makes it ill-suited for sampling repositories.
 
 \subsection{GHTorrent}
 
 While GH Archive focuses on documenting GitHub's event stream, GHTorrent continuously mines GitHub's API to collect all information present on the site, storing it in both relational and non-relational databases~\cite{G13}.
 
-Even though it offers the greatest depth in terms of mined information and no limitations to the amount of data a user can retrieve, it does have one issue which hinders its overall accessibility: it's limited to MySQL\@.
-Since the mined information is supplied in form of MySQL database dumps, one must first study the relational structure of the GHTorrent's database before even attempting to access the information through queries.
-Even with knowledge of the database and retrieval queries outlined, certain third-party tools may be required in order to export the retrieved data.
-While the native MySQL implementation allows results to be exported as a comma-separated value (CSV) file, other data formats may require processing implementations or additional third-party applications.
-Since all the data is mined from the GitHub API, GHTorrent stores a relational representation of the obtained response, meaning that information not returned by the API (such as the aforementioned number of total commits of a repository, or even number of branches and releases) can not be retrieved.
+Even though it offers the largest dataset of mined information and no limitations to the amount of data a user can retrieve, it inherits a massive flaw from the very API that it mines.
+Since GHTorrent stores a relational representation of the responses obtained from the GitHub API, then any information not returned by the API (such as the aforementioned number of total commits of a repository, or even number of branches and releases) can not be retrieved.
+
+Furthermore, it suffers from an issue which inhibits its accessibility.
+GitHub-related information mined by GHTorrent is supplied to researchers as large MySQL and CSV database dumps~\cite{GHTDUMPS}.
+To access this information, one must first download compressed archives of these dumps, and then follow special procedures to restore the database backups~\cite{GHTRESTORE}.
+With the database set up, a researcher now has to study its relational structure~\cite{GHTSCHEMA} in order to outline queries for accessing the stored information related to repositories.
+While the native MySQL implementation allows querying results to be exported as a comma-separated value (CSV) file, other export options may require additional processing implementations or third-party applications.

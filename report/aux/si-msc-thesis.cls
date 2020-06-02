@@ -202,7 +202,7 @@
 \RequirePackage{siunitx} % Required for \SI commands
 
 \RequirePackage{graphicx} % Required to include images
-\graphicspath{{Figures/}{./}} % Specifies where to look for included images
+\graphicspath{{figures/}{./}} % Specifies where to look for included images
 
 \RequirePackage{booktabs} % Required for better table rules
 

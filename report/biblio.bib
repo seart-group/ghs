@@ -15,7 +15,7 @@
 @article{DEFECT1,
 	author={Lessmann, Stefan and Baesens, Bart and Mues, Christophe and Pietsch, Swantje},
 	journal={IEEE Transactions on Software Engineering},
-	title={Benchmarking Classification Models for Software Defect Prediction: A Proposed Framework and Novel Findings},
+	title={{Benchmarking Classification Models for Software Defect Prediction: A Proposed Framework and Novel Findings}},
 	year={2008},
 	volume={34},
 	number={4},
@@ -25,7 +25,7 @@
 @article{DEFECT2,
 	author={Nam, Jaechang and Fu, Wei and Kim, Sunghun and Menzies, Tim and Tan, Lin},
 	journal={IEEE Transactions on Software Engineering},
-	title={Heterogeneous Defect Prediction},
+	title={{Heterogeneous Defect Prediction}},
 	year={2018},
 	volume={44},
 	number={9},
@@ -47,13 +47,33 @@
 	journal = {ACM Transactions on Software Engineering and Methodology},
 	month = {September},
 	articleno = {19},
-	numpages = {29},
-	keywords = {bug-fixes, Neural machine translation}
+	numpages = {29}
+}
+
+@misc{HELPSEARCH,
+	title = {Understanding the search syntax},
+	author = {GitHub Help},
+	howpublished = {\url{https://help.github.com/en/github/searching-for-information-on-github/understanding-the-search-syntax}},
+	note = {Accessed on 2020-05-13},
+}
+
+@misc{APISEARCH,
+    title = {Search},
+	author = {GitHub Developer},
+	howpublished = {\url{https://developer.github.com/v3/search}},
+	note = {Accessed on 2020-05-13}
+}
+
+@misc{APIWEBHOOKS,
+	title = {Webhooks},
+	author = {GitHub Developer},
+	howpublished = {\url{https://developer.github.com/webhooks/event-payloads}},
+	note = {Accessed on 2020-05-12},
 }
 
 @inproceedings{G13,
 	author = {Gousios, Georgios},
-	title = {The {GHT}orrent dataset and tool suite},
+	title = {{The GHTorrent dataset and tool suite}},
 	year = {2013},
 	month = may,
 	pages = {233--236},
@@ -69,10 +89,28 @@
 	note = {Best data showcase paper award}
 }
 
+@misc{GHTSCHEMA,
+	title = {{The relational DB schema}},
+	howpublished = {\url{https://ghtorrent.org/relational.html}},
+	note = {Accessed on 2020-05-11}
+}
+
+@misc{GHTDUMPS,
+	title = {Downloads},
+	howpublished = {\url{https://ghtorrent.org/downloads.html}},
+	note = {Accessed on 2020-05-11}
+}
+
+@misc{GHTRESTORE,
+	title = {{Restoring GHTorrent backups}},
+	author = {Gousios, Georgios and Spinellis, Diomidis and Rani, Priya and },
+	howpublished = {\url{https://github.com/gousiosg/github-mirror/blob/master/sql/README.md#restoring-ghtorrent-backups}},
+	note = {Accessed on 2020-05-11},
+}
+
 @misc{GHA,
-	howpublished = {\url{https://www.gharchive.org}},
-	author = {Grigorik, Ilya},
 	title = {{GH Archive}},
+	howpublished = {\url{https://www.gharchive.org}},
 	note = {Accessed on 2020-05-12}
 }
 
@@ -91,6 +129,16 @@
 	note = {Accessed on 2020-03-01},
 }
 
+@article{COMMITS,
+	author = {Kalliamvakou, Eirini and Gousios, Georgios and Blincoe, Kelly and Singer, Leif and German, Daniel and Damian, Daniela},
+	year = {2015},
+	month = {September},
+	title = {{An in-depth study of the promises and perils of mining GitHub}},
+	volume = {21},
+	journal = {Empirical Software Engineering},
+	doi = {10.1007/s10664-015-9393-5}
+}
+
 @book{GIT,
     author = {Loelinger, Jon},
     title = {{Version Control with Git: Powerful tools and techniques for collaborative software development}},
@@ -104,7 +152,7 @@
     howpublished = {\url{https://help.github.com/en/github/getting-started-with-github/github-glossary}},
 	author = {GitHub Help},
 	title = {{GitHub glossary}},
-	note = {Accessed on 2020-02-22}
+	note = {Accessed on 2020-05-12}
 }
 
 @misc{METRICSWATCHERS,
@@ -129,7 +177,7 @@
 
 @misc{STARS,
 	author = {Neath, Kyle},
-	title = {Notifications \& {S}tars},
+	title = {{Notifications \& Stars}},
 	howpublished = {\url{https://github.blog/2012-08-06-notifications-stars}},
 	year = {2012},
 	month = {August},
@@ -161,4 +209,88 @@
 	journal = {Commun. ACM},
 	pages = {91–100},
 	numpages = {10}
+}
+
+@inproceedings{LICENSEBUGS,
+	author = {Vendome, Christopher and German, Daniel M. and Di Penta, Massimiliano and Bavota, Gabriele and Linares-V\'{a}squez, Mario and Poshyvanyk, Denys},
+	title = {{To Distribute or Not to Distribute? Why Licensing Bugs Matter}},
+	year = {2018},
+	isbn = {9781450356381},
+	publisher = {Association for Computing Machinery},
+	address = {New York, NY, USA},
+	url = {https://doi.org/10.1145/3180155.3180221},
+	doi = {10.1145/3180155.3180221},
+	booktitle = {Proceedings of the 40th International Conference on Software Engineering},
+	pages = {268–279},
+	numpages = {12},
+	location = {Gothenburg, Sweden},
+	series = {ICSE ’18}
+}
+
+@article{LICENSECHANGE,
+	author = {Vendome, Christopher and Bavota, Gabriele and Penta, Massimiliano Di and Linares-V{\'a}squez, Mario and German, Daniel and Poshyvanyk, Denys},
+	doi = {10.1007/s10664-016-9438-4},
+	isbn = {1573-7616},
+	journal = {Empirical Software Engineering},
+	number = {3},
+	pages = {1537--1577},
+	title = {{License usage and changes: a large-scale study on gitHub}},
+	url = {https://doi.org/10.1007/s10664-016-9438-4},
+	volume = {22},
+	year = {2017},
+	month = {June}
+}
+
+@misc{ARCHIVINGREPOS,
+	howpublished = {\url{https://help.github.com/en/github/creating-cloning-and-archiving-repositories/about-archiving-repositories}},
+	author = {GitHub Help},
+	title = {{About archiving repositories}},
+	note = {Accessed on 2020-05-12}
+}
+
+@inproceedings{ISSUES,
+	author = {Destefanis, Giuseppe and Ortu, Marco and Bowes, David and Marchesi, Michele and Tonelli, Roberto},
+	year = {2018},
+	month = {June},
+	pages = {14-19},
+	booktitle = {2018 ACM/IEEE 3rd International Workshop on Emotion Awareness in Software Engineering},
+	title = {{On Measuring Affects of GitHub Issues’ Commenters}},
+	doi = {10.1145/3194932.3194936}
+}
+
+@misc{LABELS,
+	title = {About labels},
+	author = {GitHub Help},
+	howpublished = {\url{https://help.github.com/en/github/managing-your-work-on-github/about-labels}},
+	note = {Accessed on 2020-05-12},
+}
+
+@inproceedings{PULLS,
+	author = {Rahman, Mohammad Masudur and Roy, Chanchal K.},
+	title = {{An Insight into the Pull Requests of GitHub}},
+	year = {2014},
+	isbn = {9781450328630},
+	publisher = {Association for Computing Machinery},
+	address = {New York, NY, USA},
+	url = {https://doi.org/10.1145/2597073.2597121},
+	doi = {10.1145/2597073.2597121},
+	booktitle = {Proceedings of the 11th Working Conference on Mining Software Repositories},
+	pages = {364–367},
+	numpages = {4},
+	location = {Hyderabad, India},
+	series = {MSR 2014}
+}
+
+@misc{WIKIS,
+	title = {About wikis},
+	author = {GitHub Help},
+	howpublished = {\url{https://help.github.com/en/github/building-a-strong-community/about-wikis}},
+	note = {Accessed on 2020-05-12},
+}
+
+@misc{RATELIMIT,
+	title = {{Understanding rate limits for GitHub Apps}},
+	author = {GitHub Developer},
+	howpublished = {\url{https://developer.github.com/apps/building-github-apps/understanding-rate-limits-for-github-apps}},
+	note = {Accessed on 2020-05-25}
 }
