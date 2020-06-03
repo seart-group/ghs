@@ -123,10 +123,9 @@ Interval mining is performed in the following manner:
 \newpage
 \section{Application Architecture}
 
-This following section will explore the architecture of the application server, as well as how each of the components interact to create a cohesive system.
-A full overview of the system can be seen in Figure~\ref{fig:2}.
-Since the previous sections were exclusively dedicated to the mining algorithm and database structure, there is not much need to talk about their components.
-The following sections will however focus on the GitHub API Service, GitHub Web-page Crawler Service, Database Services and the REST Controllers.
+This following section will explore the architecture of the application server, as well as how each of the components interact to create a cohesive system. A full overview of the system can be seen in Figure~\ref{fig:2}.
+Since the previous sections were exclusively dedicated to the mining algorithm and database structure, there is not much need to talk about these components.
+The following sections will focus on the GitHub API Service, GitHub Web-page Crawler Service, Database Services and the REST Controllers.
 
 \begin{figure}[h!]
     \centering
@@ -149,15 +148,15 @@ Supported methods of the GitHub API layer include:
     \item Retrieving the languages of a specific repository.
 \end{enumerate}
 
-The latter of the three retrieval methods are core to the function of the miner.
-Repository retrieval method is used when crawling intervals, while the methods for retrieving labels and languages are invoked when iterating over the repository result set.
+The last three retrieval methods are core to the function of the miner.
+The repository retrieval method is used when crawling intervals, while the methods for retrieving labels and languages are invoked when iterating over the repositories result set.
 This is due to the fact that for each mined repository, we also have to mine its associated labels and languages.
 Comparing the usage of the methods, every call to the repository retrieval method may results in up to 1000 calls to the label and language retrieval methods.
-In terms of GitHub's rate limits, this does not present an issue, as the API limits repository set retrieval and repository label/language retrieval to 1800 and 5000 authenticated requests per hour respectively~\cite{APISEARCH,RATELIMIT}.
+In terms of GitHub's rate limits, this does not represent an issue, as the API limits repository set retrieval and repository label/language retrieval to 1800 and 5000 authenticated requests per hour, respectively~\cite{APISEARCH,RATELIMIT}.
 
 The token verification procedure on the other hand sees no active usage.
 It was originally intended for use in token switching during mining.
-If a token was to exceed its allowed limit of requests, the miner would have to wait until the request rates replenish (which GitHub does on an hourly basis).
+If a token was to exceed its allowed limit of requests, the miner would have to wait until the request rates replenish (which GitHub does on a hourly basis).
 To circumvent this, the method was supposed to verify if a token has to be replaced with a fresh one from the database.
 However, given the current mining speed of the application (which is roughly 600 repositories per hour), token switching is not necessary, as the usage rates are replenished before they can even be fully spent.
 
@@ -196,8 +195,8 @@ Since calculating the number of project contributors is an expensive operation o
 Whenever an element can not be retrieved with Jsoup, Selenium is used instead.
 A single Chrome driver instance is created on server startup, which can be used for every subsequent access to repository web pages.
 Selenium then uses this web driver to navigate to the target page, wait for the information to load, and then extract it.
-Using the additional framework does not introduce any implementation challenges, as it also has the option of parsing HTML via CSS selectors.
-With that being said, Selenium should be used sparingly, as it underperforms in comparison to Jsoup.
+Using the additional framework does not introduce any implementation challenge, as it also has the option of parsing HTML via CSS selectors.
+With that being said, Selenium should be used sparingly, as it underperforms as compared to Jsoup.
 The former should only be used in case the desired information could not be retrieved by the latter.
 
 \subsection{Database Services}
