@@ -195,7 +195,7 @@ function retrieve(url) {
         $page.val('');
 
         if (totalItems > 0){
-            let count = '<div><div class="row mw-100 pt-3 mx-3"><div class="col d-flex align-items-center justify-content-start px-0"><span class="text-secondary">Total Results: '+totalItems+'</span></div><div class="col d-flex align-items-center justify-content-end px-0"><span class="text-secondary">Page: '+page+'</span></div></div></div>';
+            let count = '<div><div class="row mw-100 pt-3 mx-3"><div class="col d-flex align-items-center justify-content-start px-0"><span class="text-secondary">Total Results: '+totalItems+'</span></div><div class="col d-flex align-items-center justify-content-end px-0"><span class="text-secondary">Page: '+page+' / '+totalPages+'</span></div></div></div>';
             $results_container_items.append(count);
             if (totalPages > 1){
                 $page.removeClass('d-none');
