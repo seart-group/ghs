@@ -70,7 +70,7 @@ public class GitRepoConverter {
 
     public GitRepo jsonToGitRepo(JsonObject json,String language) throws IOException,InterruptedException {
         String repositoryURL = json.get("html_url").getAsString();
-        WebDriverWait webDriverWait = new WebDriverWait(driver, Duration.ofSeconds(30));
+        WebDriverWait webDriverWait = new WebDriverWait(driver, Duration.ofSeconds(30), Duration.ofMillis(250));
         GitHubPageCrawlerService crawlerService = new GitHubPageCrawlerService(repositoryURL,driver,webDriverWait);
         try {
             crawlerService.mine();
