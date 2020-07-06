@@ -121,8 +121,6 @@ public class GitHubPageCrawlerService {
         } catch (NullPointerException ignored){
             contributors = mineContributorsSelenium(index);
         } catch (NumberFormatException ex){
-            // For input string: "5,000+"
-            // if (ex.getMessage().substring(18).equals("\"5000+\"")){
             if (StringUtils.removeFromStart(ex.getMessage(),18).equals("\"5000+\"")){
                 contributors = 11 + LongUtils.getLongValue(StringUtils.removeFromStartAndEnd(document.selectFirst(String.format(linkTemplateReg,index)).html(),2,13));
             } else {
