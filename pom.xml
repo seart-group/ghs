@@ -5,7 +5,7 @@
 
 	<groupId>com.example</groupId>
 	<artifactId>gse-application</artifactId>
-	<version>0.9.7</version>
+	<version>1.1.1</version>
 	<packaging>jar</packaging>
 
 	<name>GitHub Search Engine</name>
