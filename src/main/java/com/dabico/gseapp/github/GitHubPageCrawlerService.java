@@ -157,13 +157,72 @@ public class GitHubPageCrawlerService {
         }
     }
 
-    private long mineCommitsSelenium() {
+    private long mineWatchersSelenium(int index){
+        try {
+            String watchersReg = String.format(watchersTemplateReg,index);
+            String watchersAlt = String.format(watchersTemplateAlt,index);
+            return LongUtils.getLongValue(StringUtils.removeFromEnd(getPageElement(watchersReg,watchersAlt).getAttribute("aria-label"),35));
+        } catch (TimeoutException ex) {
+            logger.error("Number of watchers could not be mined at this time!");
+            logger.error("Reason: Selenium could not locate the specified element");
+            return -1;
+        }
+    }
+
+    private long mineCommitsSelenium(){
+        return mineCommitsSelenium(0);
+    }
+
+    private long mineCommitsSelenium(int attempt){
         try {
             return LongUtils.getLongValue(getPageElement(commitsReg,commitsAlt).getText());
         } catch (TimeoutException ex) {
-            logger.error("Number of commits could not be mined at this time!");
-            logger.error("Reason: Selenium could not locate the specified element");
-            return -1;
+            logger.error("Selenium could not locate number of commits!");
+            logger.error("Retrying");
+            if (attempt > 2){
+                logger.error("Number of commits could not be mined at this time!");
+                return -1;
+            } else {
+                return mineCommitsSelenium(++attempt);
+            }
+        }
+    }
+
+    private long mineBranchesSelenium(){
+        return mineBranchesSelenium(0);
+    }
+
+    private long mineBranchesSelenium(int attempt){
+        try {
+            return LongUtils.getLongValue(getPageElement(branchesReg,branchesAlt).getText());
+        } catch (TimeoutException ex) {
+            logger.error("Selenium could not locate number of branches!");
+            logger.error("Retrying");
+            if (attempt > 2){
+                logger.error("Number of branches could not be mined at this time!");
+                return -1;
+            } else {
+                return mineBranchesSelenium(++attempt);
+            }
+        }
+    }
+
+    private long mineReleasesSelenium(){
+        return mineReleasesSelenium(0);
+    }
+
+    private long mineReleasesSelenium(int attempt){
+        try {
+            return LongUtils.getLongValue(getPageElement(releasesReg,releasesAlt).getText());
+        } catch (TimeoutException ex) {
+            logger.error("Selenium could not locate number of releases!");
+            logger.error("Retrying");
+            if (attempt > 2){
+                logger.error("Number of releases could not be mined at this time!");
+                return -1;
+            } else {
+                return mineReleasesSelenium(++attempt);
+            }
         }
     }
 
@@ -181,38 +240,6 @@ public class GitHubPageCrawlerService {
             return -1;
         } catch (TimeoutException ex) {
             logger.error("Number of contributors could not be mined at this time!");
-            logger.error("Reason: Selenium could not locate the specified element");
-            return -1;
-        }
-    }
-
-    private long mineBranchesSelenium(){
-        try {
-            return LongUtils.getLongValue(getPageElement(branchesReg,branchesAlt).getText());
-        } catch (TimeoutException ex) {
-            logger.error("Number of branches could not be mined at this time!");
-            logger.error("Reason: Selenium could not locate the specified element");
-            return -1;
-        }
-    }
-
-    private long mineReleasesSelenium(){
-        try {
-            return LongUtils.getLongValue(getPageElement(releasesReg,releasesAlt).getText());
-        } catch (TimeoutException ex) {
-            logger.error("Number of releases could not be mined at this time!");
-            logger.error("Reason: Selenium could not locate the specified element");
-            return -1;
-        }
-    }
-
-    private long mineWatchersSelenium(int index){
-        try {
-            String watchersReg = String.format(watchersTemplateReg,index);
-            String watchersAlt = String.format(watchersTemplateAlt,index);
-            return LongUtils.getLongValue(StringUtils.removeFromEnd(getPageElement(watchersReg,watchersAlt).getAttribute("aria-label"),35));
-        } catch (TimeoutException ex) {
-            logger.error("Number of watchers could not be mined at this time!");
             logger.error("Reason: Selenium could not locate the specified element");
             return -1;
         }
