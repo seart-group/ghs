@@ -4,7 +4,10 @@ import com.dabico.gseapp.util.interval.DateInterval;
 import com.google.gson.JsonObject;
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
-import okhttp3.*;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
+import okhttp3.ResponseBody;
 import org.apache.http.client.HttpResponseException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -28,12 +31,12 @@ public class GitHubApiService {
                                       .build();
     }
 
-    public Response searchRepositories(String language, DateInterval interval, Integer page,
-                                       String token, Boolean update) throws IOException, InterruptedException
+    public Response searchRepositories(String language, DateInterval interval, Integer page, String token,
+                                       Boolean crawl_updated_repos) throws IOException, InterruptedException
     {
         Response response = makeAPICall(Endpoints.SEARCH_REPOS.getUrl() +
                                                 "?q=language:" + language +
-                                                (update ? "+pushed:" : "+created:") + interval +
+                                                (crawl_updated_repos ? "+pushed:" : "+created:") + interval +
                                                 "+fork:true+is:public&page=" + page +
                                                 "&per_page=100", token);
         //TODO Remove guards when done
