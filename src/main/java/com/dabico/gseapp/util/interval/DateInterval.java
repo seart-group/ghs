@@ -1,6 +1,8 @@
 package com.dabico.gseapp.util.interval;
 
-import lombok.*;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
 import org.javatuples.Pair;
 
