@@ -12,7 +12,6 @@ import com.dabico.gseapp.repository.GitRepoRepository;
 import com.dabico.gseapp.repository.GitRepoRepositoryCustom;
 import com.dabico.gseapp.util.interval.DateInterval;
 import com.dabico.gseapp.util.interval.LongInterval;
-import com.opencsv.CSVWriter;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -23,10 +22,13 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.io.*;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Optional;
 
-import static org.springframework.hateoas.mvc.ControllerLinkBuilder.*;
+import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
+import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
 
 @Service
 @FieldDefaults(level = AccessLevel.PRIVATE)
@@ -60,13 +62,13 @@ public class GitRepoServiceImpl implements GitRepoService {
     }
 
     @Override
-    public GitRepoDtoListPaginated advancedSearch(String name, Boolean nameEquals,String language, String license, String label,
+    public GitRepoDtoListPaginated advancedSearch(String name, Boolean nameEquals, String language, String license, String label,
                                                   Long commitsMin, Long commitsMax, Long contributorsMin, Long contributorsMax,
                                                   Long issuesMin, Long issuesMax, Long pullsMin, Long pullsMax, Long branchesMin,
                                                   Long branchesMax, Long releasesMin, Long releasesMax, Long starsMin,
                                                   Long starsMax, Long watchersMin, Long watchersMax, Long forksMin,
                                                   Long forksMax, Date createdMin, Date createdMax, Date committedMin,
-                                                  Date committedMax, Boolean excludeForks,  Boolean onlyForks, Boolean hasIssues,
+                                                  Date committedMax, Boolean excludeForks, Boolean onlyForks, Boolean hasIssues,
                                                   Boolean hasPulls, Boolean hasWiki, Boolean hasLicense, Integer page,
                                                   Integer pageSize){
         Pageable pageable = PageRequest.of(page, pageSize, Sort.Direction.ASC, "name");

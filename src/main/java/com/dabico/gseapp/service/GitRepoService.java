@@ -5,7 +5,6 @@ import com.dabico.gseapp.model.GitRepo;
 import com.dabico.gseapp.model.GitRepoLabel;
 import com.dabico.gseapp.model.GitRepoLanguage;
 
-import java.io.File;
 import java.util.Date;
 import java.util.List;
 
