@@ -5,27 +5,35 @@ import com.dabico.gseapp.github.GitHubApiService;
 import com.dabico.gseapp.model.GitRepo;
 import com.dabico.gseapp.model.GitRepoLabel;
 import com.dabico.gseapp.model.GitRepoLanguage;
-import com.dabico.gseapp.repository.*;
+import com.dabico.gseapp.repository.AccessTokenRepository;
+import com.dabico.gseapp.repository.SupportedLanguageRepository;
 import com.dabico.gseapp.service.ApplicationPropertyService;
 import com.dabico.gseapp.service.CrawlJobService;
 import com.dabico.gseapp.service.GitRepoService;
 import com.dabico.gseapp.util.interval.DateInterval;
-import com.google.gson.*;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
-import okhttp3.*;
+import okhttp3.Response;
+import okhttp3.ResponseBody;
 import org.apache.http.client.HttpResponseException;
 import org.javatuples.Pair;
-import org.slf4j.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.time.Duration;
 import java.time.Instant;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Set;
 
-import static com.google.gson.JsonParser.*;
+import static com.google.gson.JsonParser.parseString;
 
 @Service
 @FieldDefaults(level = AccessLevel.PRIVATE)
