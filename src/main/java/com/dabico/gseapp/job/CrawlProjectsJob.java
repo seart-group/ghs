@@ -109,11 +109,12 @@ public class CrawlProjectsJob {
         logger.info("Updated interval crawl complete!");
     }
 
-    private void crawlRepos(DateInterval interval, String language, Boolean mode) throws IOException,InterruptedException {
+    private void crawlRepos(DateInterval interval, String language, Boolean crawl_updated_repos)
+            throws IOException,InterruptedException {
         requestQueue.add(interval);
         do {
             DateInterval first = requestQueue.remove(0);
-            retrieveRepos(first,language,mode);
+            retrieveRepos(first,language,crawl_updated_repos);
             if (!requestQueue.isEmpty()) {
                 logger.info("Next Crawl Intervals:");
                 logger.info(requestQueue.toString());
@@ -121,10 +122,11 @@ public class CrawlProjectsJob {
         } while (!requestQueue.isEmpty());
     }
 
-    private void retrieveRepos(DateInterval interval, String language, Boolean update) throws IOException,InterruptedException {
+    private void retrieveRepos(DateInterval interval, String language, Boolean crawl_updated_repos)
+            throws IOException,InterruptedException {
         int page = 1;
         replaceTokenIfExpired();
-        Response response = gitHubApiService.searchRepositories(language,interval,page,currentToken,update);
+        Response response = gitHubApiService.searchRepositories(language, interval, page, currentToken, crawl_updated_repos);
         ResponseBody responseBody = response.body();
         if (response.isSuccessful() && responseBody != null){
             JsonObject bodyJson = parseString(responseBody.string()).getAsJsonObject();
@@ -135,7 +137,7 @@ public class CrawlProjectsJob {
                 JsonArray results = bodyJson.get("items").getAsJsonArray();
                 response.close();
                 saveRetrievedRepos(results,language);
-                retrieveRemainingRepos(interval, language, update, results, totalPages);
+                retrieveRemainingRepos(interval, language, crawl_updated_repos, results, totalPages);
                 crawlJobService.updateCrawlDateForLanguage(language,interval.getEnd());
             } else {
                 Pair<DateInterval,DateInterval> newIntervals = interval.splitInterval();
@@ -150,21 +152,18 @@ public class CrawlProjectsJob {
             logger.error("Server Error Encountered: " + response.code());
             Thread.sleep(defaultRetryPeriod);
             logger.error("Retrying...");
-            retrieveRepos(interval, language, update);
+            retrieveRepos(interval, language, crawl_updated_repos);
         }
         response.close();
     }
 
-    private void retrieveRemainingRepos(DateInterval interval,
-                                        String language,
-                                        Boolean update,
-                                        JsonArray results,
-                                        int totalPages) throws IOException,InterruptedException {
+    private void retrieveRemainingRepos(DateInterval interval, String language, Boolean crawl_updated_repos,
+                                        JsonArray results, int totalPages) throws IOException,InterruptedException {
         if (totalPages > 1){
             int page = 2;
             while (page <= totalPages){
                 replaceTokenIfExpired();
-                Response response = gitHubApiService.searchRepositories(language,interval,page,currentToken,update);
+                Response response = gitHubApiService.searchRepositories(language, interval, page, currentToken, crawl_updated_repos);
                 ResponseBody responseBody = response.body();
                 if (response.isSuccessful() && responseBody != null){
                     JsonObject bodyJson = parseString(responseBody.string()).getAsJsonObject();
@@ -177,7 +176,7 @@ public class CrawlProjectsJob {
                     logger.error("Server Error Encountered: " + response.code());
                     Thread.sleep(defaultRetryPeriod);
                     logger.error("Retrying...");
-                    retrieveRemainingRepos(interval, language, update, results, totalPages);
+                    retrieveRemainingRepos(interval, language, crawl_updated_repos, results, totalPages);
                 }
                 response.close();
             }
