@@ -72,17 +72,17 @@ public class GitRepoServiceImpl implements GitRepoService {
                                                   Boolean hasPulls, Boolean hasWiki, Boolean hasLicense, Integer page,
                                                   Integer pageSize){
         Pageable pageable = PageRequest.of(page, pageSize, Sort.Direction.ASC, "name");
-        LongInterval commits      = new LongInterval(commitsMin,commitsMax);
-        LongInterval contributors = new LongInterval(contributorsMin,contributorsMax);
-        LongInterval issues       = new LongInterval(issuesMin,issuesMax);
-        LongInterval pulls        = new LongInterval(pullsMin,pullsMax);
-        LongInterval branches     = new LongInterval(branchesMin,branchesMax);
-        LongInterval releases     = new LongInterval(releasesMin,releasesMax);
-        LongInterval stars        = new LongInterval(starsMin,starsMax);
-        LongInterval watchers     = new LongInterval(watchersMin,watchersMax);
-        LongInterval forks        = new LongInterval(forksMin,forksMax);
-        DateInterval created      = new DateInterval(createdMin,createdMax);
-        DateInterval committed    = new DateInterval(committedMin,committedMax);
+        LongInterval commits      = LongInterval.builder().start(commitsMax).end(commitsMax).build();
+        LongInterval contributors = LongInterval.builder().start(contributorsMin).end(contributorsMax).build();
+        LongInterval issues       = LongInterval.builder().start(issuesMin).end(issuesMax).build();
+        LongInterval pulls        = LongInterval.builder().start(pullsMin).end(pullsMax).build();
+        LongInterval branches     = LongInterval.builder().start(branchesMin).end(branchesMax).build();
+        LongInterval releases     = LongInterval.builder().start(releasesMin).end(releasesMax).build();
+        LongInterval stars        = LongInterval.builder().start(starsMin).end(starsMax).build();
+        LongInterval watchers     = LongInterval.builder().start(watchersMin).end(watchersMax).build();
+        LongInterval forks        = LongInterval.builder().start(forksMin).end(forksMax).build();
+        DateInterval created      = DateInterval.builder().start(createdMin).end(createdMax).build();
+        DateInterval committed    = DateInterval.builder().start(committedMin).end(committedMax).build();
         List<GitRepo> repos = gitRepoRepositoryCustom.advancedSearch(name,nameEquals,language,license,label,commits,
                                                                      contributors,issues,pulls,branches,releases,
                                                                      stars,watchers,forks,created,committed,excludeForks,
@@ -183,17 +183,17 @@ public class GitRepoServiceImpl implements GitRepoService {
                                         Date createdMax, Date committedMin, Date committedMax, Boolean excludeForks,
                                         Boolean onlyForks, Boolean hasIssues, Boolean hasPulls, Boolean hasWiki,
                                         Boolean hasLicense){
-        LongInterval commits      = new LongInterval(commitsMin,commitsMax);
-        LongInterval contributors = new LongInterval(contributorsMin,contributorsMax);
-        LongInterval issues       = new LongInterval(issuesMin,issuesMax);
-        LongInterval pulls        = new LongInterval(pullsMin,pullsMax);
-        LongInterval branches     = new LongInterval(branchesMin,branchesMax);
-        LongInterval releases     = new LongInterval(releasesMin,releasesMax);
-        LongInterval stars        = new LongInterval(starsMin,starsMax);
-        LongInterval watchers     = new LongInterval(watchersMin,watchersMax);
-        LongInterval forks        = new LongInterval(forksMin,forksMax);
-        DateInterval created      = new DateInterval(createdMin,createdMax);
-        DateInterval committed    = new DateInterval(committedMin,committedMax);
+        LongInterval commits      = LongInterval.builder().start(commitsMax).end(commitsMax).build();
+        LongInterval contributors = LongInterval.builder().start(contributorsMin).end(contributorsMax).build();
+        LongInterval issues       = LongInterval.builder().start(issuesMin).end(issuesMax).build();
+        LongInterval pulls        = LongInterval.builder().start(pullsMin).end(pullsMax).build();
+        LongInterval branches     = LongInterval.builder().start(branchesMin).end(branchesMax).build();
+        LongInterval releases     = LongInterval.builder().start(releasesMin).end(releasesMax).build();
+        LongInterval stars        = LongInterval.builder().start(starsMin).end(starsMax).build();
+        LongInterval watchers     = LongInterval.builder().start(watchersMin).end(watchersMax).build();
+        LongInterval forks        = LongInterval.builder().start(forksMin).end(forksMax).build();
+        DateInterval created      = DateInterval.builder().start(createdMin).end(createdMax).build();
+        DateInterval committed    = DateInterval.builder().start(committedMin).end(committedMax).build();
         List<GitRepo> repos =  gitRepoRepositoryCustom.advancedSearch(name,nameEquals,language,license,label,commits,
                                                                          contributors,issues,pulls,branches,releases,
                                                                          stars,watchers,forks,created,committed,
