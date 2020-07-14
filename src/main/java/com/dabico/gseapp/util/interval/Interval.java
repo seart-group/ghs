@@ -7,6 +7,7 @@ import org.javatuples.Pair;
 
 @Getter
 @Setter
+@EqualsAndHashCode
 @SuperBuilder
 @FieldDefaults(level = AccessLevel.PROTECTED)
 public abstract class Interval<T> {
@@ -18,14 +19,6 @@ public abstract class Interval<T> {
 
     @Override
     public abstract String toString();
-
-    @Override
-    public boolean equals(Object o){
-        return (o == this) ||
-              ((o instanceof Interval) &&
-               (start.equals(((Interval<?>) o).start)) &&
-                 (end.equals(((Interval<?>) o).end)));
-    }
 
     public boolean isBound(){
         return (start != null && end != null);
