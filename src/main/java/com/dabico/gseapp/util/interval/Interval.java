@@ -18,7 +18,9 @@ public abstract class Interval<T> {
     public abstract Pair<? extends Interval<T>,? extends Interval<T>> splitInterval();
 
     @Override
-    public abstract String toString();
+    public String toString(){
+        return this.start + ".." + this.end;
+    }
 
     public boolean isBound(){
         return (start != null && end != null);
