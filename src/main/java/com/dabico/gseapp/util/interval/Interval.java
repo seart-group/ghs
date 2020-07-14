@@ -2,12 +2,12 @@ package com.dabico.gseapp.util.interval;
 
 import lombok.*;
 import lombok.experimental.FieldDefaults;
+import lombok.experimental.SuperBuilder;
 import org.javatuples.Pair;
 
 @Getter
 @Setter
-@NoArgsConstructor
-@AllArgsConstructor
+@SuperBuilder
 @FieldDefaults(level = AccessLevel.PROTECTED)
 public abstract class Interval<T> {
 
