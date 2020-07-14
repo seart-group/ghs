@@ -1,11 +1,14 @@
 package com.dabico.gseapp.util;
 
+import lombok.experimental.UtilityClass;
+
+@UtilityClass
 public class LongUtils {
-    public static long getLongValue(String input){
+    public long getLongValue(String input){
         return Long.parseLong(normalizeNumberString(input));
     }
 
-    private static String normalizeNumberString(String input){
+    private String normalizeNumberString(String input){
         return input.trim().replaceAll(",","");
     }
 }
