@@ -14,6 +14,7 @@ import com.dabico.gseapp.util.interval.DateInterval;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
 import okhttp3.Response;
@@ -32,8 +33,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
-
-import static com.google.gson.JsonParser.parseString;
 
 @Service
 @FieldDefaults(level = AccessLevel.PRIVATE)
@@ -129,7 +128,7 @@ public class CrawlProjectsJob {
         Response response = gitHubApiService.searchRepositories(language, interval, page, currentToken, crawl_updated_repos);
         ResponseBody responseBody = response.body();
         if (response.isSuccessful() && responseBody != null){
-            JsonObject bodyJson = parseString(responseBody.string()).getAsJsonObject();
+            JsonObject bodyJson = JsonParser.parseString(responseBody.string()).getAsJsonObject();
             int totalResults = bodyJson.get("total_count").getAsInt();
             int totalPages = (int) Math.ceil(totalResults/100.0);
             logger.info("Retrieved results: "+totalResults);
@@ -166,7 +165,7 @@ public class CrawlProjectsJob {
                 Response response = gitHubApiService.searchRepositories(language, interval, page, currentToken, crawl_updated_repos);
                 ResponseBody responseBody = response.body();
                 if (response.isSuccessful() && responseBody != null){
-                    JsonObject bodyJson = parseString(responseBody.string()).getAsJsonObject();
+                    JsonObject bodyJson = JsonParser.parseString(responseBody.string()).getAsJsonObject();
                     response.close();
                     results = bodyJson.get("items").getAsJsonArray();
                     saveRetrievedRepos(results,language);
@@ -201,7 +200,7 @@ public class CrawlProjectsJob {
         Response response = gitHubApiService.searchRepoLabels(repo.getName(),currentToken);
         ResponseBody responseBody = response.body();
         if (response.isSuccessful() && responseBody != null){
-            JsonArray results = parseString(responseBody.string()).getAsJsonArray();
+            JsonArray results = JsonParser.parseString(responseBody.string()).getAsJsonArray();
             logger.info("Adding: "+results.size()+" labels.");
             results.forEach(result -> repo_labels.add(GitRepoLabel.builder()
                                                  .repo(repo)
@@ -224,7 +223,7 @@ public class CrawlProjectsJob {
         Response response = gitHubApiService.searchRepoLanguages(repo.getName(),currentToken);
         ResponseBody responseBody = response.body();
         if (response.isSuccessful() && responseBody != null){
-            JsonObject result = parseString(responseBody.string()).getAsJsonObject();
+            JsonObject result = JsonParser.parseString(responseBody.string()).getAsJsonObject();
             Set<String> keySet = result.keySet();
             logger.info("Adding: "+keySet.size()+" languages.");
             keySet.forEach(key -> repo_languages.add(GitRepoLanguage.builder()
