@@ -2,6 +2,7 @@ package com.dabico.gseapp.github;
 
 import com.dabico.gseapp.util.interval.DateInterval;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
 import okhttp3.OkHttpClient;
@@ -14,8 +15,6 @@ import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
-
-import static com.google.gson.JsonParser.parseString;
 
 @Service
 @FieldDefaults(level = AccessLevel.PRIVATE)
@@ -48,7 +47,7 @@ public class GitHubApiService {
         Response response = makeAPICall(Endpoints.LIMIT.getUrl(),token);
         ResponseBody responseBody = response.body();
         if (response.isSuccessful() && responseBody != null){
-            JsonObject bodyJson = parseString(responseBody.string()).getAsJsonObject();
+            JsonObject bodyJson = JsonParser.parseString(responseBody.string()).getAsJsonObject();
             response.close();
             JsonObject search = bodyJson.get("resources").getAsJsonObject().get("search").getAsJsonObject();
             int remaining = search.get("remaining").getAsInt();
