@@ -422,9 +422,11 @@
                             <h2 class="rowsublabel">Number of watchers</h2>
                         </div>
                         <div class="col-4">
-                            <div class="form-check text-left">
-                                <label class="form-check-label">
-                                    <input type="checkbox" class="form-check-input" id="only-forks" name="onlyForks" onchange="checkOnlyForked()"><span>Only Forked Projects</span>
+                            <div class="text-left">
+                                <label class="container" for="only-forks">
+                                    Only Forked Projects
+                                    <input type="checkbox" class="form-check-input" id="only-forks" name="onlyForks" onchange="checkOnlyForked()">
+                                    <span class="checkmark"></span>
                                 </label>
                             </div>
                         </div>
@@ -467,14 +469,18 @@
                             </div>
                         </div>
                         <div class="col-4">
-                            <div class="form-check text-left">
-                                <label class="form-check-label">
-                                    <input type="checkbox" class="form-check-input" id="exclude-forks" name="excludeForks" onchange="checkExcludeForked()"><span>Exclude Forked Projects</span>
+                            <div class="text-left">
+                                <label class="container" for="exclude-forks">
+                                    Exclude Forked Projects
+                                    <input type="checkbox" class="form-check-input" id="exclude-forks" name="excludeForks" onchange="checkExcludeForked()">
+                                    <span class="checkmark"></span>
                                 </label>
                             </div>
-                            <div class="form-check text-left">
-                                <label class="form-check-label">
-                                    <input type="checkbox" class="form-check-input" id="has-issues" name="hasIssues"><span>Has Open Issues</span>
+                            <div class="text-left">
+                                <label class="container" for="has-issues">
+                                    Has Open Issues
+                                    <input type="checkbox" class="form-check-input" id="has-issues" name="hasIssues">
+                                    <span class="checkmark"></span>
                                 </label>
                             </div>
                         </div>
@@ -485,9 +491,11 @@
                         </div>
                         <div class="col-4"></div>
                         <div class="col-4">
-                            <div class="form-check text-left">
-                                <label class="form-check-label">
-                                    <input type="checkbox" class="form-check-input" id="has-pulls" name="hasPulls"><span>Has Open Pull Requests</span>
+                            <div class="text-left">
+                                <label class="container" for="has-pulls">
+                                    Has Open Pull Requests
+                                    <input type="checkbox" id="has-pulls" name="hasPulls">
+                                    <span class="checkmark"></span>
                                 </label>
                             </div>
                         </div>
@@ -515,14 +523,18 @@
                             <button id="submit-button" type="submit" class="w-50 btn btn-secondary border-dark b-2 text-center mh-100">Search</button>
                         </div>
                         <div class="col-4">
-                            <div class="form-check text-left">
-                                <label class="form-check-label">
-                                    <input type="checkbox" class="form-check-input" id="has-wiki" name="hasWiki"><span>Has Wiki</span>
+                            <div class="text-left">
+                                <label class="container" for="has-wiki">
+                                    Has Wiki
+                                    <input type="checkbox" id="has-wiki" name="hasWiki">
+                                    <span class="checkmark"></span>
                                 </label>
                             </div>
-                            <div class="form-check text-left">
-                                <label class="form-check-label">
-                                    <input type="checkbox" class="form-check-input" id="has-license" name="hasLicense"><span>Has License</span>
+                            <div class="text-left">
+                                <label class="container" for="has-license">
+                                    Has License
+                                    <input type="checkbox" id="has-license" name="hasLicense">
+                                    <span class="checkmark"></span>
                                 </label>
                             </div>
                         </div>
