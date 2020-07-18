@@ -1,5 +1,6 @@
 package com.dabico.gseapp.config;
 
+import org.jetbrains.annotations.NotNull;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
@@ -11,7 +12,7 @@ public class MainConfig {
     public WebMvcConfigurer corsConfigurer() {
         return new WebMvcConfigurer() {
             @Override
-            public void addCorsMappings(final CorsRegistry registry) {
+            public void addCorsMappings(@NotNull final CorsRegistry registry) {
                 registry.addMapping("/**").allowedMethods("GET").allowedOrigins("http://localhost:3030");
             }
         };
