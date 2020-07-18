@@ -131,6 +131,70 @@ a.btn {
     box-shadow: none;
 }
 
+.container {
+    display: block;
+    position: relative;
+    padding-left: 20px;
+    cursor: pointer;
+    user-select: none;
+}
+
+.container input {
+    position: absolute;
+    text-align: center;
+    opacity: 0;
+    cursor: pointer;
+    height: 0;
+    width: 0;
+}
+
+.checkmark {
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    margin-top: 3.5px;
+    margin-bottom: auto;
+    height: 15px;
+    width: 15px;
+    border: 1px solid #6c757d;
+    border-radius: 3px;
+    background-color: #E6E6E6;
+}
+
+.container:hover input ~ .checkmark {
+    border-color: #343a40;
+}
+
+.container input:checked ~ .checkmark {
+    background-color: #6c757d;
+}
+
+.container:hover input:checked ~ .checkmark {
+    background-color: #343a40;
+}
+
+.checkmark:after {
+    content: "";
+    position: absolute;
+    display: none;
+}
+
+.container input:checked ~ .checkmark:after {
+    display: block;
+}
+
+.container .checkmark:after {
+    left: 4px;
+    top: 0;
+    width: 5px;
+    height: 11px;
+    border: solid;
+    border-color: white;
+    border-width: 0 2px 2px 0;
+    transform: rotate(40deg);
+}
+
 a.dropdown-item {
     text-decoration: none;
 }

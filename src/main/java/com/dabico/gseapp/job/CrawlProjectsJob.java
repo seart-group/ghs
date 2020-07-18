@@ -85,11 +85,11 @@ public class CrawlProjectsJob {
             DateInterval interval;
             if (startDate != null){
                 assert startDate.before(endDate);
-                interval = new DateInterval(startDate,endDate);
+                interval = DateInterval.builder().start(startDate).end(endDate).build();
                 crawlCreatedRepos(interval,language);
                 crawlUpdatedRepos(interval,language);
             } else {
-                interval = new DateInterval(applicationPropertyService.getStartDate(),endDate);
+                interval = DateInterval.builder().start(applicationPropertyService.getStartDate()).end(endDate).build();
                 crawlCreatedRepos(interval,language);
             }
         }
