@@ -8,6 +8,7 @@ import com.dabico.gseapp.github.GitHubPageCrawlerService;
 import com.dabico.gseapp.model.GitRepo;
 import com.dabico.gseapp.model.GitRepoLabel;
 import com.dabico.gseapp.model.GitRepoLanguage;
+import com.dabico.gseapp.util.DateUtils;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import lombok.AccessLevel;
@@ -30,8 +31,6 @@ import java.time.Duration;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
-
-import static com.dabico.gseapp.util.DateUtils.fromGitDateString;
 
 @Service
 @FieldDefaults(level = AccessLevel.PRIVATE)
@@ -105,9 +104,9 @@ public class GitRepoConverter {
                       .stargazers(json.get("stargazers_count").getAsLong())
                       .forks(json.get("forks_count").getAsLong())
                       .size(json.get("size").getAsLong())
-                      .createdAt(fromGitDateString(json.get("created_at").getAsString()))
-                      .pushedAt(fromGitDateString(json.get("pushed_at").getAsString()))
-                      .updatedAt(fromGitDateString(json.get("updated_at").getAsString()))
+                      .createdAt(DateUtils.fromGitDateString(json.get("created_at").getAsString()))
+                      .pushedAt(DateUtils.fromGitDateString(json.get("pushed_at").getAsString()))
+                      .updatedAt(DateUtils.fromGitDateString(json.get("updated_at").getAsString()))
                       .homepage(homepage.isJsonNull() ? null : homepage.getAsString())
                       .mainLanguage(language)
                       .totalIssues(crawlerService.getTotalIssues())
