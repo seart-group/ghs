@@ -133,3 +133,19 @@ To dockerise the application, I have opted to use three containers: one for the 
 docker-compose up
 ```
 Docker compose will take care of the rest. The command essentially starts the `mysql`, `gse-app` and `gse-fe` services in that particular sequence. Three containers will start: `gse-application`, `gse-database` and `gse-frontend`. The compose configuration `docker-compose.yml` is configured to automatically run scripts to import the previous backup of the database.
+
+## Build and Deploy
+
+To deploy a back-end version, be sure to build a clean project jar. After that, deploy using the following commands:
+```
+docker build -t gitlab.reveal.si.usi.ch:60090/students/2020/ozren-dabic/github-search-engine/backend -f Dockerfile.be .
+docker push gitlab.reveal.si.usi.ch:60090/students/2020/ozren-dabic/github-search-engine/backend
+```
+Changes should take effect on every 5th minute of the hour, as per Watchtower configuration.
+
+To push front-end images, simply run:
+```
+docker build -t gitlab.reveal.si.usi.ch:60090/students/2020/ozren-dabic/github-search-engine/frontend -f Dockerfile.fe .
+docker push gitlab.reveal.si.usi.ch:60090/students/2020/ozren-dabic/github-search-engine/frontend
+```
+Changes should be visible almost instantly.
