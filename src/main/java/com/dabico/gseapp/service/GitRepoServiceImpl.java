@@ -72,7 +72,7 @@ public class GitRepoServiceImpl implements GitRepoService {
                                                   Boolean hasPulls, Boolean hasWiki, Boolean hasLicense, Integer page,
                                                   Integer pageSize){
         Pageable pageable = PageRequest.of(page, pageSize, Sort.Direction.ASC, "name");
-        LongInterval commits      = LongInterval.builder().start(commitsMax).end(commitsMax).build();
+        LongInterval commits      = LongInterval.builder().start(commitsMin).end(commitsMax).build();
         LongInterval contributors = LongInterval.builder().start(contributorsMin).end(contributorsMax).build();
         LongInterval issues       = LongInterval.builder().start(issuesMin).end(issuesMax).build();
         LongInterval pulls        = LongInterval.builder().start(pullsMin).end(pullsMax).build();
@@ -183,7 +183,7 @@ public class GitRepoServiceImpl implements GitRepoService {
                                         Date createdMax, Date committedMin, Date committedMax, Boolean excludeForks,
                                         Boolean onlyForks, Boolean hasIssues, Boolean hasPulls, Boolean hasWiki,
                                         Boolean hasLicense){
-        LongInterval commits      = LongInterval.builder().start(commitsMax).end(commitsMax).build();
+        LongInterval commits      = LongInterval.builder().start(commitsMin).end(commitsMax).build();
         LongInterval contributors = LongInterval.builder().start(contributorsMin).end(contributorsMax).build();
         LongInterval issues       = LongInterval.builder().start(issuesMin).end(issuesMax).build();
         LongInterval pulls        = LongInterval.builder().start(pullsMin).end(pullsMax).build();
