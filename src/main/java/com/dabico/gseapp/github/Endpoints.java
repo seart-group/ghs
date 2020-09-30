@@ -2,9 +2,11 @@ package com.dabico.gseapp.github;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.experimental.FieldDefaults;
 
 @Getter
 @AllArgsConstructor
+@FieldDefaults(makeFinal = true)
 public enum Endpoints {
     DEFAULT("https://github.com"),
     API("https://api.github.com"),
