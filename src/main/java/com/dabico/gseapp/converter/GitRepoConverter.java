@@ -33,9 +33,9 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
-@FieldDefaults(level = AccessLevel.PRIVATE)
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class GitRepoConverter {
-    static final Logger logger = LoggerFactory.getLogger(GitRepoConverter.class);
+    static Logger logger = LoggerFactory.getLogger(GitRepoConverter.class);
 
     ChromeDriver driver;
 

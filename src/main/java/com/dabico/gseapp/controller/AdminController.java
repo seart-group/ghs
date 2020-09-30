@@ -21,7 +21,7 @@ import javax.persistence.EntityNotFoundException;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
 public class AdminController {
-    static final Logger logger = LoggerFactory.getLogger(AdminController.class);
+    static Logger logger = LoggerFactory.getLogger(AdminController.class);
 
     AccessTokenService accessTokenService;
     AccessTokenConverter accessTokenConverter;

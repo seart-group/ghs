@@ -15,8 +15,6 @@ public abstract class Interval<T> {
     T start;
     T end;
 
-    public abstract Pair<? extends Interval<T>,? extends Interval<T>> splitInterval();
-
     @Override
     public String toString(){
         return this.start + ".." + this.end;
