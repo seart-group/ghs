@@ -32,10 +32,10 @@ import java.util.List;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
 public class GitRepoController {
-    static final Logger logger = LoggerFactory.getLogger(GitRepoController.class);
-    static final String filePath = "temp/";
-    static final ObjectMapper om;
-    static final XmlMapper xmlm;
+    static Logger logger = LoggerFactory.getLogger(GitRepoController.class);
+    static String filePath = "temp/";
+    static ObjectMapper om;
+    static XmlMapper xmlm;
     static {
         SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
         om = new ObjectMapper();

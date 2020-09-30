@@ -17,7 +17,7 @@ import java.util.Date;
 @Configuration
 @ConditionalOnProperty(value = "app.crawl.enabled", havingValue = "true")
 @EnableScheduling
-@FieldDefaults(level = AccessLevel.PRIVATE)
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class JobScheduler {
 
     static final Logger logger = LoggerFactory.getLogger(JobScheduler.class);

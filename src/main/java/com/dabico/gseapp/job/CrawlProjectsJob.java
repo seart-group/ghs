@@ -17,6 +17,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
+import lombok.experimental.NonFinal;
 import okhttp3.Response;
 import okhttp3.ResponseBody;
 import org.apache.http.client.HttpResponseException;
@@ -35,18 +36,21 @@ import java.util.List;
 import java.util.Set;
 
 @Service
-@FieldDefaults(level = AccessLevel.PRIVATE)
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class CrawlProjectsJob {
 
-    static final Logger logger = LoggerFactory.getLogger(CrawlProjectsJob.class);
+    static Logger logger = LoggerFactory.getLogger(CrawlProjectsJob.class);
 
+    @NonFinal
     static Long defaultRetryPeriod = 900000L;
 
     List<DateInterval> requestQueue = new ArrayList<>();
     List<String> accessTokens = new ArrayList<>();
     List<String> languages = new ArrayList<>();
 
+    @NonFinal
     int tokenOrdinal;
+    @NonFinal
     String currentToken;
 
     AccessTokenRepository accessTokenRepository;
