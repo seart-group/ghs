@@ -1,13 +1,17 @@
 package com.dabico.gseapp.repository.util;
 
+import lombok.AccessLevel;
+import lombok.experimental.FieldDefaults;
+
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class JPAQueryBuilder {
-    private StringBuilder select  = new StringBuilder();
-    private StringBuilder from    = new StringBuilder();
-    private StringBuilder join    = new StringBuilder();
-    private StringBuilder where   = new StringBuilder();
-    private StringBuilder groupBy = new StringBuilder();
-    private StringBuilder having  = new StringBuilder();
-    private StringBuilder orderBy = new StringBuilder();
+    StringBuilder select  = new StringBuilder();
+    StringBuilder from    = new StringBuilder();
+    StringBuilder join    = new StringBuilder();
+    StringBuilder where   = new StringBuilder();
+    StringBuilder groupBy = new StringBuilder();
+    StringBuilder having  = new StringBuilder();
+    StringBuilder orderBy = new StringBuilder();
 
     public String build(){
         return select.toString() +

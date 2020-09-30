@@ -22,7 +22,7 @@ public class FileSystemResourceCustom extends FileSystemResource {
     }
 
     private static final class FileInputStreamCustom extends FileInputStream {
-        private File file;
+        private final File file;
 
         public FileInputStreamCustom(File file) throws FileNotFoundException {
             super(file);
