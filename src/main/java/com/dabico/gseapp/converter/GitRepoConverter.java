@@ -22,7 +22,6 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
@@ -36,25 +35,27 @@ import java.util.stream.Collectors;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class GitRepoConverter {
     static Logger logger = LoggerFactory.getLogger(GitRepoConverter.class);
+    static String chromedriverFilePath;
+
+    static {
+        String OS = System.getProperty("os.name").toLowerCase();
+        if (OS.contains("win")){
+            chromedriverFilePath = "selenium/windows/chromedriver.exe";
+        } else if (OS.contains("mac")){
+            chromedriverFilePath = "selenium/macos/chromedriver";
+        } else {
+            chromedriverFilePath = "selenium/linux/chromedriver";
+        }
+    }
 
     ChromeDriver driver;
 
     @Autowired
     public GitRepoConverter(){
-        String chromedriverResourcePath = "selenium/";
-        String OS = System.getProperty("os.name").toLowerCase();
-        if (OS.contains("win")){
-            chromedriverResourcePath += "windows/chromedriver.exe";
-        } else if (OS.contains("mac")){
-            chromedriverResourcePath += "macos/chromedriver";
-        } else {
-            chromedriverResourcePath += "linux/chromedriver";
-        }
-        String driverPath = new ClassPathResource(chromedriverResourcePath).getPath();
-        System.setProperty("webdriver.chrome.driver", driverPath);
+        System.setProperty("webdriver.chrome.driver", chromedriverFilePath);
         System.setProperty("webdriver.chrome.silentOutput", "true");
         DesiredCapabilities capabilities = new DesiredCapabilities();
-        ChromeDriverService service = new ChromeDriverService.Builder().usingDriverExecutable(new File(driverPath)).build();
+        ChromeDriverService service = new ChromeDriverService.Builder().usingDriverExecutable(new File(chromedriverFilePath)).build();
         ChromeOptions options = new ChromeOptions();
         options.addArguments("--no-sandbox");
         options.addArguments("--headless");
