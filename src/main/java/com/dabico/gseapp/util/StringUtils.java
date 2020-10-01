@@ -6,24 +6,16 @@ import static org.apache.commons.lang3.StringUtils.isEmpty;
 
 @UtilityClass
 public class StringUtils {
-    public String removeFromStart(String str, int n) {
-        if (!isEmpty(str)) {
-            return str.length() >= n ? str.substring(n) : str;
-        } else {
-            return str;
-        }
+    public String removeFromStart(String str, int m) {
+        return removeFromStartAndEnd(str,m,0);
     }
 
     public String removeFromEnd(String str, int n) {
-        if (!isEmpty(str)) {
-            return str.length() >= n ? str.substring(0, str.length() - n) : str;
-        } else {
-            return str;
-        }
+        return removeFromStartAndEnd(str,0,n);
     }
 
     public String removeFromStartAndEnd(String str, int m, int n){
-        if (!isEmpty(str)) {
+        if (!isEmpty(str) && m >= 0 && n >= 0) {
             return (str.length() >= m && str.length() >= n) ? str.substring(m, str.length() - n) : str;
         } else {
             return str;
