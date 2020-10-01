@@ -1,12 +1,13 @@
 package com.dabico.gseapp.github;
 
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.experimental.FieldDefaults;
 
 @Getter
 @AllArgsConstructor
-@FieldDefaults(makeFinal = true)
+@FieldDefaults(level = AccessLevel.PRIVATE,makeFinal = true)
 public enum Endpoints {
     DEFAULT("https://github.com"),
     API("https://api.github.com"),
@@ -14,5 +15,5 @@ public enum Endpoints {
     REPOS("http://api.github.com/repos"),
     SEARCH("https://api.github.com/search"),
     SEARCH_REPOS("https://api.github.com/search/repositories");
-    private String url;
+    String url;
 }
