@@ -35,9 +35,9 @@ public class StringUtilsTest {
         String newStr2 = StringUtils.removeFromEnd(emptyStr,7);
         String newStr3 = StringUtils.removeFromStartAndEnd(emptyStr,5,7);
         Assert.assertEquals(emptyStr,"");
-        Assert.assertEquals(emptyStr,"");
-        Assert.assertEquals(emptyStr,"");
-        Assert.assertEquals(emptyStr,"");
+        Assert.assertEquals(newStr1,"");
+        Assert.assertEquals(newStr2,"");
+        Assert.assertEquals(newStr3,"");
     }
 
     @Test
