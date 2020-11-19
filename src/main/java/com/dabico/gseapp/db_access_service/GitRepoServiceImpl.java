@@ -1,4 +1,4 @@
-package com.dabico.gseapp.service;
+package com.dabico.gseapp.db_access_service;
 
 import com.dabico.gseapp.controller.GitRepoController;
 import com.dabico.gseapp.converter.GitRepoConverter;
@@ -61,6 +61,9 @@ public class GitRepoServiceImpl implements GitRepoService {
         return gitRepoConverter.languageListToLanguageDtoList(gitRepoLanguageRepository.findRepoLanguages(repoId));
     }
 
+    /***
+     * Similar to other `advancedSearch` method, but with pagination
+     */
     @Override
     public GitRepoDtoListPaginated advancedSearch(String name, Boolean nameEquals, String language, String license, String label,
                                                   Long commitsMin, Long commitsMax, Long contributorsMin, Long contributorsMax,
@@ -265,6 +268,9 @@ public class GitRepoServiceImpl implements GitRepoService {
         return stats;
     }
 
+    /**
+     * Return the data to be displayed in "Stat" popup (number of processed repo for each lanugae)
+     */
     @Override
     public StringLongDtoList getMainLanguageStatistics(){
         List<Object[]> languages = gitRepoRepository.getLanguageStatistics();

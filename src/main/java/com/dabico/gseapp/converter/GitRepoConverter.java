@@ -4,7 +4,7 @@ import com.dabico.gseapp.dto.GitRepoDto;
 import com.dabico.gseapp.dto.GitRepoDtoList;
 import com.dabico.gseapp.dto.GitRepoLabelDto;
 import com.dabico.gseapp.dto.GitRepoLanguageDto;
-import com.dabico.gseapp.github.GitHubPageCrawlerService;
+import com.dabico.gseapp.github_service.GitHubPageCrawlerService;
 import com.dabico.gseapp.model.GitRepo;
 import com.dabico.gseapp.model.GitRepoLabel;
 import com.dabico.gseapp.model.GitRepoLanguage;

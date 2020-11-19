@@ -1,4 +1,4 @@
-package com.dabico.gseapp.service;
+package com.dabico.gseapp.db_access_service;
 
 import com.dabico.gseapp.converter.AccessTokenConverter;
 import com.dabico.gseapp.dto.AccessTokenDto;

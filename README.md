@@ -65,11 +65,11 @@ Will do that for you. Note that you do not have to run the MySQL console as the 
 
 ## Running the application
 
-### Running in IntelliJ
+### I. Running in IntelliJ
 
 This is my preferred method for running and testing the application as it allows for easy debugging. If the run configuration has not been set, then navigate to **com.dabico.gseapp.GSEApplication.java**. The option to start the application from the main method should be on the left hand side, next to the class definition. After running for the first time, the configuration should get automatically saved to the list of available configurations. It is not necessary to provide any arguments, as Spring takes the default ones from application.properties. If you wish to override any of the arguments, it is as simple as changing them in the application.properties file.  
 
-### Running in the terminal
+### II. Running in the terminal
 
 To run the application through the terminal, first make sure you have downloaded the latest version of [Apache Maven](https://maven.apache.org/download.cgi). Next, add the **bin** directory of **apache-maven-X.X.X** to the PATH environment variable. So for example, if I put it in my Documents folder, then to add the environment variable I would run:
 ```
@@ -83,7 +83,7 @@ To ensure that the path variable has been added, run:
 ```
 mvn -v
 ```
-If it runs without error, and prints the version installed, along with other details, then maven is successfully installed and the application is ready for use. Navigate to the root folder of the project. To run the application with the default parameters specified in the application.properties file, simply run:
+If it runs without error, and prints the version installed, along with other details, then maven is successfully installed and the application is ready for use. Navigate to the root folder of the project. To run the application with the default parameters specified in the `application.properties` file, simply run:
 ```
 mvn spring-boot:run
 ```
@@ -92,7 +92,7 @@ And to override the value of an existing parameter, run:
 mvn spring-boot:run -Dspring-boot.run.arguments=--arg.one.name=argvalue,--arg.two.name=1
 ```
 
-### Running the .jar
+### III. Running using `.jar`
 
 First build the project by running the following command in the terminal:
 ```
@@ -102,7 +102,7 @@ If it did not exist yet, you should now see the **target** directory in the proj
 ```
 java -jar target/gse-application-X.X.X.jar
 ```
-Note that the name of the .jar file **gse-application-X.X.X** is derived from the settings in **pom.xml**, following the format of: *artifactId-version.jar*
+Note that the name of the `.jar` file **`gse-application-X.X.X`** is derived from the settings in `pom.xml`, following the format of: `artifactId-version.jar`.
 
 ### Supported arguments
 

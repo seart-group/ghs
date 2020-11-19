@@ -4,7 +4,7 @@ import com.dabico.gseapp.converter.AccessTokenConverter;
 import com.dabico.gseapp.converter.SupportedLanguageConverter;
 import com.dabico.gseapp.dto.AccessTokenDto;
 import com.dabico.gseapp.dto.SupportedLanguageDto;
-import com.dabico.gseapp.service.*;
+import com.dabico.gseapp.db_access_service.*;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -77,6 +77,9 @@ public class AdminController {
         return ResponseEntity.ok(gitRepoService.getAllLanguageStatistics());
     }
 
+    /**
+     * Return the data to be displayed in "Stat" popup (number of processed repo for each lanugae)
+     */
     @GetMapping("/r/stats")
     public ResponseEntity<?> getRepoStatistics(){
         return ResponseEntity.ok(gitRepoService.getMainLanguageStatistics());
