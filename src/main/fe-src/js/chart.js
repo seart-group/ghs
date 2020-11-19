@@ -18,7 +18,9 @@ fetch("http://localhost:8080/r/stats").then(response => {
         colors.push(dynamicColors(i,items.length));
         i++;
     });
-}).catch(_ => {});
+}).catch( (error) => {
+    console.error('Error (/r/stats):', error);
+});
 
 Chart.defaults.global.defaultFontFamily = "Trebuchet MS";
 

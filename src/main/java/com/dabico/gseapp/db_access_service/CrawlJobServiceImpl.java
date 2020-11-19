@@ -1,4 +1,4 @@
-package com.dabico.gseapp.service;
+package com.dabico.gseapp.db_access_service;
 
 import com.dabico.gseapp.converter.SupportedLanguageConverter;
 import com.dabico.gseapp.dto.CrawlJobDto;

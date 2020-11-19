@@ -1,4 +1,4 @@
-package com.dabico.gseapp.service;
+package com.dabico.gseapp.db_access_service;
 
 import com.dabico.gseapp.dto.*;
 import com.dabico.gseapp.model.GitRepo;
@@ -12,6 +12,7 @@ public interface GitRepoService {
     GitRepoDto getRepoById(Long id);
     List<GitRepoLabelDto> findRepoLabels(Long repoId);
     List<GitRepoLanguageDto> findRepoLanguages(Long repoId);
+
     GitRepoDtoList advancedSearch(String name, Boolean nameEquals, String language, String license, String label, Long commitsMin,
                                   Long commitsMax, Long contributorsMin, Long contributorsMax, Long issuesMin, Long issuesMax,
                                   Long pullsMin, Long pullsMax, Long branchesMin, Long branchesMax, Long releasesMin,
@@ -19,6 +20,10 @@ public interface GitRepoService {
                                   Long forksMax, Date createdMin, Date createdMax, Date committedMin, Date committedMax,
                                   Boolean excludeForks, Boolean onlyForks, Boolean hasIssues, Boolean hasPulls, Boolean hasWiki,
                                   Boolean hasLicense);
+
+    /***
+     * Similar to other `advancedSearch` method, but with pagination
+     */
     GitRepoDtoListPaginated advancedSearch(String name, Boolean nameEquals, String language, String license, String label,
                                            Long commitsMin, Long commitsMax, Long contributorsMin, Long contributorsMax,
                                            Long issuesMin, Long issuesMax, Long pullsMin, Long pullsMax, Long branchesMin,

@@ -1,6 +1,6 @@
 package com.dabico.gseapp.job;
 
-import com.dabico.gseapp.service.ApplicationPropertyService;
+import com.dabico.gseapp.db_access_service.ApplicationPropertyService;
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
 import org.slf4j.Logger;

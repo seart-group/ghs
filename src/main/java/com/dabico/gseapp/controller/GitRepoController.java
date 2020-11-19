@@ -3,7 +3,7 @@ package com.dabico.gseapp.controller;
 import com.dabico.gseapp.converter.GitRepoConverter;
 import com.dabico.gseapp.dto.GitRepoDtoList;
 import com.dabico.gseapp.dto.GitRepoDtoListPaginated;
-import com.dabico.gseapp.service.GitRepoService;
+import com.dabico.gseapp.db_access_service.GitRepoService;
 import com.dabico.gseapp.util.FileSystemResourceCustom;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;

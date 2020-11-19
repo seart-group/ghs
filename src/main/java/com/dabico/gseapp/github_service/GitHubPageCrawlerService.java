@@ -1,4 +1,4 @@
-package com.dabico.gseapp.github;
+package com.dabico.gseapp.github_service;
 
 import com.dabico.gseapp.util.DateUtils;
 import com.dabico.gseapp.util.LongUtils;

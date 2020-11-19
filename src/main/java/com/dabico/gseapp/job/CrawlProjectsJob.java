@@ -1,15 +1,15 @@
 package com.dabico.gseapp.job;
 
 import com.dabico.gseapp.converter.GitRepoConverter;
-import com.dabico.gseapp.github.GitHubApiService;
+import com.dabico.gseapp.github_service.GitHubApiService;
 import com.dabico.gseapp.model.GitRepo;
 import com.dabico.gseapp.model.GitRepoLabel;
 import com.dabico.gseapp.model.GitRepoLanguage;
 import com.dabico.gseapp.repository.AccessTokenRepository;
 import com.dabico.gseapp.repository.SupportedLanguageRepository;
-import com.dabico.gseapp.service.ApplicationPropertyService;
-import com.dabico.gseapp.service.CrawlJobService;
-import com.dabico.gseapp.service.GitRepoService;
+import com.dabico.gseapp.db_access_service.ApplicationPropertyService;
+import com.dabico.gseapp.db_access_service.CrawlJobService;
+import com.dabico.gseapp.db_access_service.GitRepoService;
 import com.dabico.gseapp.util.interval.DateInterval;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
