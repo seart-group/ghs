@@ -83,9 +83,10 @@ public class GitRepoController {
             @RequestParam(required = false, defaultValue = "false") Boolean hasWiki,
             @RequestParam(required = false, defaultValue = "false") Boolean hasLicense,
             @RequestParam(required = false, defaultValue = "0") Integer page,
-            @RequestParam(required = false, defaultValue = "20") Integer pageSize
+            @RequestParam(required = false, defaultValue = "20") Integer pageSize,
+            @RequestParam(required = false) Long totalResultsCached
     ){
-        GitRepoDtoListPaginated results = gitRepoService.advancedSearch(name, nameEquals, language, license, label,
+        GitRepoDtoListPaginated results = gitRepoService.advancedSearch_paginated(name, nameEquals, language, license, label,
                                                                         commitsMin, commitsMax, contributorsMin, contributorsMax,
                                                                         issuesMin, issuesMax, pullsMin, pullsMax,
                                                                         branchesMin, branchesMax, releasesMin, releasesMax,
@@ -93,7 +94,7 @@ public class GitRepoController {
                                                                         forksMin, forksMax, createdMin, createdMax,
                                                                         committedMin, committedMax, excludeForks, onlyForks,
                                                                         hasIssues, hasPulls, hasWiki, hasLicense,
-                                                                        page, pageSize);
+                                                                        page, pageSize, totalResultsCached);
         return ResponseEntity.ok(results);
     }
 

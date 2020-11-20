@@ -195,7 +195,7 @@ function retrieve(url) {
         $page.val('');
 
         if (totalItems > 0){
-            let count = '<div><div class="row mw-100 pt-3 mx-3"><div class="col d-flex align-items-center justify-content-start px-0"><span class="text-secondary">Total Results: '+totalItems+'</span></div><div class="col d-flex align-items-center justify-content-end px-0"><span class="text-secondary">Page: '+page+' / '+totalPages+'</span></div></div></div>';
+            let count = '<div><div class="row mw-100 pt-3 mx-3"><div class="col d-flex align-items-center justify-content-start px-0"><span class="text-secondary">Total Results: <span id="totalResult_value">'+totalItems+'</span></span></div><div class="col d-flex align-items-center justify-content-end px-0"><span class="text-secondary">Page: '+page+' / '+totalPages+'</span></div></div></div>';
             $results_container_items.append(count);
             if (totalPages > 1){
                 $page.removeClass('d-none');
@@ -255,11 +255,14 @@ function jumpToPage(base_url) {
     let page = parseInt($page.val());
     if (isNaN(page)){ return false; }
     let page_limit = parseInt($go_button.attr('page-limit'));
-    $body_html.animate({ scrollTop: 0 }, 400);
-    if (page < page_limit){
-        retrieve(base_url+'&page='+(page - 1)+'&pageSize=20');
+    if (page <= page_limit){
+        $loading_modal.modal("show");
+        $body_html.animate({ scrollTop: 0 }, 400);
+        let total_result_cache = $('#totalResult_value').text();
+        retrieve(base_url+'&page='+(page - 1)+'&pageSize=20'+'&totalResult='+total_result_cache);
     } else {
-        retrieve(base_url+'&page='+(page_limit - 1)+'&pageSize=20');
+        alert("Invalid page number: "+page+" should be <= "+page_limit);
+        // retrieve(base_url+'&page='+(page_limit - 1)+'&pageSize=20');
     }
 }
 
@@ -269,7 +272,6 @@ function changePage(url){
 }
 
 $go_form.submit(function () {
-    $loading_modal.modal("show");
     let base_url = $go_button.attr('base-url');
     jumpToPage(base_url);
     return false;
