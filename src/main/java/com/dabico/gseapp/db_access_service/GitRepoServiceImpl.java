@@ -88,7 +88,7 @@ public class GitRepoServiceImpl implements GitRepoService {
         DateInterval created      = DateInterval.builder().start(createdMin).end(createdMax).build();
         DateInterval committed    = DateInterval.builder().start(committedMin).end(committedMax).build();
 
-        Boolean shouldCountTotalResult = (totalResults==null);
+        boolean shouldCountTotalResult = (totalResults==null);
 
 //      long start = System.currentTimeMillis();
         List<GitRepoDto> repoDtos = gitRepoRepositoryCustom.advancedSearch_emad(name,nameEquals,language,license,label,commits,
@@ -161,25 +161,25 @@ public class GitRepoServiceImpl implements GitRepoService {
         repoDtoListPaginated.setBase(base);
         if (totalResults > 0){
             String csvDownloadLink = linkTo(methodOn(GitRepoController.class)
-                    .downloadCSV(name,nameEquals,language,license,label,commitsMin,commitsMax,contributorsMin,
+                    .downloadResult("csv", name,nameEquals,language,license,label,commitsMin,commitsMax,contributorsMin,
                             contributorsMax,issuesMin,issuesMax,pullsMin,pullsMax,branchesMin,branchesMax,releasesMin,
                             releasesMax,starsMin,starsMax,watchersMin,watchersMax,forksMin,forksMax,createdMin,
                             createdMax,committedMin,committedMax,excludeForks,onlyForks,hasIssues,hasPulls,hasWiki,
-                            hasLicense)).toString().split("\\{")[0];
+                            hasLicense)).toString().replace("{fileformat}", "csv").split("\\{")[0];
             repoDtoListPaginated.setCsvLink(csvDownloadLink);
             String jsonDownloadLink = linkTo(methodOn(GitRepoController.class)
-                    .downloadJSON(name,nameEquals,language,license,label,commitsMin,commitsMax,contributorsMin,
+                    .downloadResult("json", name,nameEquals,language,license,label,commitsMin,commitsMax,contributorsMin,
                             contributorsMax,issuesMin,issuesMax,pullsMin,pullsMax,branchesMin,branchesMax,releasesMin,
                             releasesMax,starsMin,starsMax,watchersMin,watchersMax,forksMin,forksMax,createdMin,
                             createdMax,committedMin,committedMax,excludeForks,onlyForks,hasIssues,hasPulls,hasWiki,
-                            hasLicense)).toString().split("\\{")[0];
+                            hasLicense)).toString().replace("{fileformat}", "json").split("\\{")[0];
             repoDtoListPaginated.setJsonLink(jsonDownloadLink);
             String xmlDownloadLink = linkTo(methodOn(GitRepoController.class)
-                    .downloadXML(name,nameEquals,language,license,label,commitsMin,commitsMax,contributorsMin,
+                    .downloadResult("xml", name,nameEquals,language,license,label,commitsMin,commitsMax,contributorsMin,
                             contributorsMax,issuesMin,issuesMax,pullsMin,pullsMax,branchesMin,branchesMax,releasesMin,
                             releasesMax,starsMin,starsMax,watchersMin,watchersMax,forksMin,forksMax,createdMin,
                             createdMax,committedMin,committedMax,excludeForks,onlyForks,hasIssues,hasPulls,hasWiki,
-                            hasLicense)).toString().split("\\{")[0];
+                            hasLicense)).toString().replace("{fileformat}", "xml").split("\\{")[0];
             repoDtoListPaginated.setXmlLink(xmlDownloadLink);
         }
         return repoDtoListPaginated;
