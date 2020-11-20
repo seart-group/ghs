@@ -21,10 +21,10 @@ public interface GitRepoService {
                                   Boolean excludeForks, Boolean onlyForks, Boolean hasIssues, Boolean hasPulls, Boolean hasWiki,
                                   Boolean hasLicense);
 
-    /***
-     * Similar to other `advancedSearch` method, but with pagination
+    /**
+     * @param totalResults If provided, we don't recount total number of result (For the sake of performance)
      */
-    GitRepoDtoListPaginated advancedSearch(String name, Boolean nameEquals, String language, String license, String label,
+    GitRepoDtoListPaginated advancedSearch_paginated(String name, Boolean nameEquals, String language, String license, String label,
                                            Long commitsMin, Long commitsMax, Long contributorsMin, Long contributorsMax,
                                            Long issuesMin, Long issuesMax, Long pullsMin, Long pullsMax, Long branchesMin,
                                            Long branchesMax, Long releasesMin, Long releasesMax, Long starsMin,
@@ -32,7 +32,8 @@ public interface GitRepoService {
                                            Long forksMax, Date createdMin, Date createdMax, Date committedMin,
                                            Date committedMax, Boolean excludeForks, Boolean onlyForks, Boolean hasIssues,
                                            Boolean hasPulls, Boolean hasWiki, Boolean hasLicense, Integer page,
-                                           Integer pageSize);
+                                           Integer pageSize, Long totalResults);
+
     GitRepo createOrUpdateRepo(GitRepo repo);
     StringList getAllLabels();
     StringList getAllLanguages();

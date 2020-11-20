@@ -61,11 +61,11 @@ public class GitRepoServiceImpl implements GitRepoService {
         return gitRepoConverter.languageListToLanguageDtoList(gitRepoLanguageRepository.findRepoLanguages(repoId));
     }
 
-    /***
-     * Similar to other `advancedSearch` method, but with pagination
+    /**
+     * @param totalResults If provided, we don't recount total number of result (For the sake of performance)
      */
     @Override
-    public GitRepoDtoListPaginated advancedSearch(String name, Boolean nameEquals, String language, String license, String label,
+    public GitRepoDtoListPaginated advancedSearch_paginated(String name, Boolean nameEquals, String language, String license, String label,
                                                   Long commitsMin, Long commitsMax, Long contributorsMin, Long contributorsMax,
                                                   Long issuesMin, Long issuesMax, Long pullsMin, Long pullsMax, Long branchesMin,
                                                   Long branchesMax, Long releasesMin, Long releasesMax, Long starsMin,
@@ -73,7 +73,8 @@ public class GitRepoServiceImpl implements GitRepoService {
                                                   Long forksMax, Date createdMin, Date createdMax, Date committedMin,
                                                   Date committedMax, Boolean excludeForks, Boolean onlyForks, Boolean hasIssues,
                                                   Boolean hasPulls, Boolean hasWiki, Boolean hasLicense, Integer page,
-                                                  Integer pageSize){
+                                                  Integer pageSize, Long totalResults)
+    {
         Pageable pageable = PageRequest.of(page, pageSize, Sort.Direction.ASC, "name");
         LongInterval commits      = LongInterval.builder().start(commitsMin).end(commitsMax).build();
         LongInterval contributors = LongInterval.builder().start(contributorsMin).end(contributorsMax).build();
@@ -86,52 +87,59 @@ public class GitRepoServiceImpl implements GitRepoService {
         LongInterval forks        = LongInterval.builder().start(forksMin).end(forksMax).build();
         DateInterval created      = DateInterval.builder().start(createdMin).end(createdMax).build();
         DateInterval committed    = DateInterval.builder().start(committedMin).end(committedMax).build();
-        List<GitRepo> repos = gitRepoRepositoryCustom.advancedSearch(name,nameEquals,language,license,label,commits,
-                                                                     contributors,issues,pulls,branches,releases,
-                                                                     stars,watchers,forks,created,committed,excludeForks,
-                                                                     onlyForks,hasIssues,hasPulls,hasWiki,hasLicense,pageable);
-        List<GitRepoDto> repoDtos = gitRepoConverter.repoListToRepoDtoList(repos);
-        Long totalResults = gitRepoRepositoryCustom.countResults(name,nameEquals,language,license,label,commits,
-                                                                 contributors,issues,pulls,branches,releases,
-                                                                 stars,watchers,forks,created,committed,excludeForks,
-                                                                 onlyForks,hasIssues,hasPulls,hasWiki,hasLicense);
+
+        Boolean shouldCountTotalResult = (totalResults==null);
+
+//      long start = System.currentTimeMillis();
+        List<GitRepoDto> repoDtos = gitRepoRepositoryCustom.advancedSearch_emad(name,nameEquals,language,license,label,commits,
+                contributors,issues,pulls,branches,releases,
+                stars,watchers,forks,created,committed,excludeForks,
+                onlyForks,hasIssues,hasPulls,hasWiki,hasLicense, pageable);
+//      System.out.printf("[Tp] Retrieving repositories: %d\n", System.currentTimeMillis() - start);
+
+
+
+//      start = System.currentTimeMillis();
+        if(shouldCountTotalResult) {
+            totalResults = gitRepoRepositoryCustom.countAdvancedSearch_emad(name, nameEquals, language, license, label, commits,
+                    contributors, issues, pulls, branches, releases,
+                    stars, watchers, forks, created, committed, excludeForks,
+                    onlyForks, hasIssues, hasPulls, hasWiki, hasLicense);
+        }
+//      System.out.printf("[Tp] Counting repositories: %d\n", System.currentTimeMillis() - start);
 
         int lastPage = (int) (totalResults/pageSize);
         if (totalResults % pageSize == 0){ lastPage -= 1; }
-
-        for (GitRepoDto repoDto : repoDtos){
-            repoDto.setLabels(new ArrayList<>(findRepoLabels(repoDto.getId())));
-            repoDto.setLanguages(new ArrayList<>(findRepoLanguages(repoDto.getId())));
-        }
 
         GitRepoDtoListPaginated repoDtoListPaginated = GitRepoDtoListPaginated.builder().build();
         repoDtoListPaginated.setItems(repoDtos);
         repoDtoListPaginated.setTotalItems(totalResults);
         repoDtoListPaginated.setTotalPages((long) lastPage+1);
         repoDtoListPaginated.setPage(page+1);
+
         if (page > 0){
             String prev = linkTo(methodOn(GitRepoController.class)
                     .searchRepos(name,nameEquals,language,license,label,commitsMin,commitsMax,contributorsMin,
                                  contributorsMax,issuesMin,issuesMax,pullsMin,pullsMax,branchesMin,branchesMax,
                                  releasesMin,releasesMax,starsMin,starsMax,watchersMin,watchersMax,forksMin,forksMax,
                                  createdMin,createdMax,committedMin,committedMax,excludeForks,onlyForks,hasIssues,
-                                 hasPulls,hasWiki,hasLicense,page - 1,pageSize)).toString().split("\\{")[0];
+                                 hasPulls,hasWiki,hasLicense,page - 1,pageSize, totalResults)).toString().split("\\{")[0];
             repoDtoListPaginated.setPrev(prev);
             String first = linkTo(methodOn(GitRepoController.class)
                     .searchRepos(name,nameEquals,language,license,label,commitsMin,commitsMax,contributorsMin,
                                  contributorsMax,issuesMin,issuesMax,pullsMin,pullsMax,branchesMin,branchesMax,
                                  releasesMin,releasesMax,starsMin,starsMax, watchersMin,watchersMax,forksMin,forksMax,
                                  createdMin,createdMax,committedMin,committedMax,excludeForks,onlyForks,hasIssues,
-                                 hasPulls,hasWiki,hasLicense,0, pageSize)).toString().split("\\{")[0];
+                                 hasPulls,hasWiki,hasLicense,0, pageSize, totalResults)).toString().split("\\{")[0];
             repoDtoListPaginated.setFirst(first);
         }
-        if (pageSize == repos.size()){
+        if (pageSize == repoDtos.size()){ // TODO: It was: "repos.size()"
             String next = linkTo(methodOn(GitRepoController.class)
                     .searchRepos(name, nameEquals, language, license, label, commitsMin, commitsMax, contributorsMin, contributorsMax,
                                  issuesMin, issuesMax, pullsMin, pullsMax, branchesMin, branchesMax, releasesMin, releasesMax,
                                  starsMin, starsMax, watchersMin, watchersMax, forksMin, forksMax, createdMin, createdMax,
                                  committedMin, committedMax, excludeForks, onlyForks, hasIssues, hasPulls, hasWiki, hasLicense,
-                                 page + 1, pageSize)).toString().split("\\{")[0];
+                                 page + 1, pageSize, totalResults)).toString().split("\\{")[0];
             repoDtoListPaginated.setNext(next);
         }
         if (page < lastPage){
@@ -140,15 +148,16 @@ public class GitRepoServiceImpl implements GitRepoService {
                                  contributorsMax,issuesMin,issuesMax,pullsMin,pullsMax,branchesMin,branchesMax,
                                  releasesMin,releasesMax,starsMin,starsMax,watchersMin,watchersMax,forksMin,forksMax,
                                  createdMin,createdMax,committedMin,committedMax,excludeForks,onlyForks,hasIssues,
-                                 hasPulls,hasWiki,hasLicense,lastPage,pageSize)).toString().split("\\{")[0];
+                                 hasPulls,hasWiki,hasLicense,lastPage,pageSize, totalResults)).toString().split("\\{")[0];
             repoDtoListPaginated.setLast(last);
         }
+
         String base = linkTo(methodOn(GitRepoController.class)
                 .searchRepos(name,nameEquals,language,license,label,commitsMin,commitsMax,contributorsMin,
                         contributorsMax,issuesMin,issuesMax,pullsMin,pullsMax,branchesMin,branchesMax,
                         releasesMin,releasesMax,starsMin,starsMax,watchersMin,watchersMax,forksMin,forksMax,
                         createdMin,createdMax,committedMin,committedMax,excludeForks,onlyForks,hasIssues,
-                        hasPulls,hasWiki,hasLicense,null,null)).toString().split("\\{")[0];
+                        hasPulls,hasWiki,hasLicense,null,null, totalResults)).toString().split("\\{")[0];
         repoDtoListPaginated.setBase(base);
         if (totalResults > 0){
             String csvDownloadLink = linkTo(methodOn(GitRepoController.class)
@@ -173,7 +182,6 @@ public class GitRepoServiceImpl implements GitRepoService {
                             hasLicense)).toString().split("\\{")[0];
             repoDtoListPaginated.setXmlLink(xmlDownloadLink);
         }
-
         return repoDtoListPaginated;
     }
 
@@ -185,7 +193,8 @@ public class GitRepoServiceImpl implements GitRepoService {
                                         Long watchersMin, Long watchersMax, Long forksMin, Long forksMax, Date createdMin,
                                         Date createdMax, Date committedMin, Date committedMax, Boolean excludeForks,
                                         Boolean onlyForks, Boolean hasIssues, Boolean hasPulls, Boolean hasWiki,
-                                        Boolean hasLicense){
+                                        Boolean hasLicense)
+    {
         LongInterval commits      = LongInterval.builder().start(commitsMin).end(commitsMax).build();
         LongInterval contributors = LongInterval.builder().start(contributorsMin).end(contributorsMax).build();
         LongInterval issues       = LongInterval.builder().start(issuesMin).end(issuesMax).build();
@@ -197,16 +206,15 @@ public class GitRepoServiceImpl implements GitRepoService {
         LongInterval forks        = LongInterval.builder().start(forksMin).end(forksMax).build();
         DateInterval created      = DateInterval.builder().start(createdMin).end(createdMax).build();
         DateInterval committed    = DateInterval.builder().start(committedMin).end(committedMax).build();
-        List<GitRepo> repos =  gitRepoRepositoryCustom.advancedSearch(name,nameEquals,language,license,label,commits,
-                                                                         contributors,issues,pulls,branches,releases,
-                                                                         stars,watchers,forks,created,committed,
-                                                                         excludeForks,onlyForks,hasIssues,hasPulls,
-                                                                         hasWiki,hasLicense);
-        List<GitRepoDto> repoDtos = gitRepoConverter.repoListToRepoDtoList(repos);
-        for (GitRepoDto repoDto : repoDtos){
-            repoDto.setLabels(new ArrayList<>(findRepoLabels(repoDto.getId())));
-            repoDto.setLanguages(new ArrayList<>(findRepoLanguages(repoDto.getId())));
-        }
+
+
+//      long start = System.currentTimeMillis();
+        List<GitRepoDto> repoDtos = gitRepoRepositoryCustom.advancedSearch_emad(name,nameEquals,language,license,label,commits,
+                contributors,issues,pulls,branches,releases,
+                stars,watchers,forks,created,committed,excludeForks,
+                onlyForks,hasIssues,hasPulls,hasWiki,hasLicense, null);
+//      System.out.printf("[T] Retrieving repositories: %d\n", System.currentTimeMillis() - start);
+
         return GitRepoDtoList.builder().items(repoDtos).build();
     }
 
