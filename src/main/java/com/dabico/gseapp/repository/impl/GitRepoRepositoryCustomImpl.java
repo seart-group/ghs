@@ -394,7 +394,7 @@ public class GitRepoRepositoryCustomImpl implements GitRepoRepositoryCustom {
 
         String query_parameters = constructAdvancedSearchParameters_emad(name, nameEquals, language, license, label, commits, contributors, issues,
                 pulls, branches, releases, stars, watchers, forks, created, committed,
-                excludeForks, onlyForks, hasIssues, hasPulls, hasWiki, hasLicense);
+                excludeForks, onlyForks, hasIssues, hasPulls, hasWiki, hasLicense, true);
 
         StringBuilder query_str = new StringBuilder();
         query_str.append("SELECT r.*, rlabel.labels, rlang.langs\n");
@@ -463,24 +463,35 @@ public class GitRepoRepositoryCustomImpl implements GitRepoRepositoryCustom {
                                              LongInterval stars, LongInterval watchers, LongInterval forks,
                                              DateInterval created, DateInterval committed, Boolean excludeForks,
                                              Boolean onlyForks, Boolean hasIssues, Boolean hasPulls, Boolean hasWiki,
-                                             Boolean hasLicense)
+                                             Boolean hasLicense, Boolean shouldFetchLabelsAndLanguagesInfo)
     {
         StringBuilder query = new StringBuilder();
-        String label_where_clause = "";
-        if (StringUtils.isNoneBlank(label)) {
-            label_where_clause = String.format("WHERE repo_id IN (SELECT repo_id FROM repo_label WHERE repo_label_name='%s')\n", label);
-        }
-        query.append("FROM repo r left join ( SELECT repo_id, GROUP_CONCAT(repo_label_name) AS labels \n" +
-                     "                        FROM repo_label \n" + label_where_clause +
-                     "                        GROUP BY repo_id) rlabel ON r.id = rlabel.repo_id\n" +
-                     "            left join ( SELECT repo_id, GROUP_CONCAT(repo_language_name,'~',size_of_code) AS langs \n" +
-                     "                        FROM repo_language \n" +
-                     "                        GROUP BY repo_id) rlang ON r.id = rlang.repo_id\n" +
-                     "WHERE 1=1 ");
 
-        if (StringUtils.isNoneBlank(label)) {
-            query.append("AND rlabel.labels IS NOT NULL ");
+        if(shouldFetchLabelsAndLanguagesInfo) {
+            String label_where_clause = "";
+            if (StringUtils.isNoneBlank(label)) {
+                label_where_clause = String.format("WHERE repo_id IN (SELECT repo_id FROM repo_label WHERE repo_label_name='%s')\n", label);
+            }
+            query.append("FROM repo r left join ( SELECT repo_id, GROUP_CONCAT(repo_label_name) AS labels \n" +
+                    "                        FROM repo_label \n" + label_where_clause +
+                    "                        GROUP BY repo_id) rlabel ON r.id = rlabel.repo_id\n" +
+                    "            left join ( SELECT repo_id, GROUP_CONCAT(repo_language_name,'~',size_of_code) AS langs \n" +
+                    "                        FROM repo_language \n" +
+                    "                        GROUP BY repo_id) rlang ON r.id = rlang.repo_id\n" +
+                    "WHERE 1=1 ");
+            if (StringUtils.isNoneBlank(label)) {
+                query.append("AND rlabel.labels IS NOT NULL ");
+            }
         }
+        else
+        {
+            String label_where_clause = "";
+            if (StringUtils.isNoneBlank(label)) {
+                label_where_clause = String.format("AND r.id IN (SELECT repo_id FROM repo_label WHERE repo_label_name='%s') ", label);
+            }
+            query.append("FROM repo r \n WHERE 1=1 "+ label_where_clause);
+        }
+
 
         if (StringUtils.isNotBlank(name)) {
             if (nameEquals) {
@@ -670,9 +681,9 @@ public class GitRepoRepositoryCustomImpl implements GitRepoRepositoryCustom {
     {
         String query_parameters = constructAdvancedSearchParameters_emad(name, nameEquals, language, license, label, commits, contributors, issues,
                 pulls, branches, releases, stars, watchers, forks, created, committed,
-                excludeForks, onlyForks, hasIssues, hasPulls, hasWiki, hasLicense);
+                excludeForks, onlyForks, hasIssues, hasPulls, hasWiki, hasLicense, false);
 
-        String query_str = "SELECT COUNT(*)\n" + query_parameters; // TODO: the JOINs in "query_parameters" are not needed!
+        String query_str = "SELECT COUNT(*)\n" + query_parameters;
 
         Object resultList = entityManager.createNativeQuery(query_str).getSingleResult();
         Long count = ((BigInteger) resultList).longValue();

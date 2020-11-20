@@ -133,7 +133,7 @@ public class GitRepoServiceImpl implements GitRepoService {
                                  hasPulls,hasWiki,hasLicense,0, pageSize, totalResults)).toString().split("\\{")[0];
             repoDtoListPaginated.setFirst(first);
         }
-        if (pageSize == repoDtos.size()){ // TODO: It was: "repos.size()"
+        if (pageSize == repoDtos.size()){
             String next = linkTo(methodOn(GitRepoController.class)
                     .searchRepos(name, nameEquals, language, license, label, commitsMin, commitsMax, contributorsMin, contributorsMax,
                                  issuesMin, issuesMax, pullsMin, pullsMax, branchesMin, branchesMax, releasesMin, releasesMax,
