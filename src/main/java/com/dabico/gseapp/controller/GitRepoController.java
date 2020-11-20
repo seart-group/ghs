@@ -98,193 +98,103 @@ public class GitRepoController {
         return ResponseEntity.ok(results);
     }
 
-    @GetMapping(
-            value = "/r/download/csv",
-            produces = "text/csv"
-    )
-    public ResponseEntity<?> downloadCSV(
-            @RequestParam(required = false, defaultValue = "") String name,
-            @RequestParam(required = false, defaultValue = "false") Boolean nameEquals,
-            @RequestParam(required = false, defaultValue = "") String language,
-            @RequestParam(required = false, defaultValue = "") String license,
-            @RequestParam(required = false, defaultValue = "") String label,
-            @RequestParam(required = false) Long commitsMin,
-            @RequestParam(required = false) Long commitsMax,
-            @RequestParam(required = false) Long contributorsMin,
-            @RequestParam(required = false) Long contributorsMax,
-            @RequestParam(required = false) Long issuesMin,
-            @RequestParam(required = false) Long issuesMax,
-            @RequestParam(required = false) Long pullsMin,
-            @RequestParam(required = false) Long pullsMax,
-            @RequestParam(required = false) Long branchesMin,
-            @RequestParam(required = false) Long branchesMax,
-            @RequestParam(required = false) Long releasesMin,
-            @RequestParam(required = false) Long releasesMax,
-            @RequestParam(required = false) Long starsMin,
-            @RequestParam(required = false) Long starsMax,
-            @RequestParam(required = false) Long watchersMin,
-            @RequestParam(required = false) Long watchersMax,
-            @RequestParam(required = false) Long forksMin,
-            @RequestParam(required = false) Long forksMax,
-            @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Date createdMin,
-            @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Date createdMax,
-            @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Date committedMin,
-            @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Date committedMax,
-            @RequestParam(required = false, defaultValue = "false") Boolean excludeForks,
-            @RequestParam(required = false, defaultValue = "false") Boolean onlyForks,
-            @RequestParam(required = false, defaultValue = "false") Boolean hasIssues,
-            @RequestParam(required = false, defaultValue = "false") Boolean hasPulls,
-            @RequestParam(required = false, defaultValue = "false") Boolean hasWiki,
-            @RequestParam(required = false, defaultValue = "false") Boolean hasLicense
-    ){
+    @GetMapping(value = "/r/download/{fileformat}")
+    public ResponseEntity<?> downloadResult(@PathVariable("fileformat") String fileformat,
+                                  @RequestParam(required = false, defaultValue = "") String name,
+                                  @RequestParam(required = false, defaultValue = "false") Boolean nameEquals,
+                                  @RequestParam(required = false, defaultValue = "") String language,
+                                  @RequestParam(required = false, defaultValue = "") String license,
+                                  @RequestParam(required = false, defaultValue = "") String label,
+                                  @RequestParam(required = false) Long commitsMin,
+                                  @RequestParam(required = false) Long commitsMax,
+                                  @RequestParam(required = false) Long contributorsMin,
+                                  @RequestParam(required = false) Long contributorsMax,
+                                  @RequestParam(required = false) Long issuesMin,
+                                  @RequestParam(required = false) Long issuesMax,
+                                  @RequestParam(required = false) Long pullsMin,
+                                  @RequestParam(required = false) Long pullsMax,
+                                  @RequestParam(required = false) Long branchesMin,
+                                  @RequestParam(required = false) Long branchesMax,
+                                  @RequestParam(required = false) Long releasesMin,
+                                  @RequestParam(required = false) Long releasesMax,
+                                  @RequestParam(required = false) Long starsMin,
+                                  @RequestParam(required = false) Long starsMax,
+                                  @RequestParam(required = false) Long watchersMin,
+                                  @RequestParam(required = false) Long watchersMax,
+                                  @RequestParam(required = false) Long forksMin,
+                                  @RequestParam(required = false) Long forksMax,
+                                  @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Date createdMin,
+                                  @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Date createdMax,
+                                  @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Date committedMin,
+                                  @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Date committedMax,
+                                  @RequestParam(required = false, defaultValue = "false") Boolean excludeForks,
+                                  @RequestParam(required = false, defaultValue = "false") Boolean onlyForks,
+                                  @RequestParam(required = false, defaultValue = "false") Boolean hasIssues,
+                                  @RequestParam(required = false, defaultValue = "false") Boolean hasPulls,
+                                  @RequestParam(required = false, defaultValue = "false") Boolean hasWiki,
+                                  @RequestParam(required = false, defaultValue = "false") Boolean hasLicense)
+    {
+
+        if(!fileformat.equals("csv") && !fileformat.equals("json") && !fileformat.equals("xml"))
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+
         GitRepoDtoList repoDtos = gitRepoService.advancedSearch(name, nameEquals, language, license, label, commitsMin,
-                                                                commitsMax, contributorsMin, contributorsMax, issuesMin,
-                                                                issuesMax, pullsMin, pullsMax, branchesMin, branchesMax,
-                                                                releasesMin, releasesMax, starsMin, starsMax, watchersMin,
-                                                                watchersMax, forksMin, forksMax, createdMin, createdMax,
-                                                                committedMin, committedMax, excludeForks, onlyForks,
-                                                                hasIssues, hasPulls, hasWiki, hasLicense);
-        String fileName = "results-"+System.currentTimeMillis()+".csv";
-        File csv = new File(filePath+fileName);
-        try {
-            CSVWriter writer = new CSVWriter(new FileWriter(csv.getAbsolutePath()));
-            List<String[]> rows = gitRepoConverter.repoDtoListToCSVRowList(repoDtos);
-            writer.writeAll(rows);
-            writer.close();
-        } catch (IOException ex){
-            logger.error(ex.getMessage());
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+                commitsMax, contributorsMin, contributorsMax, issuesMin,
+                issuesMax, pullsMin, pullsMax, branchesMin, branchesMax,
+                releasesMin, releasesMax, starsMin, starsMax, watchersMin,
+                watchersMax, forksMin, forksMax, createdMin, createdMax,
+                committedMin, committedMax, excludeForks, onlyForks,
+                hasIssues, hasPulls, hasWiki, hasLicense);
+
+        String tempFileName = System.currentTimeMillis()+".temp";
+        File tempFile = new File(filePath+tempFileName);
+
+        String mediaType = "", outputFileName="";
+        if(fileformat.equals("csv")) {
+            mediaType = "text/csv";
+            outputFileName = "results.csv";
+
+            // Write to file
+            try {
+                CSVWriter writer = new CSVWriter(new FileWriter(tempFile.getAbsolutePath()));
+                List<String[]> rows = gitRepoConverter.repoDtoListToCSVRowList(repoDtos);
+                writer.writeAll(rows);
+                writer.close();
+            } catch (IOException ex){
+                logger.error(ex.getMessage());
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+            }
+        }
+        else if(fileformat.equals("json")) {
+            mediaType = "text/plain";
+            outputFileName = "results.json";
+
+            // Write to file
+            try {
+                om.writeValue(tempFile, repoDtos);
+            } catch (IOException ex){
+                logger.error(ex.getMessage());
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+            }
+        }
+        else if(fileformat.equals("xml")) {
+            mediaType = "text/xml";
+            outputFileName = "results.xml";
+
+            // Write to file
+            try {
+                xmlm.writeValue(tempFile, repoDtos);
+            } catch (IOException ex){
+                logger.error(ex.getMessage());
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+            }
         }
 
         return ResponseEntity.ok()
-                             .header("Content-Disposition", "attachment; filename=results.csv")
-                             .contentLength(csv.length())
-                             .contentType(MediaType.parseMediaType("text/csv"))
-                             .body(new FileSystemResourceCustom(csv));
-    }
-
-    @GetMapping(
-            value = "/r/download/json",
-            produces = "text/plain"
-    )
-    public ResponseEntity<?> downloadJSON(
-            @RequestParam(required = false, defaultValue = "") String name,
-            @RequestParam(required = false, defaultValue = "false") Boolean nameEquals,
-            @RequestParam(required = false, defaultValue = "") String language,
-            @RequestParam(required = false, defaultValue = "") String license,
-            @RequestParam(required = false, defaultValue = "") String label,
-            @RequestParam(required = false) Long commitsMin,
-            @RequestParam(required = false) Long commitsMax,
-            @RequestParam(required = false) Long contributorsMin,
-            @RequestParam(required = false) Long contributorsMax,
-            @RequestParam(required = false) Long issuesMin,
-            @RequestParam(required = false) Long issuesMax,
-            @RequestParam(required = false) Long pullsMin,
-            @RequestParam(required = false) Long pullsMax,
-            @RequestParam(required = false) Long branchesMin,
-            @RequestParam(required = false) Long branchesMax,
-            @RequestParam(required = false) Long releasesMin,
-            @RequestParam(required = false) Long releasesMax,
-            @RequestParam(required = false) Long starsMin,
-            @RequestParam(required = false) Long starsMax,
-            @RequestParam(required = false) Long watchersMin,
-            @RequestParam(required = false) Long watchersMax,
-            @RequestParam(required = false) Long forksMin,
-            @RequestParam(required = false) Long forksMax,
-            @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Date createdMin,
-            @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Date createdMax,
-            @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Date committedMin,
-            @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Date committedMax,
-            @RequestParam(required = false, defaultValue = "false") Boolean excludeForks,
-            @RequestParam(required = false, defaultValue = "false") Boolean onlyForks,
-            @RequestParam(required = false, defaultValue = "false") Boolean hasIssues,
-            @RequestParam(required = false, defaultValue = "false") Boolean hasPulls,
-            @RequestParam(required = false, defaultValue = "false") Boolean hasWiki,
-            @RequestParam(required = false, defaultValue = "false") Boolean hasLicense
-    ){
-        GitRepoDtoList repoDtos = gitRepoService.advancedSearch(name, nameEquals, language, license, label, commitsMin,
-                                                                commitsMax, contributorsMin, contributorsMax, issuesMin,
-                                                                issuesMax, pullsMin, pullsMax, branchesMin, branchesMax,
-                                                                releasesMin, releasesMax, starsMin, starsMax, watchersMin,
-                                                                watchersMax, forksMin, forksMax, createdMin, createdMax,
-                                                                committedMin, committedMax, excludeForks, onlyForks,
-                                                                hasIssues, hasPulls, hasWiki, hasLicense);
-        String fileName = "results-"+System.currentTimeMillis()+".json";
-        File json = new File(filePath+fileName);
-        try {
-            om.writeValue(json,repoDtos);
-        } catch (IOException ex){
-            logger.error(ex.getMessage());
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-        }
-
-        return ResponseEntity.ok()
-                             .header("Content-Disposition", "attachment; filename=results.json")
-                             .contentLength(json.length())
-                             .contentType(MediaType.parseMediaType("text/plain"))
-                             .body(new FileSystemResourceCustom(json));
-    }
-
-    @GetMapping(
-            value = "/r/download/xml",
-            produces = "text/xml"
-    )
-    public ResponseEntity<?> downloadXML(
-            @RequestParam(required = false, defaultValue = "") String name,
-            @RequestParam(required = false, defaultValue = "false") Boolean nameEquals,
-            @RequestParam(required = false, defaultValue = "") String language,
-            @RequestParam(required = false, defaultValue = "") String license,
-            @RequestParam(required = false, defaultValue = "") String label,
-            @RequestParam(required = false) Long commitsMin,
-            @RequestParam(required = false) Long commitsMax,
-            @RequestParam(required = false) Long contributorsMin,
-            @RequestParam(required = false) Long contributorsMax,
-            @RequestParam(required = false) Long issuesMin,
-            @RequestParam(required = false) Long issuesMax,
-            @RequestParam(required = false) Long pullsMin,
-            @RequestParam(required = false) Long pullsMax,
-            @RequestParam(required = false) Long branchesMin,
-            @RequestParam(required = false) Long branchesMax,
-            @RequestParam(required = false) Long releasesMin,
-            @RequestParam(required = false) Long releasesMax,
-            @RequestParam(required = false) Long starsMin,
-            @RequestParam(required = false) Long starsMax,
-            @RequestParam(required = false) Long watchersMin,
-            @RequestParam(required = false) Long watchersMax,
-            @RequestParam(required = false) Long forksMin,
-            @RequestParam(required = false) Long forksMax,
-            @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Date createdMin,
-            @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Date createdMax,
-            @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Date committedMin,
-            @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Date committedMax,
-            @RequestParam(required = false, defaultValue = "false") Boolean excludeForks,
-            @RequestParam(required = false, defaultValue = "false") Boolean onlyForks,
-            @RequestParam(required = false, defaultValue = "false") Boolean hasIssues,
-            @RequestParam(required = false, defaultValue = "false") Boolean hasPulls,
-            @RequestParam(required = false, defaultValue = "false") Boolean hasWiki,
-            @RequestParam(required = false, defaultValue = "false") Boolean hasLicense
-    ){
-        GitRepoDtoList repoDtos = gitRepoService.advancedSearch(name, nameEquals, language, license, label, commitsMin,
-                                                                commitsMax, contributorsMin, contributorsMax, issuesMin,
-                                                                issuesMax, pullsMin, pullsMax, branchesMin, branchesMax,
-                                                                releasesMin, releasesMax, starsMin, starsMax, watchersMin,
-                                                                watchersMax, forksMin, forksMax, createdMin, createdMax,
-                                                                committedMin, committedMax, excludeForks, onlyForks,
-                                                                hasIssues, hasPulls, hasWiki, hasLicense);
-        String fileName = "results-"+System.currentTimeMillis()+".xml";
-        File xml = new File(filePath+fileName);
-        try {
-            xmlm.writeValue(xml,repoDtos);
-        } catch (IOException ex){
-            logger.error(ex.getMessage());
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-        }
-
-        return ResponseEntity.ok()
-                             .header("Content-Disposition", "attachment; filename=results.xml")
-                             .contentLength(xml.length())
-                             .contentType(MediaType.parseMediaType("text/xml"))
-                             .body(new FileSystemResourceCustom(xml));
+                .header("Content-Disposition", "attachment; filename="+outputFileName)
+                .contentLength(tempFile.length())
+                .contentType(MediaType.parseMediaType(mediaType))
+                .body(new FileSystemResourceCustom(tempFile));
     }
 
     @GetMapping("/r/{repoId}")
