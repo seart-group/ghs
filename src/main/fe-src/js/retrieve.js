@@ -174,21 +174,21 @@ function retrieve(url) {
         let totalPages = data.totalPages;
 
         if (jsonLink !== null){
-            $raw_button.attr('href',jsonLink);
+            $download_json_button.attr('href_emad',jsonLink);
         } else {
-            $raw_button.addClass('disabled');
+            $download_json_button.addClass('disabled');
         }
 
         if (xmlLink !== null){
-            $xml_button.attr('href',xmlLink);
+            $download_xml_button.attr('href_emad',xmlLink);
         } else {
-            $xml_button.addClass('disabled');
+            $download_xml_button.addClass('disabled');
         }
 
         if (csvLink !== null){
-            $download_button.attr('href',csvLink);
+            $download_csv_button.attr('href_emad',csvLink);
         } else {
-            $download_button.addClass('disabled');
+            $download_csv_button.addClass('disabled');
         }
 
         $results_container_items.empty();
@@ -243,9 +243,9 @@ function retrieve(url) {
     }).catch(err => {
         console.log(err);
         let connect_err = '<div><div class="row mw-100 py-3 mx-3"><div class="col d-flex align-items-center justify-content-center px-0"><i class="mx-1 fa fa-frown-o" style="color: #6c757d"></i><span class="text-secondary">Error connecting to DEVINTA server</span></div></div></div>';
-        $raw_button.addClass('disabled');
-        $xml_button.addClass('disabled');
-        $download_button.addClass('disabled');
+        $download_json_button.addClass('disabled');
+        $download_xml_button.addClass('disabled');
+        $download_csv_button.addClass('disabled');
         $results_container_items.empty();
         $results_container_items.append(connect_err);
     })
@@ -369,12 +369,12 @@ $back_button.click(function () {
     $form_container.toggleClass('d-none');
     $results_container.toggleClass('d-none');
     $results_container_items.empty();
-    $raw_button.attr('href','');
-    $raw_button.removeClass('disabled');
-    $xml_button.attr('href','');
-    $xml_button.removeClass('disabled');
-    $download_button.attr('href','');
-    $download_button.removeClass('disabled');
+    $download_json_button.attr('href','');
+    $download_json_button.removeClass('disabled');
+    $download_xml_button.attr('href','');
+    $download_xml_button.removeClass('disabled');
+    $download_csv_button.attr('href','');
+    $download_csv_button.removeClass('disabled');
     $first_button.attr('onclick','');
     $first_button.addClass('d-none');
     $prev_button.attr('onclick','');
