@@ -22,6 +22,16 @@
         <title>GitHub Search</title>
     </head>
 
+    <script>
+        function downloadResult(download_link){
+            // alert("Download Link: "+download_link);
+            $('#download-modal').modal('show');
+            window.setTimeout(function(){
+                window.location.href = download_link;
+            }, 500);
+        }
+    </script>
+
     <body class="d-flex flex-column">
         <nav class="navbar navbar-expand-md py-0 d-flex align-items-start">
             <div>
@@ -550,18 +560,18 @@
                         </button>
                     </div>
                     <div class="col px-0 d-flex align-items-center justify-content-end">
-                        <a id="raw-button" href="" target="_parent" onclick="$('#download-modal').modal('show');" class="btn btn-outline-secondary bg-llgray rounded-0 border-0">
+                        <span id="download-json-button" href="" target="_parent" onclick="downloadResult($(this).attr('href_emad'));" class="btn btn-outline-secondary bg-llgray rounded-0 border-0">
                             Download JSON
                             <span class="fa fa-file-text-o"></span>
-                        </a>
-                        <a id="xml-button" href="" target="_parent" onclick="$('#download-modal').modal('show');" class="btn btn-outline-secondary bg-llgray rounded-0 border-0">
+                        </span>
+                        <span id="download-xml-button" href="" target="_parent" onclick="downloadResult($(this).attr('href_emad'));" class="btn btn-outline-secondary bg-llgray rounded-0 border-0">
                             Download XML
                             <span class="fa fa-file-code-o"></span>
-                        </a>
-                        <a id="download-button" href="" target="_parent" onclick="$('#download-modal').modal('show');" class="btn btn-outline-secondary bg-llgray rounded-0 border-0">
+                        </span>
+                        <span id="download-csv-button" href="" target="_parent" onclick="downloadResult($(this).attr('href_emad'));" class="btn btn-outline-secondary bg-llgray rounded-0 border-0">
                             Download CSV
                             <span class="fa fa-file-excel-o"></span>
-                        </a>
+                        </span>
                     </div>
                 </div>
                 <div id="results-container-items" class="w-75 bg-llgray border border-top-0 border-bottom-0 justify-content-center"></div>
