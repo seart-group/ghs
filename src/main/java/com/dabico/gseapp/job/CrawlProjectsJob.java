@@ -1,7 +1,9 @@
 package com.dabico.gseapp.job;
 
-import com.dabico.gseapp.converter.GitRepoConverter;
+import com.dabico.gseapp.dto.GitRepoDto;
 import com.dabico.gseapp.github_service.GitHubApiService;
+import com.dabico.gseapp.github_service.RepoHtmlPageExtraInfo;
+import com.dabico.gseapp.github_service.RepoHtmlPageParserService;
 import com.dabico.gseapp.model.GitRepo;
 import com.dabico.gseapp.model.GitRepoLabel;
 import com.dabico.gseapp.model.GitRepoLanguage;
@@ -10,6 +12,7 @@ import com.dabico.gseapp.repository.SupportedLanguageRepository;
 import com.dabico.gseapp.db_access_service.ApplicationPropertyService;
 import com.dabico.gseapp.db_access_service.CrawlJobService;
 import com.dabico.gseapp.db_access_service.GitRepoService;
+import com.dabico.gseapp.util.DateUtils;
 import com.dabico.gseapp.util.interval.DateInterval;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
@@ -22,6 +25,7 @@ import okhttp3.Response;
 import okhttp3.ResponseBody;
 import org.apache.http.client.HttpResponseException;
 import org.javatuples.Pair;
+import org.jsoup.HttpStatusException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -55,8 +59,7 @@ public class CrawlProjectsJob {
 
     AccessTokenRepository accessTokenRepository;
     SupportedLanguageRepository supportedLanguageRepository;
-
-    GitRepoConverter gitRepoConverter;
+    RepoHtmlPageParserService repoHtmlPageParserService;
 
     GitHubApiService gitHubApiService;
     GitRepoService gitRepoService;
@@ -66,14 +69,14 @@ public class CrawlProjectsJob {
     @Autowired
     public CrawlProjectsJob(AccessTokenRepository accessTokenRepository,
                             SupportedLanguageRepository supportedLanguageRepository,
-                            GitRepoConverter gitRepoConverter,
+                            RepoHtmlPageParserService repoHtmlPageParserService,
                             GitHubApiService gitHubApiService,
                             GitRepoService gitRepoService,
                             CrawlJobService crawlJobService,
                             ApplicationPropertyService applicationPropertyService){
         this.accessTokenRepository = accessTokenRepository;
         this.supportedLanguageRepository = supportedLanguageRepository;
-        this.gitRepoConverter = gitRepoConverter;
+        this.repoHtmlPageParserService = repoHtmlPageParserService;
         this.gitHubApiService = gitHubApiService;
         this.gitRepoService = gitRepoService;
         this.crawlJobService = crawlJobService;
@@ -139,7 +142,7 @@ public class CrawlProjectsJob {
             if (totalResults <= 1000){
                 JsonArray results = bodyJson.get("items").getAsJsonArray();
                 response.close();
-                saveRetrievedRepos(results,language);
+                saveRetrievedRepos(results);
                 retrieveRemainingRepos(interval, language, crawl_updated_repos, results, totalPages);
                 crawlJobService.updateCrawlDateForLanguage(language,interval.getEnd());
             } else {
@@ -172,7 +175,7 @@ public class CrawlProjectsJob {
                     JsonObject bodyJson = JsonParser.parseString(responseBody.string()).getAsJsonObject();
                     response.close();
                     results = bodyJson.get("items").getAsJsonArray();
-                    saveRetrievedRepos(results,language);
+                    saveRetrievedRepos(results);
                     page++;
                 } else if (response.code() > 499){
                     logger.error("Error retrieving repositories at page: " + page);
@@ -186,17 +189,91 @@ public class CrawlProjectsJob {
         }
     }
 
-    private void saveRetrievedRepos(JsonArray results, String language) throws IOException,InterruptedException {
+    /**
+     * Given JSON info of 100 repos, store them in DB
+     */
+    private void saveRetrievedRepos(JsonArray results) throws IOException,InterruptedException {
         logger.info("Adding: "+results.size()+" repositories.");
         for (JsonElement element : results){
             JsonObject repoJson = element.getAsJsonObject();
-            GitRepo repo = gitRepoConverter.jsonToGitRepo(repoJson,language);
+            GitRepo repo = createGitRepoRowObjectFromGitHubAPIResultJson(repoJson);
             if (repo != null){
                 repo = gitRepoService.createOrUpdateRepo(repo);
                 retrieveRepoLabels(repo);
                 retrieveRepoLanguages(repo);
             }
         }
+    }
+
+    private GitRepo createGitRepoRowObjectFromGitHubAPIResultJson(JsonObject repoJson) throws IOException, InterruptedException {
+        GitRepo.GitRepoBuilder gitRepoBuilder = GitRepo.builder();
+
+        JsonElement license = repoJson.get("license");
+        JsonElement homepage = repoJson.get("homepage");
+
+        gitRepoBuilder.name(repoJson.get("full_name").getAsString());
+        gitRepoBuilder.isFork(repoJson.get("fork").getAsBoolean());
+        gitRepoBuilder.defaultBranch(repoJson.get("default_branch").getAsString());
+        gitRepoBuilder.license((license.isJsonNull()) ? null : license.getAsJsonObject()
+                        .get("name")
+                        .getAsString()
+                        .replaceAll("\"", ""));
+        gitRepoBuilder.stargazers(repoJson.get("stargazers_count").getAsLong());
+        gitRepoBuilder.forks(repoJson.get("forks_count").getAsLong());
+        gitRepoBuilder.size(repoJson.get("size").getAsLong());
+        gitRepoBuilder.createdAt(DateUtils.fromGitDateString(repoJson.get("created_at").getAsString()));
+        gitRepoBuilder.pushedAt(DateUtils.fromGitDateString(repoJson.get("pushed_at").getAsString()));
+        gitRepoBuilder.updatedAt(DateUtils.fromGitDateString(repoJson.get("updated_at").getAsString()));
+        gitRepoBuilder.homepage(homepage.isJsonNull() ? null : homepage.getAsString());
+        gitRepoBuilder.mainLanguage(repoJson.get("language").getAsString());
+        gitRepoBuilder.hasWiki(repoJson.get("has_wiki").getAsBoolean());
+        gitRepoBuilder.isArchived(repoJson.get("archived").getAsBoolean());
+
+        // #FutureWork: block below which is time-consuming can be done later.
+        RepoHtmlPageExtraInfo extraMinedInfo = mineExtraInfoFromRepHTMLPage(repoJson);
+        if(extraMinedInfo!=null)
+        {
+            gitRepoBuilder.commits(extraMinedInfo.getCommits());
+            gitRepoBuilder.branches(extraMinedInfo.getBranches());
+            gitRepoBuilder.releases(extraMinedInfo.getReleases());
+            gitRepoBuilder.contributors(extraMinedInfo.getContributors());
+            gitRepoBuilder.watchers(extraMinedInfo.getWatchers());
+            gitRepoBuilder.totalIssues(extraMinedInfo.getTotalIssues());
+            gitRepoBuilder.openIssues(extraMinedInfo.getOpenIssues());
+            gitRepoBuilder.totalPullRequests(extraMinedInfo.getTotalPullRequests());
+            gitRepoBuilder.openPullRequests(extraMinedInfo.getOpenPullRequests());
+            gitRepoBuilder.lastCommit(extraMinedInfo.getLastCommit());
+            gitRepoBuilder.lastCommitSHA(extraMinedInfo.getLastCommitSHA());
+        }
+
+        return gitRepoBuilder.build();
+    }
+
+    /**
+     * #FutureWork: block below which is time-consuming can be done later.
+     */
+    private RepoHtmlPageExtraInfo mineExtraInfoFromRepHTMLPage(JsonObject json) throws IOException,InterruptedException {
+        String repositoryURL = json.get("html_url").getAsString();
+
+        RepoHtmlPageExtraInfo extraMinedInfo = null;
+
+        try {
+            extraMinedInfo = repoHtmlPageParserService.mine(repositoryURL);
+        } catch (HttpStatusException ex) {
+            int code = ex.getStatusCode();
+            logger.error(ex.getMessage()+": "+ex.getUrl());
+            logger.error("Status: "+code);
+            if (code == 404){
+                logger.error("This repository no longer exists");
+                return null;
+            } else if (code == 429){
+                logger.error("Retrying");
+                Thread.sleep(300000);
+                return mineExtraInfoFromRepHTMLPage(json);
+            }
+        }
+
+        return extraMinedInfo;
     }
 
     private void retrieveRepoLabels(GitRepo repo) throws IOException,InterruptedException {
