@@ -4,29 +4,15 @@ import com.dabico.gseapp.dto.GitRepoDto;
 import com.dabico.gseapp.dto.GitRepoDtoList;
 import com.dabico.gseapp.dto.GitRepoLabelDto;
 import com.dabico.gseapp.dto.GitRepoLanguageDto;
-import com.dabico.gseapp.github_service.GitHubPageCrawlerService;
 import com.dabico.gseapp.model.GitRepo;
 import com.dabico.gseapp.model.GitRepoLabel;
 import com.dabico.gseapp.model.GitRepoLanguage;
-import com.dabico.gseapp.util.DateUtils;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
-import org.jsoup.HttpStatusException;
-import org.openqa.selenium.chrome.ChromeDriver;
-import org.openqa.selenium.chrome.ChromeDriverService;
-import org.openqa.selenium.chrome.ChromeOptions;
-import org.openqa.selenium.remote.DesiredCapabilities;
-import org.openqa.selenium.support.ui.WebDriverWait;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.io.File;
-import java.io.IOException;
-import java.time.Duration;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -35,91 +21,7 @@ import java.util.stream.Collectors;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class GitRepoConverter {
     static Logger logger = LoggerFactory.getLogger(GitRepoConverter.class);
-    static String chromedriverFilePath;
 
-    static {
-        String OS = System.getProperty("os.name").toLowerCase();
-        if (OS.contains("win")){
-            chromedriverFilePath = "selenium/windows/chromedriver.exe";
-        } else if (OS.contains("mac")){
-            chromedriverFilePath = "selenium/macos/chromedriver";
-        } else {
-            chromedriverFilePath = "selenium/linux/chromedriver";
-        }
-    }
-
-    ChromeDriver driver;
-
-    @Autowired
-    public GitRepoConverter(){
-        System.setProperty("webdriver.chrome.driver", chromedriverFilePath);
-        System.setProperty("webdriver.chrome.silentOutput", "true");
-        DesiredCapabilities capabilities = new DesiredCapabilities();
-        ChromeDriverService service = new ChromeDriverService.Builder().usingDriverExecutable(new File(chromedriverFilePath)).build();
-        ChromeOptions options = new ChromeOptions();
-        options.addArguments("--no-sandbox");
-        options.addArguments("--headless");
-        options.setExperimentalOption("useAutomationExtension", false);
-        options.addArguments("start-maximized");
-        options.addArguments("disable-infobars");
-        options.addArguments("--disable-extensions");
-        options.addArguments("--disable-dev-shm-usage");
-        capabilities.setCapability(ChromeOptions.CAPABILITY,options);
-        this.driver = new ChromeDriver(service,options);
-    }
-
-    public GitRepo jsonToGitRepo(JsonObject json,String language) throws IOException,InterruptedException {
-        String repositoryURL = json.get("html_url").getAsString();
-        WebDriverWait webDriverWait = new WebDriverWait(driver, Duration.ofSeconds(30), Duration.ofMillis(250));
-        GitHubPageCrawlerService crawlerService = new GitHubPageCrawlerService(repositoryURL,driver,webDriverWait);
-        try {
-            crawlerService.mine();
-        } catch (HttpStatusException ex) {
-            int code = ex.getStatusCode();
-            logger.error(ex.getMessage()+": "+ex.getUrl());
-            logger.error("Status: "+code);
-            if (code == 404){
-                logger.error("This repository no longer exists");
-                return null;
-            } else if (code == 429){
-                logger.error("Retrying");
-                Thread.sleep(300000);
-                return jsonToGitRepo(json,language);
-            }
-        }
-        JsonElement license = json.get("license");
-        JsonElement homepage = json.get("homepage");
-        return GitRepo.builder()
-                      .name(json.get("full_name").getAsString())
-                      .isFork(json.get("fork").getAsBoolean())
-                      .commits(crawlerService.getCommits())
-                      .branches(crawlerService.getBranches())
-                      .defaultBranch(json.get("default_branch").getAsString())
-                      .releases(crawlerService.getReleases())
-                      .contributors(crawlerService.getContributors())
-                      .license((license.isJsonNull()) ? null : license.getAsJsonObject()
-                                                                      .get("name")
-                                                                      .getAsString()
-                                                                      .replaceAll("\"",""))
-                      .watchers(crawlerService.getWatchers())
-                      .stargazers(json.get("stargazers_count").getAsLong())
-                      .forks(json.get("forks_count").getAsLong())
-                      .size(json.get("size").getAsLong())
-                      .createdAt(DateUtils.fromGitDateString(json.get("created_at").getAsString()))
-                      .pushedAt(DateUtils.fromGitDateString(json.get("pushed_at").getAsString()))
-                      .updatedAt(DateUtils.fromGitDateString(json.get("updated_at").getAsString()))
-                      .homepage(homepage.isJsonNull() ? null : homepage.getAsString())
-                      .mainLanguage(language)
-                      .totalIssues(crawlerService.getTotalIssues())
-                      .openIssues(crawlerService.getOpenIssues())
-                      .totalPullRequests(crawlerService.getTotalPullRequests())
-                      .openPullRequests(crawlerService.getOpenPullRequests())
-                      .lastCommit(crawlerService.getLastCommit())
-                      .lastCommitSHA(crawlerService.getLastCommitSHA())
-                      .hasWiki(json.get("has_wiki").getAsBoolean())
-                      .isArchived(json.get("archived").getAsBoolean())
-                      .build();
-    }
 
     public List<GitRepoDto> repoListToRepoDtoList(List<GitRepo> repos){
         return repos.stream().map(this::repoToRepoDto).collect(Collectors.toList());
