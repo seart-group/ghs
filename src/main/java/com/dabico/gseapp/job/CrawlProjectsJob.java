@@ -183,7 +183,7 @@ public class CrawlProjectsJob {
                     response.close();
                     int totalResults = bodyJson.get("total_count").getAsInt();
                     results = bodyJson.get("items").getAsJsonArray();
-                    saveRetrievedRepos(results, language, page*100+1, totalResults);
+                    saveRetrievedRepos(results, language, (page-1)*100+1, totalResults);
                     page++;
                 } else if (response.code() > 499){
                     logger.error("Error retrieving repositories at page: " + page);
