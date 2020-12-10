@@ -4,6 +4,7 @@ import com.dabico.gseapp.converter.SupportedLanguageConverter;
 import com.dabico.gseapp.dto.CrawlJobDto;
 import com.dabico.gseapp.dto.CrawlJobDtoList;
 import com.dabico.gseapp.dto.SupportedLanguageDto;
+import com.dabico.gseapp.job.CrawlProjectsJob;
 import com.dabico.gseapp.model.CrawlJob;
 import com.dabico.gseapp.model.SupportedLanguage;
 import com.dabico.gseapp.repository.CrawlJobRepository;
@@ -11,6 +12,8 @@ import com.dabico.gseapp.repository.SupportedLanguageRepository;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -23,6 +26,8 @@ import java.util.Optional;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 @AllArgsConstructor(onConstructor_ = @Autowired)
 public class CrawlJobServiceImpl implements CrawlJobService {
+    static Logger logger = LoggerFactory.getLogger(CrawlJobServiceImpl.class);
+
     CrawlJobRepository crawlJobRepository;
     SupportedLanguageRepository supportedLanguageRepository;
     SupportedLanguageConverter supportedLanguageConverter;
@@ -52,6 +57,7 @@ public class CrawlJobServiceImpl implements CrawlJobService {
 
     @Override
     public void updateCrawlDateForLanguage(String language, Date date){
+        logger.info("Crawling "+language+" repositories secured upto: "+date);
         SupportedLanguage supportedLanguage = supportedLanguageRepository.findByName(language).orElse(null);
         assert supportedLanguage != null;
         Optional<CrawlJob> crawlJobOpt = crawlJobRepository.findByLanguage(supportedLanguage.getName());

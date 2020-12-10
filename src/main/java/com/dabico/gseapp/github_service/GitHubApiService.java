@@ -1,5 +1,6 @@
 package com.dabico.gseapp.github_service;
 
+import com.dabico.gseapp.job.CrawlProjectsJob;
 import com.dabico.gseapp.util.interval.DateInterval;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
@@ -10,6 +11,8 @@ import okhttp3.Request;
 import okhttp3.Response;
 import okhttp3.ResponseBody;
 import org.apache.http.client.HttpResponseException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -19,7 +22,10 @@ import java.util.concurrent.TimeUnit;
 @Service
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class GitHubApiService {
+    static Logger logger = LoggerFactory.getLogger(GitHubApiService.class);
+
     OkHttpClient client;
+    final static int MIN_STARS = 10;
 
     @Autowired
     public GitHubApiService(){
@@ -33,11 +39,13 @@ public class GitHubApiService {
     public Response searchRepositories(String language, DateInterval interval, Integer page, String token,
                                        Boolean crawl_updated_repos) throws IOException, InterruptedException
     {
-        Response response = makeAPICall(Endpoints.SEARCH_REPOS.getUrl() +
-                                                "?q=language:" + language +
-                                                (crawl_updated_repos ? "+pushed:" : "+created:") + interval +
-                                                "+fork:true+is:public&page=" + page +
-                                                "&per_page=100", token);
+        String url = Endpoints.SEARCH_REPOS.getUrl() + "?q=language:" + language +
+                (crawl_updated_repos ? "+pushed:" : "+created:") + interval +
+                "+fork:true+stars:>="+MIN_STARS+"+is:public&page=" + page + "&per_page=100";
+
+        logger.info("Github API Call: "+url);
+        Response response = makeAPICall(url, token);
+
         //TODO Remove guards when done
         Thread.sleep(1000);
         return response;
