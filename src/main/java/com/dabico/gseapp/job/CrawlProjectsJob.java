@@ -250,7 +250,7 @@ public class CrawlProjectsJob {
         JsonElement license = repoJson.get("license");
         JsonElement homepage = repoJson.get("homepage");
 
-        gitRepoBuilder.name(repoJson.get("full_name").getAsString());
+        gitRepoBuilder.name(repoJson.get("full_name").getAsString().toLowerCase());
         gitRepoBuilder.isFork(repoJson.get("fork").getAsBoolean());
         gitRepoBuilder.defaultBranch(repoJson.get("default_branch").getAsString());
         gitRepoBuilder.license((license.isJsonNull()) ? null : license.getAsJsonObject()
