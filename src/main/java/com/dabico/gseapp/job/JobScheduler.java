@@ -34,6 +34,11 @@ public class JobScheduler {
     @Scheduled(fixedRateString = "#{@applicationPropertyServiceImpl.getScheduling()}")
     public void run(){
         try {
+            if(crawlProjectsJob.running) {
+                // Emad: It seems the @Scheduled run this method no matters if existing run is finished or not. Not sure.
+                logger.info("Next crawl job postponed due to an on-going job");
+                return;
+            }
             crawlProjectsJob.run();
             logger.info("Next crawl scheduled for: " + Date.from(Instant.now().plusMillis(applicationPropertyService.getScheduling())));
         } catch (Exception ex) {

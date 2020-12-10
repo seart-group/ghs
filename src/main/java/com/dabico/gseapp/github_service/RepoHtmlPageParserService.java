@@ -34,7 +34,7 @@ public class RepoHtmlPageParserService {
 
     public RepoHtmlPageExtraInfo mine(String repoURL) throws IOException
     {
-        logger.info("Mining data for: " + repoURL);
+        logger.info("\tMining data for: " + repoURL);
 
         RepoHtmlPageExtraInfo extraMinedInfo = new RepoHtmlPageExtraInfo();
 
@@ -151,6 +151,7 @@ public class RepoHtmlPageParserService {
             extraInfo.setTotalIssues(totalIssues);
 
         } catch (NullPointerException ignored){
+            // logger.debug("Issues not parsed.");
             // Later Selenium take care of it.
         }
     }
@@ -164,6 +165,7 @@ public class RepoHtmlPageParserService {
             extraInfo.setOpenPullRequests(openPullRequests);
             extraInfo.setTotalPullRequests(totalPullRequests);
         } catch (NullPointerException ignored){
+            // logger.debug("Pull Requests not parsed.");
             // Later Selenium take care of it.
         }
     }
