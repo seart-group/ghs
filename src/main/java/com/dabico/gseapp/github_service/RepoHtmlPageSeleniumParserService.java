@@ -61,7 +61,7 @@ public class RepoHtmlPageSeleniumParserService {
         webDriverWait = new WebDriverWait(driver, Duration.ofSeconds(30), Duration.ofMillis(250));
     }
 
-    public long mineWatchersSelenium(String repoURL, int index){
+    public Long mineWatchersSelenium(String repoURL, int index){
         try {
             String watchersReg = String.format(RepoHtmlTags.watchersTemplateReg, index);
             String watchersAlt = String.format(RepoHtmlTags.watchersTemplateAlt, index);
@@ -69,15 +69,15 @@ public class RepoHtmlPageSeleniumParserService {
         } catch (TimeoutException ex) {
             logger.error("Number of watchers could not be mined at this time!");
             logger.error("Reason: Selenium could not locate the specified element");
-            return -1;
+            return null;
         }
     }
 
-    public long mineCommitsSelenium(String repoURL){
+    public Long mineCommitsSelenium(String repoURL){
         return mineCommitsSelenium(0, repoURL);
     }
 
-    public long mineCommitsSelenium(int attempt, String repoURL){
+    public Long mineCommitsSelenium(int attempt, String repoURL){
         try {
             return LongUtils.getLongValue(getPageElement(repoURL, RepoHtmlTags.commitsReg, RepoHtmlTags.commitsAlt).getText());
         } catch (TimeoutException ex) {
@@ -85,18 +85,18 @@ public class RepoHtmlPageSeleniumParserService {
             logger.error("Retrying");
             if (attempt > 2){
                 logger.error("Number of commits could not be mined at this time!");
-                return -1;
+                return null;
             } else {
                 return mineCommitsSelenium(++attempt, repoURL);
             }
         }
     }
 
-    public long mineBranchesSelenium(String repoURL){
+    public Long mineBranchesSelenium(String repoURL){
         return mineBranchesSelenium(0, repoURL);
     }
 
-    public long mineBranchesSelenium(int attempt, String repoURL){
+    public Long mineBranchesSelenium(int attempt, String repoURL){
         try {
             return LongUtils.getLongValue(getPageElement(repoURL, RepoHtmlTags.branchesReg, RepoHtmlTags.branchesAlt).getText());
         } catch (TimeoutException ex) {
@@ -104,18 +104,18 @@ public class RepoHtmlPageSeleniumParserService {
             logger.error("Retrying");
             if (attempt > 2){
                 logger.error("Number of branches could not be mined at this time!");
-                return -1;
+                return null;
             } else {
                 return mineBranchesSelenium(++attempt, repoURL);
             }
         }
     }
 
-    public long mineReleasesSelenium(String repoURL){
+    public Long mineReleasesSelenium(String repoURL){
         return mineReleasesSelenium(0, repoURL);
     }
 
-    public long mineReleasesSelenium(int attempt, String repoURL){
+    public Long mineReleasesSelenium(int attempt, String repoURL){
         try {
             return LongUtils.getLongValue(getPageElement(repoURL, RepoHtmlTags.releasesReg, RepoHtmlTags.releasesAlt).getText());
         } catch (TimeoutException ex) {
@@ -123,14 +123,14 @@ public class RepoHtmlPageSeleniumParserService {
             logger.error("Retrying");
             if (attempt > 2){
                 logger.error("Number of releases could not be mined at this time!");
-                return -1;
+                return null;
             } else {
                 return mineReleasesSelenium(++attempt, repoURL);
             }
         }
     }
 
-    public long mineContributorsSelenium(int index, String repoURL){
+    public Long mineContributorsSelenium(int index, String repoURL){
         try {
             String contributorsReg = String.format(RepoHtmlTags.contribTemplateReg, index);
             String contributorsAlt = String.format(RepoHtmlTags.contribTemplateAlt, index);
@@ -142,11 +142,11 @@ public class RepoHtmlPageSeleniumParserService {
                 long contributors = 11 + LongUtils.getLongValue(StringUtils.removeFromStartAndEnd(getPageElement(repoURL, linkReg,linkAlt).getText(),2,13));
                 return contributors;
             }
-            return -1;
+            return null;
         } catch (TimeoutException ex) {
             logger.error("Number of contributors could not be mined at this time!");
             logger.error("Reason: Selenium could not locate the specified element");
-            return -1;
+            return null;
         }
     }
 

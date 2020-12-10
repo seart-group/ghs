@@ -220,7 +220,7 @@ public class GitRepoServiceImpl implements GitRepoService {
 
     @Override
     public GitRepo createOrUpdateRepo(GitRepo repo){
-        Optional<GitRepo> opt = gitRepoRepository.findGitRepoByName(repo.getName());
+        Optional<GitRepo> opt = gitRepoRepository.findGitRepoByName(repo.getName().toLowerCase());
         if (opt.isPresent()){
             GitRepo existing = opt.get();
             existing.setIsFork(repo.getIsFork());
