@@ -74,11 +74,11 @@ public class RepoHtmlPageParserService {
         }
 
         int contributorElementIndex = getContributorElementIndex(document);
-        if (contributorElementIndex < 1){ return; }
-
-        if(extraInfo.getContributors() == null) {
-            long contributors = repoHtmlPageSeleniumParserService.mineContributorsSelenium(contributorElementIndex, repoURL);
-            extraInfo.setContributors(contributors);
+        if (contributorElementIndex > 0 ) {
+            if (extraInfo.getContributors() == null) {
+                long contributors = repoHtmlPageSeleniumParserService.mineContributorsSelenium(contributorElementIndex, repoURL);
+                extraInfo.setContributors(contributors);
+            }
         }
     }
 
@@ -199,7 +199,10 @@ public class RepoHtmlPageParserService {
 
     private int getContributorElementIndex(Document document){
         int index = 1;
-        Elements sidebar = document.selectFirst(RepoHtmlTags.sidebarReg).children();
+        Element sidebarR = document.selectFirst(RepoHtmlTags.sidebarReg);
+        if(sidebarR == null)
+            return 0;
+        Elements sidebar = sidebarR.children();
         for (Element element : sidebar){
             if (element.children().first().children().first().html().contains("> Contributors <")){
                 return index;
