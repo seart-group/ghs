@@ -205,7 +205,7 @@ public class CrawlProjectsJob {
         for (JsonElement element : results){
             JsonObject repoJson = element.getAsJsonObject();
 
-            String repoFullName = repoJson.get("full_name").getAsString();
+            String repoFullName = repoJson.get("full_name").getAsString().toLowerCase();
             Optional<GitRepo> opt = gitRepoRepository.findGitRepoByName(repoFullName);
 
             if(!opt.isPresent())

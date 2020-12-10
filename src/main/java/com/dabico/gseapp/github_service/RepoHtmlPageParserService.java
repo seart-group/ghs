@@ -58,9 +58,13 @@ public class RepoHtmlPageParserService {
             extraInfo.setWatchers(watchers);
         }
 
-        if(extraInfo.getCommits() == null) {
-            long commits = repoHtmlPageSeleniumParserService.mineCommitsSelenium(repoURL);
-            extraInfo.setCommits(commits);
+        boolean infiniteCommit = extraInfo.getCommits()!=null && extraInfo.getCommits().equals(RepoHtmlPageExtraInfo.INFINITE);
+        if(extraInfo.getCommits() == null || infiniteCommit) {
+            Long commits = repoHtmlPageSeleniumParserService.mineCommitsSelenium(repoURL);
+            if(commits==null && infiniteCommit)
+                extraInfo.setCommits(RepoHtmlPageExtraInfo.INFINITE);
+            else
+                extraInfo.setCommits(commits);
         }
 
         if(extraInfo.getBranches() == null) {
@@ -102,8 +106,8 @@ public class RepoHtmlPageParserService {
             // Later Selenium take care of it.
         } catch (NumberFormatException ex){
             if (StringUtils.removeFromStart(ex.getMessage(),18).equals("\"∞\"")){
-                // Record error state -2 if repo has "infinite" commits
-                //extraInfo.setCommits(-2); // Emad: Let's wait for Selenium to try it.
+                extraInfo.setCommits(RepoHtmlPageExtraInfo.INFINITE);
+                // Later Selenium take care of it.
             }
         }
 

@@ -470,7 +470,7 @@ public class GitRepoRepositoryCustomImpl implements GitRepoRepositoryCustom {
         if(shouldFetchLabelsAndLanguagesInfo) {
             String label_where_clause = "";
             if (StringUtils.isNoneBlank(label)) {
-                label_where_clause = String.format("WHERE repo_id IN (SELECT repo_id FROM repo_label WHERE repo_label_name='%s')\n", label);
+                label_where_clause = String.format("WHERE repo_id IN (SELECT repo_id FROM repo_label WHERE LOWER(repo_label_name)=LOWER('%s'))\n", label);
             }
             query.append("FROM repo r left join ( SELECT repo_id, GROUP_CONCAT(repo_label_name) AS labels \n" +
                     "                        FROM repo_label \n" + label_where_clause +
