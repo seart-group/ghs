@@ -422,28 +422,28 @@ public class GitRepoRepositoryCustomImpl implements GitRepoRepositoryCustom {
                 }
 
             GitRepoDto repo = GitRepoDto.builder()
-                    .id(((BigInteger) row[0]).longValue())
+                    .id(row[0]!=null?((BigInteger) row[0]).longValue():null)
                     .name((String) row[1])
                     .isFork((Boolean) row[2])
-                    .commits(((BigInteger) row[3]).longValue())
-                    .branches(((BigInteger) row[4]).longValue())
+                    .commits(row[3]!=null?((BigInteger) row[3]).longValue():null)
+                    .branches(row[4]!=null?((BigInteger) row[4]).longValue():null)
                     .defaultBranch((String) row[5])
-                    .releases(((BigInteger) row[6]).longValue())
-                    .contributors(((BigInteger) row[7]).longValue())
+                    .releases(row[6]!=null?((BigInteger) row[6]).longValue():null)
+                    .contributors(row[7]!=null?((BigInteger) row[7]).longValue():null)
                     .license((String) row[8])
-                    .watchers(((BigInteger) row[9]).longValue())
-                    .stargazers(((BigInteger) row[10]).longValue())
-                    .forks(((BigInteger) row[11]).longValue())
-                    .size(((BigInteger) row[12]).longValue())
+                    .watchers(row[9]!=null?((BigInteger) row[9]).longValue():null)
+                    .stargazers(row[10]!=null?((BigInteger) row[10]).longValue():null)
+                    .forks(row[11]!=null?((BigInteger) row[11]).longValue():null)
+                    .size(row[12]!=null?((BigInteger) row[12]).longValue():null)
                     .createdAt((Date) row[13])
                     .pushedAt((Date) row[14])
                     .updatedAt((Date) row[15])
                     .homepage((String) row[16])
                     .mainLanguage((String) row[17])
-                    .totalIssues(((BigInteger) row[18]).longValue())
-                    .openIssues(((BigInteger) row[19]).longValue())
-                    .totalPullRequests(((BigInteger) row[20]).longValue())
-                    .openPullRequests(((BigInteger) row[21]).longValue())
+                    .totalIssues(row[18]!=null?((BigInteger) row[18]).longValue():null)
+                    .openIssues(row[19]!=null?((BigInteger) row[19]).longValue():null)
+                    .totalPullRequests(row[20]!=null?((BigInteger) row[20]).longValue():null)
+                    .openPullRequests(row[21]!=null?((BigInteger) row[21]).longValue():null)
                     .lastCommit((Date) row[22])
                     .lastCommitSHA((String) row[23])
                     .hasWiki((Boolean) row[24])
@@ -495,9 +495,9 @@ public class GitRepoRepositoryCustomImpl implements GitRepoRepositoryCustom {
 
         if (StringUtils.isNotBlank(name)) {
             if (nameEquals) {
-                query.append(String.format("AND lower(r.name) = lower('%s') ", name));
+                query.append(String.format("AND r.name = lower('%s') ", name));
             } else {
-                query.append(String.format("AND lower(r.name) LIKE lower('%s') ", name));
+                query.append(String.format("AND r.name LIKE lower('%s') ", name));
             }
         }
 
