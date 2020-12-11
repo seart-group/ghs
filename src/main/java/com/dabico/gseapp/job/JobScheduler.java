@@ -42,6 +42,7 @@ public class JobScheduler {
             crawlProjectsJob.run();
             logger.info("Next crawl scheduled for: " + Date.from(Instant.now().plusMillis(applicationPropertyService.getScheduling())));
         } catch (Exception ex) {
+            crawlProjectsJob.running = false;
             ex.printStackTrace();
         }
     }
