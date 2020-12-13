@@ -62,13 +62,19 @@ public class RepoHtmlPageSeleniumParserService {
     }
 
     public Long mineWatchersSelenium(String repoURL, int index){
+        String watchersText= null;
         try {
             String watchersReg = String.format(RepoHtmlTags.watchersTemplateReg, index);
             String watchersAlt = String.format(RepoHtmlTags.watchersTemplateAlt, index);
-            return LongUtils.getLongValue(StringUtils.removeFromEnd(getPageElement(repoURL, watchersReg, watchersAlt).getAttribute("aria-label"),35));
+            watchersText = StringUtils.removeFromEnd(getPageElement(repoURL, watchersReg, watchersAlt).getAttribute("aria-label"), 35);
+            return LongUtils.getLongValue(watchersText);
         } catch (TimeoutException ex) {
             logger.error("Number of watchers could not be mined at this time!");
             logger.error("Reason: Selenium could not locate the specified element");
+            return null;
+        } catch (Exception e)
+        {
+            logger.error("Selenium failed to parse number of watchers: "+watchersText);
             return null;
         }
     }
@@ -78,8 +84,10 @@ public class RepoHtmlPageSeleniumParserService {
     }
 
     public Long mineCommitsSelenium(int attempt, String repoURL){
+        String commits_text = null;
         try {
-            return LongUtils.getLongValue(getPageElement(repoURL, RepoHtmlTags.commitsReg, RepoHtmlTags.commitsAlt).getText());
+            commits_text = getPageElement(repoURL, RepoHtmlTags.commitsReg, RepoHtmlTags.commitsAlt).getText();
+            return LongUtils.getLongValue(commits_text);
         } catch (TimeoutException ex) {
             logger.error("Selenium could not locate number of commits!");
             logger.error("Retrying");
@@ -89,6 +97,10 @@ public class RepoHtmlPageSeleniumParserService {
             } else {
                 return mineCommitsSelenium(++attempt, repoURL);
             }
+        } catch (Exception e)
+        {
+            logger.error("Selenium failed to parse number of commits: "+commits_text);
+            return null;
         }
     }
 
@@ -97,8 +109,10 @@ public class RepoHtmlPageSeleniumParserService {
     }
 
     public Long mineBranchesSelenium(int attempt, String repoURL){
+        String branchesText = null;
         try {
-            return LongUtils.getLongValue(getPageElement(repoURL, RepoHtmlTags.branchesReg, RepoHtmlTags.branchesAlt).getText());
+            branchesText = getPageElement(repoURL, RepoHtmlTags.branchesReg, RepoHtmlTags.branchesAlt).getText();
+            return LongUtils.getLongValue(branchesText);
         } catch (TimeoutException ex) {
             logger.error("Selenium could not locate number of branches!");
             logger.error("Retrying");
@@ -108,6 +122,10 @@ public class RepoHtmlPageSeleniumParserService {
             } else {
                 return mineBranchesSelenium(++attempt, repoURL);
             }
+        } catch (Exception e)
+        {
+            logger.error("Selenium failed to parse number of branches: "+branchesText);
+            return null;
         }
     }
 
@@ -116,8 +134,10 @@ public class RepoHtmlPageSeleniumParserService {
     }
 
     public Long mineReleasesSelenium(int attempt, String repoURL){
+        String releasesText = null;
         try {
-            return LongUtils.getLongValue(getPageElement(repoURL, RepoHtmlTags.releasesReg, RepoHtmlTags.releasesAlt).getText());
+            releasesText = getPageElement(repoURL, RepoHtmlTags.releasesReg, RepoHtmlTags.releasesAlt).getText();
+            return LongUtils.getLongValue(releasesText);
         } catch (TimeoutException ex) {
             logger.error("Selenium could not locate number of releases!");
             logger.error("Retrying");
@@ -127,14 +147,20 @@ public class RepoHtmlPageSeleniumParserService {
             } else {
                 return mineReleasesSelenium(++attempt, repoURL);
             }
+        } catch (Exception e)
+        {
+            logger.error("Selenium failed to parse number of releases: "+releasesText);
+            return null;
         }
     }
 
     public Long mineContributorsSelenium(int index, String repoURL){
+        String contributorsText = null;
         try {
             String contributorsReg = String.format(RepoHtmlTags.contribTemplateReg, index);
             String contributorsAlt = String.format(RepoHtmlTags.contribTemplateAlt, index);
-            return LongUtils.getLongValue(getPageElement(repoURL, contributorsReg,contributorsAlt).getText());
+            contributorsText = getPageElement(repoURL, contributorsReg, contributorsAlt).getText();
+            return LongUtils.getLongValue(contributorsText);
         } catch (NumberFormatException ex){
             String linkReg = String.format(RepoHtmlTags.linkTemplateReg, index);
             String linkAlt = String.format(RepoHtmlTags.linkTemplateAlt, index);
@@ -146,6 +172,10 @@ public class RepoHtmlPageSeleniumParserService {
         } catch (TimeoutException ex) {
             logger.error("Number of contributors could not be mined at this time!");
             logger.error("Reason: Selenium could not locate the specified element");
+            return null;
+        } catch (Exception e)
+        {
+            logger.error("Selenium failed to parse number of contributors: "+contributorsText);
             return null;
         }
     }
@@ -160,6 +190,10 @@ public class RepoHtmlPageSeleniumParserService {
             webDriverWait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector(elementAlt)));
             webDriverWait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector(elementAlt)));
             return driver.findElementByCssSelector(elementAlt);
+        } catch (Exception e)
+        {
+            logger.error("Selenium failed to get page element: "+repoURL+" | "+elementReg+" | "+elementAlt);
+            return null;
         }
     }
 
