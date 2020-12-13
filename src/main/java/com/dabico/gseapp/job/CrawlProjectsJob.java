@@ -93,6 +93,7 @@ public class CrawlProjectsJob {
         logger.info("New Crawling for all languages: "+languages);
         Date endDate = Date.from(Instant.now().minus(Duration.ofHours(2)));
         for (String language : languages){
+            this.requestQueue.clear();
             Date startDate = crawlJobService.getCrawlDateByLanguage(language);
             DateInterval interval;
 
