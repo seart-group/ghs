@@ -90,8 +90,10 @@ public class CrawlProjectsJob {
     public void run() throws IOException,InterruptedException {
         this.running = true;
         reset();
+
         logger.info("New Crawling for all languages: "+languages);
         Date endDate = Date.from(Instant.now().minus(Duration.ofHours(2)));
+
         for (String language : languages){
             this.requestQueue.clear();
             Date startDate = crawlJobService.getCrawlDateByLanguage(language);
@@ -103,7 +105,9 @@ public class CrawlProjectsJob {
 //                crawlCreatedRepos(interval,language);
                 crawlUpdatedRepos(interval,language);
             } else {
-                interval = DateInterval.builder().start(applicationPropertyService.getStartDate()).end(endDate).build();
+                Date veryStartDate = applicationPropertyService.getStartDate();
+                logger.info("No previous crawling found for "+language+". We start from scratch: "+veryStartDate);
+                interval = DateInterval.builder().start(veryStartDate).end(endDate).build();
 //                crawlCreatedRepos(interval,language);
                 crawlUpdatedRepos(interval,language);
             }
@@ -112,20 +116,26 @@ public class CrawlProjectsJob {
     }
 
     private void crawlCreatedRepos(DateInterval interval, String language) throws IOException,InterruptedException {
-        logger.info("Crawling "+language.toUpperCase()+" repositories CREATED: "+interval);
+        logger.info("Starting crawling "+language+" repositories created through: "+interval);
         crawlRepos(interval, language,false);
-        logger.info("Crawling "+language.toUpperCase()+" repositories CREATED: "+interval+ " [FINISHED]");
+        logger.info("Finished crawling "+language+" repositories created through: "+interval);
     }
 
     private void crawlUpdatedRepos(DateInterval interval, String language) throws IOException,InterruptedException {
-        logger.info("Crawling "+language.toUpperCase()+" repositories UPDATED: "+interval);
+        logger.info("Starting crawling "+language+" repositories updated through: "+interval);
         crawlRepos(interval, language,true);
-        logger.info("Crawling "+language.toUpperCase()+" repositories updated: "+interval+ " [FINISHED]");
+        logger.info("Finished crawling "+language+" repositories updated through: "+interval);
     }
 
     private void crawlRepos(DateInterval interval, String language, Boolean crawl_updated_repos)
             throws IOException,InterruptedException
     {
+        if( interval.getStart().compareTo(interval.getEnd()) >= 0)
+        {
+            logger.warn("Invalid interval Skipped: "+interval );
+            return;
+        }
+
         requestQueue.add(interval);
         do {
             logger.info("Next Crawl Intervals: "+requestQueue.toString());
