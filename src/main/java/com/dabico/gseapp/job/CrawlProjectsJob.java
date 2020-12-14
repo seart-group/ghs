@@ -1,6 +1,5 @@
 package com.dabico.gseapp.job;
 
-import com.dabico.gseapp.dto.GitRepoDto;
 import com.dabico.gseapp.github_service.GitHubApiService;
 import com.dabico.gseapp.github_service.RepoHtmlPageExtraInfo;
 import com.dabico.gseapp.github_service.RepoHtmlPageParserService;
@@ -35,7 +34,6 @@ import org.springframework.stereotype.Service;
 import java.io.IOException;
 import java.time.Duration;
 import java.time.Instant;
-import java.time.LocalDate;
 import java.util.*;
 
 @Service
@@ -52,6 +50,11 @@ public class CrawlProjectsJob {
     List<DateInterval> requestQueue = new ArrayList<>();
     List<String> accessTokens = new ArrayList<>();
     List<String> languages = new ArrayList<>();
+
+    @NonFinal
+    // Temporary. Because I'm keep restarting server, but I don't care about
+    // very new Java updates, but finishing all language at least once.
+    static String startingLanguage = "C";
 
     @NonFinal
     int tokenOrdinal;
@@ -95,6 +98,12 @@ public class CrawlProjectsJob {
         Date endDate = Date.from(Instant.now().minus(Duration.ofHours(2)));
 
         for (String language : languages){
+
+            if(language.equals(startingLanguage))
+                startingLanguage = null;
+            else if(startingLanguage!=null && !language.equals(startingLanguage))
+                continue;
+
             this.requestQueue.clear();
             Date startDate = crawlJobService.getCrawlDateByLanguage(language);
             DateInterval interval;
@@ -102,15 +111,13 @@ public class CrawlProjectsJob {
             if (startDate != null){
                 assert startDate.before(endDate);
                 interval = DateInterval.builder().start(startDate).end(endDate).build();
-//                crawlCreatedRepos(interval,language);
-                crawlUpdatedRepos(interval,language);
             } else {
                 Date veryStartDate = applicationPropertyService.getStartDate();
                 logger.info("No previous crawling found for "+language+". We start from scratch: "+veryStartDate);
                 interval = DateInterval.builder().start(veryStartDate).end(endDate).build();
-//                crawlCreatedRepos(interval,language);
-                crawlUpdatedRepos(interval,language);
             }
+
+            crawlUpdatedRepos(interval,language);
         }
         this.running = false;
     }
@@ -244,8 +251,19 @@ public class CrawlProjectsJob {
                 }
             }
 
-            if(repoJson.get("language").isJsonNull())
+            if(repoJson.get("language").isJsonNull()) {
                 repoJson.addProperty("language", language); // This can happen. Example Repo: "aquynh/iVM"
+            }
+            else if(false == repoJson.get("language").getAsString().equals(language))
+            {
+                // This can happen. Example Repo: https://api.github.com/search/repositories?q=baranowski/habit-vim
+                // And if you go to repo homepage or repo "language_url" (api that shows language distribution),
+                // you will see that main_language is only wrong in the above link.
+                logger.warn("**** Mismatch language: searched-for: "+language+" | repo: "+repoJson.get("language").getAsString());
+                repoJson.addProperty("language", language);
+            }
+
+
 
             GitRepo repo = createGitRepoRowObjectFromGitHubAPIResultJson(repoJson);
             repo = gitRepoService.createOrUpdateRepo(repo);
