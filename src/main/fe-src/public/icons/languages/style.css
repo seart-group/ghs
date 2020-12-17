@@ -46,3 +46,6 @@
 .lang-typescript:before {
   content: "\e906";
 }
+.lang-csharp:before {
+  content: "\e907";
+}

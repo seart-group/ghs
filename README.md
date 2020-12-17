@@ -149,3 +149,7 @@ docker build -t gitlab.reveal.si.usi.ch:60090/students/2020/ozren-dabic/github-s
 docker push gitlab.reveal.si.usi.ch:60090/students/2020/ozren-dabic/github-search-engine/frontend
 ```
 Changes should be visible almost instantly.
+
+
+## More Info on Flyway and Database Migration
+Read [here](./README_flyway.md)
