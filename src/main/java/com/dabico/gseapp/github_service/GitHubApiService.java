@@ -43,6 +43,9 @@ public class GitHubApiService {
                 (crawl_updated_repos ? "+pushed:" : "+created:") + interval +
                 "+fork:true+stars:>="+MIN_STARS+"+is:public&page=" + page + "&per_page=100";
 
+//      String url = Endpoints.SEARCH_REPOS.getUrl() + "?q=repo:XXX/YYYYY+fork:true";
+//        String url = Endpoints.SEARCH_REPOS.getUrl() + "?q=repo:zenedge/zentables-addons+fork:true";
+
         logger.info("Github API Call: "+url);
         Response response = makeAPICall(url, token);
 

@@ -50,7 +50,11 @@ public class RepoHtmlPageParserService {
     private void seleniumMine_homePage(String repoURL, RepoHtmlPageExtraInfo extraInfo) throws IOException {
         Document document = Jsoup.connect(repoURL).userAgent("Mozilla").followRedirects(false).get();
         if (isEmptyRepo(document)){ return; }
-        int docIndex = isSponsored(document)? 2: 1;
+        if(document.selectFirst(RepoHtmlTags.isPageValid) == null) {return;}
+
+        Boolean sponsored = isSponsored(document);
+        if(sponsored==null) return;
+        int docIndex = sponsored ? 2: 1;
 
 
         if(extraInfo.getWatchers() == null){
@@ -89,7 +93,11 @@ public class RepoHtmlPageParserService {
     private void jsoupMine_homePage(String repoURL, RepoHtmlPageExtraInfo extraInfo) throws IOException {
         Document document = Jsoup.connect(repoURL).userAgent("Mozilla").followRedirects(false).get();
         if (isEmptyRepo(document)){ return; }
-        int docIndex = isSponsored(document)? 2: 1;
+        if(document.selectFirst(RepoHtmlTags.isPageValid) == null) {return;}
+
+        Boolean sponsored = isSponsored(document);
+        if(sponsored==null) return;
+        int docIndex = sponsored ? 2: 1;
 
         try {
             String watchersReg = String.format(RepoHtmlTags.watchersTemplateReg, docIndex);
@@ -189,11 +197,16 @@ public class RepoHtmlPageParserService {
     }
 
 
-    private boolean isSponsored(Document document){
+    private Boolean isSponsored(Document document){
         try {
             return document.selectFirst(RepoHtmlTags.actionListReg).childrenSize() > 3;
         } catch (NullPointerException ignored) {
-            return document.selectFirst(RepoHtmlTags.actionListAlt).childrenSize() > 3;
+            try {
+                return document.selectFirst(RepoHtmlTags.actionListAlt).childrenSize() > 3;
+            } catch (Exception e)
+            {
+                return null;
+            }
         }
     }
 
