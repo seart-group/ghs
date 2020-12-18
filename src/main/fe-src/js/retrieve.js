@@ -42,7 +42,14 @@ function appendResult(item) {
     let collapse = '<div id="repo-'+repo_id+'-collapse" class="collapse"></div>';
 
     let row_1 = '<div class="row mw-100 pt-3 mx-3 border border-bottom-0 bg-lgray"></div>';
-    let row_1_col_1 = '<div class="col d-flex align-items-center justify-content-start"><span class="mx-1 fa-2x lang-'+repo_mainLanguage.toLowerCase()+'" title="'+repo_mainLanguage+' Repository"></span><a href="https://github.com/'+repo_name+'" target="_blank" class="mx-1 text-dark rowsublabel">'+repo_name+'</a></div>';
+
+    let repo_class_label = 'lang-'+repo_mainLanguage.toLowerCase();
+    if(repo_mainLanguage === 'C++')
+        repo_class_label = 'lang-cpp';
+    else if(repo_mainLanguage === 'C#')
+        repo_class_label = 'lang-csharp';
+
+    let row_1_col_1 = '<div class="col d-flex align-items-center justify-content-start"><span class="mx-1 fa-2x '+repo_class_label+'" title="'+repo_mainLanguage+' Repository"></span><a href="https://github.com/'+repo_name+'" target="_blank" class="mx-1 text-dark rowsublabel">'+repo_name+'</a></div>';
     let row_1_col_2 = '<div class="col-auto d-flex align-items-center justify-content-end"></div>';
 
     if (repo_isArchived) {
