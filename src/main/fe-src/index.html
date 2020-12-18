@@ -200,7 +200,7 @@
                     <div class="p-3 row">
                         <div class="col-8">
                             <div class="input-group">
-                                <input type="text" id="name" name="name" class="form-control rounded-0 bg-lgray border-secondary border-left-0 border-top-0 border-right-0" placeholder="Search by keyword in name" pattern="[A-Za-z0-9-/_.]{0,140}" title="Max length: 140, with allowed characters: A-Z a-z 0-9 - / _ .">
+                                <input type="text" id="name" name="name" class="form-control rounded-0 bg-lgray border-secondary border-left-0 border-top-0 border-right-0" placeholder="Search by keyword in name" pattern="Will be loaded via script" title="Will be loaded via script">
                                 <div class="input-group-append">
                                     <button type="button" id="match" name="nameEquals" value="false" class="btn btn-outline-secondary rounded-0 border-left-0 border-top-0 border-right-0 bg-lgray" data-toggle="dropdown">
                                         Contains <i class="fa fa-angle-down fa-lg"></i>
@@ -221,7 +221,7 @@
                             <input id="license" name="license" class="form-control rounded-0 border-secondary border-top-0 border-left-0 border-right-0 bg-lgray" value="" type="text" placeholder="License" pattern="[A-Za-z0-9-.*/\s]*" title="Please use only existing GitHub licenses">
                         </div>
                         <div class="col-4">
-                            <input id="label" name="label" class="form-control rounded-0 border-secondary border-top-0 border-left-0 border-right-0 bg-lgray" value="" type="text" placeholder="Uses Label" pattern="[A-Za-z0-9-_.:<>='*@/?!#\s\(\)]*" title="Please avoid characters like double quotes">
+                            <input id="label" name="label" class="form-control rounded-0 border-secondary border-top-0 border-left-0 border-right-0 bg-lgray" value="" type="text" placeholder="Uses Label"  pattern="[A-Za-z0-9-_.:<>='*@/?!#\s\(\)]*" title="Please avoid characters like double quotes">
                         </div>
                     </div>
                     <div class="px-3 pt-3 row text-left">
@@ -618,6 +618,9 @@
         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
         <script src="js/selectors.js"></script>
         <script src="js/general.js"></script>
+        <script>
+            toggleNameEquality(false); //by default we are in "Contain" mode.
+        </script>
         <script src="js/datepicker.js"></script>
         <script src="js/chart.js"></script>
         <script src="js/typeahead.js"></script>

@@ -317,42 +317,45 @@ function submitQuery() {
 
     let search_base = "http://localhost:8080/r/search?";
 
-    search_base += "nameEquals=" + nameEquals;
-    search_base += "&onlyForks=" + onlyForks;
-    search_base += "&excludeForks=" + excludeForks;
-    search_base += "&hasIssues=" + hasIssues;
-    search_base += "&hasPulls=" + hasPulls;
-    search_base += "&hasWiki=" + hasWiki;
-    search_base += "&hasLicense=" + hasLicense;
+    let url_params = "";
+    url_params += "nameEquals=" + nameEquals;
+    url_params += "&onlyForks=" + onlyForks;
+    url_params += "&excludeForks=" + excludeForks;
+    url_params += "&hasIssues=" + hasIssues;
+    url_params += "&hasPulls=" + hasPulls;
+    url_params += "&hasWiki=" + hasWiki;
+    url_params += "&hasLicense=" + hasLicense;
 
-    if (!name.isEmpty()){ search_base += "&name=" + name; }
-    if (!language.isEmpty()){ search_base += "&language=" + encodeURIComponent(language); } //we have to encode C++ and C# cases
-    if (!label.isEmpty()){ search_base += "&label=" + label; }
-    if (!license.isEmpty()){ search_base += "&license=" + license; }
-    if (!commitsMin.isEmpty()){ search_base += "&commitsMin=" + commitsMin; }
-    if (!commitsMax.isEmpty()){ search_base += "&commitsMax=" + commitsMax; }
-    if (!contributorsMin.isEmpty()){ search_base += "&contributorsMin=" + contributorsMin; }
-    if (!contributorsMax.isEmpty()){ search_base += "&contributorsMax=" + contributorsMax; }
-    if (!issuesMin.isEmpty()){ search_base += "&issuesMin=" + issuesMin; }
-    if (!issuesMax.isEmpty()){ search_base += "&issuesMax=" + issuesMax; }
-    if (!pullsMin.isEmpty()){ search_base += "&pullsMin=" + pullsMin; }
-    if (!pullsMax.isEmpty()){ search_base += "&pullsMax=" + pullsMax; }
-    if (!branchesMin.isEmpty()){ search_base += "&branchesMin=" + branchesMin; }
-    if (!branchesMax.isEmpty()){ search_base += "&branchesMax=" + branchesMax; }
-    if (!releasesMin.isEmpty()){ search_base += "&releasesMin=" + releasesMin; }
-    if (!releasesMax.isEmpty()){ search_base += "&releasesMax=" + releasesMax; }
-    if (!starsMin.isEmpty()){ search_base += "&starsMin=" + starsMin; }
-    if (!starsMax.isEmpty()){ search_base += "&starsMax=" + starsMax; }
-    if (!watchersMin.isEmpty()){ search_base += "&watchersMin=" + watchersMin; }
-    if (!watchersMax.isEmpty()){ search_base += "&watchersMax=" + watchersMax; }
-    if (!forksMin.isEmpty()){ search_base += "&forksMin=" + forksMin; }
-    if (!forksMax.isEmpty()){ search_base += "&forksMax=" + forksMax; }
-    if (!createdMin.isEmpty()){ search_base += "&createdMin=" + createdMin; }
-    if (!createdMax.isEmpty()){ search_base += "&createdMax=" + createdMax; }
-    if (!committedMin.isEmpty()){ search_base += "&committedMin=" + committedMin; }
-    if (!committedMax.isEmpty()){ search_base += "&committedMax=" + committedMax; }
+    if (!name.isEmpty()){ url_params += "&name=" + name; }
+    if (!language.isEmpty()){ url_params += "&language=" + encodeURIComponent(language); } //we have to encode C++ and C# cases
+    if (!label.isEmpty()){ url_params += "&label=" + encodeURIComponent(label); }
+    if (!license.isEmpty()){ url_params += "&license=" + license; }
+    if (!commitsMin.isEmpty()){ url_params += "&commitsMin=" + commitsMin; }
+    if (!commitsMax.isEmpty()){ url_params += "&commitsMax=" + commitsMax; }
+    if (!contributorsMin.isEmpty()){ url_params += "&contributorsMin=" + contributorsMin; }
+    if (!contributorsMax.isEmpty()){ url_params += "&contributorsMax=" + contributorsMax; }
+    if (!issuesMin.isEmpty()){ url_params += "&issuesMin=" + issuesMin; }
+    if (!issuesMax.isEmpty()){ url_params += "&issuesMax=" + issuesMax; }
+    if (!pullsMin.isEmpty()){ url_params += "&pullsMin=" + pullsMin; }
+    if (!pullsMax.isEmpty()){ url_params += "&pullsMax=" + pullsMax; }
+    if (!branchesMin.isEmpty()){ url_params += "&branchesMin=" + branchesMin; }
+    if (!branchesMax.isEmpty()){ url_params += "&branchesMax=" + branchesMax; }
+    if (!releasesMin.isEmpty()){ url_params += "&releasesMin=" + releasesMin; }
+    if (!releasesMax.isEmpty()){ url_params += "&releasesMax=" + releasesMax; }
+    if (!starsMin.isEmpty()){ url_params += "&starsMin=" + starsMin; }
+    if (!starsMax.isEmpty()){ url_params += "&starsMax=" + starsMax; }
+    if (!watchersMin.isEmpty()){ url_params += "&watchersMin=" + watchersMin; }
+    if (!watchersMax.isEmpty()){ url_params += "&watchersMax=" + watchersMax; }
+    if (!forksMin.isEmpty()){ url_params += "&forksMin=" + forksMin; }
+    if (!forksMax.isEmpty()){ url_params += "&forksMax=" + forksMax; }
+    if (!createdMin.isEmpty()){ url_params += "&createdMin=" + createdMin; }
+    if (!createdMax.isEmpty()){ url_params += "&createdMax=" + createdMax; }
+    if (!committedMin.isEmpty()){ url_params += "&committedMin=" + committedMin; }
+    if (!committedMax.isEmpty()){ url_params += "&committedMax=" + committedMax; }
 
-    retrieve(encodeURI(search_base));
+
+    let final_url = search_base + url_params;
+    retrieve(final_url);
 }
 
 $main_search_form.submit(function () {
