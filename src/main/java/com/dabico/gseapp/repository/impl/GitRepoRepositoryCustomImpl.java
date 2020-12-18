@@ -497,7 +497,7 @@ public class GitRepoRepositoryCustomImpl implements GitRepoRepositoryCustom {
             if (nameEquals) {
                 query.append(String.format("AND r.name = lower('%s') ", name));
             } else {
-                query.append(String.format("AND r.name LIKE lower('%s') ", name));
+                query.append(String.format("AND r.name LIKE lower('%%%s%%') ", name));
             }
         }
 

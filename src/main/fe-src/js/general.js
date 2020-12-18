@@ -8,13 +8,16 @@ function toggleNameEquality(bool_val) {
     button.value = bool_val;
     if (bool_val){
         input.setAttribute("placeholder","Search by full repository name");
-        input.setAttribute("pattern","[A-Za-z0-9-_.]{1,39}\/[A-Za-z0-9-_.]{1,100}");
+        // input.setAttribute("pattern","[A-Za-z0-9-_.]{1,39}\/[A-Za-z0-9-_.]{1,100}");
+        input.setAttribute("pattern","[^\\s'\"]{1,39}\/[^\\s'\"]{1,100}");
         input.setAttribute("title","Must follow format of: username/reponame, max lengths 39 and 100 respectively");
         button.innerHTML = "Equals <i class=\"fa fa-angle-down fa-lg\"></i>";
     } else {
         input.setAttribute("placeholder","Search by keyword in name");
-        input.setAttribute("pattern","[A-Za-z0-9-/_.]{0,140}");
-        input.setAttribute("title","Max length: 140, with allowed characters: A-Z a-z 0-9 - / _ .");
+        // input.setAttribute("pattern","[A-Za-z0-9-/_.]{0,140}");
+        // input.setAttribute("title","Max length: 140, with allowed characters: A-Z a-z 0-9 - / _ .");
+        input.setAttribute("pattern","[^\\s'\"]{0,140}");
+        input.setAttribute("title","Max length: 140, with no whitespace, ', \"");
         button.innerHTML = "Contains <i class=\"fa fa-angle-down fa-lg\"></i>";
     }
 }
