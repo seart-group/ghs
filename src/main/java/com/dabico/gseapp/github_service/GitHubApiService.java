@@ -17,6 +17,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.concurrent.TimeUnit;
 
 @Service
@@ -39,7 +41,8 @@ public class GitHubApiService {
     public Response searchRepositories(String language, DateInterval interval, Integer page, String token,
                                        Boolean crawl_updated_repos) throws IOException, InterruptedException
     {
-        String url = Endpoints.SEARCH_REPOS.getUrl() + "?q=language:" + language +
+        String language_encoded = URLEncoder.encode(language, StandardCharsets.UTF_8);
+        String url = Endpoints.SEARCH_REPOS.getUrl() + "?q=language:" + language_encoded +
                 (crawl_updated_repos ? "+pushed:" : "+created:") + interval +
                 "+fork:true+stars:>="+MIN_STARS+"+is:public&page=" + page + "&per_page=100";
 

@@ -28,7 +28,7 @@ let $go_form = $('#go-form');
 let $go_button = $('#go-button');
 let $results_container = $('#results-container');
 let $results_container_items = $('#results-container-items');
-let $form = $('#form');
+let $main_search_form = $('#main-search-form');
 let $form_container = $('#form-container');
 let $loading_modal = $('#loading-modal');
 //class selectors

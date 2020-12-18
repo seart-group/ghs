@@ -326,7 +326,7 @@ function submitQuery() {
     search_base += "&hasLicense=" + hasLicense;
 
     if (!name.isEmpty()){ search_base += "&name=" + name; }
-    if (!language.isEmpty()){ search_base += "&language=" + language; }
+    if (!language.isEmpty()){ search_base += "&language=" + encodeURIComponent(language); } //we have to encode C++ and C# cases
     if (!label.isEmpty()){ search_base += "&label=" + label; }
     if (!license.isEmpty()){ search_base += "&license=" + license; }
     if (!commitsMin.isEmpty()){ search_base += "&commitsMin=" + commitsMin; }
@@ -355,7 +355,7 @@ function submitQuery() {
     retrieve(encodeURI(search_base));
 }
 
-$form.submit(function () {
+$main_search_form.submit(function () {
     $loading_modal.modal("show");
     submitQuery();
     $body_html.animate({ scrollTop: 0 }, 400);
@@ -365,7 +365,7 @@ $form.submit(function () {
 });
 
 $back_button.click(function () {
-    $form.get(0).reset();
+    $main_search_form.get(0).reset();
     $form_container.toggleClass('d-none');
     $results_container.toggleClass('d-none');
     $results_container_items.empty();
