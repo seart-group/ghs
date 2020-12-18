@@ -1,14 +1,15 @@
 version: '3'
-volumes:
-  dbdata:
+#volumes:
+#  dbdata:
 
 services:
   mysql:
-    image: mysql
+    image: mysql:8.0.22
     container_name: gse-database
+    restart: always
     volumes:
-      - .docker:/docker-entrypoint-initdb.d
-      - dbdata:/var/lib/mysql
+      - ./initdb:/docker-entrypoint-initdb.d
+      - ./dbdata:/var/lib/mysql
     environment:
       MYSQL_ROOT_PASSWORD: 9ijn8uhb7ygv
       MYSQL_DATABASE: gse
@@ -37,13 +38,13 @@ services:
     image: 'gitlab.reveal.si.usi.ch:60090/students/2020/ozren-dabic/github-search-engine/backend'
     container_name: gse-application
     restart: on-failure:5
-#    expose:
-#      - "8080"
-#    ports:
-#      - "8080:8080"
     environment:
       WAIT_HOSTS: mysql:3306
       SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/gse?serverTimezone=UTC&useLegacyDatetimeCode=false&useUnicode=yes&characterEncoding=UTF-8
       SPRING_FLYWAY__URL: jdbc:mysql://mysql:3306/gse?serverTimezone=UTC&useLegacyDatetimeCode=false&useUnicode=yes&characterEncoding=UTF-8
     depends_on:
       - mysql
+    #ports:
+    #  - "127.0.0.1:7080:8080"
+    #expose:
+    #  - "8080"
