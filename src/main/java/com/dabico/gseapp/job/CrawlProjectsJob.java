@@ -355,12 +355,20 @@ public class CrawlProjectsJob {
         if (response.isSuccessful() && responseBody != null){
             JsonArray results = JsonParser.parseString(responseBody.string()).getAsJsonArray();
             logger.info("\tAdding: "+results.size()+" labels.");
-            results.forEach(result -> repo_labels.add(GitRepoLabel.builder()
-                                                 .repo(repo)
-                                                 .label(result.getAsJsonObject().get("name").getAsString())
-                                                 .build())
-            );
-            gitRepoService.createUpdateLabels(repo,repo_labels);
+
+            for(JsonElement item: results)
+            {
+                String label = item.getAsJsonObject().get("name").getAsString();
+                label = label.trim().substring(0, Math.min(label.length(), 60));  // 60: due to db column limit
+                repo_labels.add(GitRepoLabel.builder().repo(repo).label(label).build());
+            }
+
+            try {
+                gitRepoService.createUpdateLabels(repo, repo_labels);
+            } catch (Exception e)
+            {
+                logger.error("Failed to add labels: "+e.getMessage());
+            }
         } else if (response.code() > 499){
             logger.error("Error retrieving labels.");
             logger.error("Server Error Encountered: " + response.code());
@@ -385,7 +393,13 @@ public class CrawlProjectsJob {
                                                                     .sizeOfCode(result.get(key).getAsLong())
                                                                     .build())
             );
-            gitRepoService.createUpdateLanguages(repo,repo_languages);
+            try {
+                gitRepoService.createUpdateLanguages(repo,repo_languages);
+            } catch (Exception e)
+            {
+                logger.error("Failed to add languages: "+e.getMessage());
+            }
+
         } else if (response.code() > 499){
             logger.error("Error retrieving languages.");
             logger.error("Server Error Encountered: " + response.code());
