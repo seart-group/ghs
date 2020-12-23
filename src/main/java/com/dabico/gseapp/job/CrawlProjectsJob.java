@@ -264,12 +264,17 @@ public class CrawlProjectsJob {
             }
 
 
-
-            GitRepo repo = createGitRepoRowObjectFromGitHubAPIResultJson(repoJson);
-            repo = gitRepoService.createOrUpdateRepo(repo);
-            logger.info("\tBasic information saved (repo Table).");
-            retrieveRepoLabels(repo);
-            retrieveRepoLanguages(repo);
+            try {
+                GitRepo repo = createGitRepoRowObjectFromGitHubAPIResultJson(repoJson);
+                repo = gitRepoService.createOrUpdateRepo(repo);
+                logger.info("\tBasic information saved (repo Table).");
+                retrieveRepoLabels(repo);
+                retrieveRepoLanguages(repo);
+            }
+            catch (Exception e)
+            {
+                logger.error("Failed to store info: "+e.getMessage());
+            }
         }
     }
 
@@ -298,7 +303,8 @@ public class CrawlProjectsJob {
         gitRepoBuilder.isArchived(repoJson.get("archived").getAsBoolean());
 
         // #FutureWork: block below which is time-consuming can be done later.
-        RepoHtmlPageExtraInfo extraMinedInfo = mineExtraInfoFromRepHTMLPage(repoJson);
+        String repositoryURL = repoJson.get("html_url").getAsString();
+        RepoHtmlPageExtraInfo extraMinedInfo = mineExtraInfoFromRepHTMLPage(repositoryURL);
         if(extraMinedInfo!=null)
         {
             gitRepoBuilder.commits(extraMinedInfo.getCommits());
@@ -324,9 +330,7 @@ public class CrawlProjectsJob {
     /**
      * #FutureWork: block below which is time-consuming can be done later.
      */
-    private RepoHtmlPageExtraInfo mineExtraInfoFromRepHTMLPage(JsonObject json) throws IOException,InterruptedException {
-        String repositoryURL = json.get("html_url").getAsString();
-
+    private RepoHtmlPageExtraInfo mineExtraInfoFromRepHTMLPage(String repositoryURL) throws IOException,InterruptedException {
         RepoHtmlPageExtraInfo extraMinedInfo = null;
 
         try {
@@ -341,7 +345,7 @@ public class CrawlProjectsJob {
             } else if (code == 429){
                 logger.error("Retrying in 5min (due to error: 429, too many requests)");
                 Thread.sleep(300000);
-                return mineExtraInfoFromRepHTMLPage(json);
+                return mineExtraInfoFromRepHTMLPage(repositoryURL);
             }
         }
 
