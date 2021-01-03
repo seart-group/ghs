@@ -54,7 +54,7 @@ public class CrawlProjectsJob {
     @NonFinal
     // Temporary. Because I'm keep restarting server, but I don't care about
     // very new Java updates, but finishing all language at least once.
-    static String startingLanguage = "C#";
+    static String startingLanguage = "Swift";
 
     @NonFinal
     int tokenOrdinal;
