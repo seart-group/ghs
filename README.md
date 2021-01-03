@@ -26,19 +26,23 @@ The docker-compose configuration `docker-compose.yml` is configured to automatic
 
 ### Build and Deploy
 
-To deploy a back-end version, be sure to build a clean project jar. After that, deploy using the following commands:
+To deploy a back-end version, be sure to build a clean project jar: `mvn clean package`
+
+After that, deploy using the following commands:
 ```
 docker build -t gitlab.reveal.si.usi.ch:60090/students/2020/ozren-dabic/github-search-engine/backend -f Dockerfile.be .
 docker push gitlab.reveal.si.usi.ch:60090/students/2020/ozren-dabic/github-search-engine/backend
 ```
-Changes should take effect on every 5th minute of the hour, as per Watchtower configuration.
 
 To push front-end images, simply run:
 ```
 docker build -t gitlab.reveal.si.usi.ch:60090/students/2020/ozren-dabic/github-search-engine/frontend -f Dockerfile.fe .
 docker push gitlab.reveal.si.usi.ch:60090/students/2020/ozren-dabic/github-search-engine/frontend
 ```
-Changes should be visible almost instantly.
+
+On server side:
+1. Fetch new image(s): `docker-compose pull`
+2. The, run it: `gse-compose up -d <service-name>` where service-names are `gse-fe`, `gse-app` and `mysql`
 
 
 ## More Info on Flyway and Database Migration

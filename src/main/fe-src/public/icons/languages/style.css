@@ -49,3 +49,9 @@
 .lang-csharp:before {
   content: "\e907";
 }
+.lang-swift:before {
+  content: "\e908";
+}
+.lang-objective-c:before {
+  content: "\e909";
+}
