@@ -34,13 +34,14 @@
 
     <body class="d-flex flex-column">
         <nav class="navbar navbar-expand-md py-0 d-flex align-items-start">
-            <div>
-                <div style="height: 80px">
-                    <h1 class="navbar-brand pr-4-5">DEVINTA</h1>
-                </div>
-                <div class="text-right" style="height: 30px">
+            <div style="display: flex;align-items: center;">
+<!--                <div style="height: 80px">-->
+<!--                    <h1 class="navbar-brand pr-4-5">SEART</h1>-->
+<!--                </div>-->
+                <img src="./public/img/SEART-white-bg.png" alt="SEART" width="200px"/>
+                <span class="text-right" style="margin-left: 30px;">
                     <h3 class="navbar-brand text-lgray">GitHub Search</h3>
-                </div>
+                </span>
             </div>
             <div class="py-3 pl-3">
                 <button class="navbar-toggler navbar-light" type="button" data-toggle="collapse" data-target="#main-navigation">
@@ -49,9 +50,8 @@
             </div>
             <div class="collapse navbar-collapse py-3 pl-3" id="main-navigation">
                 <ul class="navbar-nav">
-                    <li class="nav-item"><a class="nav-link" data-toggle="modal" data-target="#stats-modal">Stats</a></li>
-                    <li class="nav-item"><a class="nav-link" data-toggle="modal" data-target="#instructions-modal">Instructions</a></li>
-                    <li class="nav-item"><a class="nav-link" data-toggle="modal" data-target="#how-it-works-modal">How It Works</a></li>
+                    <li class="nav-item"><a class="nav-link" data-toggle="modal" data-target="#stats-modal">Mined Projects</a></li>
+                    <li class="nav-item"><a class="nav-link" data-toggle="modal" data-target="#info-modal">Info</a></li>
                 </ul>
             </div>
         </nav>
@@ -60,7 +60,7 @@
             <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-lg" role="document">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title" id="stats-modal-title">Stats</h5>
+                        <h5 class="modal-title" id="stats-modal-title">Mined Projects</h5>
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                             <span aria-hidden="true">&times;</span>
                         </button>
@@ -73,92 +73,29 @@
                 </div>
             </div>
         </div>
-        <div class="modal fade" id="instructions-modal" tabindex="-1" role="dialog" aria-labelledby="instructions-modal-title" aria-hidden="true">
+        <div class="modal fade" id="info-modal" tabindex="-1" role="dialog" aria-labelledby="info-modal-title" aria-hidden="true">
             <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-lg" role="document">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title" id="instructions-modal-title">Instructions</h5>
+                        <h5 class="modal-title" id="instructions-modal-title">Information</h5>
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                             <span aria-hidden="true">&times;</span>
                         </button>
                     </div>
                     <div class="modal-body">
                         <div class="w-100">
+                            <b class="pr-2">SEART GitHub search engine</b>
                             <p class="p-2 text-justify">
-                                The DEVINTA GitHub repository search engine supports querying by a magnitude of parameters. Keep in mind however that all parameters are optional. Searching without any specified parameters yields all the currently existing records in the database.
+                            The SEART GitHub search engine (<i>seart-ghs</i>) allows to sample repositories to use for empirical studies by using several combinations of selection criteria. <b>All parameters in the search form are optional</b>. Searching without any specified parameters would result in retrieving all currently available repositories in our database (this search may take up to a few minutes).
                             </p>
+                            <br/>
+                            <b class="pr-2">Mined Projects</b>
                             <p class="p-2 text-justify">
-                                Repository name matching has two distinct modes:
+                            As a design choice, we only mine information about repositories having at least 10 stars (e.g., from preliminary analyses we performed on Java, < 5% of repositories have at least 10 stars). This drastically reduces the number of repositories we store and makes the tool more scalable. While we acknowledge that the number of stars is not a good proxy of repositories quality or relevance, we found the 10 stars threshold to be a reasonable mechanism to remove most of personal/toy projects unlikely to be relevant for empirical studies. Note that, since seart-ghs continuously updates the information about the mined projects, a project excluded in the first place as having < 10 stars can be mined a few days after once its number of starts reaches the set threshold.
                             </p>
-                            <ul class="pl-4 pr-2">
-                                <li class="text-justify">Contains - Which matches all repositories containing the specific keyword. Keywords can only contain alphanumeric characters, along with the dot, slash, dash and underscore characters. Maximum allowed keyword length is 140 characters.</li>
-                                <li class="text-justify">Equals - Which matches a repository by fully qualified name: <b>username/reponame</b>. The <b>username</b> is the name of the repository owner, and the <b>reponame</b> is the name of the project. Allowed characters include letters, numbers, dots, dashes and underscores. The maximum allowed length of the <b>username</b> and <b>reponame</b> are 39 and 100 characters respectively.</li>
-                            </ul>
-                            <p class="p-2 text-justify">
-                                Repositories can also be searched by their license, main language and a label they use. To aid the user in constructing the query, these input fields use a typeahead to suggest existing values to filter by.
-                            </p>
-                            <p class="p-2 text-justify">
-                                History, activity and popularity filters (number of commits, contributors, stars, watchers...) limit selections according to ranges specified in the query. These selection intervals are fully inclusive, and can be upper bound, lower bound, fully bound and even unbound. Inputs of this type only except positive integers and zero. The up and down arrows next to the input increment and decrement its value.
-                            </p>
-                            <p class="p-2 text-justify">
-                                Date-based filters limit repository selection by date of creation or last commit. The supported date format is <b>YYYY-MM-DD</b>. Clicking on the calendar button next to the input reveals a date picker for simplified selection.
-                            </p>
-                            <p class="p-2 text-justify">
-                                Finally, there are several additional binary filters. These filters allow separation of fork repositories from source projects, selection of projects that have open issues and pull requests, as well as selection of projects that have a wiki and that are licensed. Keep in mind that only one of the following can be selected: "Only Forked Projects" and "Exclude Forked Projects".
-                            </p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="modal fade" id="how-it-works-modal" tabindex="-1" role="dialog" aria-labelledby="how-it-works-modal-title" aria-hidden="true">
-            <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-lg" role="document">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="how-it-works-modal-title">How It Works</h5>
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                            <span aria-hidden="true">&times;</span>
-                        </button>
-                    </div>
-                    <div class="modal-body">
-                        <div class="w-100">
-                            <p class="p-2 text-justify">
-                                The mining algorithm is the core of our search engine. In broad terms, the miner is responsible for mining all the public projects written in certain languages, from oldest to newest created. It is important to note that the miner currently prioritises repositories consisting predominantly of code written in more popular languages, which include: Java, Kotlin, C, C++, C#, Python, JavaScript and TypeScript. Since mining is sequentially performed for each language, all the repositories of one language have to be mined before moving to the next one.
-                            </p>
-                            <p class="p-2 text-justify">
-                                The mining algorithm works as follows:
-                            </p>
-                            <p class="p-2 text-justify">
-                                The application retrieves the list of all supported languages from a database table. For each language, the application then checks if any prior mining has been conducted for said language. If no prior mining was conducted for the language, the application mines all repositories created between January 1<sup>st</sup> 2008 and two hours before the mining process was started. Conversely, the mining is resumed from the date indicated in the database, and the application mines all repositories created and updated between that date and two hours before the mining process was started.
-                            </p>
-                            <p class="p-2 text-justify">
-                                Having selected a time interval for mining a language, there may be more repositories than can be retrieved by the GitHub API. To work around this issue, if a time interval has too many results, then we split it into more manageable chunks.
-                            </p>
-                            <p class="p-2 text-justify">
-                                Interval mining is performed in the following manner:
-                            </p>
-                            <div class="p-2">
-                                <ol class="pl-4">
-                                    <li class="text-justify">A “request stack” is defined, used for storing future mining intervals. The first element of the data structure will always be the broad mining interval of a language, described previously in more detail.</li>
-                                    <li class="text-justify">We take a date interval from the top of the stack. Said interval is passed to a GitHub API call, requesting all projects and associated forks of a certain language created during that time. If the stack is empty, then the crawl is finished.</li>
-                                    <li class="text-justify">Depending on the number of total results returned in the response:
-                                        <ol class="pl-4 list-inner">
-                                            <li class="text-justify">If the number of results is greater than 1000, then the time interval is split in half, and the two new intervals are pushed to the stack. Return to step 2.</li>
-                                            <li class="text-justify">Otherwise, we iterate over the result list. For each result:
-                                                <ol class="pl-4 list-inner-inner">
-                                                    <li class="text-justify">Scrape the missing information from the repository web-page, and save the full record to the database.</li>
-                                                    <li class="text-justify">Using the GitHub API, retrieve the repository labels, and save them to the database</li>
-                                                    <li class="text-justify">Using the GitHub API, retrieve the repository languages, and save them to the database.</li>
-                                                </ol>
-                                            </li>
-                                            <li class="text-justify">After iterating through all the results, return to step 2.</li>
-                                        </ol>
-                                    </li>
-                                </ol>
-                            </div>
-                            <p class="p-2 text-justify">
-                                The mined repository information can then be accessed by users of this website through queries. Once a query is submitted, a REST request containing the query parameters is sent to the central server. The server then processes the sent information and propagates a query to the application database. Query results are sent back to the user, consisting of a page of the first twenty alphabetically sorted matches, along with the download links for the full result set, as well as other page navigation links.
-                            </p>
+
+                            <br/>
+                            <p class="p-2 text-justify">Report a bug & see known bugs: <a href=""> Link to GitHub issue tracker</a></p>
                         </div>
                     </div>
                 </div>
@@ -189,7 +126,7 @@
             </div>
         </div>
 
-        <div id="page-content" class="py-5">
+        <div id="page-content" class="pb-5" style="min-width: 1000px;">
             <div id="form-container" class="row mw-100 justify-content-center text-center">
                 <form id="main-search-form" autocomplete="off" class="w-75 bg-llgray-transparent border">
                     <div class="px-3 pt-3 row text-left">
@@ -609,6 +546,7 @@
         <footer id="sticky-footer" class="py-3 px-3 bg-white">
             <div class="text-left">
                 <p class="text-gray">Created by: <a href="https://www.linkedin.com/in/dabico" target="_blank">Ozren Dabić</a>, <a href="https://www.inf.usi.ch/phd/aghajani" target="_blank">Emad Aghajani</a>, <a href="https://www.inf.usi.ch/faculty/bavota" target="_blank">Gabriele Bavota</a></p>
+                <p class="text-gray">Maintained by: <a href="https://seart.si.usi.ch" target="_blank">SEART</a></p>
             </div>
         </footer>
 
