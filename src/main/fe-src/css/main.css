@@ -304,7 +304,7 @@ h1.navbar-brand {
 }
 
 h3.navbar-brand {
-    margin: 0;
+    margin: auto 20px;
     font-weight: bold;
     font-size: 30px;
     line-height: normal;
@@ -314,9 +314,13 @@ h3.navbar-brand {
     justify-content: flex-end;
 }
 
+nav {
+    min-height: 90px;
+}
 .nav-item {
     color: grey;
     text-decoration: underline;
+    margin: auto 20px;
 }
 
 .nav-item:hover {
