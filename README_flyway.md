@@ -1,7 +1,7 @@
 
 <!-- 
 	Author: Emad Aghajani 
-	Note:	This file is based on my first-hand experience and by no means can be considered as an official instruction.
+	Note:	This file is based on my experience and by no means can be considered as an official instruction.
 -->
 
 
@@ -40,4 +40,4 @@ If migrations fails, app will not run, and you will be stuck, unless you handle 
 
 
 ##### Disclaimer
-This file is based on Emad's first-hand experience and by no means can be considered as an official instruction.
+This file is based on Emad's experience and by no means can be considered as an official instruction.
