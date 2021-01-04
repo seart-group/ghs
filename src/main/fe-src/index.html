@@ -33,27 +33,15 @@
     </script>
 
     <body class="d-flex flex-column">
-        <nav class="navbar navbar-expand-md py-0 d-flex align-items-start">
-            <div style="display: flex;align-items: center;">
-<!--                <div style="height: 80px">-->
-<!--                    <h1 class="navbar-brand pr-4-5">SEART</h1>-->
-<!--                </div>-->
-                <img src="./public/img/SEART-white-bg.png" alt="SEART" width="200px"/>
-                <span class="text-right" style="margin-left: 30px;">
-                    <h3 class="navbar-brand text-lgray">GitHub Search</h3>
-                </span>
+        <nav class="py-0 px-4 d-flex justify-content-between align-content-center">
+            <div class="d-flex flex-row">
+                <img src="./public/img/SEART-white-bg.png" alt="SEART" width="200px" height="80px"/>
+                <h3 class="navbar-brand text-lgray">GitHub Search</h3>
             </div>
-            <div class="py-3 pl-3">
-                <button class="navbar-toggler navbar-light" type="button" data-toggle="collapse" data-target="#main-navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-            </div>
-            <div class="collapse navbar-collapse py-3 pl-3" id="main-navigation">
-                <ul class="navbar-nav">
-                    <li class="nav-item"><a class="nav-link" data-toggle="modal" data-target="#stats-modal">Mined Projects</a></li>
-                    <li class="nav-item"><a class="nav-link" data-toggle="modal" data-target="#info-modal">Info</a></li>
-                </ul>
-            </div>
+            <ul class="navbar-nav flex-row align-content-center">
+                <li class="nav-item"><a class="nav-link" data-toggle="modal" data-target="#stats-modal">Mined Projects</a></li>
+                <li class="nav-item"><a class="nav-link" data-toggle="modal" data-target="#info-modal">Info</a></li>
+            </ul>
         </nav>
 
         <div class="modal fade" id="stats-modal" tabindex="-1" role="dialog" aria-labelledby="stats-modal-title" aria-hidden="true">
@@ -73,6 +61,7 @@
                 </div>
             </div>
         </div>
+
         <div class="modal fade" id="info-modal" tabindex="-1" role="dialog" aria-labelledby="info-modal-title" aria-hidden="true">
             <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-lg" role="document">
                 <div class="modal-content">
@@ -101,6 +90,7 @@
                 </div>
             </div>
         </div>
+
         <div class="modal fade" id="download-modal" tabindex="-1" role="dialog" aria-labelledby="download-modal-title" aria-hidden="true">
             <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-lg" role="document">
                 <div class="modal-content">
@@ -118,6 +108,7 @@
                 </div>
             </div>
         </div>
+
         <div class="modal" id="loading-modal" tabindex="-1" role="dialog" aria-labelledby="loading-modal-title" aria-hidden="true" data-backdrop="static" data-keyboard="false">
             <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-lg justify-content-center text-center" role="document">
                 <div class="modal-content w-15">
@@ -125,6 +116,7 @@
                 </div>
             </div>
         </div>
+
 
         <div id="page-content" class="pb-5" style="min-width: 1000px;">
             <div id="form-container" class="row mw-100 justify-content-center text-center">
