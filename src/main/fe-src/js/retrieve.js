@@ -145,7 +145,7 @@ function appendResult(item) {
     let row_9_col_2 = '<div class="col-12 d-flex flex-wrap align-items-center align-content-between justify-content-start"></div>';
 
     if (repo_labels.length > 0){
-        row_9_col_1 = $(row_9_col_1).append('<span class="mx-1">Tags:</span>');
+        row_9_col_1 = $(row_9_col_1).append('<span class="mx-1">Issue Labels:</span>');
         repo_labels.forEach(label => {
             row_9_col_2 = $(row_9_col_2).append('<span class="badge badge-dark m-1">'+label.label+'</span>');
         });
