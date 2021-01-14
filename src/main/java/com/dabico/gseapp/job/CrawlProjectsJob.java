@@ -54,7 +54,7 @@ public class CrawlProjectsJob {
     @NonFinal
     // Temporary. Because I'm keep restarting server, but I don't care about
     // very new Java updates, but finishing all language at least once.
-    static String startingLanguage = "Swift";
+    static String startingLanguage = null;
 
     @NonFinal
     int tokenOrdinal;
@@ -98,6 +98,9 @@ public class CrawlProjectsJob {
         Date endDate = Date.from(Instant.now().minus(Duration.ofHours(2)));
 
         for (String language : languages){
+
+            if(language.equals("JavaScript") || language.equals("TypeScript"))
+                continue; // Temporary
 
             if(language.equals(startingLanguage))
                 startingLanguage = null;
