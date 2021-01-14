@@ -26,16 +26,16 @@ The docker-compose configuration `docker-compose.yml` is configured to automatic
 
 ### Build and Deploy
 
-To deploy a back-end version, be sure to build a clean project jar: `mvn clean package`
-
-After that, deploy using the following commands:
+To deploy back-end image use the following commands:
 ```
+mvn clean package
 docker build -t gitlab.reveal.si.usi.ch:60090/students/2020/ozren-dabic/github-search-engine/backend -f Dockerfile.be .
 docker push gitlab.reveal.si.usi.ch:60090/students/2020/ozren-dabic/github-search-engine/backend
 ```
 
-To push front-end images, simply run:
+To deploy front-end images, simply run:
 ```
+mvn clean package
 docker build -t gitlab.reveal.si.usi.ch:60090/students/2020/ozren-dabic/github-search-engine/frontend -f Dockerfile.fe .
 docker push gitlab.reveal.si.usi.ch:60090/students/2020/ozren-dabic/github-search-engine/frontend
 ```
