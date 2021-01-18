@@ -99,7 +99,7 @@ public class CrawlProjectsJob {
 
         for (String language : languages){
 
-            if(language.equals("JavaScript") || language.equals("TypeScript"))
+            if(language.equals("JavaScript"))
                 continue; // Temporary
 
             if(language.equals(startingLanguage))
@@ -120,6 +120,11 @@ public class CrawlProjectsJob {
                 interval = DateInterval.builder().start(veryStartDate).end(endDate).build();
             }
 
+            if(interval.getStart().after(interval.getStart()))
+            {
+                logger.warn("language "+language+" has bad interval range: Start > End | "+interval.getStart()+" > "+interval.getEnd());
+                continue;
+            }
             crawlUpdatedRepos(interval,language);
         }
         this.running = false;
@@ -425,10 +430,12 @@ public class CrawlProjectsJob {
     }
 
     private void getLanguagesToMine(){
+        languages.clear();
         supportedLanguageRepository.findAll().forEach(language -> languages.add(language.getName()));
     }
 
     private void getAccessTokens(){
+        accessTokens.clear();
         accessTokenRepository.findAll().forEach(accessToken -> accessTokens.add(accessToken.getValue()));
     }
 
