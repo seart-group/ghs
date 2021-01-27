@@ -1,24 +1,27 @@
 # Installation and Usage
 
 **Table of Content**:
-1. [Creating the necessary MySQL user and database table](#creating-the-necessary-mysql-user-and-database-table)
-2. [Running the `application`](#running-the-application)
+1. [Setup MySQL](#setup-mysql)
+2. [Initialize GitHub Access Tokens](#initialize-github-access-tokens)
+3. [Running the `application`](#running-the-application)
    1. Running in IntelliJ
    2. Running in the terminal
    3. Running using `.jar`
    4. [Supported arguments](#supported-arguments)
-3. [Running the `frontend`](#running-the-frontend)
+4. [Running the `frontend`](#running-the-frontend)
 
 ---
 
-## Creating the necessary MySQL user and database table
+## 1. Setup MySQL
 
 <details>
 <summary>
 For the project to work, one must first create the necessary user and DB table specified in the application.properties, and grant the user access and modification privileges to said DB table.
 </summary>
 
-### Step 1/4:
+**Note**: You do not have to run the MySQL console as the aforementioned `gseadmin` user. The user is only required for the flyway migrations, as well as for JPA to access the database.
+
+### Step 1/6:
 
 Open the MySQL console in your terminal by typing:
 ```
@@ -26,14 +29,14 @@ sudo mysql
 ```
 After providing your password (provided you have one in place), you should be greeted with the MySQL console.  
 
-### Step 2/4:
+### Step 2/6:
 
 Create the database for the project by running:  
 ``` mysql
 CREATE DATABASE gse CHARACTER SET utf8 COLLATE utf8_bin;
 ```
 
-### Step 3/4:
+### Step 3/6:
 
 Manually set the MySQL server timezone to UTC, using the command:
 ```mysql
@@ -61,7 +64,7 @@ Be sure to restart your MySQL service for the changes to take effect! If you are
 mysql --help | grep /my.cnf
 ```
 
-### Step 4/4:
+### Step 4/6:
 
 Create the user by running these two commands in sequence:  
 ``` mysql
@@ -70,18 +73,29 @@ GRANT ALL ON gse.* to 'gseadmin'@'%';
 ```
 
 If all the commands above worked, then your database should be ready for use.  
-If for any reason whatsoever you wish to drop and create the database, then simply running:  
-``` mysql
-DROP DATABASE gse;
-CREATE DATABASE gse CHARACTER SET utf8 COLLATE utf8_bin;
+
+If for any reason whatsoever you wish to drop and create the database, then simply run `DROP DATABASE gse;` and start from scratch.  
+
+
+### Step 5/6
+Create tables:
+```shell
+$ mysql -u gseadmin -p gse < docker/initdb/1-gse-db-schema.sql`
 ```
-Will do that for you. Note that you do not have to run the MySQL console as the aforementioned *gseadmin* user. The user is only required for the flyway migrations, as well as for JPA to access the database.  
+
+### Step 6/6
+(Optional) Initialize the database with an existing dataset of mined repositories — or otherwise the Crawler will start from scratch.
+```shell
+$ mysql -u gseadmin -p gse < docker/initdb/2-gse-db-data-***.sql`
+```
+
 </details>
 
+## 2. Initialize GitHub Access Tokens and Crawler's programming languages
+- Make sure to enter at least one valid GitHub access token by updating `V1__initialize_tokens.sql` file before running the app for the first time.
+- Also specify the Crawler's programming languages in `V0__initialize_languages.sql`.
 
-
-
-## Running the `application`
+## 3. Running the `application`
 
 ### I. Running in IntelliJ
 
@@ -144,7 +158,6 @@ Here's a list of arguments supported by the application that you can find in `ap
 Note that although there are other parameters, I strongly recommend you **DON'T** override them.
 
 
-
-## Running the `front-end`
+## 4. Running the `front-end`
 
 The easiest way to start the front-end is through IntelliJ itself. After starting the application back-end, navigate to `src/main/fe-src` in the project tree. Right click on `index.html`, and select one of the provided launch options from `Open In Browser`. Please note that IntelliJ's built-in web-server port is [by default configured](https://www.jetbrains.com/help/idea/php-built-in-web-server.html#configuring-built-in-web-server) to `63342`. In order to access the back-end API, change it to `3030` in `Preferences > Build, Execution, Deployment > Debugger > Built-in server`, as the application CORS configurer can only accept connections from `localhost:3030`.
