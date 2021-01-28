@@ -7,7 +7,7 @@ EXPOSE 3030
 ENV API_HOST gse-app
 ENV API_PORT 8080
 
-COPY fe-entrypoint.sh /
+COPY docker/fe-entrypoint.sh /
 RUN chmod 777 /fe-entrypoint.sh
 
 ENTRYPOINT ["/fe-entrypoint.sh"]

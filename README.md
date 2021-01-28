@@ -9,7 +9,7 @@ This project is made of two subprojects:
 
 ## Setup & Run Project Locally (for development)
 
-The detailed instruction can be find [here](./RUN.md)
+The detailed instruction can be find [here](./README_SETUP.md)
 
 
 ## Dockerisation :whale:
@@ -30,26 +30,25 @@ The docker-compose configuration `docker-compose.yml` is configured to automatic
    specify the crawler programming languages on `V0__initialize_languages.sql`.
    - This should be done only for the first time. Once the migration is done by Flyway, this file should not be touched.
 
-2. Build the backend as `jar` file: `mvn clean package`
-
-3. To deploy back-end image use the following commands:
-```
-docker build -t gitlab.reveal.si.usi.ch:60090/students/2020/ozren-dabic/github-search-engine/backend -f Dockerfile.be .
-docker push gitlab.reveal.si.usi.ch:60090/students/2020/ozren-dabic/github-search-engine/backend
-```
-
-4. To deploy front-end images, simply run:
-```
+2. Build the backend as `jar` file: 
+```shell
 mvn clean package
-docker build -t gitlab.reveal.si.usi.ch:60090/students/2020/ozren-dabic/github-search-engine/frontend -f Dockerfile.fe .
-docker push gitlab.reveal.si.usi.ch:60090/students/2020/ozren-dabic/github-search-engine/frontend
 ```
 
-5. On server side:
-   1. (first time only) Copy `docker` folder on your server.
-   2. (first time only) Login: `docker login -u emadpres https://gitlab.reveal.si.usi.ch:60090`
-   3. Fetch new image(s): `docker-compose pull`
-   4. The, run it: `docker-compose up`
+3. To deploy back-end image use the following commands (the tailing `.` should refers to root of the project):
+```shell
+docker build -t ghs-backend:latest -f docker/Dockerfile.be .
+```
+
+4. To deploy front-end images, simply run (the tailing `.` should refers to root of the project):
+```shell
+docker build -t ghs-frontend:latest -f docker/Dockerfile.fe .
+```
+
+5. On server side, or the machine you want to deploy on:
+   1. (first time only) Copy `docker-compose` folder on your server.
+   2. Fetch new image(s) you just built: `docker-compose pull`
+   3. The, run it: `docker-compose up`
 
 
 ## More Info on Flyway and Database Migration
