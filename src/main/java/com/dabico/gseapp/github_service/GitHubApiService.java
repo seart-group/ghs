@@ -1,6 +1,5 @@
 package com.dabico.gseapp.github_service;
 
-import com.dabico.gseapp.job.CrawlProjectsJob;
 import com.dabico.gseapp.util.interval.DateInterval;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
@@ -66,7 +65,13 @@ public class GitHubApiService {
             JsonObject search = bodyJson.get("resources").getAsJsonObject().get("search").getAsJsonObject();
             int remaining = search.get("remaining").getAsInt();
             return remaining <= 0;
-        } else {
+        }  else if (response.code() == 401) {
+            logger.error("**************** Invalid Access Token [401 Unauthorized]: {} ****************", token);
+            logger.error("**************** Exiting gse app due to invalid token  ****************", token);
+            System.exit(401);
+            return false;
+        }
+        else {
             throw new HttpResponseException(response.code(),"GitHub Server Error");
         }
     }

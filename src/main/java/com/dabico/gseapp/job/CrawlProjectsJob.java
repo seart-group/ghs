@@ -43,7 +43,7 @@ public class CrawlProjectsJob {
     static Logger logger = LoggerFactory.getLogger(CrawlProjectsJob.class);
 
     @NonFinal
-    static Long defaultRetryPeriod = 900000L;
+    static Long defaultRetryPeriod_ms = 900000L;
 
     @NonFinal
     public boolean running = false;
@@ -189,7 +189,7 @@ public class CrawlProjectsJob {
         } else if (response.code() > 499){
             logger.error("Error retrieving repositories.");
             logger.error("Server Error Encountered: " + response.code());
-            Thread.sleep(defaultRetryPeriod);
+            Thread.sleep(defaultRetryPeriod_ms);
             logger.error("Retrying...");
             retrieveRepos(interval, language, crawl_updated_repos);
         }
@@ -214,7 +214,7 @@ public class CrawlProjectsJob {
                 } else if (response.code() > 499){
                     logger.error("Error retrieving repositories at page: " + page);
                     logger.error("Server Error Encountered: " + response.code());
-                    Thread.sleep(defaultRetryPeriod);
+                    Thread.sleep(defaultRetryPeriod_ms);
                     logger.error("Retrying...");
                     retrieveRemainingRepos(interval, language, crawl_updated_repos, results, totalPages);
                 }
@@ -384,7 +384,7 @@ public class CrawlProjectsJob {
         } else if (response.code() > 499){
             logger.error("Error retrieving labels.");
             logger.error("Server Error Encountered: " + response.code());
-            Thread.sleep(defaultRetryPeriod);
+            Thread.sleep(defaultRetryPeriod_ms);
             logger.error("Retrying...");
             retrieveRepoLabels(repo);
         }
@@ -415,7 +415,7 @@ public class CrawlProjectsJob {
         } else if (response.code() > 499){
             logger.error("Error retrieving languages.");
             logger.error("Server Error Encountered: " + response.code());
-            Thread.sleep(defaultRetryPeriod);
+            Thread.sleep(defaultRetryPeriod_ms);
             logger.error("Retrying...");
             retrieveRepoLanguages(repo);
         }
@@ -445,9 +445,9 @@ public class CrawlProjectsJob {
                 currentToken = getNewToken();
             }
         } catch (HttpResponseException ex) {
-            logger.error("Error communicating with GitHub.");
-            logger.error("Server Error Encountered: " + ex.getStatusCode());
-            Thread.sleep(defaultRetryPeriod);
+            logger.error("Error communicating with GitHub: "+ ex.getStatusCode() + " | "+ ex.getMessage());
+            logger.error("Sleeping for {} seconds", defaultRetryPeriod_ms /1000.0);
+            Thread.sleep(defaultRetryPeriod_ms);
             logger.error("Retrying...");
         }
     }
