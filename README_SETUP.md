@@ -80,13 +80,13 @@ If for any reason whatsoever you wish to drop and create the database, then simp
 ### Step 5/6
 Create tables:
 ```shell
-$ mysql -u gseadmin -p gse < docker/initdb/1-gse-db-schema.sql`
+$ mysql -u gseadmin -p gse < docker-compose/initdb/1-gse-db-schema.sql`
 ```
 
 ### Step 6/6
 (Optional) Initialize the database with an existing dataset of mined repositories — or otherwise the Crawler will start from scratch.
 ```shell
-$ mysql -u gseadmin -p gse < docker/initdb/2-gse-db-data-***.sql`
+$ mysql -u gseadmin -p gse < docker-compose/initdb/2-gse-db-data-***.sql`
 ```
 
 </details>

@@ -24,9 +24,9 @@ services:
 
   gse-fe:
 #    build:
-#      context: ./
-#      dockerfile: Dockerfile.fe
-    image: 'gitlab.reveal.si.usi.ch:60090/students/2020/ozren-dabic/github-search-engine/frontend'
+#      context: ../
+#      dockerfile: ../docker-compose/Dockerfile.fe
+    image: 'ghs-frontend:latest'
     container_name: gse-fe
     restart: on-failure:5
     labels:
@@ -48,9 +48,9 @@ services:
 
   gse-app:
 #    build:
-#       context: ./
-#       dockerfile: Dockerfile.be
-    image: 'gitlab.reveal.si.usi.ch:60090/students/2020/ozren-dabic/github-search-engine/backend'
+#       context: ../
+#       dockerfile: ../docker-compose/Dockerfile.be
+    image: 'ghs-backend:latest'
     container_name: gse-app
     restart: on-failure:5
     environment:
