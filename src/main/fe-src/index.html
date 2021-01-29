@@ -30,7 +30,7 @@
 
             gtag('config', 'G-1Z0MFVW1VB', {  // this object to avoid warning (https://stackoverflow.com/questions/62569419/)
                 cookie_domain: 'seart-ghs.si.usi.ch',
-                cookie_flags: 'SameSite=None;Secure' 
+                cookie_flags: 'SameSite=None;Secure'
 		    });
         </script>
     </head>
@@ -473,7 +473,8 @@
                             </div>
                         </div>
                         <div class="col-4">
-                            <button id="submit-button" type="submit" class="w-50 btn btn-secondary border-dark b-2 text-center mh-100">Search</button>
+                            <!-- The "Search" button onClick event invokes `submitQuery()` function-->
+                            <button type="submit" class="w-50 btn btn-secondary border-dark b-2 text-center mh-100">Search</button>
                         </div>
                         <div class="col-4">
                             <div class="text-left">
