@@ -67,7 +67,7 @@ public class GitHubApiService {
             return remaining <= 0;
         }  else if (response.code() == 401) {
             logger.error("**************** Invalid Access Token [401 Unauthorized]: {} ****************", token);
-            logger.error("**************** Exiting gse app due to invalid token  ****************", token);
+            logger.error("**************** Exiting gse app due to invalid token  ****************");
             System.exit(401);
             return false;
         }
