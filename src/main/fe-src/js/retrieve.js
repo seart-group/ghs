@@ -164,6 +164,8 @@ function appendResult(item) {
 }
 
 function retrieve(url) {
+    gtag('event', 'search', {'event-type': 'secondary'});
+
     fetch(url).then(response => {
         return response.json();
     }).then(data => {
@@ -285,6 +287,9 @@ $go_form.submit(function () {
 });
 
 function submitQuery() {
+
+    gtag('event', 'search', {'event-type': 'primary'});
+
     let name = document.getElementById("name").value;
     let nameEquals = document.getElementById("match").value;
     let language = document.getElementById("language").value;
