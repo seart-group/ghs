@@ -55,7 +55,8 @@ docker build -t ghs-frontend:latest -f docker/Dockerfile.fe .
 Read [here](./README_flyway.md)
 
 ## FAQ
-- **How add a new programming language to platform?** See [this commit for adding C#](https://gitlab.reveal.si.usi.ch/devinta/github-search-engine/-/commit/2fd9c1da171119f5d33fd157b2275ad6429264ce) on 17th December 2020.
+- **How add a new programming language to platform?**
+  1. See the "Adding C#" commit on December 17th 2020.
+  2. Create a new Flyway migration file to insert a new language row on `supported_languages` table.
+   
 
-## Important TODOs
-- [ ] Current *Advance Search* re-implementation via Native SQL query may be subject to SQL Injection.
