@@ -16,55 +16,50 @@
 
 <details>
 <summary>
-For the project to work, one must first create the necessary user and DB table specified in the application.properties, and grant the user access and modification privileges to said DB table.
+For the project to work, one must first create the necessary user and DB table specified in the <code>application.properties</code>, and grant the user access and modification privileges to said DB table.
 </summary>
 
-**Note**: You do not have to run the MySQL console as the aforementioned `gseadmin` user. The user is only required for the flyway migrations, as well as for JPA to access the database.
+Open the MySQL console in your terminal by typing: `sudo mysql -u root -p`
 
-### Step 1/6:
+### Step 1/5: Configure Database 
+- **Timezone**
+   ```mysql
+   -- set the timezone
+   SET GLOBAL time_zone = '+00:00';
+   -- verify it with
+   SELECT @@global.time_zone, @@session.time_zone;
+   -- You should see something like:
+   -- +--------------------+---------------------+
+   -- | @@global.time_zone | @@session.time_zone |
+   -- +--------------------+---------------------+
+   -- | +00:00             | SYSTEM              |
+   -- +--------------------+---------------------+
+   ```
+- **Maximum `group_concat`**
+  
+   Also we need to increase the maximum length of `CONCAT_GROUP` statement results (by default is 1024 characters):
+   ```mysql
+   SET GLOBAL group_concat_max_len = 10000
+   ```
 
-Open the MySQL console in your terminal by typing:
+Note that this step is **necessary** whenever a new MySQL session starts, as the `SET` command will only be valid for the current session. 
+To permanently set MySQL's configuration, you must add the following line to your `my.cnf` config file (Locate it with `mysql --help | grep /my.cnf`), under the `[mysqld]` section:
+```cnf
+[mysql]
+default-time-zone = "+00:00"
+group_concat_max_len=10000
 ```
-sudo mysql
-```
-After providing your password (provided you have one in place), you should be greeted with the MySQL console.  
 
-### Step 2/6:
+Be sure to restart your MySQL service for the changes to take effect!
 
-Create the database for the project by running:  
+### Step 2/5: Create Database: `gse`
+
+Create the database for the project by running:
 ``` mysql
 CREATE DATABASE gse CHARACTER SET utf8 COLLATE utf8_bin;
 ```
 
-### Step 3/6:
-
-Manually set the MySQL server timezone to UTC, using the command:
-```mysql
-SET GLOBAL time_zone = '+00:00';
-```
-To ensure that the timezone has been successfully set, run:
-```mysql
-SELECT @@global.time_zone, @@session.time_zone;
-```
-You should see something like:
-```
-+--------------------+---------------------+
-| @@global.time_zone | @@session.time_zone |
-+--------------------+---------------------+
-| +00:00             | SYSTEM              |
-+--------------------+---------------------+
-1 row in set (0.00 sec)
-```
-Note that this step is **necessary** whenever a new MySQL session starts, as the `SET` command will only be valid for the current session. To permanently set MySQL's default timezone to UTC, you must add the following line to your `my.cnf` (usually located in `/usr/local/etc`) config file, under the `[mysqld]` section:
-```
-default-time-zone = "+00:00"
-```
-Be sure to restart your MySQL service for the changes to take effect! If you are having trouble with locating the `my.cnf` file, type the following into the terminal:
-```
-mysql --help | grep /my.cnf
-```
-
-### Step 4/6:
+### Step 3/5: Create User: `gseadmin`
 
 Create the user by running these two commands in sequence:  
 ``` mysql
@@ -72,23 +67,20 @@ CREATE USER 'gseadmin'@'%' identified by 'Lugano2020';
 GRANT ALL ON gse.* to 'gseadmin'@'%';
 ```
 
-If all the commands above worked, then your database should be ready for use.  
-
-If for any reason whatsoever you wish to drop and create the database, then simply run `DROP DATABASE gse;` and start from scratch.  
+**Note**: The `gseadmin` user is only required for the flyway migrations, as well as for JPA to access the database.
 
 
-### Step 5/6
+### Step 4/5: Create Tables
 Create tables:
 ```shell
 $ mysql -u gseadmin -p gse < docker-compose/initdb/1-gse-db-schema.sql`
 ```
 
-### Step 6/6
-(Optional) Initialize the database with an existing dataset of mined repositories — or otherwise the Crawler will start from scratch.
+### Step 5/5: Populate Tables (Optional)
+Initialize the database with an existing dataset of mined repositories — or otherwise the Crawler will start from scratch.
 ```shell
 $ mysql -u gseadmin -p gse < docker-compose/initdb/2-gse-db-data-***.sql`
 ```
-
 </details>
 
 ## 2. Setup Crawler
