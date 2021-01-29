@@ -28,7 +28,10 @@
             function gtag(){dataLayer.push(arguments);}
             gtag('js', new Date());
 
-            gtag('config', 'G-1Z0MFVW1VB');
+            gtag('config', 'G-1Z0MFVW1VB', {  // this object to avoid warning (https://stackoverflow.com/questions/62569419/)
+                cookie_domain: 'seart-ghs.si.usi.ch',
+                cookie_flags: 'SameSite=None;Secure' 
+		    });
         </script>
     </head>
 
