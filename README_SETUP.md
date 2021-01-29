@@ -1,14 +1,14 @@
 # Installation and Usage
 
 **Table of Content**:
-1. [Setup MySQL](#setup-mysql)
-2. [Initialize GitHub Access Tokens](#initialize-github-access-tokens)
-3. [Running the `application`](#running-the-application)
+1. [Setup MySQL](#1-setup-mysql)
+2. [Setup Crawler](#2-setup-crawler)
+3. [Running the `application`](#3-running-the-application)
    1. Running in IntelliJ
    2. Running in the terminal
    3. Running using `.jar`
    4. [Supported arguments](#supported-arguments)
-4. [Running the `frontend`](#running-the-frontend)
+4. [Running the `frontend`](#4-running-the-frontend)
 
 ---
 
@@ -91,7 +91,28 @@ $ mysql -u gseadmin -p gse < docker-compose/initdb/2-gse-db-data-***.sql`
 
 </details>
 
-## 2. Initialize GitHub Access Tokens and Crawler's programming languages
+## 2. Setup Crawler
+To make Crawler work, you have to initialize `supported_language` and  `access_token`. For that, you have two options:
+1. Providing this information as part of your `docker-compose/initdb/2-gse-db-data***.sql` dump. (**Recommended**)
+2. Manually adding rows to the tables.
+3. Creating a migration file at `resources/db/migration/V0__initialize_tokens_languages.sql` and run the app:
+   ```sql
+   -- Initialize crawler programming langauges
+   INSERT INTO supported_language VALUES (1,'Java', current_timestamp);
+   INSERT INTO supported_language VALUES (2,'Kotlin', current_timestamp);
+   INSERT INTO supported_language VALUES (3,'C', current_timestamp);
+   INSERT INTO supported_language VALUES (4,'C++', current_timestamp);
+   INSERT INTO supported_language VALUES (5,'C#', current_timestamp);
+   INSERT INTO supported_language VALUES (6,'Python', current_timestamp);
+   INSERT INTO supported_language VALUES (7,'JavaScript', current_timestamp);
+   INSERT INTO supported_language VALUES (8,'TypeScript', current_timestamp);
+   INSERT INTO supported_language VALUES (9,'Swift', current_timestamp);
+   INSERT INTO supported_language VALUES (10,'Objective-C', current_timestamp);
+   -- Initialize GitHub access tokens
+   INSERT INTO access_token (value,added) VALUES ('<YOUR_GITHUB_ACCESS_TOKEN>',current_timestamp);
+   ```
+
+### Initialize GitHub Access Tokens for Crawler
 - Make sure to enter at least one valid GitHub access token by updating `V1__initialize_tokens.sql` file before running the app for the first time.
 - Also specify the Crawler's programming languages in `V0__initialize_languages.sql`.
 

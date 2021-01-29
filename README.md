@@ -26,9 +26,7 @@ The docker-compose configuration `docker-compose.yml` is configured to automatic
 
 ### Build and Deploy
 
-1. (only first time) Make sure to initialize GitHub access tokens by updating `V1__initialize_tokens.sql` file and 
-   specify the crawler programming languages on `V0__initialize_languages.sql`.
-   - This should be done only for the first time. Once the migration is done by Flyway, this file should not be touched.
+1. Configure Crawler with GitHub access token and programming languages (See [Here](./README_SETUP.md#2-setup-crawler))
 
 2. Build the backend as `jar` file: 
 ```shell
