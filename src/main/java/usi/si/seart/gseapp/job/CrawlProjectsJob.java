@@ -437,6 +437,12 @@ public class CrawlProjectsJob {
     private void getAccessTokens(){
         accessTokens.clear();
         accessTokenRepository.findAll().forEach(accessToken -> accessTokens.add(accessToken.getValue()));
+        if(accessTokens.size()==0)
+        {
+            logger.error("**************** No Access Token Found ****************");
+            logger.error("**************** Exiting gse app due to lack of access token  ****************");
+            System.exit(1);
+        }
     }
 
     private void replaceTokenIfExpired() throws IOException,InterruptedException {
