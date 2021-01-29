@@ -85,8 +85,8 @@ $ mysql -u gseadmin -p gse < docker-compose/initdb/2-gse-db-data-***.sql`
 
 ## 2. Setup Crawler
 To make Crawler work, you have to initialize `supported_language` and  `access_token`. For that, you have two options:
-1. Providing this information as part of your `docker-compose/initdb/2-gse-db-data***.sql` dump. (**Recommended**)
-2. Manually adding rows to the tables.
+1. Providing languages/tokens when populating the database (as part of `docker-compose/initdb/2-gse-db-data***.sql` dump) (**Recommended**)
+2. Manually adding to the tables.
 3. Creating a migration file at `resources/db/migration/V0__initialize_tokens_languages.sql` and run the app:
    ```sql
    -- Initialize crawler programming langauges
@@ -103,11 +103,7 @@ To make Crawler work, you have to initialize `supported_language` and  `access_t
    -- Initialize GitHub access tokens
    INSERT INTO access_token (value,added) VALUES ('<YOUR_GITHUB_ACCESS_TOKEN>',current_timestamp);
    ```
-
-### Initialize GitHub Access Tokens for Crawler
-- Make sure to enter at least one valid GitHub access token by updating `V1__initialize_tokens.sql` file before running the app for the first time.
-- Also specify the Crawler's programming languages in `V0__initialize_languages.sql`.
-
+   
 ## 3. Running the `application`
 
 ### I. Running in IntelliJ
