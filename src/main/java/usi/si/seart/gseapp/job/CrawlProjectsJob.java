@@ -99,8 +99,8 @@ public class CrawlProjectsJob {
 
         for (String language : languages){
 
-            if(language.equals("JavaScript"))
-                continue; // Temporary
+//            if(language.equals("JavaScript"))
+//                continue; // Temporary
 
             if(language.equals(startingLanguage))
                 startingLanguage = null;
