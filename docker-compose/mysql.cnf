@@ -1,2 +1,3 @@
 [mysqld]
+default-time-zone="+00:00"
 group_concat_max_len=10000
