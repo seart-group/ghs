@@ -164,7 +164,7 @@ function appendResult(item) {
 }
 
 function retrieve(url) {
-    gtag('event', 'search', {'event-type': 'secondary'});
+    gtag('event', 'search-pages');
 
     fetch(url).then(response => {
         return response.json();
@@ -288,7 +288,7 @@ $go_form.submit(function () {
 
 function submitQuery() {
 
-    gtag('event', 'search', {'event-type': 'primary'});
+    gtag('event', 'search');
 
     let name = document.getElementById("name").value;
     let nameEquals = document.getElementById("match").value;
