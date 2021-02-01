@@ -9,15 +9,15 @@ This project is made of two subprojects:
 
 ## Setup & Run Project Locally (for development)
 
-The detailed instruction can be find [here](./README_SETUP.md)
+The detailed instruction can be find [here](./README_SETUP.md).
 
 
 ## Dockerisation :whale:
-The project is designed with deployment in mind. Read detailed instructions [here](./README_DEPLOY.md)
+The instruction to deploy the project via Docker is available [here](./README_DEPLOY.md).
 
 
 ## More Info on Flyway and Database Migration
-To learn more about Flyway you can read on [here](./README_flyway.md)
+To learn more about Flyway you can read on [here](./README_flyway.md).
 
 ---
 ## FAQ
