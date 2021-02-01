@@ -40,9 +40,13 @@ public class JPAQueryBuilder {
             select.append(Operator.COMMA.value);
         } else {
             select.append(Clause.SELECT.value);
-            if (distinct) select.append(Operator.DISTINCT.value);
         }
+
+        if (distinct)
+            select.append(Operator.DISTINCT.value);
+
         select.append(columnName).append(" ");
+
         if (!alias.isBlank()){
             select.append(Operator.AS.value);
             select.append(alias).append(" ");

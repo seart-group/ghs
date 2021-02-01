@@ -22,19 +22,19 @@ public interface GitRepoRepositoryCustom {
 //                                 Boolean onlyForks, Boolean hasIssues, Boolean hasPulls, Boolean hasWiki,
 //                                 Boolean hasLicense, Pageable pageable);
 
-    List<GitRepoDto> advancedSearch_emad(String name, Boolean nameEquals, String language, String license, String label,
-                                                LongInterval commits, LongInterval contributors, LongInterval issues,
-                                                LongInterval pulls, LongInterval branches, LongInterval releases,
-                                                LongInterval stars, LongInterval watchers, LongInterval forks,
-                                                DateInterval created, DateInterval committed, Boolean excludeForks,
-                                                Boolean onlyForks, Boolean hasIssues, Boolean hasPulls, Boolean hasWiki,
-                                                Boolean hasLicense, Pageable pageable);
+    List<GitRepoDto> AdvancedQuery_Search_EA(String name, Boolean nameEquals, String language, String license, String label,
+                                             LongInterval commits, LongInterval contributors, LongInterval issues,
+                                             LongInterval pulls, LongInterval branches, LongInterval releases,
+                                             LongInterval stars, LongInterval watchers, LongInterval forks,
+                                             DateInterval created, DateInterval committed, Boolean excludeForks,
+                                             Boolean onlyForks, Boolean hasIssues, Boolean hasPulls, Boolean hasWiki,
+                                             Boolean hasLicense, Pageable pageable);
 
-    Long countAdvancedSearch_emad(String name, Boolean nameEquals, String language, String license, String label,
-                                         LongInterval commits, LongInterval contributors, LongInterval issues,
-                                         LongInterval pulls, LongInterval branches, LongInterval releases,
-                                         LongInterval stars, LongInterval watchers, LongInterval forks,
-                                         DateInterval created, DateInterval committed, Boolean excludeForks,
-                                         Boolean onlyForks, Boolean hasIssues, Boolean hasPulls, Boolean hasWiki,
-                                         Boolean hasLicense);
+    Long AdvancedQuery_Count_EA(String name, Boolean nameEquals, String language, String license, String label,
+                                LongInterval commits, LongInterval contributors, LongInterval issues,
+                                LongInterval pulls, LongInterval branches, LongInterval releases,
+                                LongInterval stars, LongInterval watchers, LongInterval forks,
+                                DateInterval created, DateInterval committed, Boolean excludeForks,
+                                Boolean onlyForks, Boolean hasIssues, Boolean hasPulls, Boolean hasWiki,
+                                Boolean hasLicense);
 }
