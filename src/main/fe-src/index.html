@@ -36,8 +36,14 @@
     </head>
 
     <script>
-        function downloadResult(download_link){
-            // alert("Download Link: "+download_link);
+        function downloadResult(download_link, type){
+            if(type === 'JSON')
+                gtag('event', 'download-json');
+            else if(type === 'XML')
+                gtag('event', 'download-xml');
+            else if(type === 'CSV')
+                gtag('event', 'download-csv');
+
             $('#download-modal').modal('show');
             window.setTimeout(function(){
                 window.location.href = download_link;
@@ -504,15 +510,15 @@
                         </button>
                     </div>
                     <div class="col px-0 d-flex align-items-center justify-content-end">
-                        <span id="download-json-button" href="" target="_parent" onclick="downloadResult($(this).attr('href_emad'));" class="btn btn-outline-secondary bg-llgray rounded-0 border-0">
+                        <span id="download-json-button" href="" target="_parent" onclick="downloadResult($(this).attr('href_emad'),'JSON');" class="btn btn-outline-secondary bg-llgray rounded-0 border-0">
                             Download JSON
                             <span class="fa fa-file-text-o"></span>
                         </span>
-                        <span id="download-xml-button" href="" target="_parent" onclick="downloadResult($(this).attr('href_emad'));" class="btn btn-outline-secondary bg-llgray rounded-0 border-0">
+                        <span id="download-xml-button" href="" target="_parent" onclick="downloadResult($(this).attr('href_emad'),'XML');" class="btn btn-outline-secondary bg-llgray rounded-0 border-0">
                             Download XML
                             <span class="fa fa-file-code-o"></span>
                         </span>
-                        <span id="download-csv-button" href="" target="_parent" onclick="downloadResult($(this).attr('href_emad'));" class="btn btn-outline-secondary bg-llgray rounded-0 border-0">
+                        <span id="download-csv-button" href="" target="_parent" onclick="downloadResult($(this).attr('href_emad'),'CSV');" class="btn btn-outline-secondary bg-llgray rounded-0 border-0">
                             Download CSV
                             <span class="fa fa-file-excel-o"></span>
                         </span>
