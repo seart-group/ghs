@@ -377,15 +377,15 @@ public class GitRepoRepositoryCustomImpl implements GitRepoRepositoryCustom {
      * Warning: This method is supposed to improve efficiency of JPA approach. It contains "column-names".
      * @author Emad
      */
-    public List<GitRepoDto> advancedSearch_emad(String name, Boolean nameEquals, String language, String license, String label,
-                                                LongInterval commits, LongInterval contributors, LongInterval issues,
-                                                LongInterval pulls, LongInterval branches, LongInterval releases,
-                                                LongInterval stars, LongInterval watchers, LongInterval forks,
-                                                DateInterval created, DateInterval committed, Boolean excludeForks,
-                                                Boolean onlyForks, Boolean hasIssues, Boolean hasPulls, Boolean hasWiki,
-                                                Boolean hasLicense, Pageable pageable) {
+    public List<GitRepoDto> AdvancedQuery_Search_EA(String name, Boolean nameEquals, String language, String license, String label,
+                                                    LongInterval commits, LongInterval contributors, LongInterval issues,
+                                                    LongInterval pulls, LongInterval branches, LongInterval releases,
+                                                    LongInterval stars, LongInterval watchers, LongInterval forks,
+                                                    DateInterval created, DateInterval committed, Boolean excludeForks,
+                                                    Boolean onlyForks, Boolean hasIssues, Boolean hasPulls, Boolean hasWiki,
+                                                    Boolean hasLicense, Pageable pageable) {
 
-        String query_parameters = constructAdvancedSearchParameters_emad(name, nameEquals, language, license, label, commits, contributors, issues,
+        String query_parameters = AdvancedQuery_ConstructPartialQuery(name, nameEquals, language, license, label, commits, contributors, issues,
                 pulls, branches, releases, stars, watchers, forks, created, committed,
                 excludeForks, onlyForks, hasIssues, hasPulls, hasWiki, hasLicense, true);
 
@@ -449,14 +449,35 @@ public class GitRepoRepositoryCustomImpl implements GitRepoRepositoryCustom {
         return res;
     }
 
+    public Long AdvancedQuery_Count_EA(String name, Boolean nameEquals, String language, String license, String label,
+                                       LongInterval commits, LongInterval contributors, LongInterval issues,
+                                       LongInterval pulls, LongInterval branches, LongInterval releases,
+                                       LongInterval stars, LongInterval watchers, LongInterval forks,
+                                       DateInterval created, DateInterval committed, Boolean excludeForks,
+                                       Boolean onlyForks, Boolean hasIssues, Boolean hasPulls, Boolean hasWiki,
+                                       Boolean hasLicense)
+    {
+        String query_parameters = AdvancedQuery_ConstructPartialQuery(name, nameEquals, language, license, label, commits, contributors, issues,
+                pulls, branches, releases, stars, watchers, forks, created, committed,
+                excludeForks, onlyForks, hasIssues, hasPulls, hasWiki, hasLicense, false);
 
-    public String constructAdvancedSearchParameters_emad(String name, Boolean nameEquals, String language, String license, String label,
-                                             LongInterval commits, LongInterval contributors, LongInterval issues,
-                                             LongInterval pulls, LongInterval branches, LongInterval releases,
-                                             LongInterval stars, LongInterval watchers, LongInterval forks,
-                                             DateInterval created, DateInterval committed, Boolean excludeForks,
-                                             Boolean onlyForks, Boolean hasIssues, Boolean hasPulls, Boolean hasWiki,
-                                             Boolean hasLicense, Boolean shouldFetchLabelsAndLanguagesInfo)
+        String query_str = "SELECT COUNT(*)\n" + query_parameters;
+
+        Object resultList = entityManager.createNativeQuery(query_str).getSingleResult();
+        Long count = ((BigInteger) resultList).longValue();
+        return count;
+    }
+
+
+
+
+    public String AdvancedQuery_ConstructPartialQuery(String name, Boolean nameEquals, String language, String license, String label,
+                                                      LongInterval commits, LongInterval contributors, LongInterval issues,
+                                                      LongInterval pulls, LongInterval branches, LongInterval releases,
+                                                      LongInterval stars, LongInterval watchers, LongInterval forks,
+                                                      DateInterval created, DateInterval committed, Boolean excludeForks,
+                                                      Boolean onlyForks, Boolean hasIssues, Boolean hasPulls, Boolean hasWiki,
+                                                      Boolean hasLicense, Boolean shouldFetchLabelsAndLanguagesInfo)
     {
         StringBuilder query = new StringBuilder();
 
@@ -662,25 +683,6 @@ public class GitRepoRepositoryCustomImpl implements GitRepoRepositoryCustom {
         }
 
         return query.toString();
-    }
-
-    public Long countAdvancedSearch_emad(String name, Boolean nameEquals, String language, String license, String label,
-                                                     LongInterval commits, LongInterval contributors, LongInterval issues,
-                                                     LongInterval pulls, LongInterval branches, LongInterval releases,
-                                                     LongInterval stars, LongInterval watchers, LongInterval forks,
-                                                     DateInterval created, DateInterval committed, Boolean excludeForks,
-                                                     Boolean onlyForks, Boolean hasIssues, Boolean hasPulls, Boolean hasWiki,
-                                                     Boolean hasLicense)
-    {
-        String query_parameters = constructAdvancedSearchParameters_emad(name, nameEquals, language, license, label, commits, contributors, issues,
-                pulls, branches, releases, stars, watchers, forks, created, committed,
-                excludeForks, onlyForks, hasIssues, hasPulls, hasWiki, hasLicense, false);
-
-        String query_str = "SELECT COUNT(*)\n" + query_parameters;
-
-        Object resultList = entityManager.createNativeQuery(query_str).getSingleResult();
-        Long count = ((BigInteger) resultList).longValue();
-        return count;
     }
 
 }
