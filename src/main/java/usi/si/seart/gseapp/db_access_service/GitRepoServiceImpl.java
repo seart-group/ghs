@@ -91,7 +91,7 @@ public class GitRepoServiceImpl implements GitRepoService {
         boolean shouldCountTotalResult = (totalResults==null);
 
 //      long start = System.currentTimeMillis();
-        List<GitRepoDto> repoDtos = gitRepoRepositoryCustom.AdvancedQuery_Search_EA(name,nameEquals,language,license,label,commits,
+        List<GitRepoDto> repoDtos = gitRepoRepositoryCustom.AdvancedSearch(name,nameEquals,language,license,label,commits,
                 contributors,issues,pulls,branches,releases,
                 stars,watchers,forks,created,committed,excludeForks,
                 onlyForks,hasIssues,hasPulls,hasWiki,hasLicense, pageable);
@@ -101,7 +101,7 @@ public class GitRepoServiceImpl implements GitRepoService {
 
 //      start = System.currentTimeMillis();
         if(shouldCountTotalResult) {
-            totalResults = gitRepoRepositoryCustom.AdvancedQuery_Count_EA(name, nameEquals, language, license, label, commits,
+            totalResults = gitRepoRepositoryCustom.AdvancedSearchCount(name, nameEquals, language, license, label, commits,
                     contributors, issues, pulls, branches, releases,
                     stars, watchers, forks, created, committed, excludeForks,
                     onlyForks, hasIssues, hasPulls, hasWiki, hasLicense);
@@ -208,7 +208,7 @@ public class GitRepoServiceImpl implements GitRepoService {
         DateInterval committed    = DateInterval.builder().start(committedMin).end(committedMax).build();
 
 
-        List<GitRepoDto> repoDtos = gitRepoRepositoryCustom.AdvancedQuery_Search_EA(name,nameEquals,language,license,label,commits,
+        List<GitRepoDto> repoDtos = gitRepoRepositoryCustom.AdvancedSearch(name,nameEquals,language,license,label,commits,
                 contributors,issues,pulls,branches,releases,
                 stars,watchers,forks,created,committed,excludeForks,
                 onlyForks,hasIssues,hasPulls,hasWiki,hasLicense, null);
