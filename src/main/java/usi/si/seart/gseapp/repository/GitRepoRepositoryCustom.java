@@ -8,33 +8,20 @@ import org.springframework.data.domain.Pageable;
 import java.util.List;
 
 public interface GitRepoRepositoryCustom {
-//    Long countResults(String name, Boolean nameEquals, String language, String license, String label,
-//                      LongInterval commits, LongInterval contributors, LongInterval issues, LongInterval pulls,
-//                      LongInterval branches, LongInterval releases, LongInterval stars, LongInterval watchers,
-//                      LongInterval forks, DateInterval created, DateInterval committed, Boolean excludeForks,
-//                      Boolean onlyForks, Boolean hasIssues, Boolean hasPulls, Boolean hasWiki,
-//                      Boolean hasLicense);
 
-//    List<GitRepo> advancedSearch(String name, Boolean nameEquals, String language, String license, String label,
-//                                 LongInterval commits, LongInterval contributors, LongInterval issues, LongInterval pulls,
-//                                 LongInterval branches, LongInterval releases, LongInterval stars, LongInterval watchers,
-//                                 LongInterval forks, DateInterval created, DateInterval committed, Boolean excludeForks,
-//                                 Boolean onlyForks, Boolean hasIssues, Boolean hasPulls, Boolean hasWiki,
-//                                 Boolean hasLicense, Pageable pageable);
+    List<GitRepoDto> AdvancedSearch(String name, Boolean nameEquals, String language, String license, String label,
+                                    LongInterval commits, LongInterval contributors, LongInterval issues,
+                                    LongInterval pulls, LongInterval branches, LongInterval releases,
+                                    LongInterval stars, LongInterval watchers, LongInterval forks,
+                                    DateInterval created, DateInterval committed, Boolean excludeForks,
+                                    Boolean onlyForks, Boolean hasIssues, Boolean hasPulls, Boolean hasWiki,
+                                    Boolean hasLicense, Pageable pageable);
 
-    List<GitRepoDto> AdvancedQuery_Search_EA(String name, Boolean nameEquals, String language, String license, String label,
-                                             LongInterval commits, LongInterval contributors, LongInterval issues,
-                                             LongInterval pulls, LongInterval branches, LongInterval releases,
-                                             LongInterval stars, LongInterval watchers, LongInterval forks,
-                                             DateInterval created, DateInterval committed, Boolean excludeForks,
-                                             Boolean onlyForks, Boolean hasIssues, Boolean hasPulls, Boolean hasWiki,
-                                             Boolean hasLicense, Pageable pageable);
-
-    Long AdvancedQuery_Count_EA(String name, Boolean nameEquals, String language, String license, String label,
-                                LongInterval commits, LongInterval contributors, LongInterval issues,
-                                LongInterval pulls, LongInterval branches, LongInterval releases,
-                                LongInterval stars, LongInterval watchers, LongInterval forks,
-                                DateInterval created, DateInterval committed, Boolean excludeForks,
-                                Boolean onlyForks, Boolean hasIssues, Boolean hasPulls, Boolean hasWiki,
-                                Boolean hasLicense);
+    Long AdvancedSearchCount(String name, Boolean nameEquals, String language, String license, String label,
+                             LongInterval commits, LongInterval contributors, LongInterval issues,
+                             LongInterval pulls, LongInterval branches, LongInterval releases,
+                             LongInterval stars, LongInterval watchers, LongInterval forks,
+                             DateInterval created, DateInterval committed, Boolean excludeForks,
+                             Boolean onlyForks, Boolean hasIssues, Boolean hasPulls, Boolean hasWiki,
+                             Boolean hasLicense);
 }

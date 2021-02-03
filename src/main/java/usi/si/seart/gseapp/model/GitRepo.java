@@ -101,13 +101,13 @@ public class GitRepo {
     @Column(name = "crawled")
     Date crawled;
 
-    @Builder.Default
-    @OneToMany(mappedBy="repo", cascade=CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
-    Set<GitRepoLabel> labels = new HashSet<>();
+//    @Builder.Default
+//    @OneToMany(mappedBy="repo", cascade=CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+//    Set<GitRepoLabel> labels = new HashSet<>();
 
-    @Builder.Default
-    @OneToMany(mappedBy="repo", cascade=CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
-    Set<GitRepoLanguage> languages = new HashSet<>();
+//    @Builder.Default
+//    @OneToMany(mappedBy="repo", cascade=CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+//    Set<GitRepoLanguage> languages = new HashSet<>();
 
     @PreUpdate
     @PrePersist
