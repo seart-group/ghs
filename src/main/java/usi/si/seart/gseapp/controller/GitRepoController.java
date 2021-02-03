@@ -33,7 +33,7 @@ import java.util.List;
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
 public class GitRepoController {
     static Logger logger = LoggerFactory.getLogger(GitRepoController.class);
-    static String filePath = "temp/";
+    final static String downloadFolder = "download-temp/";
     static ObjectMapper om;
     static XmlMapper xmlm;
     static {
@@ -147,7 +147,8 @@ public class GitRepoController {
                 hasIssues, hasPulls, hasWiki, hasLicense);
 
         String tempFileName = System.currentTimeMillis()+".temp";
-        File tempFile = new File(filePath+tempFileName);
+        File tempFile = new File(downloadFolder +tempFileName);
+        tempFile.getParentFile().mkdirs();
 
         String mediaType = "", outputFileName="";
         if(fileformat.equals("csv")) {
