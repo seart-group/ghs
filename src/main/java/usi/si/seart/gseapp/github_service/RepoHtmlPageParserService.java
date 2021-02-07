@@ -34,8 +34,6 @@ public class RepoHtmlPageParserService {
 
     public RepoHtmlPageExtraInfo mine(String repoURL) throws IOException
     {
-        logger.info("\tMining data for: " + repoURL);
-
         RepoHtmlPageExtraInfo extraMinedInfo = new RepoHtmlPageExtraInfo();
 
         jsoupMine_homePage(repoURL, extraMinedInfo);
