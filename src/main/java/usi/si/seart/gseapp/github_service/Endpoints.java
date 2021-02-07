@@ -12,7 +12,7 @@ public enum Endpoints {
     DEFAULT("https://github.com"),
     API("https://api.github.com"),
     LIMIT("https://api.github.com/rate_limit"),
-    REPOS("http://api.github.com/repos"),
+    REPOS("https://api.github.com/repos"),
     SEARCH("https://api.github.com/search"),
     SEARCH_REPOS("https://api.github.com/search/repositories");
     String url;

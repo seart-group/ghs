@@ -43,7 +43,7 @@ public class CrawlProjectsJob {
     static Logger logger = LoggerFactory.getLogger(CrawlProjectsJob.class);
 
     @NonFinal
-    static Long defaultRetryPeriod_ms = 900000L;
+    static Long defaultRetryPeriod_ms = 120000L;
 
     @NonFinal
     public boolean running = false;
@@ -172,9 +172,9 @@ public class CrawlProjectsJob {
             int totalResults = bodyJson.get("total_count").getAsInt();
             int totalPages = (int) Math.ceil(totalResults/100.0);
             logger.info("Retrieved results: "+totalResults);
+            response.close();
             if (totalResults <= 1000){
                 JsonArray results = bodyJson.get("items").getAsJsonArray();
-                response.close();
                 saveRetrievedRepos(results, language, 1, totalResults);
                 retrieveRemainingRepos(interval, language, crawl_updated_repos, results, totalPages);
                 crawlJobService.updateCrawlDateForLanguage(language,interval.getEnd());
@@ -184,16 +184,19 @@ public class CrawlProjectsJob {
                     requestQueue.add(0,newIntervals.getValue1());
                     requestQueue.add(0,newIntervals.getValue0());
                 }
-                response.close();
             }
         } else if (response.code() > 499){
             logger.error("Error retrieving repositories.");
             logger.error("Server Error Encountered: " + response.code());
+            response.close();
             Thread.sleep(defaultRetryPeriod_ms);
             logger.error("Retrying...");
             retrieveRepos(interval, language, crawl_updated_repos);
+        } else{
+            gitHubApiService.isTokenLimitExceeded(this.currentToken);
+            logger.error("Failed to execute API call. Code={} Success={} (Repos)", response.code(), response.isSuccessful());
+            response.close();
         }
-        response.close();
     }
 
     private void retrieveRemainingRepos(DateInterval interval, String language, Boolean crawl_updated_repos,
@@ -214,11 +217,15 @@ public class CrawlProjectsJob {
                 } else if (response.code() > 499){
                     logger.error("Error retrieving repositories at page: " + page);
                     logger.error("Server Error Encountered: " + response.code());
+                    response.close();
                     Thread.sleep(defaultRetryPeriod_ms);
                     logger.error("Retrying...");
                     retrieveRemainingRepos(interval, language, crawl_updated_repos, results, totalPages);
+                } else{
+                    gitHubApiService.isTokenLimitExceeded(this.currentToken);
+                    logger.error("Failed to execute API call. Code={} Success={} (Repos Cont.)", response.code(), response.isSuccessful());
+                    response.close();
                 }
-                response.close();
             }
         }
     }
@@ -329,6 +336,7 @@ public class CrawlProjectsJob {
         }
         else
         {
+            gitHubApiService.isTokenLimitExceeded(this.currentToken);
             logger.warn("\tFailed to mine extra info: "+repoJson.get("full_name").getAsString());
         }
 
@@ -344,9 +352,10 @@ public class CrawlProjectsJob {
         try {
             extraMinedInfo = repoHtmlPageParserService.mine(repositoryURL);
         } catch (HttpStatusException ex) {
+            logger.error("Failed mining data for {}", repositoryURL);
             int code = ex.getStatusCode();
             logger.error(ex.getMessage()+": "+ex.getUrl());
-            logger.error("Status: "+code);
+            logger.error("Status: {}", code);
             if (code == 404){
                 logger.error("This repository no longer exists");
                 return null;
@@ -354,6 +363,11 @@ public class CrawlProjectsJob {
                 logger.error("Retrying in 5min (due to error: 429, too many requests)");
                 Thread.sleep(300000);
                 return mineExtraInfoFromRepHTMLPage(repositoryURL);
+            }
+            else
+            {
+                gitHubApiService.isTokenLimitExceeded(this.currentToken);
+                logger.error("Failed mineExtraInfoFromRepHTMLPage");
             }
         }
 
@@ -365,61 +379,77 @@ public class CrawlProjectsJob {
         Response response = gitHubApiService.searchRepoLabels(repo.getName(),currentToken);
         ResponseBody responseBody = response.body();
         if (response.isSuccessful() && responseBody != null){
-            JsonArray results = JsonParser.parseString(responseBody.string()).getAsJsonArray();
-            logger.info("\tAdding: "+results.size()+" labels.");
-
-            for(JsonElement item: results)
-            {
-                String label = item.getAsJsonObject().get("name").getAsString();
-                label = label.trim().substring(0, Math.min(label.length(), 60));  // 60: due to db column limit
-                repo_labels.add(GitRepoLabel.builder().repo(repo).label(label).build());
-            }
-
             try {
+                JsonArray results = JsonParser.parseString(responseBody.string()).getAsJsonArray();
+                logger.info("\tAdding: "+results.size()+" labels.");
+
+                for(JsonElement item: results)
+                {
+                    String label = item.getAsJsonObject().get("name").getAsString();
+                    label = label.trim();
+                    label = label.substring(0, Math.min(label.length(), 60));  // 60: due to db column limit
+                    repo_labels.add(GitRepoLabel.builder().repo(repo).label(label).build());
+                }
+
                 gitRepoService.createUpdateLabels(repo, repo_labels);
             } catch (Exception e)
             {
                 logger.error("Failed to add labels: "+e.getMessage());
             }
-        } else if (response.code() > 499){
+            response.close();
+        }
+        else if (response.code() > 499){
             logger.error("Error retrieving labels.");
             logger.error("Server Error Encountered: " + response.code());
+            response.close();
             Thread.sleep(defaultRetryPeriod_ms);
             logger.error("Retrying...");
             retrieveRepoLabels(repo);
+        }  else{
+            gitHubApiService.isTokenLimitExceeded(this.currentToken);
+            logger.error("Failed to execute API call. Code={} Success={} (Labels)", response.code(), response.isSuccessful());
+            response.close();
         }
-        response.close();
     }
 
     private void retrieveRepoLanguages(GitRepo repo) throws IOException,InterruptedException {
+//        logger.debug("       ---retrieveRepoLanguages");
         List<GitRepoLanguage> repo_languages = new ArrayList<>();
         Response response = gitHubApiService.searchRepoLanguages(repo.getName(),currentToken);
         ResponseBody responseBody = response.body();
         if (response.isSuccessful() && responseBody != null){
-            JsonObject result = JsonParser.parseString(responseBody.string()).getAsJsonObject();
-            Set<String> keySet = result.keySet();
-            logger.info("\tAdding: "+keySet.size()+" languages.");
-            keySet.forEach(key -> repo_languages.add(GitRepoLanguage.builder()
-                                                                    .repo(repo)
-                                                                    .language(key)
-                                                                    .sizeOfCode(result.get(key).getAsLong())
-                                                                    .build())
-            );
             try {
+                JsonObject result = JsonParser.parseString(responseBody.string()).getAsJsonObject();
+                Set<String> keySet = result.keySet();
+                logger.info("\tAdding: "+keySet.size()+" languages.");
+
+                keySet.forEach(key -> repo_languages.add(GitRepoLanguage.builder()
+                                                                        .repo(repo)
+                                                                        .language(key)
+                                                                        .sizeOfCode(result.get(key).getAsLong())
+                                                                        .build())
+                );
+
                 gitRepoService.createUpdateLanguages(repo,repo_languages);
             } catch (Exception e)
             {
                 logger.error("Failed to add languages: "+e.getMessage());
             }
-
+            response.close();
         } else if (response.code() > 499){
             logger.error("Error retrieving languages.");
             logger.error("Server Error Encountered: " + response.code());
+            response.close();
             Thread.sleep(defaultRetryPeriod_ms);
             logger.error("Retrying...");
             retrieveRepoLanguages(repo);
         }
-        response.close();
+        else{
+            gitHubApiService.isTokenLimitExceeded(this.currentToken);
+            logger.error("Failed to execute API call. Code={} Success={} (Languages)", response.code(), response.isSuccessful());
+            response.close();
+        }
+
     }
 
     private void reset(){

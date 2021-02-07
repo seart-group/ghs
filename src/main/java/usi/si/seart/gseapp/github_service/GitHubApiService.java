@@ -56,37 +56,19 @@ public class GitHubApiService {
         return response;
     }
 
-    public boolean isTokenLimitExceeded(String token) throws IOException {
-        Response response = makeAPICall(Endpoints.LIMIT.getUrl(),token);
-        ResponseBody responseBody = response.body();
-        if (response.isSuccessful() && responseBody != null){
-            JsonObject bodyJson = JsonParser.parseString(responseBody.string()).getAsJsonObject();
-            response.close();
-            JsonObject search = bodyJson.get("resources").getAsJsonObject().get("search").getAsJsonObject();
-            int remaining = search.get("remaining").getAsInt();
-            return remaining <= 0;
-        }  else if (response.code() == 401) {
-            logger.error("**************** Invalid Access Token [401 Unauthorized]: {} ****************", token);
-            logger.error("**************** Exiting gse app due to invalid token  ****************");
-            System.exit(401);
-            return false;
-        }
-        else {
-            throw new HttpResponseException(response.code(),"GitHub Server Error");
-        }
-    }
-
     public Response searchRepoLabels(String name, String token) throws IOException, InterruptedException {
         //TODO Adjust scalability for more than 100 labels used THEORETICALLY SHOULD NOT HAPPEN
+        // TODO: Should we encode URL name? emoji!?
         Response response = makeAPICall(generateLabelsURL(name) + "?page=1&per_page=100",token);
-        Thread.sleep(2000);
+        Thread.sleep(1000);
         return response;
     }
 
     public Response searchRepoLanguages(String name, String token) throws IOException, InterruptedException {
         //TODO Adjust scalability for more than 100 languages used THEORETICALLY SHOULD NOT HAPPEN
+        // TODO: Should we encode URL name? emoji!?
         Response response = makeAPICall(generateLanguagesURL(name) + "?page=1&per_page=100",token);
-        Thread.sleep(2000);
+        Thread.sleep(1000);
         return response;
     }
 
@@ -100,6 +82,29 @@ public class GitHubApiService {
                           .addHeader("Authorization", "token " + token)
                           .addHeader("Accept", "application/vnd.github.v3+json")
                           .build();
+    }
+
+    public boolean isTokenLimitExceeded(String token) throws IOException {
+        Response response = makeAPICall(Endpoints.LIMIT.getUrl(),token);
+        ResponseBody responseBody = response.body();
+        if (response.isSuccessful() && responseBody != null){
+            JsonObject bodyJson = JsonParser.parseString(responseBody.string()).getAsJsonObject();
+            response.close();
+            int remaining_core = bodyJson.get("resources").getAsJsonObject().get("core").getAsJsonObject().get("remaining").getAsInt();
+            int remaining_search = bodyJson.get("resources").getAsJsonObject().get("search").getAsJsonObject().get("remaining").getAsInt();
+
+            logger.debug("******** TOKEN: {} -- CORE: {} -- SEARCH: {} **********", token, remaining_core, remaining_search);
+
+            return (remaining_core <= 0 || remaining_search<=0);
+        }  else if (response.code() == 401) {
+            logger.error("**************** Invalid Access Token [401 Unauthorized]: {} ****************", token);
+            logger.error("**************** Exiting gse app due to invalid token  ****************");
+            System.exit(401);
+            return false;
+        }
+        else {
+            throw new HttpResponseException(response.code(),"GitHub Server Error");
+        }
     }
 
     private String generateRepoURL(String name){ return Endpoints.REPOS.getUrl() + "/" + name; }
