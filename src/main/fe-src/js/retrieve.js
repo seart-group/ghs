@@ -106,7 +106,7 @@ function appendResult(item) {
     let row_8_col_1 = '<div class="col-12 mr-0 d-flex flex-wrap align-items-center align-content-between justify-content-start"></div>';
     let row_8_col_2 = '<div class="col-12 d-flex flex-wrap align-items-center align-content-between justify-content-start"></div>';
 
-    if (repo_languages.length > 1){
+    if (repo_languages.length > 0){
         row_8_col_1 = $(row_8_col_1).append('<span class="mx-1">Languages:</span>');
 
         let entries = [];
