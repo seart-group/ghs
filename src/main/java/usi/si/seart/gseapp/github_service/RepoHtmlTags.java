@@ -2,7 +2,8 @@ package usi.si.seart.gseapp.github_service;
 
 public class RepoHtmlTags {
     static String isPageValid         = "#js-repo-pjax-container";
-    static String commitsReg          = "#js-repo-pjax-container > div > div > div > div > div > div > div > div:nth-child(2) > ul > li > a > span > strong";
+    static String commitsReg          = "#js-repo-pjax-container > div > div > div > div > div > div > div > div:nth-child(4) > ul > li > a > span > strong";
+    static String commitsReg_backup          = "#js-repo-pjax-container > div > div > div > div > div > div > div > div:nth-child(2) > ul > li > a > span > strong";
     static String linkTemplateAlt     = "#js-repo-pjax-container > div.container-xl.clearfix.new-discussion-timeline.px-3.px-md-4.px-lg-5 > div > div.gutter-condensed.gutter-lg.d-flex.flex-column.flex-md-row > div.flex-shrink-0.col-12.col-md-3 > div > div:nth-child(%d) > div > div > a";
     static String commitsAlt          = "#js-repo-pjax-container > div.container-xl.clearfix.new-discussion-timeline.px-3.px-md-4.px-lg-5 > div > div.gutter-condensed.gutter-lg.d-flex.flex-column.flex-md-row > div.flex-shrink-0.col-12.col-md-9.mb-4.mb-md-0 > div.Box.mb-3 > div.Box-header.Box-header--blue.position-relative > div > div:nth-child(4) > ul > li > a > span > strong";
     static String branchesReg         = "#js-repo-pjax-container > div > div > div > div > div > div > a:nth-child(1) > strong";
