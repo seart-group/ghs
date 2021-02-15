@@ -46,21 +46,31 @@ public class RepoHtmlPageParserService {
     }
 
     private void seleniumMine_homePage(String repoURL, RepoHtmlPageExtraInfo extraInfo) throws IOException {
+
+        boolean infiniteCommit = extraInfo.getCommits()!=null && extraInfo.getCommits().equals(RepoHtmlPageExtraInfo.INFINITE);
+
+        if(     extraInfo.getWatchers() != null &&
+                extraInfo.getCommits() != null && infiniteCommit == false &&
+                extraInfo.getBranches() != null &&
+                extraInfo.getReleases() != null &&
+                extraInfo.getContributors() != null)
+            return;
+
+
         Document document = Jsoup.connect(repoURL).userAgent("Mozilla").followRedirects(false).get();
         if (isEmptyRepo(document)){ return; }
         if(document.selectFirst(RepoHtmlTags.isPageValid) == null) {return;}
 
-        Boolean sponsored = isSponsored(document);
-        if(sponsored==null) return;
-        int docIndex = sponsored ? 2: 1;
-
-
         if(extraInfo.getWatchers() == null){
+            Boolean sponsored = isSponsored(document);
+            if(sponsored==null) return;
+            int docIndex = sponsored ? 2: 1;
+
             long watchers = repoHtmlPageSeleniumParserService.mineWatchersSelenium(repoURL, docIndex);
             extraInfo.setWatchers(watchers);
         }
 
-        boolean infiniteCommit = extraInfo.getCommits()!=null && extraInfo.getCommits().equals(RepoHtmlPageExtraInfo.INFINITE);
+
         if(extraInfo.getCommits() == null || infiniteCommit) {
             Long commits = repoHtmlPageSeleniumParserService.mineCommitsSelenium(repoURL);
             if(commits==null && infiniteCommit)
@@ -106,7 +116,14 @@ public class RepoHtmlPageParserService {
         }
 
         try {
-            long commits  = LongUtils.getLongValue(document.selectFirst(RepoHtmlTags.commitsReg).html());
+            Long commits = null;
+            if(document.selectFirst(RepoHtmlTags.commitsReg) != null)
+                commits  = LongUtils.getLongValue(document.selectFirst(RepoHtmlTags.commitsReg).html());
+            else {
+                logger.warn("Using backup selector fo commits!");
+                commits = LongUtils.getLongValue(document.selectFirst(RepoHtmlTags.commitsReg_backup).html());
+            }
+
             extraInfo.setCommits(commits);
         } catch (NullPointerException ignored) {
             // Later Selenium take care of it.
