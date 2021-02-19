@@ -39,7 +39,7 @@ Open the MySQL console in your terminal by typing: `sudo mysql -u root -p`
   
    Also we need to increase the maximum length of `CONCAT_GROUP` statement results (by default is 1024 characters):
    ```mysql
-   SET GLOBAL group_concat_max_len = 10000
+   SET GLOBAL group_concat_max_len = 10000;
    ```
 
 Note that this step is **necessary** whenever a new MySQL session starts, as the `SET` command will only be valid for the current session. 
@@ -73,13 +73,13 @@ GRANT ALL ON gse.* to 'gseadmin'@'%';
 ### Step 4/5: Create Tables
 Create tables:
 ```shell
-$ mysql -u gseadmin -p gse < docker-compose/initdb/1-gse-db-schema.sql`
+$ mysql -u gseadmin -pLugano2020 gse < ./docker-compose/initdb/1-gse-db-schema.sql
 ```
 
 ### Step 5/5: Populate Tables (Optional)
 Initialize the database with an existing dataset of mined repositories — or otherwise the Crawler will start from scratch.
 ```shell
-$ mysql -u gseadmin -p gse < docker-compose/initdb/2-gse-db-data-***.sql`
+$ mysql -u gseadmin -pLugano2020 gse < ./docker-compose/initdb/2-gse-db-data-***.sql
 ```
 </details>
 
@@ -87,6 +87,10 @@ $ mysql -u gseadmin -p gse < docker-compose/initdb/2-gse-db-data-***.sql`
 To make Crawler work, you have to initialize `supported_language` and  `access_token`. For that, you have two options:
 1. Providing languages/tokens when populating the database (as part of `docker-compose/initdb/2-gse-db-data***.sql` dump) (**Recommended**)
 2. Manually adding to the tables.
+   ```shell
+   $ mysql -u gseadmin -pLugano2020 gse
+   > [same INSERT statements in next(3) option]
+   ```
 3. Creating a migration file at `resources/db/migration/V0__initialize_tokens_languages.sql` and run the app:
    ```sql
    -- Initialize crawler programming langauges
@@ -108,55 +112,52 @@ To make Crawler work, you have to initialize `supported_language` and  `access_t
 
 ### I. Running in IntelliJ
 
-This is my preferred method for running and testing the application as it allows for easy debugging. If the run configuration has not been set, then navigate to **com.dabico.gseapp.GSEApplication.java**. The option to start the application from the main method should be on the left hand side, next to the class definition. After running for the first time, the configuration should get automatically saved to the list of available configurations. It is not necessary to provide any arguments, as Spring takes the default ones from application.properties. If you wish to override any of the arguments, it is as simple as changing them in the application.properties file.  
+This is my preferred method for running and testing the application as it allows for easy debugging. 
+If the run configuration has not been set, then navigate to `usi/si/seart/GSEApplication.java`. The option to start the application from the main method should be on the left hand side, next to the class definition. After running for the first time, the configuration should get automatically saved to the list of available configurations. It is not necessary to provide any arguments, as Spring takes the default ones from application.properties. If you wish to override any of the arguments, it is as simple as changing them in the application.properties file.  
 
 ### II. Running in the terminal
-<details>
 
-<summary>Steps to run the project via Terminal</summary>
 
-To run the application through the terminal, first make sure you have downloaded the latest version of [Apache Maven](https://maven.apache.org/download.cgi). Next, add the **bin** directory of **apache-maven-X.X.X** to the PATH environment variable. So for example, if I put it in my Documents folder, then to add the environment variable I would run:
-```
-export PATH=/Users/username/Documents/apache-maven-X.X.X/bin:$PATH
-```
-Note that this will only temporarily add the environment variable, until the current terminal is ends. To permanently add it, simply run the following:
-```
-echo 'export PATH="/Users/username/Documents/apache-maven-X.X.X/bin:$PATH"' >> ~/.bash_profile
-```
-To ensure that the path variable has been added, run:  
-```
-mvn -v
-```
-If it runs without error, and prints the version installed, along with other details, then maven is successfully installed and the application is ready for use. Navigate to the root folder of the project. To run the application with the default parameters specified in the `application.properties` file, simply run:
-```
-mvn spring-boot:run
-```
-And to override the value of an existing parameter, run:
-```
-mvn spring-boot:run -Dspring-boot.run.arguments=--arg.one.name=argvalue,--arg.two.name=1
-```
-</details>
+1. Make sure Apache Maven (`mvn`) is installed
+
+    <details>
+    <summary>How to install Maven?</summary>
+    
+    1. First downloaded the latest version of [Apache Maven](https://maven.apache.org/download.cgi).
+    2. Next, add the `apache-maven-X.X.X/bin` to `PATH` environment variable
+       ```shell
+       # add this to ~/.zshrc or ~/.bash_profile
+       export PATH="/usr/local/apache-maven-x.x.x/bin/:$PATH"
+       ```
+    3. To ensure that the path variable has been added, run: `mvn -v`
+    </details>
+
+2. Navigate to the root folder of the project. To run the application with the default parameters (specified in the `application.properties` file), simply run:
+    ```shell
+    mvn spring-boot:run
+    ```
+3. And to override the value of an existing parameter, run:
+    ```shell
+    mvn spring-boot:run -Dspring-boot.run.arguments=--arg.one.name=argvalue,--arg.two.name=1
+    ```
 
 ### III. Running using `.jar`
 
-<details>
-
-<summary>Steps to run the project using `.jar`</summary>
-
-First build the project by running the following command in the terminal:
-```
-mvn clean package
-```
-If it did not exist yet, you should now see the **target** directory in the project root. The root of said directory will contain the Java Archive file for the project. All you have to do now is run the following:
-```
-java -jar target/gse-application-X.X.X.jar
-```
-Note that the name of the `.jar` file **`gse-application-X.X.X`** is derived from the settings in `pom.xml`, following the format of: `artifactId-version.jar`.
-</details>
+1. Make sure Apache Maven (`mvn`) is installed (How to install? see the previous section)
+2. Build the project: `mvn clean package`. If it did not exist yet, you should now see the `target` directory in the project root.
+3. Navigate to the root folder of the project. To run the application with the default parameters (specified in the `application.properties` file), simply run:
+   ```shell
+   java -jar target/gse-application-X.X.X.jar 
+   ```
+4. And to override the value of an existing parameter, run:
+   ```shell
+   java -Dapp.crawl.enabled=false -jar target/gse-application-x.x.x.jar
+   ```
+- Note that the name of the `.jar` file **`gse-application-x.x.x`** is derived from the settings in `pom.xml`, following the format of: `artifactId-version.jar`.
 
 ### Supported arguments
 
-Here's a list of arguments supported by the application that you can find in `application.properties` file:
+Here's a list of arguments supported by the application that you can find in `application.properties` (usual place for _Spring_ projects):
 
 | variable name | type | default value | description |
 | ------------- | ---- | ------------- | ----------- |

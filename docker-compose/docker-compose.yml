@@ -26,7 +26,7 @@ services:
   gse-fe:
 #    build:
 #      context: ../
-#      dockerfile: ../docker-compose/Dockerfile.fe
+#      dockerfile: ../docker/Dockerfile.fe
     image: 'ghs-frontend:latest'
     container_name: gse-fe
     restart: on-failure:5
@@ -38,7 +38,8 @@ services:
       - ./nginx-gse-fe/timeout.conf:/etc/nginx/conf.d/timeout.conf
       - ./nginx-gse-fe/default.conf.template:/etc/nginx/conf.d/default.conf.template
 #    ports:
-      # temporarily for STRIPE project
+      # currently we're using a reverse-proxy to accept incoming requests and it forwards them to gse-fe:3030
+      # However, if you want to expose gse-fe, map its port (3030) to something by uncommenting line below.
       #- "7030:3030"
     depends_on:
       - gse-app
@@ -50,7 +51,7 @@ services:
   gse-app:
 #    build:
 #       context: ../
-#       dockerfile: ../docker-compose/Dockerfile.be
+#       dockerfile: ../docker/Dockerfile.be
     image: 'ghs-backend:latest'
     container_name: gse-app
     restart: on-failure:5
@@ -58,6 +59,7 @@ services:
       WAIT_HOSTS: gse-db:3306
       SPRING_DATASOURCE_URL: jdbc:mysql://gse-db:3306/gse?serverTimezone=UTC&useLegacyDatetimeCode=false&useUnicode=yes&characterEncoding=UTF-8
       SPRING_FLYWAY__URL: jdbc:mysql://gse-db:3306/gse?serverTimezone=UTC&useLegacyDatetimeCode=false&useUnicode=yes&characterEncoding=UTF-8
+      #APP_CRAWL_ENABLED: 'false'
     depends_on:
       - gse-db
 
