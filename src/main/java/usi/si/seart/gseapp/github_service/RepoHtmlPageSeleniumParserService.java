@@ -154,31 +154,31 @@ public class RepoHtmlPageSeleniumParserService {
         }
     }
 
-    public Long mineContributorsSelenium(int index, String repoURL){
-        String contributorsText = null;
-        try {
-            String contributorsReg = String.format(RepoHtmlTags.contribTemplateReg, index);
-            String contributorsAlt = String.format(RepoHtmlTags.contribTemplateAlt, index);
-            contributorsText = getPageElement(repoURL, contributorsReg, contributorsAlt).getText();
-            return LongUtils.getLongValue(contributorsText);
-        } catch (NumberFormatException ex){
-            String linkReg = String.format(RepoHtmlTags.linkTemplateReg, index);
-            String linkAlt = String.format(RepoHtmlTags.linkTemplateAlt, index);
-            if (StringUtils.removeFromStart(ex.getMessage(),18).equals("\"5000+\"")){
-                long contributors = 11 + LongUtils.getLongValue(StringUtils.removeFromStartAndEnd(getPageElement(repoURL, linkReg,linkAlt).getText(),2,13));
-                return contributors;
-            }
-            return null;
-        } catch (TimeoutException ex) {
-            logger.error("Number of contributors could not be mined at this time!");
-            logger.error("Reason: Selenium could not locate the specified element");
-            return null;
-        } catch (Exception e)
-        {
-            logger.error("Selenium failed to parse number of contributors: "+contributorsText);
-            return null;
-        }
-    }
+//    public Long mineContributorsSelenium(int index, String repoURL){
+//        String contributorsText = null;
+//        try {
+//            String contributorsReg = String.format(RepoHtmlTags.contribTemplateReg, index);
+//            String contributorsAlt = String.format(RepoHtmlTags.contribTemplateAlt, index);
+//            contributorsText = getPageElement(repoURL, contributorsReg, contributorsAlt).getText();
+//            return LongUtils.getLongValue(contributorsText);
+//        } catch (NumberFormatException ex){
+//            String linkReg = String.format(RepoHtmlTags.linkTemplateReg, index);
+//            String linkAlt = String.format(RepoHtmlTags.linkTemplateAlt, index);
+//            if (StringUtils.removeFromStart(ex.getMessage(),18).equals("\"5000+\"")){
+//                long contributors = 11 + LongUtils.getLongValue(StringUtils.removeFromStartAndEnd(getPageElement(repoURL, linkReg,linkAlt).getText(),2,13));
+//                return contributors;
+//            }
+//            return null;
+//        } catch (TimeoutException ex) {
+//            logger.error("Number of contributors could not be mined at this time!");
+//            logger.error("Reason: Selenium could not locate the specified element");
+//            return null;
+//        } catch (Exception e)
+//        {
+//            logger.error("Selenium failed to parse number of contributors: "+contributorsText);
+//            return null;
+//        }
+//    }
 
     public WebElement getPageElement(String repoURL, String elementReg, String elementAlt){
         driver.get(repoURL);

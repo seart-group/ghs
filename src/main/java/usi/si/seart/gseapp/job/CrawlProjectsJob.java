@@ -282,9 +282,11 @@ public class CrawlProjectsJob {
             try {
                 GitRepo repo = createGitRepoRowObjectFromGitHubAPIResultJson(repoJson);
                 repo = gitRepoService.createOrUpdateRepo(repo);
-                logger.info("\tBasic information saved (repo Table).");
-                retrieveRepoLabels(repo);
-                retrieveRepoLanguages(repo);
+                if(repo!=null) {
+                    logger.info("\tBasic information saved (repo Table).");
+                    retrieveRepoLabels(repo);
+                    retrieveRepoLanguages(repo);
+                }
             }
             catch (Exception e)
             {
