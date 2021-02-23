@@ -33,6 +33,7 @@ docker build -t ghs-frontend:latest -f docker/Dockerfile.fe .
     1. (first time only) Copy `docker-compose` folder on your server.
     2. Fetch the new image(s) you built in the previous step: `docker-compose pull`
     3. The, run it: `docker-compose up`
+       - If you're running without a reverse-proxy server, read comments on top of `docker-compose.yml` file
 
 **Note:** To override default parameters set in `application.properties`, you can define enviroments in `docker-compose.yml`. For instance to disable crawling ([src](https://stackoverflow.com/questions/46057625)):
    ```yml
