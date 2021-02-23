@@ -1,8 +1,11 @@
 package usi.si.seart.gseapp.db_access_service;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import usi.si.seart.gseapp.controller.GitRepoController;
 import usi.si.seart.gseapp.converter.GitRepoConverter;
 import usi.si.seart.gseapp.dto.*;
+import usi.si.seart.gseapp.github_service.RepoHtmlPageParserService;
 import usi.si.seart.gseapp.model.GitRepo;
 import usi.si.seart.gseapp.model.GitRepoLabel;
 import usi.si.seart.gseapp.model.GitRepoLanguage;
@@ -34,6 +37,9 @@ import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 @AllArgsConstructor(onConstructor_ = @Autowired)
 public class GitRepoServiceImpl implements GitRepoService {
+
+    static final Logger logger = LoggerFactory.getLogger(GitRepoServiceImpl.class);
+
     GitRepoRepository gitRepoRepository;
     GitRepoRepositoryCustom gitRepoRepositoryCustom;
     GitRepoLabelRepository gitRepoLabelRepository;
@@ -218,6 +224,15 @@ public class GitRepoServiceImpl implements GitRepoService {
 
     @Override
     public GitRepo createOrUpdateRepo(GitRepo repo){
+
+        if(repo.getWatchers()==null || repo.getCommits() == null || repo.getBranches() == null ||
+                repo.getReleases() == null || repo.getContributors() == null  ||
+                repo.getLastCommit() == null || repo.getLastCommitSHA()==null)
+        {
+            logger.error("*** REFUSING to store repo data due to incompleteness: {}", repo.getName());
+            return null;
+        }
+
         Optional<GitRepo> opt = gitRepoRepository.findGitRepoByName(repo.getName().toLowerCase());
         if (opt.isPresent()){
             GitRepo existing = opt.get();

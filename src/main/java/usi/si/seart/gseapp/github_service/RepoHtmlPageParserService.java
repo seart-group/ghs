@@ -92,8 +92,9 @@ public class RepoHtmlPageParserService {
         int contributorElementIndex = getContributorElementIndex(document);
         if (contributorElementIndex > 0 ) {
             if (extraInfo.getContributors() == null) {
-                long contributors = repoHtmlPageSeleniumParserService.mineContributorsSelenium(contributorElementIndex, repoURL);
-                extraInfo.setContributors(contributors);
+                logger.error("Selenium is NOT IMPLEMENTED to mine #contributors !!!");
+                //long contributors = repoHtmlPageSeleniumParserService.mineContributorsSelenium(contributorElementIndex, repoURL);
+                //extraInfo.setContributors(contributors);
             }
         }
     }
@@ -116,12 +117,12 @@ public class RepoHtmlPageParserService {
         }
 
         try {
-            Long commits = null;
+            Long commits;
             if(document.selectFirst(RepoHtmlTags.commitsReg) != null)
                 commits  = LongUtils.getLongValue(document.selectFirst(RepoHtmlTags.commitsReg).html());
             else {
-                logger.warn("Using backup selector fo commits!");
-                commits = LongUtils.getLongValue(document.selectFirst(RepoHtmlTags.commitsReg_backup).html());
+                logger.warn("Using alternative selector for #commits");
+                commits = LongUtils.getLongValue(document.selectFirst(RepoHtmlTags.commitsRegAlt).html());
             }
 
             extraInfo.setCommits(commits);
@@ -145,28 +146,54 @@ public class RepoHtmlPageParserService {
 
 
         try {
-            long releases = LongUtils.getLongValue(document.selectFirst(RepoHtmlTags.releasesReg).html());
+            long releases;
+            if(document.selectFirst(RepoHtmlTags.releasesReg)!=null)
+                releases = LongUtils.getLongValue(document.selectFirst(RepoHtmlTags.releasesReg).html());
+            else
+            {
+                logger.warn("Using alternative selector for #releases");
+                releases = LongUtils.getLongValue(document.selectFirst(RepoHtmlTags.releasesRegAlt).html());
+            }
             extraInfo.setReleases(releases);
         } catch (NullPointerException ex){
             // Later Selenium take care of it.
         }
 
 
-        int contributorElementIndex = getContributorElementIndex(document);
-        if (contributorElementIndex < 1){ return; }
-
-
         try {
-            long contributors = LongUtils.getLongValue(document.selectFirst(String.format(RepoHtmlTags.contribTemplateReg, contributorElementIndex)).html());
-            extraInfo.setContributors(contributors);
-        } catch (NullPointerException ignored){
-            // Later Selenium take care of it.
-        } catch (NumberFormatException ex){
-            if (StringUtils.removeFromStart(ex.getMessage(),18).equals("\"5000+\"")){
-                long contributors = 11 + LongUtils.getLongValue(StringUtils.removeFromStartAndEnd(document.selectFirst(String.format(RepoHtmlTags.linkTemplateReg, contributorElementIndex)).html(),2,13));
+            long contributors;
+            Element contrVerifyElem = document.selectFirst(RepoHtmlTags.contributorsVerify);
+            if( contrVerifyElem!=null && contrVerifyElem.html().contains("Contributors")) {
+                String contrStr = document.selectFirst(RepoHtmlTags.contributors).html();
+                if(contrStr.equals("5,000+"))
+                    contributors  = 5000l;
+                else
+                    contributors = LongUtils.getLongValue(contrStr);
                 extraInfo.setContributors(contributors);
             }
+            else
+                extraInfo.setContributors(0l); //some repo has ZERO contributor, like github.com/benwang6/spring-cloud-repo
+        } catch (NumberFormatException ex){
+            logger.error("Failed to parse #Contributors = {}: {}", document.selectFirst(RepoHtmlTags.contributors).html(), ex.getMessage());
+        } catch (NullPointerException ex){
+            // Later Selenium take care of it.
         }
+
+
+//        int contributorElementIndex = getContributorElementIndex(document);
+//        if (contributorElementIndex < 1){ return; }
+//
+//        try {
+//            long contributors = LongUtils.getLongValue(document.selectFirst(String.format(RepoHtmlTags.contribTemplateReg, contributorElementIndex)).html());
+//            extraInfo.setContributors(contributors);
+//        } catch (NullPointerException ignored){
+//            // Later Selenium take care of it.
+//        } catch (NumberFormatException ex){
+//            if (StringUtils.removeFromStart(ex.getMessage(),18).equals("\"5000+\"")){
+//                long contributors = 11 + LongUtils.getLongValue(StringUtils.removeFromStartAndEnd(document.selectFirst(String.format(RepoHtmlTags.linkTemplateReg, contributorElementIndex)).html(),2,13));
+//                extraInfo.setContributors(contributors);
+//            }
+//        }
     }
 
     private void jsoupMine_issuesPage(String repoURL, RepoHtmlPageExtraInfo extraInfo) throws IOException {
