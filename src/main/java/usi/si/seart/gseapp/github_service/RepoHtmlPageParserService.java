@@ -49,7 +49,7 @@ public class RepoHtmlPageParserService {
 
         boolean infiniteCommit = extraInfo.getCommits()!=null && extraInfo.getCommits().equals(RepoHtmlPageExtraInfo.INFINITE);
 
-        if(     extraInfo.getWatchers() != null &&
+        if(     //extraInfo.getWatchers() != null &&
                 extraInfo.getCommits() != null && infiniteCommit == false &&
                 extraInfo.getBranches() != null &&
                 extraInfo.getReleases() != null &&
@@ -61,14 +61,14 @@ public class RepoHtmlPageParserService {
         if (isEmptyRepo(document)){ return; }
         if(document.selectFirst(RepoHtmlTags.isPageValid) == null) {return;}
 
-        if(extraInfo.getWatchers() == null){
-            Boolean sponsored = isSponsored(document);
-            if(sponsored==null) return;
-            int docIndex = sponsored ? 2: 1;
-
-            long watchers = repoHtmlPageSeleniumParserService.mineWatchersSelenium(repoURL, docIndex);
-            extraInfo.setWatchers(watchers);
-        }
+//        if(extraInfo.getWatchers() == null){
+//            Boolean sponsored = isSponsored(document);
+//            if(sponsored==null) return;
+//            int docIndex = sponsored ? 2: 1;
+//
+//            long watchers = repoHtmlPageSeleniumParserService.mineWatchersSelenium(repoURL, docIndex);
+//            extraInfo.setWatchers(watchers);
+//        }
 
 
         if(extraInfo.getCommits() == null || infiniteCommit) {
@@ -104,17 +104,17 @@ public class RepoHtmlPageParserService {
         if (isEmptyRepo(document)){ return; }
         if(document.selectFirst(RepoHtmlTags.isPageValid) == null) {return;}
 
-        Boolean sponsored = isSponsored(document);
-        if(sponsored==null) return;
-        int docIndex = sponsored ? 2: 1;
-
-        try {
-            String watchersReg = String.format(RepoHtmlTags.watchersTemplateReg, docIndex);
-            long watchers = LongUtils.getLongValue(document.selectFirst(watchersReg).attr("aria-label").split(" ")[0]);
-            extraInfo.setWatchers(watchers);
-        } catch (NullPointerException ignored){
-            // Later Selenium take care of it.
-        }
+        // Now this information is available from GitHub API, in "subscribers_count" field
+//        Boolean sponsored = isSponsored(document);
+//        if(sponsored==null) return;
+//        int docIndex = sponsored ? 2: 1;
+//        try {
+//            String watchersReg = String.format(RepoHtmlTags.watchersTemplateReg, docIndex);
+//            long watchers = LongUtils.getLongValue(document.selectFirst(watchersReg).attr("aria-label").split(" ")[0]);
+//            extraInfo.setWatchers(watchers);
+//        } catch (NullPointerException ignored){
+//            // Later Selenium take care of it.
+//        }
 
         try {
             Long commits;

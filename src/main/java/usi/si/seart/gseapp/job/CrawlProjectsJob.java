@@ -280,7 +280,8 @@ public class CrawlProjectsJob {
 
 
             try {
-                GitRepo repo = createGitRepoRowObjectFromGitHubAPIResultJson(repoJson);
+                JsonObject repoJsonDetailed = retrieveRepoInfo(repoFullName);
+                GitRepo repo = createGitRepoRowObjectFromGitHubAPIResultJson(repoJsonDetailed);
                 repo = gitRepoService.createOrUpdateRepo(repo);
                 if(repo!=null) {
                     logger.info("\tBasic information saved (repo Table).");
@@ -310,6 +311,7 @@ public class CrawlProjectsJob {
                         .replaceAll("\"", ""));
         gitRepoBuilder.stargazers(repoJson.get("stargazers_count").getAsLong());
         gitRepoBuilder.forks(repoJson.get("forks_count").getAsLong());
+        gitRepoBuilder.watchers(repoJson.get("subscribers_count").getAsLong());
         gitRepoBuilder.size(repoJson.get("size").getAsLong());
         gitRepoBuilder.createdAt(DateUtils.fromGitDateString(repoJson.get("created_at").getAsString()));
         gitRepoBuilder.pushedAt(DateUtils.fromGitDateString(repoJson.get("pushed_at").getAsString()));
@@ -328,7 +330,7 @@ public class CrawlProjectsJob {
             gitRepoBuilder.branches(extraMinedInfo.getBranches());
             gitRepoBuilder.releases(extraMinedInfo.getReleases());
             gitRepoBuilder.contributors(extraMinedInfo.getContributors());
-            gitRepoBuilder.watchers(extraMinedInfo.getWatchers());
+//            gitRepoBuilder.watchers(extraMinedInfo.getWatchers()); // already fetched from "subscribers_count"
             gitRepoBuilder.totalIssues(extraMinedInfo.getTotalIssues());
             gitRepoBuilder.openIssues(extraMinedInfo.getOpenIssues());
             gitRepoBuilder.totalPullRequests(extraMinedInfo.getTotalPullRequests());
@@ -375,6 +377,38 @@ public class CrawlProjectsJob {
 
         return extraMinedInfo;
     }
+
+
+    private JsonObject retrieveRepoInfo(String repoFullName) throws IOException,InterruptedException {
+        List<GitRepoLabel> repo_labels = new ArrayList<>();
+        Response response = gitHubApiService.searchRepoInfo(repoFullName,currentToken);
+        ResponseBody responseBody = response.body();
+        if (response.isSuccessful() && responseBody != null){
+            JsonObject bodyJson = null;
+            try {
+                bodyJson = JsonParser.parseString(responseBody.string()).getAsJsonObject();
+            } catch (Exception e)
+            {
+                logger.error("Failed to load Repo Info: "+e.getMessage());
+            }
+            response.close();
+            return bodyJson;
+        }
+        else if (response.code() > 499){
+            logger.error("Error retrieving Repo Info.");
+            logger.error("Server Error Encountered: " + response.code());
+            response.close();
+            Thread.sleep(defaultRetryPeriod_ms);
+            logger.error("Retrying...");
+            retrieveRepoInfo(repoFullName);
+        }  else{
+            gitHubApiService.isTokenLimitExceeded(this.currentToken);
+            logger.error("Failed to execute API call. Code={} Success={} (Labels)", response.code(), response.isSuccessful());
+            response.close();
+        }
+        return null;
+    }
+
 
     private void retrieveRepoLabels(GitRepo repo) throws IOException,InterruptedException {
         List<GitRepoLabel> repo_labels = new ArrayList<>();

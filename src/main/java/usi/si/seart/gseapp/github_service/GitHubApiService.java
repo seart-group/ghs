@@ -56,6 +56,14 @@ public class GitHubApiService {
         return response;
     }
 
+    public Response searchRepoInfo(String name, String token) throws IOException, InterruptedException {
+        //TODO Adjust scalability for more than 100 labels used THEORETICALLY SHOULD NOT HAPPEN
+        // TODO: Should we encode URL name? emoji!?
+        Response response = makeAPICall(generateRepoURL(name),token);
+        Thread.sleep(500);
+        return response;
+    }
+
     public Response searchRepoLabels(String name, String token) throws IOException, InterruptedException {
         //TODO Adjust scalability for more than 100 labels used THEORETICALLY SHOULD NOT HAPPEN
         // TODO: Should we encode URL name? emoji!?
