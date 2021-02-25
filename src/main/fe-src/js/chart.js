@@ -7,7 +7,7 @@ function dynamicColors(i,total) {
     return "rgb(" + c + "," + c + "," + c + ")";
 }
 
-fetch("http://localhost:8080/r/stats").then(response => {
+fetch("http://localhost:8080/api/r/stats").then(response => {
     return response.json();
 }).then(data => {
     let i = 0;

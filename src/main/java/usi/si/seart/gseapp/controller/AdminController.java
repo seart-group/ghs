@@ -31,12 +31,12 @@ public class AdminController {
     ApplicationPropertyService applicationPropertyService;
     GitRepoService gitRepoService;
 
-    @GetMapping("/t")
+    @GetMapping("/api/t")
     public ResponseEntity<?> getTokens(){
         return ResponseEntity.ok(accessTokenService.getAll());
     }
 
-    @PostMapping("/t")
+    @PostMapping("/api/t")
     public ResponseEntity<?> addToken(@RequestBody AccessTokenDto token){
         AccessTokenDto created = accessTokenService.create(accessTokenConverter.fromTokenDtoToToken(token));
         if (created != null){
@@ -46,7 +46,7 @@ public class AdminController {
         }
     }
 
-    @DeleteMapping("/t/{tokenId}")
+    @DeleteMapping("/api/t/{tokenId}")
     public ResponseEntity<?> deleteToken(@PathVariable(value = "tokenId") Long tokenId){
         try {
             accessTokenService.delete(tokenId);
@@ -57,12 +57,12 @@ public class AdminController {
         }
     }
 
-    @GetMapping("/l")
+    @GetMapping("/api/l")
     public ResponseEntity<?> getLanguages(){
         return ResponseEntity.ok(supportedLanguageService.getAll());
     }
 
-    @PostMapping("/l")
+    @PostMapping("/api/l")
     public ResponseEntity<?> addLanguage(@RequestBody SupportedLanguageDto langDto){
         SupportedLanguageDto created = supportedLanguageService.create(supportedLanguageConverter.fromLanguageDtoToLanguage(langDto));
         if (created != null){
@@ -72,7 +72,7 @@ public class AdminController {
         }
     }
 
-    @GetMapping("/l/stats")
+    @GetMapping("/api/l/stats")
     public ResponseEntity<?> getLanguageStatistics(){
         return ResponseEntity.ok(gitRepoService.getAllLanguageStatistics());
     }
@@ -80,12 +80,12 @@ public class AdminController {
     /**
      * Return the data to be displayed in "Stat" popup (number of processed repo for each lanugae)
      */
-    @GetMapping("/r/stats")
+    @GetMapping("/api/r/stats")
     public ResponseEntity<?> getRepoStatistics(){
         return ResponseEntity.ok(gitRepoService.getMainLanguageStatistics());
     }
 
-    @DeleteMapping("/l/{langId}")
+    @DeleteMapping("/api/l/{langId}")
     public ResponseEntity<?> deleteLanguage(@PathVariable(value = "langId") Long langId){
         try {
             supportedLanguageService.delete(langId);
@@ -96,17 +96,17 @@ public class AdminController {
         }
     }
 
-    @GetMapping("/j")
+    @GetMapping("/api/j")
     public ResponseEntity<?> getCompletedJobs(){
         return ResponseEntity.ok(crawlJobService.getCompletedJobs());
     }
 
-    @GetMapping("/s")
+    @GetMapping("/api/s")
     public ResponseEntity<?> getSchedulingRate(){
         return ResponseEntity.ok(applicationPropertyService.getScheduling());
     }
 
-    @PutMapping("/s")
+    @PutMapping("/api/s")
     public ResponseEntity<?> setSchedulingRate(@RequestBody Long rate){
         applicationPropertyService.setScheduling(rate);
         return ResponseEntity.ok().build();

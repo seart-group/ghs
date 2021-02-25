@@ -164,7 +164,8 @@ public class GitRepoServiceImpl implements GitRepoService {
                         releasesMin,releasesMax,starsMin,starsMax,watchersMin,watchersMax,forksMin,forksMax,
                         createdMin,createdMax,committedMin,committedMax,excludeForks,onlyForks,hasIssues,
                         hasPulls,hasWiki,hasLicense,null,null, totalResults)).toString().split("\\{")[0];
-        repoDtoListPaginated.setBase(base);
+        repoDtoListPaginated.setBase(base); // base = https://seart-ghs.si.usi.ch/api/r/search?name=&nameEquals=false&language=C&license=&label=&excludeForks=false&onlyForks=false&hasIssues=false&hasPulls=false&hasWiki=false&hasLicense=false&totalResultsCached=52527
+
         if (totalResults > 0){
             String csvDownloadLink = linkTo(methodOn(GitRepoController.class)
                     .downloadResult("csv", name,nameEquals,language,license,label,commitsMin,commitsMax,contributorsMin,

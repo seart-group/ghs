@@ -47,7 +47,7 @@ public class GitRepoController {
     GitRepoService gitRepoService;
     GitRepoConverter gitRepoConverter;
 
-    @GetMapping("/r/search")
+    @GetMapping("/api/r/search")
     public ResponseEntity<?> searchRepos(
             @RequestParam(required = false, defaultValue = "") String name,
             @RequestParam(required = false, defaultValue = "false") Boolean nameEquals,
@@ -98,7 +98,7 @@ public class GitRepoController {
         return ResponseEntity.ok(results);
     }
 
-    @GetMapping(value = "/r/download/{fileformat}")
+    @GetMapping(value = "/api/r/download/{fileformat}")
     public ResponseEntity<?> downloadResult(@PathVariable("fileformat") String fileformat,
                                   @RequestParam(required = false, defaultValue = "") String name,
                                   @RequestParam(required = false, defaultValue = "false") Boolean nameEquals,
@@ -198,7 +198,7 @@ public class GitRepoController {
                 .body(new FileSystemResourceCustom(tempFile));
     }
 
-    @GetMapping("/r/{repoId}")
+    @GetMapping("/api/r/{repoId}")
     public ResponseEntity<?> getRepoById(@PathVariable(value = "repoId") Long repoId){
         try {
             return ResponseEntity.ok(gitRepoService.getRepoById(repoId));
@@ -208,17 +208,17 @@ public class GitRepoController {
         }
     }
 
-    @GetMapping("/r/labels")
+    @GetMapping("/api/r/labels")
     public ResponseEntity<?> getAllLabels(){
         return ResponseEntity.ok(gitRepoService.getAllLabels());
     }
 
-    @GetMapping("/r/languages")
+    @GetMapping("/api/r/languages")
     public ResponseEntity<?> getAllLanguages(){
         return ResponseEntity.ok(gitRepoService.getAllLanguages());
     }
 
-    @GetMapping("/r/licenses")
+    @GetMapping("/api/r/licenses")
     public ResponseEntity<?> getAllLicenses() {
         return ResponseEntity.ok(gitRepoService.getAllLicenses());
     }
