@@ -327,7 +327,7 @@ function submitQuery() {
     let hasWiki = document.getElementById("has-wiki").checked;
     let hasLicense = document.getElementById("has-license").checked;
 
-    let search_base = "http://localhost:8080/r/search?";
+    let search_base = "http://localhost:8080/api/r/search?";
 
     let url_params = "";
     url_params += "nameEquals=" + nameEquals;
