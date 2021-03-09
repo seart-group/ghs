@@ -49,11 +49,12 @@ public class RepoHtmlPageParserService {
 
         boolean infiniteCommit = extraInfo.getCommits()!=null && extraInfo.getCommits().equals(RepoHtmlPageExtraInfo.INFINITE);
 
-        if(     //extraInfo.getWatchers() != null &&
-                extraInfo.getCommits() != null && infiniteCommit == false &&
-                extraInfo.getBranches() != null &&
-                extraInfo.getReleases() != null &&
-                extraInfo.getContributors() != null)
+        if(     //extraInfo.getWatchers() != null
+                extraInfo.getCommits() != null && infiniteCommit == false
+                && extraInfo.getBranches() != null
+                && extraInfo.getReleases() != null
+                // && extraInfo.getContributors() != null
+        )
             return;
 
 
@@ -89,14 +90,14 @@ public class RepoHtmlPageParserService {
             extraInfo.setReleases(releases);
         }
 
-        int contributorElementIndex = getContributorElementIndex(document);
-        if (contributorElementIndex > 0 ) {
-            if (extraInfo.getContributors() == null) {
-                logger.error("Selenium is NOT IMPLEMENTED to mine #contributors !!!");
-                //long contributors = repoHtmlPageSeleniumParserService.mineContributorsSelenium(contributorElementIndex, repoURL);
-                //extraInfo.setContributors(contributors);
-            }
-        }
+//        int contributorElementIndex = getContributorElementIndex(document);
+//        if (contributorElementIndex > 0 ) {
+//            if (extraInfo.getContributors() == null) {
+//                logger.error("Selenium is NOT IMPLEMENTED to mine #contributors !!!");
+//                //long contributors = repoHtmlPageSeleniumParserService.mineContributorsSelenium(contributorElementIndex, repoURL);
+//                //extraInfo.setContributors(contributors);
+//            }
+//        }
     }
 
     private void jsoupMine_homePage(String repoURL, RepoHtmlPageExtraInfo extraInfo) throws IOException {
@@ -160,24 +161,24 @@ public class RepoHtmlPageParserService {
         }
 
 
-        try {
-            long contributors;
-            Element contrVerifyElem = document.selectFirst(RepoHtmlTags.contributorsVerify);
-            if( contrVerifyElem!=null && contrVerifyElem.html().contains("Contributors")) {
-                String contrStr = document.selectFirst(RepoHtmlTags.contributors).html();
-                if(contrStr.equals("5,000+"))
-                    contributors  = 5000l;
-                else
-                    contributors = LongUtils.getLongValue(contrStr);
-                extraInfo.setContributors(contributors);
-            }
-            else
-                extraInfo.setContributors(0l); //some repo has ZERO contributor, like github.com/benwang6/spring-cloud-repo
-        } catch (NumberFormatException ex){
-            logger.error("Failed to parse #Contributors = {}: {}", document.selectFirst(RepoHtmlTags.contributors).html(), ex.getMessage());
-        } catch (NullPointerException ex){
-            // Later Selenium take care of it.
-        }
+//        try {
+//            long contributors;
+//            Element contrVerifyElem = document.selectFirst(RepoHtmlTags.contributorsVerify);
+//            if( contrVerifyElem!=null && contrVerifyElem.html().contains("Contributors")) {
+//                String contrStr = document.selectFirst(RepoHtmlTags.contributors).html();
+//                if(contrStr.equals("5,000+"))
+//                    contributors  = 5000l;
+//                else
+//                    contributors = LongUtils.getLongValue(contrStr);
+//                extraInfo.setContributors(contributors);
+//            }
+//            else
+//                extraInfo.setContributors(0l); //some repo has ZERO contributor, like github.com/benwang6/spring-cloud-repo
+//        } catch (NumberFormatException ex){
+//            logger.error("Failed to parse #Contributors = {}: {}", document.selectFirst(RepoHtmlTags.contributors).html(), ex.getMessage());
+//        } catch (NullPointerException ex){
+//            // Later Selenium take care of it.
+//        }
 
 
 //        int contributorElementIndex = getContributorElementIndex(document);
