@@ -3,7 +3,7 @@ package usi.si.seart.gseapp.util.interval;
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
 import lombok.experimental.SuperBuilder;
-import org.javatuples.Pair;
+import org.apache.commons.lang3.tuple.Pair;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -16,7 +16,7 @@ public class DateInterval extends Interval<Date> {
         Date median = new Date((start.getTime() + end.getTime())/2);
         DateInterval firstInterval  = DateInterval.builder().start(start).end(median).build();
         DateInterval secondInterval = DateInterval.builder().start(median).end(end).build();
-        return new Pair<>(firstInterval,secondInterval);
+        return Pair.of(firstInterval,secondInterval);
     }
 
     @Override

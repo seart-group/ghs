@@ -14,7 +14,7 @@ public class RepoHtmlPageExtraInfo {
     Long commits = null;
     Long branches = null;
     Long releases = null;
-    Long contributors= null;
+//    Long contributors= null;
 
     Long totalIssues = null;
     Long openIssues = null;
