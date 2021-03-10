@@ -76,9 +76,7 @@ public class GitHubCredentialUtil {
 
             int remaining_core = result.get("resources").getAsJsonObject().get("core").getAsJsonObject().get("remaining").getAsInt();
             int remaining_search = result.get("resources").getAsJsonObject().get("search").getAsJsonObject().get("remaining").getAsInt();
-
-            logger.debug("******** TOKEN: {} -- CORE: {} -- SEARCH: {} **********", currentToken, remaining_core, remaining_search);
-
+//            logger.debug("******** TOKEN: {} -- CORE: {} -- SEARCH: {} **********", currentToken, remaining_core, remaining_search);
             boolean isTokenLimitExceeded = (remaining_core <= 0 || remaining_search<=0);
             if(isTokenLimitExceeded)
             {
@@ -88,8 +86,8 @@ public class GitHubCredentialUtil {
                 {
                     try
                     {
-                        logger.info("[[Sleeping {}+2 Sec]]", l);
-                        TimeUnit.SECONDS.sleep(l+2);
+                        logger.info("[[Sleeping {} Sec]]", l);
+                        TimeUnit.SECONDS.sleep(l+1);
                     } catch (InterruptedException e)
                     {
                         logger.error("I was interrupted while I was waiting for GitHub cool-down.");

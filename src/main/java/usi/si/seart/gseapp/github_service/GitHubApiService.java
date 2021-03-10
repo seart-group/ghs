@@ -66,6 +66,7 @@ public class GitHubApiService {
                 "+fork:true+stars:>="+MIN_STARS+"+is:public&page=" + page + "&per_page=100";
 
         // For debugging specific repository
+//        url = generateSearchRepo("XXXXX/YYYYY");
 //        url = generateSearchRepo("torvalds/linux"); // only pulls
 //        url = generateSearchRepo("davidwernhart/AlDente"); // both issue and pulls
 //        url = generateSearchRepo("seart-group/ghs"); // only issues
@@ -230,7 +231,7 @@ public class GitHubApiService {
                         return Triple.of(response.code(), headers, bodyStr);
                     }
                 }
-                logger.error("Try #{}: 403 Error. response code = {} - X-RateLimit-Remaining={}", tryNum, response.code(), rateLimitRemainingStr);
+                logger.info("Try #{}: 403 Error. response code = {} - X-RateLimit-Remaining={}", tryNum, response.code(), rateLimitRemainingStr);
                 gitHubCredentialUtil.replaceTokenIfExpired();
             } else if (response.code() >= 500) {
                 logger.error("Try #{}: GitHub Server Error Encountered: {}", tryNum, response.code());
