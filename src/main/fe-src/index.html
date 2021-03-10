@@ -3,8 +3,8 @@
     <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-        <meta name="description" content="GitHub Search Engine App, USI 2020 Bachelor Project">
-        <meta name="author" content="Ozren Dabić">
+        <meta name="description" content="GitHub Search, SEART, Software Institute (SI), USI">
+        <meta name="author" content="Ozren Dabić, Emad Aghajani">
         <link rel="icon" type="image/png" href="public/img/logo-32.png">
 
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
@@ -58,6 +58,7 @@
                 <h3 class="navbar-brand text-lgray">GitHub Search</h3>
             </div>
             <ul class="navbar-nav flex-row align-content-center">
+                <li class="nav-item"><a class="nav-link" data-toggle="modal" data-target="#paper-citation">How to cite this tool?</a></li>
                 <li class="nav-item"><a class="nav-link" data-toggle="modal" data-target="#stats-modal">Mined Projects</a></li>
                 <li class="nav-item"><a class="nav-link" data-toggle="modal" data-target="#info-modal">Info</a></li>
             </ul>
@@ -81,11 +82,45 @@
             </div>
         </div>
 
+        <div class="modal fade" id="paper-citation" tabindex="-1" role="dialog" aria-labelledby="paper-citation-title" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-lg" role="document">
+                <div class="modal-content">
+<!--                    <div class="modal-header">-->
+<!--                        <h5 class="modal-title">How to cite this work?</h5>-->
+<!--                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">-->
+<!--                            <span aria-hidden="true">&times;</span>-->
+<!--                        </button>-->
+<!--                    </div>-->
+                    <div class="modal-body">
+                        <div class="w-100">
+                            <b class="pr-2">Cite this tool as:</b>
+                            <pre>
+                                <code style="color: #721c24">
+@inproceedings{Dabic:msr2021data,
+  author = {Dabic, Ozren and Aghajani, Emad and Bavota, Gabriele},
+  title = {Sampling Projects in GitHub for {MSR} Studies},
+  year = {2021},
+  url = {<a href="https://arxiv.org/abs/2103.04682" target="_blank" style="color: #721c24">https://arxiv.org/abs/2103.04682</a>},
+  booktitle = {Proceedings of the 18th International Conference on Mining Software Repositories},
+  pages = {To appear},
+  numpages = {5},
+  series = {MSR'21}
+}
+                                </code>
+                            </pre>
+
+                            <p class="p-2 text-justify">Link to the paper (PDF): <a href="https://arxiv.org/pdf/2103.04682.pdf" target="_blank" style="color: darkblue; font-size: medium">Sampling Projects in GitHub for MSR Studies</a></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <div class="modal fade" id="info-modal" tabindex="-1" role="dialog" aria-labelledby="info-modal-title" aria-hidden="true">
             <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-lg" role="document">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title" id="instructions-modal-title">Information</h5>
+                        <h5 class="modal-title">Information</h5>
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                             <span aria-hidden="true">&times;</span>
                         </button>
