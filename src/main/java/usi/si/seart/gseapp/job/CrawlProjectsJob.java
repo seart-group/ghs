@@ -241,25 +241,25 @@ public class CrawlProjectsJob {
                 }
             }
 
-            if(repoJson.get("language").isJsonNull()) {
-                repoJson.addProperty("language", language); // This can happen. Example Repo: "aquynh/iVM"
-            }
-            else if(false == repoJson.get("language").getAsString().equals(language))
-            {
-                // This can happen. Example Repo: https://api.github.com/search/repositories?q=baranowski/habit-vim
-                // And if you go to repo homepage or repo "language_url" (api that shows language distribution),
-                // you will see that main_language is only wrong in the above link.
-                logger.warn("**** Mismatch language: searched-for: "+language+" | repo: "+repoJson.get("language").getAsString());
-                repoJson.addProperty("language", language);
-            }
-
-
             try
             {
                 String responseStr = gitHubApiService.fetchRepoInfo(repoFullName);
                 if(responseStr!=null)
                 {
                     JsonObject result = JsonParser.parseString(responseStr).getAsJsonObject();
+
+
+                    if(result.get("language").isJsonNull())
+                        result.addProperty("language", language); // This can happen. Example Repo: "aquynh/iVM"
+                    else if(false == result.get("language").getAsString().equals(language))
+                    {
+                        // This can happen. Example Repo: https://api.github.com/search/repositories?q=baranowski/habit-vim
+                        // And if you go to repo homepage or repo "language_url" (api that shows language distribution),
+                        // you will see that main_language is only wrong in the above link.
+                        logger.warn("**** Mismatch language: searched-for: "+language+" | repo: "+repoJson.get("language").getAsString());
+                        result.addProperty("language", language);
+                    }
+
                     GitRepo repo = createGitRepoRowObjectFromGitHubAPIResultJson(result);
                     repo = gitRepoService.createOrUpdateRepo(repo);
                     if(repo!=null) {
@@ -267,6 +267,10 @@ public class CrawlProjectsJob {
                         retrieveRepoLabels(repo);
                         retrieveRepoLanguages(repo);
                     }
+                }
+                else
+                {
+                    logger.error("SKIPPING due to null response from server");
                 }
             }
             catch (Exception e)
