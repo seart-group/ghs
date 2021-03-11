@@ -1,10 +1,10 @@
 @font-face {
   font-family: 'languages';
-  src:  url('fonts/languages.eot?3f4ooa');
-  src:  url('fonts/languages.eot?3f4ooa#iefix') format('embedded-opentype'),
-    url('fonts/languages.ttf?3f4ooa') format('truetype'),
-    url('fonts/languages.woff?3f4ooa') format('woff'),
-    url('fonts/languages.svg?3f4ooa#languages') format('svg');
+  src:  url('fonts/languages.eot?aeq8ku');
+  src:  url('fonts/languages.eot?aeq8ku#iefix') format('embedded-opentype'),
+    url('fonts/languages.ttf?aeq8ku') format('truetype'),
+    url('fonts/languages.woff?aeq8ku') format('woff'),
+    url('fonts/languages.svg?aeq8ku#languages') format('svg');
   font-weight: normal;
   font-style: normal;
   font-display: block;
@@ -13,7 +13,7 @@
 [class^="lang-"], [class*=" lang-"] {
   /* use !important to prevent issues with browser extensions that change fonts */
   font-family: 'languages' !important;
-  speak: none;
+  speak: never;
   font-style: normal;
   font-weight: normal;
   font-variant: normal;
@@ -25,6 +25,24 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
+.lang-objective-c:before {
+  content: "\e909";
+}
+.lang-csharp:before {
+  content: "\e907";
+}
+.lang-go:before {
+  content: "\e908";
+}
+.lang-php:before {
+  content: "\e90a";
+}
+.lang-ruby:before {
+  content: "\e90b";
+}
+.lang-swift:before {
+  content: "\e90c";
+}
 .lang-c:before {
   content: "\e900";
 }
@@ -45,13 +63,4 @@
 }
 .lang-typescript:before {
   content: "\e906";
-}
-.lang-csharp:before {
-  content: "\e907";
-}
-.lang-swift:before {
-  content: "\e908";
-}
-.lang-objective-c:before {
-  content: "\e909";
 }
