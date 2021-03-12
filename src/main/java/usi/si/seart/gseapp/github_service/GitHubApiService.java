@@ -212,8 +212,10 @@ public class GitHubApiService {
                 return Triple.of(response.code(), headers, bodyStr);
             } else if (response.code() == STATUS_UNAUTHORIZED) {
                 logger.error("**************** Invalid Access Token [401 Unauthorized]: {} ****************", gitHubCredentialUtil.getCurrentToken());
-                logger.error("**************** Exiting gse app due to invalid token  ****************");
-                System.exit(STATUS_UNAUTHORIZED);
+                // Here we should not call `replaceTokenIfExpired()`, otherwise it leads to an infinite loop,
+                // because that method calls Rate API with the very same unauthorized token.
+                gitHubCredentialUtil.GetANewToken();
+                Thread.sleep(5000);
             } else if (response.code() == STATUS_TOO_MANY_REQUESTS) {
                 gitHubCredentialUtil.replaceTokenIfExpired();
             } else if (response.code() == STATUS_FORBIDDEN) {

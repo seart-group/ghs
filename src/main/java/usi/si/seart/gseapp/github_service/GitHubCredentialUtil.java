@@ -29,7 +29,7 @@ public class GitHubCredentialUtil {
 
 
     @NonFinal
-    int tokenOrdinal;
+    int currentTokenIndex;
     @NonFinal
     String currentToken;
 
@@ -44,9 +44,9 @@ public class GitHubCredentialUtil {
         this.gitHubApiService.setGitHubCredentialUtil(this);
 
 
-        getAccessTokens();
-        this.tokenOrdinal = -1;
-        this.currentToken = getNewToken();
+        FetchListOfTokensFromDB();
+        currentTokenIndex = 0;
+        currentToken = accessTokens.get(currentTokenIndex);
     }
 
     public String getCurrentToken()
@@ -54,13 +54,17 @@ public class GitHubCredentialUtil {
         return currentToken;
     }
 
-    private void getAccessTokens(){
+    void GetANewToken(){
+        currentTokenIndex = (currentTokenIndex + 1) % accessTokens.size();
+        currentToken = accessTokens.get(currentTokenIndex);
+    }
+
+    private void FetchListOfTokensFromDB(){
         accessTokens.clear();
         accessTokenRepository.findAll().forEach(accessToken -> accessTokens.add(accessToken.getValue()));
         if(accessTokens.size()==0)
         {
             logger.error("**************** No Access Token Found ****************");
-            logger.error("**************** Exiting gse app due to lack of access token  ****************");
             System.exit(1);
         }
     }
@@ -80,7 +84,7 @@ public class GitHubCredentialUtil {
             boolean isTokenLimitExceeded = (remaining_core <= 0 || remaining_search<=0);
             if(isTokenLimitExceeded)
             {
-                currentToken = getNewToken();
+                GetANewToken();
                 long l = calculateWaitingTime(result);
                 if(l>0)
                 {
@@ -101,12 +105,6 @@ public class GitHubCredentialUtil {
             logger.error("Failed to use GitHub Limit API");
         }
     }
-
-    private String getNewToken(){
-        tokenOrdinal = (tokenOrdinal + 1) % accessTokens.size();
-        return accessTokens.get(tokenOrdinal);
-    }
-
 
     public long calculateWaitingTime(JsonObject rateLimitResponseJson)
     {
