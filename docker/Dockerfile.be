@@ -1,6 +1,5 @@
 FROM markhobson/maven-chrome:jdk-13
 
-COPY selenium /usr/local/selenium
 COPY target /usr/local/target
 
 WORKDIR /usr/local/
