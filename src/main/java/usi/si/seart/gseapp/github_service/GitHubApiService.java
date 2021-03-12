@@ -203,7 +203,7 @@ public class GitHubApiService {
             else
             {
                 logger.error("**********************************************************************");
-                logger.error("How come 'body' object is null? reqURL = {}\", reqURL");
+                logger.error("How come 'body' object is null? reqURL = {}\", reqURL", reqURL);
                 logger.error("**********************************************************************");
             }
             response.close();
