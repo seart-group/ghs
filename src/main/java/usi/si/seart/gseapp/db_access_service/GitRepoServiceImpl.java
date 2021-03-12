@@ -5,7 +5,6 @@ import org.slf4j.LoggerFactory;
 import usi.si.seart.gseapp.controller.GitRepoController;
 import usi.si.seart.gseapp.converter.GitRepoConverter;
 import usi.si.seart.gseapp.dto.*;
-import usi.si.seart.gseapp.github_service.RepoHtmlPageParserService;
 import usi.si.seart.gseapp.model.GitRepo;
 import usi.si.seart.gseapp.model.GitRepoLabel;
 import usi.si.seart.gseapp.model.GitRepoLanguage;
