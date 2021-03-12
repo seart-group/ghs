@@ -43,11 +43,12 @@ function appendResult(item) {
 
     let row_1 = '<div class="row mw-100 pt-3 mx-3 border border-bottom-0 bg-lgray"></div>';
 
-    let repo_class_label = 'lang-'+repo_mainLanguage.toLowerCase();
-    if(repo_mainLanguage === 'C++')
-        repo_class_label = 'lang-cpp';
-    else if(repo_mainLanguage === 'C#')
-        repo_class_label = 'lang-csharp';
+    // Converting db-side languages to CSS compatible format
+    // DB languages: Java, Kotlin, C, C++, C#, Python, JavaScript, TypeScript, Swift, Objective-C, Ruby, PHP, Go
+    let repo_class_label;
+    if(repo_mainLanguage === 'C++')     repo_class_label = 'lang-cpp';
+    else if(repo_mainLanguage === 'C#') repo_class_label = 'lang-csharp';
+    else                                repo_class_label = 'lang-'+repo_mainLanguage.toLowerCase();
 
     let row_1_col_1 = '<div class="col d-flex align-items-center justify-content-start"><span class="mx-1 fa-2x '+repo_class_label+'" title="'+repo_mainLanguage+' Repository"></span><a href="https://github.com/'+repo_name+'" target="_blank" class="mx-1 text-dark rowsublabel">'+repo_name+'</a></div>';
     let row_1_col_2 = '<div class="col-auto d-flex align-items-center justify-content-end"></div>';
