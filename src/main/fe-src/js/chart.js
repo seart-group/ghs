@@ -11,13 +11,19 @@ fetch("http://localhost:8080/api/r/stats").then(response => {
     return response.json();
 }).then(data => {
     let i = 0;
+    let total_num_of_repos = 0;
+    
     let items = data.items;
     items.forEach(obj => {
         supported_languages.push(obj.name);
         num_of_repos.push(obj.value);
+        total_num_of_repos += obj.value;
         colors.push(dynamicColors(i,items.length));
         i++;
     });
+
+    total_num_of_repos__with_comma = total_num_of_repos.toLocaleString('en', {useGrouping:true});
+    document.getElementById("total_num_of_repos").innerText = total_num_of_repos__with_comma;
 }).catch( (error) => {
     console.error('Error (/r/stats):', error);
 });
