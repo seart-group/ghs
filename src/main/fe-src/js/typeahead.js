@@ -1,5 +1,5 @@
 function generateOptions(dataset) {
-    return { showHintOnFocus: true, source: dataset, items: 10, minLength: 2 }
+    return { showHintOnFocus: true, source: dataset, items: 15, minLength: 2 }
 }
 
 fetch("http://localhost:8080/api/r/labels").then(response => {
