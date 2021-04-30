@@ -13,10 +13,10 @@ import java.util.List;
 @Getter
 @Setter
 @Builder
-@JacksonXmlRootElement(localName = "GitRepoList")
+@JacksonXmlRootElement(localName = "repositories")
 public class GitRepoDtoList {
     @Builder.Default
-    @JacksonXmlElementWrapper(localName = "items")
-    @JacksonXmlProperty(localName = "GitRepo")
+    @JacksonXmlElementWrapper(useWrapping = false)
+    @JacksonXmlProperty(localName = "repository")
     List<GitRepoDto> items = new ArrayList<>();
 }
