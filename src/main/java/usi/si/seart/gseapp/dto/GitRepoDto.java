@@ -39,11 +39,11 @@ public class GitRepoDto {
     Boolean hasWiki;
     Boolean isArchived;
     @Builder.Default
-    @JacksonXmlElementWrapper(localName = "GitRepoLanguages")
-    @JacksonXmlProperty(localName = "GitRepoLanguage")
+    @JacksonXmlElementWrapper(localName = "languages")
+    @JacksonXmlProperty(localName = "language")
     List<GitRepoLanguageDto> languages = new ArrayList<>();
     @Builder.Default
-    @JacksonXmlElementWrapper(localName = "GitRepoLabels")
-    @JacksonXmlProperty(localName = "GitRepoLabel")
+    @JacksonXmlElementWrapper(localName = "labels")
+    @JacksonXmlProperty(localName = "label")
     List<GitRepoLabelDto> labels = new ArrayList<>();
 }
