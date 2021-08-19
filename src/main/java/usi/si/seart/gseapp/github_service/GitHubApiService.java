@@ -147,6 +147,16 @@ public class GitHubApiService {
         return n;
     }
 
+    public Long fetchNumberOfLabels(String repoFullName) throws IOException, InterruptedException {
+        Long n = fetchLastPageNumberFromHeader(generateLabelsURL(repoFullName) + "?page=1&per_page=1");
+        return n;
+    }
+
+    public Long fetchNumberOfLanguages(String repoFullName) throws IOException, InterruptedException {
+        Long n = fetchLastPageNumberFromHeader(generateLanguagesURL(repoFullName) + "?page=1&per_page=1");
+        return n;
+    }
+
     private Long fetchLastPageNumberFromHeader(String url) throws IOException, InterruptedException {
         Triple<Integer, Headers, String> response = makeAPICall(url);
         Integer retCode = response.getLeft();
@@ -173,17 +183,17 @@ public class GitHubApiService {
         return lastPageCount;
     }
 
-    public String fetchRepoLabels(String repoFullName) throws IOException, InterruptedException {
-        //TODO Adjust scalability for more than 100 labels used THEORETICALLY SHOULD NOT HAPPEN
-        Triple<Integer, Headers, String> response = makeAPICall(generateLabelsURL(repoFullName) + "?page=1&per_page=100");
+    public String fetchRepoLabels(String repoFullName, int page) throws IOException, InterruptedException {
+        String url = String.format("%s?page=%d&per_page=100", generateLabelsURL(repoFullName), page);
+        Triple<Integer, Headers, String> response = makeAPICall(url);
         String responseStr = response.getRight();
         Thread.sleep(1000);
         return responseStr;
     }
 
-    public String fetchRepoLanguages(String repoFullName) throws IOException, InterruptedException {
-        //TODO Adjust scalability for more than 100 languages used THEORETICALLY SHOULD NOT HAPPEN
-        Triple<Integer, Headers, String> response = makeAPICall(generateLanguagesURL(repoFullName) + "?page=1&per_page=100");
+    public String fetchRepoLanguages(String repoFullName, int page) throws IOException, InterruptedException {
+        String url = String.format("%s?page=%d&per_page=100", generateLanguagesURL(repoFullName), page);
+        Triple<Integer, Headers, String> response = makeAPICall(url);
         String responseStr = response.getRight();
         Thread.sleep(1000);
         return responseStr;
