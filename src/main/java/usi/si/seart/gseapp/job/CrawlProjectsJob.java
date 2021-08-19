@@ -312,21 +312,28 @@ public class CrawlProjectsJob {
 
     private void retrieveRepoLabels(GitRepo repo) {
         List<GitRepoLabel> repo_labels = new ArrayList<>();
+        boolean newResults = false;
         try {
-            String responseStr = gitHubApiService.fetchRepoLabels(repo.getName());
-            if (responseStr != null) {
-                JsonArray result = JsonParser.parseString(responseStr).getAsJsonArray();
-                logger.info("\tAdding: " + result.size() + " labels.");
+            Long totalLabels = gitHubApiService.fetchNumberOfLabels(repo.getName());
+            int totalPages = (int) Math.ceil(totalLabels / 100.0);
+            for(int page=1; page<=totalPages; page++)
+            {
+                String responseStr = gitHubApiService.fetchRepoLabels(repo.getName(), page);
+                if (responseStr != null) {
+                    JsonArray result = JsonParser.parseString(responseStr).getAsJsonArray();
+                    logger.info("\tAdding: " + result.size() + " labels.");
 
-                for (JsonElement item : result) {
-                    String label = item.getAsJsonObject().get("name").getAsString();
-                    label = label.trim();
-                    label = label.substring(0, Math.min(label.length(), 60));  // 60: due to db column limit
-                    repo_labels.add(GitRepoLabel.builder().repo(repo).label(label).build());
+                    for (JsonElement item : result) {
+                        String label = item.getAsJsonObject().get("name").getAsString();
+                        label = label.trim();
+                        label = label.substring(0, Math.min(label.length(), 60));  // 60: due to db column limit
+                        repo_labels.add(GitRepoLabel.builder().repo(repo).label(label).build());
+                    }
+                    newResults = true;
                 }
-
-                gitRepoService.createUpdateLabels(repo, repo_labels);
             }
+            if(newResults)
+                gitRepoService.createUpdateLabels(repo, repo_labels);
         } catch (Exception e) {
             logger.error("Failed to add labels: {}", e.getMessage());
         }
@@ -334,23 +341,29 @@ public class CrawlProjectsJob {
 
     private void retrieveRepoLanguages(GitRepo repo) {
         List<GitRepoLanguage> repo_languages = new ArrayList<>();
-
+        boolean newResults = false;
         try {
-            String responseStr = gitHubApiService.fetchRepoLanguages(repo.getName());
-            if (responseStr != null) {
-                JsonObject result = JsonParser.parseString(responseStr).getAsJsonObject();
-                Set<String> keySet = result.keySet();
-                logger.info("\tAdding: " + keySet.size() + " languages.");
+            Long totalLanguages = gitHubApiService.fetchNumberOfLanguages(repo.getName());
+            int totalPages = (int) Math.ceil(totalLanguages / 100.0);
+            for(int page=1; page<=totalPages; page++)
+            {
+                String responseStr = gitHubApiService.fetchRepoLanguages(repo.getName(), page);
+                if (responseStr != null) {
+                    JsonObject result = JsonParser.parseString(responseStr).getAsJsonObject();
+                    Set<String> keySet = result.keySet();
+                    logger.info("\tAdding: " + keySet.size() + " languages.");
 
-                keySet.forEach(key -> repo_languages.add(GitRepoLanguage.builder()
-                        .repo(repo)
-                        .language(key)
-                        .sizeOfCode(result.get(key).getAsLong())
-                        .build())
-                );
-
-                gitRepoService.createUpdateLanguages(repo, repo_languages);
+                    keySet.forEach(key -> repo_languages.add(GitRepoLanguage.builder()
+                            .repo(repo)
+                            .language(key)
+                            .sizeOfCode(result.get(key).getAsLong())
+                            .build())
+                    );
+                    newResults = true;
+                }
             }
+            if(newResults)
+                gitRepoService.createUpdateLanguages(repo, repo_languages);
         } catch (Exception e) {
             logger.error("Failed to add languages: {}", e.getMessage());
         }
