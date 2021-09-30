@@ -24,7 +24,7 @@ mvn clean package
 docker build -t ghs-backend:latest -f docker/Dockerfile.be .
 ```
 
-4. To deploy front-end images, simply run (the tailing `.` should refers to root of the project):
+4. To deploy front-end images, simply run (the tailing `.` should refer to the root of the project):
 ```shell
 docker build -t ghs-frontend:latest -f docker/Dockerfile.fe .
 ```
