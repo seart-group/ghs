@@ -5,8 +5,8 @@ import java.util.Date;
 public interface ApplicationPropertyService {
     Boolean getEnabled();
     void setEnabled(Boolean value);
-    Long getScheduling();
-    void setScheduling(Long value);
+    Long getCrawlScheduling();
+    void setCrawlScheduling(Long value);
     Date getStartDate();
     void setStartDate(Date value);
 }
