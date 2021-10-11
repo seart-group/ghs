@@ -18,7 +18,10 @@ public class ApplicationPropertyServiceImpl implements ApplicationPropertyServic
     Boolean enabled;
 
     @Value(value = "${app.crawl.scheduling}")
-    Long scheduling;
+    Long crawlScheduling;
+
+    @Value(value = "${app.cleanup.scheduling}")
+    Long cleanUpScheduling;
 
     @Value("#{new java.text.SimpleDateFormat(\"yyyy-MM-dd'T'HH:mm:ss\").parse(\"${app.crawl.startdate}\")}")
     Date startDate;

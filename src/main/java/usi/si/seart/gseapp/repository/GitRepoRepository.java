@@ -13,4 +13,6 @@ public interface GitRepoRepository extends JpaRepository<GitRepo,Long> {
     List<Object[]> getLanguageStatistics();
     @Query("select distinct r.license from GitRepo r where r.license is not null group by r.license order by count(r.license) desc")
     List<String> findAllLicenses();
+    @Query("SELECT r.name FROM GitRepo r ORDER BY r.crawled ASC")
+    List<String> findAllRepoNames();
 }

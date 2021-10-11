@@ -31,7 +31,7 @@ public class JobScheduler {
         this.applicationPropertyService = applicationPropertyService;
     }
 
-    @Scheduled(fixedRateString = "#{@applicationPropertyServiceImpl.getScheduling()}")
+    @Scheduled(fixedRateString = "#{@applicationPropertyServiceImpl.getCrawlScheduling()}")
     public void run(){
         try {
             if(crawlProjectsJob.running) {
@@ -40,7 +40,7 @@ public class JobScheduler {
                 return;
             }
             crawlProjectsJob.run();
-            logger.info("Next crawl scheduled for: " + Date.from(Instant.now().plusMillis(applicationPropertyService.getScheduling())));
+            logger.info("Next crawl scheduled for: " + Date.from(Instant.now().plusMillis(applicationPropertyService.getCrawlScheduling())));
         } catch (Exception ex) {
             crawlProjectsJob.running = false;
             ex.printStackTrace();

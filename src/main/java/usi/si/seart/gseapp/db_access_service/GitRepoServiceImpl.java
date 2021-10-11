@@ -282,6 +282,11 @@ public class GitRepoServiceImpl implements GitRepoService {
     }
 
     @Override
+    public StringList getAllRepoNames(){
+        return StringList.builder().items(gitRepoRepository.findAllRepoNames()).build();
+    }
+
+    @Override
     public StringLongDtoList getAllLanguageStatistics(){
         List<Object[]> languages = gitRepoLanguageRepository.getLanguageStatistics();
         StringLongDtoList stats = StringLongDtoList.builder().build();

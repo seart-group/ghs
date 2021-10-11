@@ -103,12 +103,12 @@ public class AdminController {
 
     @GetMapping("/api/s")
     public ResponseEntity<?> getSchedulingRate(){
-        return ResponseEntity.ok(applicationPropertyService.getScheduling());
+        return ResponseEntity.ok(applicationPropertyService.getCrawlScheduling());
     }
 
     @PutMapping("/api/s")
     public ResponseEntity<?> setSchedulingRate(@RequestBody Long rate){
-        applicationPropertyService.setScheduling(rate);
+        applicationPropertyService.setCrawlScheduling(rate);
         return ResponseEntity.ok().build();
     }
 }
