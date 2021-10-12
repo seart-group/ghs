@@ -64,7 +64,7 @@ public class CleanUpProjectsJob {
         {
             cur++;
             String repoURL = String.format("https://github.com/%s", repo);
-            logger.debug("{}/{}\tChecking if repo exists: {}",cur, TOTAL, repoURL);
+//            logger.debug("{}/{}\tChecking if repo exists: {}",cur, TOTAL, repoURL);
             boolean exists = CheckIfRepoExists(repoURL);
             if(exists==false) {
                 logger.info("{}/{}\tChecking if repo exists: {} ==> TO BE DELETED", cur, TOTAL, repoURL);
