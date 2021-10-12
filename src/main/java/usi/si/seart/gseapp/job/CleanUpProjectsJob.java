@@ -91,7 +91,6 @@ public class CleanUpProjectsJob {
     {
         boolean res;
         try {
-//        int res = RunCommand(, 60, env);
             String[] cmd_array = List.of("git", "ls-remote", repo_http_url).toArray(new String[0]);
             ProcessBuilder pb = new ProcessBuilder(cmd_array);
             pb.environment().put("GIT_TERMINAL_PROMPT", "0");
