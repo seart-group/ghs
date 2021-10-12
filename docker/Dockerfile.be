@@ -1,4 +1,8 @@
-FROM markhobson/maven-chrome:jdk-13
+FROM openjdk:11.0.4-jre-slim
+
+RUN apt-get -y update
+RUN apt-get -y install git
+
 
 COPY target /usr/local/target
 
