@@ -1,17 +1,5 @@
 package usi.si.seart.gseapp.job;
 
-import lombok.extern.slf4j.Slf4j;
-import usi.si.seart.gseapp.github_service.GitHubApiService;
-import usi.si.seart.gseapp.model.GitRepo;
-import usi.si.seart.gseapp.model.GitRepoLabel;
-import usi.si.seart.gseapp.model.GitRepoLanguage;
-import usi.si.seart.gseapp.repository.GitRepoRepository;
-import usi.si.seart.gseapp.repository.SupportedLanguageRepository;
-import usi.si.seart.gseapp.db_access_service.ApplicationPropertyService;
-import usi.si.seart.gseapp.db_access_service.CrawlJobService;
-import usi.si.seart.gseapp.db_access_service.GitRepoService;
-import usi.si.seart.gseapp.util.DateUtils;
-import usi.si.seart.gseapp.util.interval.DateInterval;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -19,14 +7,30 @@ import com.google.gson.JsonParser;
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
 import lombok.experimental.NonFinal;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.apache.commons.lang3.tuple.Pair;
+import usi.si.seart.gseapp.db_access_service.ApplicationPropertyService;
+import usi.si.seart.gseapp.db_access_service.CrawlJobService;
+import usi.si.seart.gseapp.db_access_service.GitRepoService;
+import usi.si.seart.gseapp.github_service.GitHubApiService;
+import usi.si.seart.gseapp.model.GitRepo;
+import usi.si.seart.gseapp.model.GitRepoLabel;
+import usi.si.seart.gseapp.model.GitRepoLanguage;
+import usi.si.seart.gseapp.repository.GitRepoRepository;
+import usi.si.seart.gseapp.repository.SupportedLanguageRepository;
+import usi.si.seart.gseapp.util.DateUtils;
+import usi.si.seart.gseapp.util.interval.DateInterval;
 
 import java.io.IOException;
 import java.time.Duration;
 import java.time.Instant;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 
 @Slf4j
 @Service

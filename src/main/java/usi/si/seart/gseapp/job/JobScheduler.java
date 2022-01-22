@@ -1,14 +1,14 @@
 package usi.si.seart.gseapp.job;
 
-import lombok.extern.slf4j.Slf4j;
-import usi.si.seart.gseapp.db_access_service.ApplicationPropertyService;
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
+import usi.si.seart.gseapp.db_access_service.ApplicationPropertyService;
 
 import java.time.Instant;
 import java.util.Date;

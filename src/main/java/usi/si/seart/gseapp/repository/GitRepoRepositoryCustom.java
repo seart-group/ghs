@@ -1,9 +1,9 @@
 package usi.si.seart.gseapp.repository;
 
+import org.springframework.data.domain.Pageable;
 import usi.si.seart.gseapp.dto.GitRepoDto;
 import usi.si.seart.gseapp.util.interval.DateInterval;
 import usi.si.seart.gseapp.util.interval.LongInterval;
-import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 

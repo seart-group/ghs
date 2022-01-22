@@ -2,17 +2,21 @@ package usi.si.seart.gseapp.github_service;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import lombok.experimental.NonFinal;
-import lombok.extern.slf4j.Slf4j;
-import okhttp3.*;
-import org.apache.commons.lang3.tuple.Pair;
-import org.apache.commons.lang3.tuple.Triple;
-import usi.si.seart.gseapp.util.DateUtils;
-import usi.si.seart.gseapp.util.interval.DateInterval;
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
+import lombok.experimental.NonFinal;
+import lombok.extern.slf4j.Slf4j;
+import okhttp3.Headers;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
+import okhttp3.ResponseBody;
+import org.apache.commons.lang3.tuple.Pair;
+import org.apache.commons.lang3.tuple.Triple;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import usi.si.seart.gseapp.util.DateUtils;
+import usi.si.seart.gseapp.util.interval.DateInterval;
 
 import java.io.IOException;
 import java.net.URLEncoder;

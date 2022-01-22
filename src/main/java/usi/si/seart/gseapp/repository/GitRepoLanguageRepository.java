@@ -1,10 +1,10 @@
 package usi.si.seart.gseapp.repository;
 
-import usi.si.seart.gseapp.model.GitRepo;
-import usi.si.seart.gseapp.model.GitRepoLanguage;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import usi.si.seart.gseapp.model.GitRepo;
+import usi.si.seart.gseapp.model.GitRepoLanguage;
 
 import java.util.List;
 

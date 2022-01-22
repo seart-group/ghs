@@ -1,6 +1,12 @@
 package usi.si.seart.gseapp.db_access_service;
 
-import usi.si.seart.gseapp.dto.*;
+import usi.si.seart.gseapp.dto.GitRepoDto;
+import usi.si.seart.gseapp.dto.GitRepoDtoList;
+import usi.si.seart.gseapp.dto.GitRepoDtoListPaginated;
+import usi.si.seart.gseapp.dto.GitRepoLabelDto;
+import usi.si.seart.gseapp.dto.GitRepoLanguageDto;
+import usi.si.seart.gseapp.dto.StringList;
+import usi.si.seart.gseapp.dto.StringLongDtoList;
 import usi.si.seart.gseapp.model.GitRepo;
 import usi.si.seart.gseapp.model.GitRepoLabel;
 import usi.si.seart.gseapp.model.GitRepoLanguage;

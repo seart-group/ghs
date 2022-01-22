@@ -1,12 +1,12 @@
 package usi.si.seart.gseapp.converter;
 
-import usi.si.seart.gseapp.dto.AccessTokenDto;
-import usi.si.seart.gseapp.model.AccessToken;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import usi.si.seart.gseapp.dto.AccessTokenDto;
+import usi.si.seart.gseapp.model.AccessToken;
 
 import java.util.List;
 import java.util.stream.Collectors;
