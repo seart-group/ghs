@@ -1,15 +1,17 @@
 package usi.si.seart.gseapp.util;
 
+import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.core.io.FileSystemResource;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
 
+@Slf4j
 public class FileSystemResourceCustom extends FileSystemResource {
-
-    private static final Logger logger = LoggerFactory.getLogger(FileSystemResourceCustom.class);
 
     public FileSystemResourceCustom(File file) {
         super(file);
@@ -35,7 +37,7 @@ public class FileSystemResourceCustom extends FileSystemResource {
             String fileName = file.getName();
             boolean successful = file.delete();
             if (!successful){
-                logger.error("Error could not delete file: "+fileName);
+                log.error("Error could not delete file: "+fileName);
             }
         }
     }

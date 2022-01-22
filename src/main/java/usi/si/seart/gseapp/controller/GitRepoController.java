@@ -1,5 +1,6 @@
 package usi.si.seart.gseapp.controller;
 
+import lombok.extern.slf4j.Slf4j;
 import usi.si.seart.gseapp.converter.GitRepoConverter;
 import usi.si.seart.gseapp.dto.GitRepoDtoList;
 import usi.si.seart.gseapp.dto.GitRepoDtoListPaginated;
@@ -8,8 +9,6 @@ import usi.si.seart.gseapp.util.FileSystemResourceCustom;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
@@ -22,11 +21,11 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Date;
 
+@Slf4j
 @RestController
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
 public class GitRepoController {
-    static Logger logger = LoggerFactory.getLogger(GitRepoController.class);
     final static String downloadFolder = "download-temp/";
 
     GitRepoService gitRepoService;
@@ -152,7 +151,7 @@ public class GitRepoController {
                     break;
             }
         } catch (IOException ex) {
-            logger.error(ex.getMessage());
+            log.error(ex.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
 
@@ -168,7 +167,7 @@ public class GitRepoController {
         try {
             return ResponseEntity.ok(gitRepoService.getRepoById(repoId));
         } catch (EntityNotFoundException ex) {
-            logger.error(ex.getMessage());
+            log.error(ex.getMessage());
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
     }

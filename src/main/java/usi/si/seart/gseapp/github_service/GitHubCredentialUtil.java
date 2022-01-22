@@ -5,10 +5,9 @@ import com.google.gson.JsonParser;
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
 import lombok.experimental.NonFinal;
+import lombok.extern.slf4j.Slf4j;
 import okhttp3.Headers;
 import org.apache.commons.lang3.tuple.Triple;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import usi.si.seart.gseapp.repository.AccessTokenRepository;
@@ -19,10 +18,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+@Slf4j
 @Service
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class GitHubCredentialUtil {
-    static Logger logger = LoggerFactory.getLogger(GitHubCredentialUtil.class);
 
     GitHubApiService gitHubApiService;
     AccessTokenRepository accessTokenRepository;
@@ -64,7 +63,7 @@ public class GitHubCredentialUtil {
         accessTokenRepository.findAll().forEach(accessToken -> accessTokens.add(accessToken.getValue()));
         if(accessTokens.size()==0)
         {
-            logger.error("**************** No Access Token Found ****************");
+            log.error("**************** No Access Token Found ****************");
             System.exit(1);
         }
     }
@@ -90,11 +89,11 @@ public class GitHubCredentialUtil {
                 {
                     try
                     {
-                        logger.info("[[Sleeping {} Sec]]", l);
+                        log.info("[[Sleeping {} Sec]]", l);
                         TimeUnit.SECONDS.sleep(l+1);
                     } catch (InterruptedException e)
                     {
-                        logger.error("I was interrupted while I was waiting for GitHub cool-down.");
+                        log.error("I was interrupted while I was waiting for GitHub cool-down.");
                         e.printStackTrace();
                     }
                 }
@@ -102,7 +101,7 @@ public class GitHubCredentialUtil {
         }
         else
         {
-            logger.error("Failed to use GitHub Limit API");
+            log.error("Failed to use GitHub Limit API");
         }
     }
 
@@ -130,7 +129,7 @@ public class GitHubCredentialUtil {
             search_wait_sec = 0;
         else
             search_wait_sec = search_reset_epochSecond-now_epochSecond;
-        logger.info("Search Limit: {}/min  Remaining: {}  -- Reset: {}  Now: {} => Search Wait {} Sec | Core Limit: {}/min  Remaining: {}  -- Reset: {}  Now: {} => Core Wait {} Sec ",
+        log.info("Search Limit: {}/min  Remaining: {}  -- Reset: {}  Now: {} => Search Wait {} Sec | Core Limit: {}/min  Remaining: {}  -- Reset: {}  Now: {} => Core Wait {} Sec ",
                 search_limit, search_remaining, search_reset_epochSecond, now_epochSecond, search_wait_sec,
                 core_limit, core_remaining, core_reset_epochSecond, now_epochSecond, core_wait_sec);
 

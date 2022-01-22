@@ -1,5 +1,6 @@
 package usi.si.seart.gseapp.job;
 
+import lombok.extern.slf4j.Slf4j;
 import usi.si.seart.gseapp.github_service.GitHubApiService;
 import usi.si.seart.gseapp.model.GitRepo;
 import usi.si.seart.gseapp.model.GitRepoLabel;
@@ -18,8 +19,6 @@ import com.google.gson.JsonParser;
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
 import lombok.experimental.NonFinal;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.apache.commons.lang3.tuple.Pair;
@@ -29,12 +28,10 @@ import java.time.Duration;
 import java.time.Instant;
 import java.util.*;
 
+@Slf4j
 @Service
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class CrawlProjectsJob {
-
-    static Logger logger = LoggerFactory.getLogger(CrawlProjectsJob.class);
-
 
     @NonFinal
     public boolean running = false;
@@ -47,8 +44,6 @@ public class CrawlProjectsJob {
     // very new Java updates, but finishing all language at least once.
     static String startingLanguage = "PHP";
 
-
-    ;
     SupportedLanguageRepository supportedLanguageRepository;
     GitRepoRepository gitRepoRepository;
 
@@ -64,7 +59,6 @@ public class CrawlProjectsJob {
                             CrawlJobService crawlJobService,
                             ApplicationPropertyService applicationPropertyService,
                             GitRepoRepository gitRepoRepository) {
-
         this.supportedLanguageRepository = supportedLanguageRepository;
         this.gitHubApiService = gitHubApiService;
         this.gitRepoService = gitRepoService;
@@ -77,7 +71,7 @@ public class CrawlProjectsJob {
         this.running = true;
         getLanguagesToMine();
 
-        logger.info("New Crawling for all languages: " + languages);
+        log.info("New Crawling for all languages: " + languages);
         Date endDate = Date.from(Instant.now().minus(Duration.ofHours(2)));
 
         for (String language : languages) {
@@ -99,12 +93,12 @@ public class CrawlProjectsJob {
                 interval = DateInterval.builder().start(startDate).end(endDate).build();
             } else {
                 Date veryStartDate = applicationPropertyService.getStartDate();
-                logger.info("No previous crawling found for " + language + ". We start from scratch: " + veryStartDate);
+                log.info("No previous crawling found for " + language + ". We start from scratch: " + veryStartDate);
                 interval = DateInterval.builder().start(veryStartDate).end(endDate).build();
             }
 
             if (interval.getStart().after(interval.getStart())) {
-                logger.warn("language " + language + " has bad interval range: Start > End | " + interval.getStart() + " > " + interval.getEnd());
+                log.warn("language " + language + " has bad interval range: Start > End | " + interval.getStart() + " > " + interval.getEnd());
                 continue;
             }
             crawlUpdatedRepos(interval, language);
@@ -113,27 +107,27 @@ public class CrawlProjectsJob {
     }
 
     private void crawlCreatedRepos(DateInterval interval, String language) throws IOException, InterruptedException {
-        logger.info("Starting crawling " + language + " repositories created through: " + interval);
+        log.info("Starting crawling " + language + " repositories created through: " + interval);
         crawlRepos(interval, language, false);
-        logger.info("Finished crawling " + language + " repositories created through: " + interval);
+        log.info("Finished crawling " + language + " repositories created through: " + interval);
     }
 
     private void crawlUpdatedRepos(DateInterval interval, String language) throws IOException, InterruptedException {
-        logger.info("Starting crawling " + language + " repositories updated through: " + interval);
+        log.info("Starting crawling " + language + " repositories updated through: " + interval);
         crawlRepos(interval, language, true);
-        logger.info("Finished crawling " + language + " repositories updated through: " + interval);
+        log.info("Finished crawling " + language + " repositories updated through: " + interval);
     }
 
     private void crawlRepos(DateInterval interval, String language, Boolean crawl_updated_repos)
             throws IOException, InterruptedException {
         if (interval.getStart().compareTo(interval.getEnd()) >= 0) {
-            logger.warn("Invalid interval Skipped: " + interval);
+            log.warn("Invalid interval Skipped: " + interval);
             return;
         }
 
         requestQueue.add(interval);
         do {
-            logger.info("Next Crawl Intervals: " + requestQueue.toString());
+            log.info("Next Crawl Intervals: " + requestQueue.toString());
 
             DateInterval first = requestQueue.remove(0);
             retrieveRepos(first, language, crawl_updated_repos);
@@ -148,7 +142,7 @@ public class CrawlProjectsJob {
                 JsonObject result = JsonParser.parseString(responseStr).getAsJsonObject();
                 int totalResults = result.get("total_count").getAsInt();
                 int totalPages = (int) Math.ceil(totalResults / 100.0);
-                logger.info("Retrieved results: " + totalResults);
+                log.info("Retrieved results: " + totalResults);
                 if (totalResults <= 1000) {
                     JsonArray results = result.get("items").getAsJsonArray();
                     saveRetrievedRepos(results, language, 1, totalResults);
@@ -163,7 +157,7 @@ public class CrawlProjectsJob {
                 }
             }
         } catch (Exception e) {
-            logger.error("Failed to parse GitHubAPI response {} (retrieveRepos)", e.getMessage());
+            log.error("Failed to parse GitHubAPI response {} (retrieveRepos)", e.getMessage());
         }
     }
 
@@ -181,7 +175,7 @@ public class CrawlProjectsJob {
                         page++;
                     }
                 } catch (Exception e) {
-                    logger.error("Failed to parse GitHubAPI response {} (retrieveRemainingRepos)", e.getMessage());
+                    log.error("Failed to parse GitHubAPI response {} (retrieveRemainingRepos)", e.getMessage());
                 }
             }
         }
@@ -191,7 +185,7 @@ public class CrawlProjectsJob {
      * Given JSON info of 100 repos, store them in DB
      */
     private void saveRetrievedRepos(JsonArray results, String language, int repo_num_start, int repo_num_total) {
-        logger.info("Adding: " + results.size() + " repositories (" + repo_num_start + "-" + (repo_num_start + results.size() - 1) + " | total: " + repo_num_total + ")");
+        log.info("Adding: " + results.size() + " repositories (" + repo_num_start + "-" + (repo_num_start + results.size() - 1) + " | total: " + repo_num_total + ")");
         for (JsonElement element : results) {
             JsonObject repoJson = element.getAsJsonObject();
 
@@ -199,9 +193,9 @@ public class CrawlProjectsJob {
             Optional<GitRepo> opt = gitRepoRepository.findGitRepoByName(repoFullName);
 
             if (!opt.isPresent())
-                logger.info(repo_num_start + "/" + repo_num_total + " saving new repo: " + repoFullName);
+                log.info(repo_num_start + "/" + repo_num_total + " saving new repo: " + repoFullName);
             else
-                logger.info(repo_num_start + "/" + repo_num_total + " updating repo: " + repoFullName);
+                log.info(repo_num_start + "/" + repo_num_total + " updating repo: " + repoFullName);
 
             repo_num_start++;
 
@@ -217,7 +211,7 @@ public class CrawlProjectsJob {
 //                boolean incompleteMinedInfo = existingRepInfo.getContributors() == null;
 
                 if (existing_updatedAt.compareTo(repo_updatedAt) == 0 && existing_pushedAt.compareTo(repo_pushedAt) == 0) {
-                    logger.info("\tSKIPPED. We already have the latest info up to " + existing_updatedAt + "(updated)  " + existing_pushedAt + "(pushed)");
+                    log.info("\tSKIPPED. We already have the latest info up to " + existing_updatedAt + "(updated)  " + existing_pushedAt + "(pushed)");
                     continue; // we already have the latest info for this repo
                 }
             }
@@ -234,22 +228,22 @@ public class CrawlProjectsJob {
                         // This can happen. Example Repo: https://api.github.com/search/repositories?q=baranowski/habit-vim
                         // And if you go to repo homepage or repo "language_url" (api that shows language distribution),
                         // you will see that main_language is only wrong in the above link.
-                        logger.warn("**** Mismatch language: searched-for: " + language + " | repo: " + repoJson.get("language").getAsString());
+                        log.warn("**** Mismatch language: searched-for: " + language + " | repo: " + repoJson.get("language").getAsString());
                         result.addProperty("language", language);
                     }
 
                     GitRepo repo = createGitRepoRowObjectFromGitHubAPIResultJson(result);
                     repo = gitRepoService.createOrUpdateRepo(repo);
                     if (repo != null) {
-                        logger.info("\tBasic information saved (repo Table).");
+                        log.info("\tBasic information saved (repo Table).");
                         retrieveRepoLabels(repo);
                         retrieveRepoLanguages(repo);
                     }
                 } else {
-                    logger.error("SKIPPING due to null response from server");
+                    log.error("SKIPPING due to null response from server");
                 }
             } catch (Exception e) {
-                logger.error("Failed to fetch repo info from GitHubAPI: {} (saveRetrievedRepos)", e.getMessage());
+                log.error("Failed to fetch repo info from GitHubAPI: {} (saveRetrievedRepos)", e.getMessage());
             }
         }
     }
@@ -321,7 +315,7 @@ public class CrawlProjectsJob {
                 String responseStr = gitHubApiService.fetchRepoLabels(repo.getName(), page);
                 if (responseStr != null) {
                     JsonArray result = JsonParser.parseString(responseStr).getAsJsonArray();
-                    logger.info("\tAdding: " + result.size() + " labels.");
+                    log.info("\tAdding: " + result.size() + " labels.");
 
                     for (JsonElement item : result) {
                         String label = item.getAsJsonObject().get("name").getAsString();
@@ -335,7 +329,7 @@ public class CrawlProjectsJob {
             if(newResults)
                 gitRepoService.createUpdateLabels(repo, repo_labels);
         } catch (Exception e) {
-            logger.error("Failed to add labels: {}", e.getMessage());
+            log.error("Failed to add labels: {}", e.getMessage());
         }
     }
 
@@ -351,7 +345,7 @@ public class CrawlProjectsJob {
                 if (responseStr != null) {
                     JsonObject result = JsonParser.parseString(responseStr).getAsJsonObject();
                     Set<String> keySet = result.keySet();
-                    logger.info("\tAdding: " + keySet.size() + " languages.");
+                    log.info("\tAdding: " + keySet.size() + " languages.");
 
                     keySet.forEach(key -> repo_languages.add(GitRepoLanguage.builder()
                             .repo(repo)
@@ -365,7 +359,7 @@ public class CrawlProjectsJob {
             if(newResults)
                 gitRepoService.createUpdateLanguages(repo, repo_languages);
         } catch (Exception e) {
-            logger.error("Failed to add languages: {}", e.getMessage());
+            log.error("Failed to add languages: {}", e.getMessage());
         }
 
     }

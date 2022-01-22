@@ -1,5 +1,6 @@
 package usi.si.seart.gseapp.db_access_service;
 
+import lombok.extern.slf4j.Slf4j;
 import usi.si.seart.gseapp.converter.SupportedLanguageConverter;
 import usi.si.seart.gseapp.dto.CrawlJobDto;
 import usi.si.seart.gseapp.dto.CrawlJobDtoList;
@@ -11,8 +12,6 @@ import usi.si.seart.gseapp.repository.SupportedLanguageRepository;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -21,11 +20,11 @@ import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
+@Slf4j
 @Service
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 @AllArgsConstructor(onConstructor_ = @Autowired)
 public class CrawlJobServiceImpl implements CrawlJobService {
-    static Logger logger = LoggerFactory.getLogger(CrawlJobServiceImpl.class);
 
     CrawlJobRepository crawlJobRepository;
     SupportedLanguageRepository supportedLanguageRepository;
@@ -56,7 +55,7 @@ public class CrawlJobServiceImpl implements CrawlJobService {
 
     @Override
     public void updateCrawlDateForLanguage(String language, Date date){
-        logger.info("Crawling "+language+" repositories secured upto: "+date);
+        log.info("Crawling "+language+" repositories secured upto: "+date);
         SupportedLanguage supportedLanguage = supportedLanguageRepository.findByName(language).orElse(null);
         assert supportedLanguage != null;
         Optional<CrawlJob> crawlJobOpt = crawlJobRepository.findByLanguage(supportedLanguage.getName());
