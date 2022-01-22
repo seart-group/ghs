@@ -1,6 +1,11 @@
 package usi.si.seart.gseapp.db_access_service;
 
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 import usi.si.seart.gseapp.converter.SupportedLanguageConverter;
 import usi.si.seart.gseapp.dto.CrawlJobDto;
 import usi.si.seart.gseapp.dto.CrawlJobDtoList;
@@ -9,11 +14,6 @@ import usi.si.seart.gseapp.model.CrawlJob;
 import usi.si.seart.gseapp.model.SupportedLanguage;
 import usi.si.seart.gseapp.repository.CrawlJobRepository;
 import usi.si.seart.gseapp.repository.SupportedLanguageRepository;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.experimental.FieldDefaults;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.Date;

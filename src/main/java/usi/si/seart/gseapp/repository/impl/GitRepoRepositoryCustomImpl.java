@@ -1,11 +1,5 @@
 package usi.si.seart.gseapp.repository.impl;
 
-import usi.si.seart.gseapp.dto.GitRepoDto;
-import usi.si.seart.gseapp.dto.GitRepoLabelDto;
-import usi.si.seart.gseapp.dto.GitRepoLanguageDto;
-import usi.si.seart.gseapp.repository.GitRepoRepositoryCustom;
-import usi.si.seart.gseapp.util.interval.DateInterval;
-import usi.si.seart.gseapp.util.interval.LongInterval;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -13,12 +7,22 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
+import usi.si.seart.gseapp.dto.GitRepoDto;
+import usi.si.seart.gseapp.dto.GitRepoLabelDto;
+import usi.si.seart.gseapp.dto.GitRepoLanguageDto;
+import usi.si.seart.gseapp.repository.GitRepoRepositoryCustom;
+import usi.si.seart.gseapp.util.interval.DateInterval;
+import usi.si.seart.gseapp.util.interval.LongInterval;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 import java.math.BigInteger;
 import java.time.temporal.ChronoUnit;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @Repository
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)

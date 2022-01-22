@@ -1,7 +1,7 @@
 package usi.si.seart.gseapp.repository;
 
-import usi.si.seart.gseapp.model.SupportedLanguage;
 import org.springframework.data.jpa.repository.JpaRepository;
+import usi.si.seart.gseapp.model.SupportedLanguage;
 
 import java.util.Optional;
 

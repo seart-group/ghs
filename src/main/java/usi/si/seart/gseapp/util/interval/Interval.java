@@ -1,9 +1,11 @@
 package usi.si.seart.gseapp.util.interval;
 
-import lombok.*;
+import lombok.AccessLevel;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.Setter;
 import lombok.experimental.FieldDefaults;
 import lombok.experimental.SuperBuilder;
-import org.javatuples.Pair;
 
 @Getter
 @Setter
