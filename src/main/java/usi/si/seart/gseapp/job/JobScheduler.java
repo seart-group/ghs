@@ -1,10 +1,9 @@
 package usi.si.seart.gseapp.job;
 
+import lombok.extern.slf4j.Slf4j;
 import usi.si.seart.gseapp.db_access_service.ApplicationPropertyService;
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Configuration;
@@ -14,13 +13,12 @@ import org.springframework.scheduling.annotation.Scheduled;
 import java.time.Instant;
 import java.util.Date;
 
+@Slf4j
 @Configuration
 @ConditionalOnProperty(value = "app.crawl.enabled", havingValue = "true")
 @EnableScheduling
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class JobScheduler {
-
-    static final Logger logger = LoggerFactory.getLogger(JobScheduler.class);
 
     CrawlProjectsJob crawlProjectsJob;
     ApplicationPropertyService applicationPropertyService;
@@ -36,11 +34,11 @@ public class JobScheduler {
         try {
             if(crawlProjectsJob.running) {
                 // Emad: It seems the @Scheduled run this method no matters if existing run is finished or not. Not sure.
-                logger.info("Next crawl job postponed due to an on-going job");
+                log.info("Next crawl job postponed due to an on-going job");
                 return;
             }
             crawlProjectsJob.run();
-            logger.info("Next crawl scheduled for: " + Date.from(Instant.now().plusMillis(applicationPropertyService.getCrawlScheduling())));
+            log.info("Next crawl scheduled for: " + Date.from(Instant.now().plusMillis(applicationPropertyService.getCrawlScheduling())));
         } catch (Exception ex) {
             crawlProjectsJob.running = false;
             ex.printStackTrace();

@@ -1,5 +1,6 @@
 package usi.si.seart.gseapp.controller;
 
+import lombok.extern.slf4j.Slf4j;
 import usi.si.seart.gseapp.converter.AccessTokenConverter;
 import usi.si.seart.gseapp.converter.SupportedLanguageConverter;
 import usi.si.seart.gseapp.db_access_service.*;
@@ -8,8 +9,6 @@ import usi.si.seart.gseapp.dto.SupportedLanguageDto;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,11 +16,11 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.persistence.EntityNotFoundException;
 
+@Slf4j
 @RestController
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
 public class AdminController {
-    static Logger logger = LoggerFactory.getLogger(AdminController.class);
 
     AccessTokenService accessTokenService;
     AccessTokenConverter accessTokenConverter;
@@ -52,7 +51,7 @@ public class AdminController {
             accessTokenService.delete(tokenId);
             return ResponseEntity.noContent().build();
         } catch (EntityNotFoundException ex){
-            logger.error(ex.getMessage());
+            log.error(ex.getMessage());
             return ResponseEntity.notFound().build();
         }
     }
@@ -91,7 +90,7 @@ public class AdminController {
             supportedLanguageService.delete(langId);
             return ResponseEntity.noContent().build();
         } catch (EntityNotFoundException ex){
-            logger.error(ex.getMessage());
+            log.error(ex.getMessage());
             return ResponseEntity.notFound().build();
         }
     }

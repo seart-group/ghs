@@ -1,7 +1,6 @@
 package usi.si.seart.gseapp.db_access_service;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import usi.si.seart.gseapp.controller.GitRepoController;
 import usi.si.seart.gseapp.converter.GitRepoConverter;
 import usi.si.seart.gseapp.dto.*;
@@ -32,12 +31,11 @@ import java.util.Optional;
 import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
 import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
 
+@Slf4j
 @Service
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 @AllArgsConstructor(onConstructor_ = @Autowired)
 public class GitRepoServiceImpl implements GitRepoService {
-
-    static final Logger logger = LoggerFactory.getLogger(GitRepoServiceImpl.class);
 
     GitRepoRepository gitRepoRepository;
     GitRepoRepositoryCustom gitRepoRepositoryCustom;
@@ -229,7 +227,7 @@ public class GitRepoServiceImpl implements GitRepoService {
                 repo.getReleases() == null || repo.getContributors() == null  ||
                 repo.getLastCommit() == null || repo.getLastCommitSHA()==null)
         {
-            logger.error("*** REFUSING to store repo data due to incompleteness: {}", repo.getName());
+            log.error("*** REFUSING to store repo data due to incompleteness: {}", repo.getName());
             return null;
         }
 

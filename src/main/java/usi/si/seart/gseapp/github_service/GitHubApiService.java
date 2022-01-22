@@ -3,6 +3,7 @@ package usi.si.seart.gseapp.github_service;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import lombok.experimental.NonFinal;
+import lombok.extern.slf4j.Slf4j;
 import okhttp3.*;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.commons.lang3.tuple.Triple;
@@ -10,8 +11,6 @@ import usi.si.seart.gseapp.util.DateUtils;
 import usi.si.seart.gseapp.util.interval.DateInterval;
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -21,10 +20,10 @@ import java.nio.charset.StandardCharsets;
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
+@Slf4j
 @Service
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class GitHubApiService {
-    static Logger logger = LoggerFactory.getLogger(GitHubApiService.class);
 
     OkHttpClient client;
     final static int MIN_STARS = 10;
@@ -72,7 +71,7 @@ public class GitHubApiService {
 //        url = generateSearchRepo("seart-group/ghs"); // only issues
 
 
-        logger.info("Github API Call: "+url);
+        log.info("Github API Call: "+url);
         Triple<Integer, Headers, String> response = makeAPICall(url);
         String bodyStr = response.getRight();
 
@@ -212,16 +211,16 @@ public class GitHubApiService {
                 bodyStr = body.string();
             else
             {
-                logger.error("**********************************************************************");
-                logger.error("How come 'body' object is null? reqURL = {}\", reqURL", reqURL);
-                logger.error("**********************************************************************");
+                log.error("**********************************************************************");
+                log.error("How come 'body' object is null? reqURL = {}\", reqURL", reqURL);
+                log.error("**********************************************************************");
             }
             response.close();
 
             if (response.isSuccessful() && body != null) {
                 return Triple.of(response.code(), headers, bodyStr);
             } else if (response.code() == STATUS_UNAUTHORIZED) {
-                logger.error("**************** Invalid Access Token [401 Unauthorized]: {} ****************", gitHubCredentialUtil.getCurrentToken());
+                log.error("**************** Invalid Access Token [401 Unauthorized]: {} ****************", gitHubCredentialUtil.getCurrentToken());
                 // Here we should not call `replaceTokenIfExpired()`, otherwise it leads to an infinite loop,
                 // because that method calls Rate API with the very same unauthorized token.
                 gitHubCredentialUtil.GetANewToken();
@@ -235,26 +234,26 @@ public class GitHubApiService {
                     int rateLimitRemaining = Integer.parseInt(rateLimitRemainingStr);
                     if (rateLimitRemaining > 0) {
                         if(bodyStr.contains("too large")==false) {
-                            logger.error("**********************************************************************");
-                            logger.error("403 but limit not exceeded. So we expected 'too long' in message. but not found!");
-                            logger.error("Update the logic. reqURL = {}", reqURL);
-                            logger.error("**********************************************************************");
+                            log.error("**********************************************************************");
+                            log.error("403 but limit not exceeded. So we expected 'too long' in message. but not found!");
+                            log.error("Update the logic. reqURL = {}", reqURL);
+                            log.error("**********************************************************************");
                         }
                         return Triple.of(response.code(), headers, bodyStr);
                     }
                 }
-                logger.info("Try #{}: 403 Error. response code = {} - X-RateLimit-Remaining={}", tryNum, response.code(), rateLimitRemainingStr);
+                log.info("Try #{}: 403 Error. response code = {} - X-RateLimit-Remaining={}", tryNum, response.code(), rateLimitRemainingStr);
                 gitHubCredentialUtil.replaceTokenIfExpired();
             } else if (response.code() >= 500) {
-                logger.error("Try #{}: GitHub Server Error Encountered: {}", tryNum, response.code());
+                log.error("Try #{}: GitHub Server Error Encountered: {}", tryNum, response.code());
                 Thread.sleep(retrySleepPeriod_ms);
-                logger.error("Retrying...");
+                log.error("Retrying...");
             } else {
-                logger.error("Try #{}: Failed to execute API call. retCode={} isSuccess={} - reqURL={}", tryNum, response.code(), response.isSuccessful(), reqURL);
+                log.error("Try #{}: Failed to execute API call. retCode={} isSuccess={} - reqURL={}", tryNum, response.code(), response.isSuccessful(), reqURL);
                 gitHubCredentialUtil.replaceTokenIfExpired();
             }
         }
-        logger.error("Failed after {} try. SKIPPING.", maxRetryCount);
+        log.error("Failed after {} try. SKIPPING.", maxRetryCount);
         return null;
     }
 

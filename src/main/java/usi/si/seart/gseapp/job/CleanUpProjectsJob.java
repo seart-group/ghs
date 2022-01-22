@@ -3,11 +3,8 @@ package usi.si.seart.gseapp.job;
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
 import lombok.experimental.NonFinal;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.context.event.ApplicationReadyEvent;
-import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
@@ -18,17 +15,16 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.nio.file.Path;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 
+@Slf4j
 @Service
 @EnableScheduling
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class CleanUpProjectsJob {
 
     private static final int RUN_COMMAND_TIMEOUT = -3;
-    static Logger logger = LoggerFactory.getLogger(CleanUpProjectsJob.class);
 
     @NonFinal boolean running = false;
     GitRepoRepository gitRepoRepository;
@@ -43,21 +39,20 @@ public class CleanUpProjectsJob {
     @Scheduled(fixedRateString = "#{@applicationPropertyServiceImpl.getCleanUpScheduling()}")
     public void run(){
         if (this.running) {
-            logger.error("CleanUpProjectsJob wanted to run while the prior job still running!!!!");
+            log.error("CleanUpProjectsJob wanted to run while the prior job still running!!!!");
             return;
         }
         this.running = true;
         CleanUp();
         this.running = false;
-
     }
 
     private void CleanUp() {
-        logger.info("CleanUpProjectsJob started ....");
+        log.info("CleanUpProjectsJob started ....");
         List<String> allRepos = gitRepoRepository.findAllRepoNames();
 
         final int TOTAL = allRepos.size();
-        logger.info("CleanUpProjectsJob started on {} repositories ...", TOTAL);
+        log.info("CleanUpProjectsJob started on {} repositories ...", TOTAL);
 
         int cur=0, nDeleted=0;
         for(String repo: allRepos)
@@ -67,7 +62,7 @@ public class CleanUpProjectsJob {
 //            logger.debug("{}/{}\tChecking if repo exists: {}",cur, TOTAL, repoURL);
             boolean exists = CheckIfRepoExists(repoURL);
             if(exists==false) {
-                logger.info("{}/{}\tChecking if repo exists: {} ==> TO BE DELETED", cur, TOTAL, repoURL);
+                log.info("{}/{}\tChecking if repo exists: {} ==> TO BE DELETED", cur, TOTAL, repoURL);
                 Optional<GitRepo> opt = gitRepoRepository.findGitRepoByName(repo.toLowerCase());
                 if (opt.isPresent()) {
                     GitRepo existing = opt.get();
@@ -76,7 +71,7 @@ public class CleanUpProjectsJob {
                 }
             }
         }
-        logger.info("CleanUpProjectsJob finished on {} repositories. {} DELETED.", TOTAL, nDeleted);
+        log.info("CleanUpProjectsJob finished on {} repositories. {} DELETED.", TOTAL, nDeleted);
     }
 
 
