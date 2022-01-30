@@ -3,11 +3,11 @@ package usi.si.seart.gseapp.model;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.FieldDefaults;
+import org.hibernate.Hibernate;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -17,6 +17,7 @@ import javax.persistence.PrePersist;
 import javax.persistence.PreUpdate;
 import javax.persistence.Table;
 import java.util.Date;
+import java.util.Objects;
 
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Getter
@@ -24,7 +25,6 @@ import java.util.Date;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @Table(name = "repo")
 @Entity
 public class GitRepo {
@@ -35,7 +35,6 @@ public class GitRepo {
     Long id;
 
     @Column(name = "name")
-    @EqualsAndHashCode.Include
     String name;
 
     @Column(name = "is_fork_project")
@@ -121,7 +120,22 @@ public class GitRepo {
 //    @OneToMany(mappedBy="repo", cascade=CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
 //    Set<GitRepoLanguage> languages = new HashSet<>();
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) return false;
+        GitRepo gitRepo = (GitRepo) o;
+        return id != null && Objects.equals(id, gitRepo.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, name);
+    }
+
     @PreUpdate
     @PrePersist
-    private void onPersistAndUpdate() { crawled = new Date(); }
+    private void onPersistAndUpdate() {
+        crawled = new Date();
+    }
 }
