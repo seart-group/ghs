@@ -6,16 +6,12 @@ import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import usi.si.seart.gseapp.converter.SupportedLanguageConverter;
-import usi.si.seart.gseapp.dto.CrawlJobDto;
-import usi.si.seart.gseapp.dto.CrawlJobDtoList;
-import usi.si.seart.gseapp.dto.SupportedLanguageDto;
 import usi.si.seart.gseapp.model.CrawlJob;
 import usi.si.seart.gseapp.model.SupportedLanguage;
 import usi.si.seart.gseapp.repository.CrawlJobRepository;
 import usi.si.seart.gseapp.repository.SupportedLanguageRepository;
 
-import java.util.ArrayList;
+import javax.persistence.EntityNotFoundException;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -28,23 +24,10 @@ public class CrawlJobServiceImpl implements CrawlJobService {
 
     CrawlJobRepository crawlJobRepository;
     SupportedLanguageRepository supportedLanguageRepository;
-    SupportedLanguageConverter supportedLanguageConverter;
 
     @Override
-    public CrawlJobDtoList getCompletedJobs(){
-        CrawlJobDtoList crawlJobDtoList = CrawlJobDtoList.builder().build();
-        List<CrawlJob> crawlJobs = crawlJobRepository.findAll();
-        List<CrawlJobDto> crawlJobDtos = new ArrayList<>();
-        for (CrawlJob crawlJob : crawlJobs) {
-            SupportedLanguageDto slDto = supportedLanguageConverter.fromLanguageToLanguageDto(crawlJob.getLanguage());
-            crawlJobDtos.add(CrawlJobDto.builder()
-                                        .id(crawlJob.getId())
-                                        .language(slDto)
-                                        .crawled(crawlJob.getCrawled())
-                                        .build());
-        }
-        crawlJobDtoList.setItems(crawlJobDtos);
-        return crawlJobDtoList;
+    public List<CrawlJob> getCompletedJobs(){
+        return crawlJobRepository.findAll();
     }
 
     @Override
@@ -56,8 +39,8 @@ public class CrawlJobServiceImpl implements CrawlJobService {
     @Override
     public void updateCrawlDateForLanguage(String language, Date date){
         log.info("Crawling "+language+" repositories secured upto: "+date);
-        SupportedLanguage supportedLanguage = supportedLanguageRepository.findByName(language).orElse(null);
-        assert supportedLanguage != null;
+        SupportedLanguage supportedLanguage = supportedLanguageRepository.findByName(language)
+                .orElseThrow(EntityNotFoundException::new);
         Optional<CrawlJob> crawlJobOpt = crawlJobRepository.findByLanguage(supportedLanguage.getName());
         if (crawlJobOpt.isEmpty()){
             crawlJobRepository.save(CrawlJob.builder().language(supportedLanguage).crawled(date).build());

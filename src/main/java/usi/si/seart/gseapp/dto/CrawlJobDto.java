@@ -12,5 +12,5 @@ import java.util.Date;
 public class CrawlJobDto {
     Long id;
     Date crawled;
-    SupportedLanguageDto language;
+    String language;
 }
