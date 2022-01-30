@@ -5,40 +5,33 @@ import lombok.AllArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import usi.si.seart.gseapp.converter.SupportedLanguageConverter;
-import usi.si.seart.gseapp.dto.StringList;
-import usi.si.seart.gseapp.dto.SupportedLanguageDto;
 import usi.si.seart.gseapp.model.SupportedLanguage;
 import usi.si.seart.gseapp.repository.SupportedLanguageRepository;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 @AllArgsConstructor(onConstructor_ = @Autowired)
 public class SupportedLanguageServiceImpl implements SupportedLanguageService {
     SupportedLanguageRepository supportedLanguageRepository;
-    SupportedLanguageConverter supportedLanguageConverter;
 
     @Override
-    public StringList getAll(){
+    public List<String> getAll(){
         List<SupportedLanguage> languages = supportedLanguageRepository.findAll();
-        List<String> languagesNames = new ArrayList<>();
-        languages.forEach(language -> languagesNames.add(language.getName()));
-        return StringList.builder().items(languagesNames).build();
+        return languages.stream().map(SupportedLanguage::getName).collect(Collectors.toList());
     }
 
     @Override
-    public SupportedLanguageDto create(SupportedLanguage language){
+    public SupportedLanguage create(SupportedLanguage language){
         Optional<SupportedLanguage> opt = supportedLanguageRepository.findByName(language.getName());
-        if (opt.isEmpty()){
-            return supportedLanguageConverter.fromLanguageToLanguageDto(supportedLanguageRepository.save(language));
-        }
-        return null;
+        return opt.orElseGet(() -> supportedLanguageRepository.save(language));
     }
 
     @Override
-    public void delete(Long id){ supportedLanguageRepository.deleteById(id); }
+    public void delete(Long id){
+        supportedLanguageRepository.deleteById(id);
+    }
 }

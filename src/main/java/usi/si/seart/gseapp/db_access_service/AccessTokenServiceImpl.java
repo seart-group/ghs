@@ -5,9 +5,6 @@ import lombok.AllArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import usi.si.seart.gseapp.converter.AccessTokenConverter;
-import usi.si.seart.gseapp.dto.AccessTokenDto;
-import usi.si.seart.gseapp.dto.AccessTokenDtoList;
 import usi.si.seart.gseapp.model.AccessToken;
 import usi.si.seart.gseapp.repository.AccessTokenRepository;
 
@@ -19,24 +16,20 @@ import java.util.Optional;
 @AllArgsConstructor(onConstructor_ = @Autowired)
 public class AccessTokenServiceImpl implements AccessTokenService {
     AccessTokenRepository accessTokenRepository;
-    AccessTokenConverter accessTokenConverter;
 
     @Override
-    public AccessTokenDtoList getAll(){
-        List<AccessToken> tokens = accessTokenRepository.findAll();
-        List<AccessTokenDto> dtos = accessTokenConverter.fromTokensToTokenDtos(tokens);
-        return AccessTokenDtoList.builder().items(dtos).build();
+    public List<AccessToken> getAll(){
+        return accessTokenRepository.findAll();
     }
 
     @Override
-    public AccessTokenDto create(AccessToken token){
+    public AccessToken create(AccessToken token){
         Optional<AccessToken> opt = accessTokenRepository.findByValue(token.getValue());
-        if (opt.isEmpty()){
-            return accessTokenConverter.fromTokenToTokenDto(accessTokenRepository.save(token));
-        }
-        return null;
+        return opt.orElseGet(() -> accessTokenRepository.save(token));
     }
 
     @Override
-    public void delete(Long id){ accessTokenRepository.deleteById(id); }
+    public void delete(Long id){
+        accessTokenRepository.deleteById(id);
+    }
 }
