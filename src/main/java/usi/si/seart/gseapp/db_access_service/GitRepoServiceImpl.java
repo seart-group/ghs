@@ -17,7 +17,6 @@ import usi.si.seart.gseapp.dto.GitRepoDtoList;
 import usi.si.seart.gseapp.dto.GitRepoDtoListPaginated;
 import usi.si.seart.gseapp.dto.GitRepoLabelDto;
 import usi.si.seart.gseapp.dto.GitRepoLanguageDto;
-import usi.si.seart.gseapp.dto.StringList;
 import usi.si.seart.gseapp.dto.StringLongDto;
 import usi.si.seart.gseapp.dto.StringLongDtoList;
 import usi.si.seart.gseapp.model.GitRepo;
@@ -272,23 +271,23 @@ public class GitRepoServiceImpl implements GitRepoService {
     }
 
     @Override
-    public StringList getAllLabels(){
-        return StringList.builder().items(gitRepoLabelRepository.findAllLabels()).build();
+    public List<String> getAllLabels(){
+        return gitRepoLabelRepository.findAllLabels();
     }
 
     @Override
-    public StringList getAllLanguages(){
-        return StringList.builder().items(gitRepoLanguageRepository.findAllLanguages()).build();
+    public List<String> getAllLanguages(){
+        return gitRepoLanguageRepository.findAllLanguages();
     }
 
     @Override
-    public StringList getAllLicenses(){
-        return StringList.builder().items(gitRepoRepository.findAllLicenses()).build();
+    public List<String> getAllLicenses(){
+        return gitRepoRepository.findAllLicenses();
     }
 
     @Override
-    public StringList getAllRepoNames(){
-        return StringList.builder().items(gitRepoRepository.findAllRepoNames()).build();
+    public List<String> getAllRepoNames(){
+        return gitRepoRepository.findAllRepoNames();
     }
 
     @Override

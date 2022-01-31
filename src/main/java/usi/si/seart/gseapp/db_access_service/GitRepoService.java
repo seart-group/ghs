@@ -5,7 +5,6 @@ import usi.si.seart.gseapp.dto.GitRepoDtoList;
 import usi.si.seart.gseapp.dto.GitRepoDtoListPaginated;
 import usi.si.seart.gseapp.dto.GitRepoLabelDto;
 import usi.si.seart.gseapp.dto.GitRepoLanguageDto;
-import usi.si.seart.gseapp.dto.StringList;
 import usi.si.seart.gseapp.dto.StringLongDtoList;
 import usi.si.seart.gseapp.model.GitRepo;
 import usi.si.seart.gseapp.model.GitRepoLabel;
@@ -41,10 +40,10 @@ public interface GitRepoService {
                                                      Integer pageSize, Long totalResults);
 
     GitRepo createOrUpdateRepo(GitRepo repo);
-    StringList getAllLabels();
-    StringList getAllLanguages();
-    StringList getAllLicenses();
-    StringList getAllRepoNames();
+    List<String> getAllLabels();
+    List<String> getAllLanguages();
+    List<String> getAllLicenses();
+    List<String> getAllRepoNames();
     StringLongDtoList getAllLanguageStatistics();
     StringLongDtoList getMainLanguageStatistics();
     void createUpdateLabels(GitRepo repo, List<GitRepoLabel> labels);

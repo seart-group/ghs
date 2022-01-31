@@ -23,6 +23,7 @@ import javax.persistence.EntityNotFoundException;
 import java.io.File;
 import java.io.IOException;
 import java.util.Date;
+import java.util.Map;
 
 @Slf4j
 @RestController
@@ -177,16 +178,16 @@ public class GitRepoController {
 
     @GetMapping("/r/labels")
     public ResponseEntity<?> getAllLabels(){
-        return ResponseEntity.ok(gitRepoService.getAllLabels());
+        return ResponseEntity.ok(Map.of("items", gitRepoService.getAllLabels()));
     }
 
     @GetMapping("/r/languages")
     public ResponseEntity<?> getAllLanguages(){
-        return ResponseEntity.ok(gitRepoService.getAllLanguages());
+        return ResponseEntity.ok(Map.of("items", gitRepoService.getAllLanguages()));
     }
 
     @GetMapping("/r/licenses")
     public ResponseEntity<?> getAllLicenses() {
-        return ResponseEntity.ok(gitRepoService.getAllLicenses());
+        return ResponseEntity.ok(Map.of("items", gitRepoService.getAllLicenses()));
     }
 }
