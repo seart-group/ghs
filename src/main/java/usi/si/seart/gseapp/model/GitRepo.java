@@ -9,15 +9,20 @@ import lombok.Setter;
 import lombok.experimental.FieldDefaults;
 import org.hibernate.Hibernate;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.OneToMany;
 import javax.persistence.PrePersist;
 import javax.persistence.PreUpdate;
 import javax.persistence.Table;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.Objects;
+import java.util.Set;
 
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Getter
@@ -112,13 +117,13 @@ public class GitRepo {
     @Column(name = "crawled")
     Date crawled;
 
-//    @Builder.Default
-//    @OneToMany(mappedBy="repo", cascade=CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
-//    Set<GitRepoLabel> labels = new HashSet<>();
+    @Builder.Default
+    @OneToMany(mappedBy="repo", cascade=CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    Set<GitRepoLabel> labels = new HashSet<>();
 
-//    @Builder.Default
-//    @OneToMany(mappedBy="repo", cascade=CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
-//    Set<GitRepoLanguage> languages = new HashSet<>();
+    @Builder.Default
+    @OneToMany(mappedBy="repo", cascade= CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    Set<GitRepoLanguage> languages = new HashSet<>();
 
     @Override
     public boolean equals(Object o) {
