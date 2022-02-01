@@ -13,6 +13,7 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.PrePersist;
 import javax.persistence.PreUpdate;
@@ -35,6 +36,7 @@ public class GitRepoLanguage {
     Long id;
 
     @ManyToOne
+    @JoinColumn(name = "repo_id")
     GitRepo repo;
 
     @Column(name = "repo_language_name")
