@@ -5,13 +5,13 @@ import usi.si.seart.gseapp.dto.GitRepoDtoList;
 import usi.si.seart.gseapp.dto.GitRepoDtoListPaginated;
 import usi.si.seart.gseapp.dto.GitRepoLabelDto;
 import usi.si.seart.gseapp.dto.GitRepoLanguageDto;
-import usi.si.seart.gseapp.dto.StringLongDtoList;
 import usi.si.seart.gseapp.model.GitRepo;
 import usi.si.seart.gseapp.model.GitRepoLabel;
 import usi.si.seart.gseapp.model.GitRepoLanguage;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 public interface GitRepoService {
     GitRepoDto getRepoById(Long id);
@@ -44,8 +44,8 @@ public interface GitRepoService {
     List<String> getAllLanguages();
     List<String> getAllLicenses();
     List<String> getAllRepoNames();
-    StringLongDtoList getAllLanguageStatistics();
-    StringLongDtoList getMainLanguageStatistics();
+    Map<String, Long> getAllLanguageStatistics();
+    Map<String, Long> getMainLanguageStatistics();
     void createUpdateLabels(GitRepo repo, List<GitRepoLabel> labels);
     void createUpdateLanguages(GitRepo repo, List<GitRepoLanguage> languages);
 }
