@@ -88,9 +88,6 @@ public class AdminController {
         return ResponseEntity.ok(gitRepoService.getAllLanguageStatistics());
     }
 
-    /**
-     * Return the data to be displayed in "Stat" popup (number of processed repo for each lanugae)
-     */
     @GetMapping("/r/stats")
     public ResponseEntity<?> getRepoStatistics(){
         return ResponseEntity.ok(gitRepoService.getMainLanguageStatistics());

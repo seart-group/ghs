@@ -17,8 +17,6 @@ import usi.si.seart.gseapp.dto.GitRepoDtoList;
 import usi.si.seart.gseapp.dto.GitRepoDtoListPaginated;
 import usi.si.seart.gseapp.dto.GitRepoLabelDto;
 import usi.si.seart.gseapp.dto.GitRepoLanguageDto;
-import usi.si.seart.gseapp.dto.StringLongDto;
-import usi.si.seart.gseapp.dto.StringLongDtoList;
 import usi.si.seart.gseapp.model.GitRepo;
 import usi.si.seart.gseapp.model.GitRepoLabel;
 import usi.si.seart.gseapp.model.GitRepoLanguage;
@@ -30,9 +28,14 @@ import usi.si.seart.gseapp.util.interval.DateInterval;
 import usi.si.seart.gseapp.util.interval.LongInterval;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.Date;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.function.Supplier;
+import java.util.stream.Collectors;
 
 import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
 import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
@@ -290,23 +293,38 @@ public class GitRepoServiceImpl implements GitRepoService {
         return gitRepoRepository.findAllRepoNames();
     }
 
+
+    /**
+     * Retrieve the cumulative size (in bytes) of all source files written in a language,
+     * across all processed GitHub repositories.
+     *
+     * @return A map where the keys are language names Strings,
+     *         that map to the Long value representing byte size for each language.
+     *         The map entries are sorted in descending fashion by value.
+     */
     @Override
-    public StringLongDtoList getAllLanguageStatistics(){
-        List<Object[]> languages = gitRepoLanguageRepository.getLanguageStatistics();
-        StringLongDtoList stats = StringLongDtoList.builder().build();
-        languages.forEach(language -> stats.getItems().add(new StringLongDto((String) language[0],(Long) language[1])));
-        return stats;
+    public Map<String, Long> getAllLanguageStatistics(){
+        return getLanguageStatistics(gitRepoLanguageRepository::getLanguageStatistics);
     }
 
     /**
-     * Return the data to be displayed in "Stat" popup (number of processed repo for each lanugae)
+     * Retrieve the number of processed GitHub repositories for each main (supported) language.
+     *
+     * @return A map where the keys are language names Strings,
+     *         that map to Long values of the number of corresponding GitHub repositories.
+     *         The map entries are sorted in descending fashion by value.
      */
     @Override
-    public StringLongDtoList getMainLanguageStatistics(){
-        List<Object[]> languages = gitRepoRepository.getLanguageStatistics();
-        StringLongDtoList stats = StringLongDtoList.builder().build();
-        languages.forEach(language -> stats.getItems().add(new StringLongDto((String) language[0],(Long) language[1])));
-        return stats;
+    public Map<String, Long> getMainLanguageStatistics(){
+        return getLanguageStatistics(gitRepoRepository::getLanguageStatistics);
+    }
+
+    private Map<String, Long> getLanguageStatistics(Supplier<List<Object[]>> languageSupplier){
+        List<Object[]> languages = languageSupplier.get();
+        return languages.stream()
+                .map(pair -> Map.entry((String) pair[0], (Long) pair[1]))
+                .sorted(Map.Entry.comparingByValue(Comparator.reverseOrder()))
+                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (x, y) -> y, LinkedHashMap::new));
     }
 
     @Override

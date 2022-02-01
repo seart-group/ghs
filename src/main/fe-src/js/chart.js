@@ -2,7 +2,7 @@ let supported_languages = [];
 let num_of_repos = [];
 let colors = [];
 
-function dynamicColors(i,total) {
+function dynamicColors(i, total) {
     let c = 100 + i * 155/total;
     return "rgb(" + c + "," + c + "," + c + ")";
 }
@@ -11,20 +11,20 @@ fetch("http://localhost:8080/api/r/stats").then(response => {
     return response.json();
 }).then(data => {
     let i = 0;
-    let total_num_of_repos = 0;
-    
-    let items = data.items;
-    items.forEach(obj => {
-        supported_languages.push(obj.name);
-        num_of_repos.push(obj.value);
-        total_num_of_repos += obj.value;
-        colors.push(dynamicColors(i,items.length));
-        i++;
-    });
+    let total_repos = 0;
 
-    total_num_of_repos__with_comma = total_num_of_repos.toLocaleString('en', {useGrouping:true});
-    document.getElementById("total_num_of_repos").innerText = total_num_of_repos__with_comma;
-}).catch( (error) => {
+    let entries = Object.entries(data);
+
+    for (const [language, repos] of entries) {
+        supported_languages.push(language);
+        num_of_repos.push(repos);
+        total_repos += repos;
+        colors.push(dynamicColors(i, entries.length));
+        i++;
+    }
+
+    document.getElementById("total_num_of_repos").innerText = total_repos.toLocaleString('en', {useGrouping: true});
+}).catch(error => {
     console.error('Error (/r/stats):', error);
 });
 
