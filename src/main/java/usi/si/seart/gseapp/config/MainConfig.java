@@ -9,12 +9,13 @@ import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import usi.si.seart.gseapp.converter.AccessTokenToDtoConverter;
 import usi.si.seart.gseapp.converter.CrawlJobToDtoConverter;
+import usi.si.seart.gseapp.converter.GitRepoToDtoConverter;
 import usi.si.seart.gseapp.converter.SupportedLanguageToDtoConverter;
 
 @Configuration
 public class MainConfig {
     @Bean
-    public WebMvcConfigurer corsConfigurer() {
+    public WebMvcConfigurer webConfigurer() {
         return new WebMvcConfigurer() {
             @Override
             public void addCorsMappings(@NotNull final CorsRegistry registry) {
@@ -26,6 +27,7 @@ public class MainConfig {
                  registry.addConverter(new AccessTokenToDtoConverter());
                  registry.addConverter(new SupportedLanguageToDtoConverter());
                  registry.addConverter(new CrawlJobToDtoConverter());
+                 registry.addConverter(new GitRepoToDtoConverter());
             }
         };
     }
@@ -40,5 +42,4 @@ public class MainConfig {
         threadPoolTaskScheduler.setPoolSize(2); // 1: Crawler, 2: CleanUp
         return threadPoolTaskScheduler;
     }
-
 }
