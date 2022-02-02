@@ -8,11 +8,12 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.FieldDefaults;
 import org.hibernate.Hibernate;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
@@ -118,11 +119,13 @@ public class GitRepo {
     Date crawled;
 
     @Builder.Default
-    @OneToMany(mappedBy="repo", cascade=CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy="repo", cascade=CascadeType.ALL, orphanRemoval = true)
+    @Fetch(value = FetchMode.JOIN)
     Set<GitRepoLabel> labels = new HashSet<>();
 
     @Builder.Default
-    @OneToMany(mappedBy="repo", cascade= CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy="repo", cascade= CascadeType.ALL, orphanRemoval = true)
+    @Fetch(value = FetchMode.JOIN)
     Set<GitRepoLanguage> languages = new HashSet<>();
 
     @Override
