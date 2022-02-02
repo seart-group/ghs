@@ -9,4 +9,6 @@ public interface ApplicationPropertyService {
     void setCrawlScheduling(Long value);
     Date getStartDate();
     void setStartDate(Date value);
+    Integer getPageSize();
+    void setPageSize(Integer pageSize);
 }

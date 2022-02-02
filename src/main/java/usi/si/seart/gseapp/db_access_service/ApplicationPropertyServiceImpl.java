@@ -25,4 +25,7 @@ public class ApplicationPropertyServiceImpl implements ApplicationPropertyServic
 
     @Value("#{new java.text.SimpleDateFormat(\"yyyy-MM-dd'T'HH:mm:ss\").parse(\"${app.crawl.startdate}\")}")
     Date startDate;
+
+    @Value(value = "${app.search.page-size}")
+    Integer pageSize;
 }
