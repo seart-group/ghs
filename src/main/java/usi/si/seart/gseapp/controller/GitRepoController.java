@@ -1,10 +1,14 @@
 package usi.si.seart.gseapp.controller;
 
+import com.google.common.collect.Range;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -17,12 +21,16 @@ import usi.si.seart.gseapp.converter.GitRepoConverter;
 import usi.si.seart.gseapp.db_access_service.GitRepoService;
 import usi.si.seart.gseapp.dto.GitRepoDtoList;
 import usi.si.seart.gseapp.dto.GitRepoDtoListPaginated;
+import usi.si.seart.gseapp.model.GitRepo;
+import usi.si.seart.gseapp.repository.GitRepoRepository;
 import usi.si.seart.gseapp.util.FileSystemResourceCustom;
+import usi.si.seart.gseapp.util.Ranges;
 
 import javax.persistence.EntityNotFoundException;
 import java.io.File;
 import java.io.IOException;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Map;
 
 @Slf4j
@@ -32,6 +40,7 @@ import java.util.Map;
 public class GitRepoController {
     final static String downloadFolder = "download-temp/";
 
+    GitRepoRepository gitRepoRepository;
     GitRepoService gitRepoService;
     GitRepoConverter gitRepoConverter;
 
@@ -84,6 +93,72 @@ public class GitRepoController {
                                                                         hasIssues, hasPulls, hasWiki, hasLicense,
                                                                         page, pageSize, totalResultsCached);
         return ResponseEntity.ok(results);
+    }
+
+    @GetMapping("/r/search/new")
+    public ResponseEntity<?> newSearchRepos(
+            @RequestParam(required = false, defaultValue = "") String name,
+            @RequestParam(required = false, defaultValue = "false") Boolean nameEquals,
+            @RequestParam(required = false, defaultValue = "") String language,
+            @RequestParam(required = false, defaultValue = "") String license,
+            @RequestParam(required = false, defaultValue = "") String label,
+            @RequestParam(required = false) Long commitsMin,
+            @RequestParam(required = false) Long commitsMax,
+            @RequestParam(required = false) Long contributorsMin,
+            @RequestParam(required = false) Long contributorsMax,
+            @RequestParam(required = false) Long issuesMin,
+            @RequestParam(required = false) Long issuesMax,
+            @RequestParam(required = false) Long pullsMin,
+            @RequestParam(required = false) Long pullsMax,
+            @RequestParam(required = false) Long branchesMin,
+            @RequestParam(required = false) Long branchesMax,
+            @RequestParam(required = false) Long releasesMin,
+            @RequestParam(required = false) Long releasesMax,
+            @RequestParam(required = false) Long starsMin,
+            @RequestParam(required = false) Long starsMax,
+            @RequestParam(required = false) Long watchersMin,
+            @RequestParam(required = false) Long watchersMax,
+            @RequestParam(required = false) Long forksMin,
+            @RequestParam(required = false) Long forksMax,
+            @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Date createdMin,
+            @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Date createdMax,
+            @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Date committedMin,
+            @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Date committedMax,
+            @RequestParam(required = false, defaultValue = "false") Boolean excludeForks,
+            @RequestParam(required = false, defaultValue = "false") Boolean onlyForks,
+            @RequestParam(required = false, defaultValue = "false") Boolean hasIssues,
+            @RequestParam(required = false, defaultValue = "false") Boolean hasPulls,
+            @RequestParam(required = false, defaultValue = "false") Boolean hasWiki,
+            @RequestParam(required = false, defaultValue = "false") Boolean hasLicense,
+            @RequestParam(required = false, defaultValue = "0") Integer page,
+            @RequestParam(required = false, defaultValue = "20") Integer pageSize
+    ){
+        Range<Long> commits = Ranges.build(commitsMin, commitsMax);
+        Range<Long> contributors = Ranges.build(contributorsMin, contributorsMax);
+        Range<Long> issues = Ranges.build(issuesMin, issuesMax);
+        Range<Long> pulls = Ranges.build(pullsMin, pullsMax);
+        Range<Long> branches = Ranges.build(branchesMin, branchesMax);
+        Range<Long> releases = Ranges.build(releasesMin, releasesMax);
+        Range<Long> stars = Ranges.build(starsMin, starsMax);
+        Range<Long> watchers = Ranges.build(watchersMin, watchersMax);
+        Range<Long> forks = Ranges.build(forksMin, forksMax);
+        Range<Date> created = Ranges.build(createdMin, createdMax);
+        Range<Date> committed = Ranges.build(committedMin, committedMax);
+
+        PageRequest pageRequest = PageRequest.of(page, pageSize, Sort.by("name").ascending());
+
+        Page<GitRepo> results = gitRepoRepository.findGitRepoDynamically(
+                name, nameEquals, language, license, label, commits, contributors, issues, pulls, branches, releases,
+                stars, watchers, forks, created, committed, excludeForks, onlyForks, hasIssues, hasPulls, hasWiki,
+                hasLicense, pageRequest
+        );
+
+        return ResponseEntity.ok(
+                Map.of(
+                        "pages", results.getTotalPages(),
+                        "results", results.getTotalElements()
+                )
+        );
     }
 
     @GetMapping(value = "/r/download/{fileformat}")
