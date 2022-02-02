@@ -38,11 +38,10 @@ import java.util.Map;
 public class AdminController {
 
     ConversionService conversionService;
-
+    ApplicationPropertyService applicationPropertyService;
     AccessTokenService accessTokenService;
     SupportedLanguageService supportedLanguageService;
     CrawlJobService crawlJobService;
-    ApplicationPropertyService applicationPropertyService;
     GitRepoService gitRepoService;
 
     @GetMapping("/t")
