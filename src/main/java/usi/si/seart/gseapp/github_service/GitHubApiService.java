@@ -16,7 +16,7 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.apache.commons.lang3.tuple.Triple;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import usi.si.seart.gseapp.util.DateUtils;
+import usi.si.seart.gseapp.util.Dates;
 import usi.si.seart.gseapp.util.Ranges;
 
 import java.io.IOException;
@@ -110,7 +110,7 @@ public class GitHubApiService {
         JsonObject latestCommitJson = JsonParser.parseString(bodyStr).getAsJsonArray().get(0).getAsJsonObject();
         String sha = latestCommitJson.get("sha").getAsString();
         String dateStr = latestCommitJson.get("commit").getAsJsonObject().get("committer").getAsJsonObject().get("date").getAsString();
-        Date date = DateUtils.fromGitDateString(dateStr);
+        Date date = Dates.fromGitDateString(dateStr);
         return Pair.of(sha,date);
     }
 
