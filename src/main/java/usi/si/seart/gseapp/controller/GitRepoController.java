@@ -28,9 +28,9 @@ import org.springframework.web.bind.annotation.RestController;
 import usi.si.seart.gseapp.db_access_service.ApplicationPropertyService;
 import usi.si.seart.gseapp.db_access_service.GitRepoService;
 import usi.si.seart.gseapp.dto.GitRepoDto;
+import usi.si.seart.gseapp.io.SelfDestructingResource;
 import usi.si.seart.gseapp.model.GitRepo;
 import usi.si.seart.gseapp.util.Ranges;
-import usi.si.seart.gseapp.util.SelfDestructingResource;
 
 import java.io.File;
 import java.io.IOException;
