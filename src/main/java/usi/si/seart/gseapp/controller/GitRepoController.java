@@ -11,6 +11,7 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.data.domain.Page;
@@ -42,6 +43,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @SuppressWarnings("ConstantConditions")
 @Slf4j
@@ -325,7 +327,18 @@ public class GitRepoController {
                     break;
                 case "json":
                     mediaType += "plain";
-                    objMapper.writerWithDefaultPrettyPrinter().writeValue(tempFile, dtos);
+                    Map<String, Object> searchParams = constructParameterMap(
+                            name, nameEquals, language, license, label, commitsMin, commitsMax, contributorsMin,
+                            contributorsMax, issuesMin, issuesMax, pullsMin, pullsMax, branchesMin, branchesMax,
+                            releasesMin, releasesMax, starsMin, starsMax, watchersMin, watchersMax, forksMin, forksMax,
+                            createdMin, createdMax, committedMin, committedMax, excludeForks, onlyForks, hasIssues,
+                            hasPulls, hasWiki, hasLicense
+                    );
+                    objMapper.writerWithDefaultPrettyPrinter().writeValue(tempFile, new LinkedHashMap<>(){{
+                        put("parameters", searchParams);
+                        put("count", dtos.size());
+                        put("items", dtos);
+                    }});
                     break;
                 case "xml":
                     mediaType += format;
@@ -344,6 +357,59 @@ public class GitRepoController {
                 .contentLength(tempFile.length())
                 .contentType(MediaType.parseMediaType(mediaType))
                 .body(new SelfDestructingResource(tempFile));
+    }
+
+    private Map<String, Object> constructParameterMap(
+            String name, Boolean nameEquals, String language, String license, String label, Long commitsMin, Long commitsMax,
+            Long contributorsMin, Long contributorsMax, Long issuesMin, Long issuesMax, Long pullsMin, Long pullsMax,
+            Long branchesMin, Long branchesMax, Long releasesMin, Long releasesMax, Long starsMin, Long starsMax,
+            Long watchersMin, Long watchersMax, Long forksMin, Long forksMax, Date createdMin, Date createdMax,
+            Date committedMin, Date committedMax, Boolean excludeForks, Boolean onlyForks, Boolean hasIssues,
+            Boolean hasPulls, Boolean hasWiki, Boolean hasLicense
+    ){
+        Map<String, Object> map = new LinkedHashMap<>();
+        if (StringUtils.isNotBlank(name)) map.put("name", name);
+        map.put("nameEquals", nameEquals);
+        if (StringUtils.isNotBlank(language)) map.put("language", language);
+        if (StringUtils.isNotBlank(license)) map.put("license", license);
+        if (StringUtils.isNotBlank(label)) map.put("label", label);
+        map.put("commitsMin", commitsMin);
+        map.put("commitsMax", commitsMax);
+        map.put("contributorsMin", contributorsMin);
+        map.put("contributorsMax", contributorsMax);
+        map.put("issuesMin", issuesMin);
+        map.put("issuesMax", issuesMax);
+        map.put("pullsMin", pullsMin);
+        map.put("pullsMax", pullsMax);
+        map.put("branchesMin", branchesMin);
+        map.put("branchesMax", branchesMax);
+        map.put("releasesMin", releasesMin);
+        map.put("releasesMax", releasesMax);
+        map.put("starsMin", starsMin);
+        map.put("starsMax", starsMax);
+        map.put("watchersMin", watchersMin);
+        map.put("watchersMax", watchersMax);
+        map.put("forksMin", forksMin);
+        map.put("forksMax", forksMax);
+        map.put("createdMin", createdMin);
+        map.put("createdMax", createdMax);
+        map.put("committedMin", committedMin);
+        map.put("committedMax", committedMax);
+        map.put("excludeForks", excludeForks);
+        map.put("onlyForks", onlyForks);
+        map.put("hasIssues", hasIssues);
+        map.put("hasPulls", hasPulls);
+        map.put("hasWiki", hasWiki);
+        map.put("hasLicense", hasLicense);
+
+        return map.entrySet().stream()
+                .filter(entry -> entry.getValue() != null)
+                .collect(Collectors.toMap(
+                        Map.Entry::getKey,
+                        Map.Entry::getValue,
+                        (x, y) -> y,
+                        LinkedHashMap::new
+                ));
     }
 
     @GetMapping("/r/{repoId}")
