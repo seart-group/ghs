@@ -30,14 +30,14 @@ import java.util.concurrent.TimeUnit;
 public class GitHubApiService {
 
     OkHttpClient client;
-    final static int MIN_STARS = 10;
+    static int MIN_STARS = 10;
 
-    final static long retrySleepPeriod_ms = 60000L;
-    final static int maxRetryCount = 3;
+    static long retrySleepPeriod_ms = 60000L;
+    static int maxRetryCount = 3;
 
-    final static int STATUS_UNAUTHORIZED = 401;
-    final static int STATUS_FORBIDDEN = 403;
-    final static int STATUS_TOO_MANY_REQUESTS = 429;
+    static int STATUS_UNAUTHORIZED = 401;
+    static int STATUS_FORBIDDEN = 403;
+    static int STATUS_TOO_MANY_REQUESTS = 429;
 
     @NonFinal
     GitHubCredentialUtil gitHubCredentialUtil;
