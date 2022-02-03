@@ -7,6 +7,8 @@ public interface ApplicationPropertyService {
     void setEnabled(Boolean value);
     Long getCrawlScheduling();
     void setCrawlScheduling(Long value);
+    Long getCleanUpScheduling();
+    void setCleanUpScheduling(Long value);
     Date getStartDate();
     void setStartDate(Date value);
     Integer getPageSize();
