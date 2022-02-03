@@ -133,15 +133,15 @@ public class GitRepoSpecification implements Specification<GitRepo> {
         }
 
         String language = (String) parameters.get("language");
-        if (StringUtils.isNoneBlank(language))
+        if (StringUtils.isNotBlank(language))
             specification.add(new KeyValueCriteria("mainLanguage", language, BinaryOperation.EQUAL));
 
         String license = (String) parameters.get("license");
-        if (StringUtils.isNoneBlank(license))
+        if (StringUtils.isNotBlank(license))
             specification.add(new KeyValueCriteria("license", license, BinaryOperation.EQUAL));
 
         String label = (String) parameters.get("label");
-        if (StringUtils.isNoneBlank(label))
+        if (StringUtils.isNotBlank(label))
             specification.add(new NestedKeyValueCriteria("labels", "label", label, BinaryOperation.IN));
 
         Range commits = (Range) parameters.get("commits");
