@@ -228,7 +228,7 @@ public class CrawlProjectsJob {
                 Date repo_updatedAt = DateUtils.fromGitDateString(repoJson.get("updated_at").getAsString());
                 Date repo_pushedAt = DateUtils.fromGitDateString(repoJson.get("pushed_at").getAsString());
 
-//                boolean incompleteMinedInfo = existingRepInfo.getContributors() == null;
+                // boolean incompleteMinedInfo = existingRepInfo.getContributors() == null;
 
                 if (existing_updatedAt.compareTo(repo_updatedAt) == 0 && existing_pushedAt.compareTo(repo_pushedAt) == 0) {
                     log.info("\tSKIPPED. We already have the latest info up to " + existing_updatedAt + "(updated)  " + existing_pushedAt + "(pushed)");
@@ -268,6 +268,7 @@ public class CrawlProjectsJob {
         }
     }
 
+    // TODO: 03.02.22 Migrate this into a converter! We can use something like JsonObjectToGitRepoConverter...
     private GitRepo createGitRepoRowObjectFromGitHubAPIResultJson(JsonObject repoJson) throws IOException, InterruptedException {
         GitRepo.GitRepoBuilder gitRepoBuilder = GitRepo.builder();
 
@@ -295,7 +296,8 @@ public class CrawlProjectsJob {
         gitRepoBuilder.hasWiki(repoJson.get("has_wiki").getAsBoolean());
         gitRepoBuilder.isArchived(repoJson.get("archived").getAsBoolean());
         boolean has_issues = repoJson.get("has_issues").getAsBoolean();
-        //gitRepoBuilder.openIssues(repoJson.get("open_issues").getAsLong());  // open_issues in the response refers to sum of "issues" and "pull requests"
+        // // open_issues in the response refers to sum of "issues" and "pull requests"
+        // gitRepoBuilder.openIssues(repoJson.get("open_issues").getAsLong());
 
 
         Long numberOfCommits = gitHubApiService.fetchNumberOfCommits(repoFullName);
