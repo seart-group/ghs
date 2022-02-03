@@ -37,9 +37,11 @@ public class Ranges {
 
     public <T extends Comparable> String toString(Range<T> range, Format formatter) {
         StringBuilder builder = new StringBuilder();
-        if (range.hasLowerBound()) builder.append(formatter.format(range.lowerEndpoint()));
-        if (range.hasLowerBound() || range.hasUpperBound()) builder.append("..");
-        if (range.hasUpperBound()) builder.append(formatter.format(range.upperEndpoint()));
+        boolean lowerBound = range.hasLowerBound();
+        boolean upperBound = range.hasUpperBound();
+        if (lowerBound) builder.append(formatter.format(range.lowerEndpoint()));
+        if (lowerBound || upperBound) builder.append("..");
+        if (upperBound) builder.append(formatter.format(range.upperEndpoint()));
         return builder.toString();
     }
 }
