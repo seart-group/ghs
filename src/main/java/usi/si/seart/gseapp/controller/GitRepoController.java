@@ -329,7 +329,7 @@ public class GitRepoController {
                     break;
                 case "xml":
                     mediaType += format;
-                    xmlMapper.configure(ToXmlGenerator.Feature.WRITE_XML_1_1, true)
+                    xmlMapper.configure(ToXmlGenerator.Feature.WRITE_XML_DECLARATION, true)
                             .writerWithDefaultPrettyPrinter()
                             .writeValue(tempFile, dtos);
                     break;
