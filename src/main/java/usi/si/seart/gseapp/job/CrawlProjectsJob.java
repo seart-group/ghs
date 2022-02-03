@@ -1,5 +1,6 @@
 package usi.si.seart.gseapp.job;
 
+import com.google.common.collect.Range;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -21,9 +22,11 @@ import usi.si.seart.gseapp.model.GitRepoLanguage;
 import usi.si.seart.gseapp.repository.GitRepoRepository;
 import usi.si.seart.gseapp.repository.SupportedLanguageRepository;
 import usi.si.seart.gseapp.util.DateUtils;
-import usi.si.seart.gseapp.util.interval.DateInterval;
+import usi.si.seart.gseapp.util.Ranges;
 
 import java.io.IOException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
@@ -31,6 +34,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.function.BinaryOperator;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -39,7 +44,7 @@ public class CrawlProjectsJob {
 
     @NonFinal
     public boolean running = false;
-    List<DateInterval> requestQueue = new ArrayList<>();
+    List<Range<Date>> requestQueue = new ArrayList<>();
 
     List<String> languages = new ArrayList<>();
 
@@ -47,6 +52,10 @@ public class CrawlProjectsJob {
     // Temporary. Because I'm keep restarting server, but I don't care about
     // very new Java updates, but finishing all language at least once.
     static String startingLanguage = "PHP";
+
+    static DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+
+    static BinaryOperator<Date> dateMedian = (a, b) -> new Date((a.getTime() + b.getTime())/2);
 
     SupportedLanguageRepository supportedLanguageRepository;
     GitRepoRepository gitRepoRepository;
@@ -80,8 +89,8 @@ public class CrawlProjectsJob {
 
         for (String language : languages) {
 
-//            if(language.equals("JavaScript"))
-//                continue; // Temporary
+            // if(language.equals("JavaScript"))
+            //     continue; // Temporary
 
             if (language.equals(startingLanguage))
                 startingLanguage = null;
@@ -90,58 +99,66 @@ public class CrawlProjectsJob {
 
             this.requestQueue.clear();
             Date startDate = crawlJobService.getCrawlDateByLanguage(language);
-            DateInterval interval;
+            Range<Date> dateRange;
 
-            if (startDate != null) {
-                assert startDate.before(endDate);
-                interval = DateInterval.builder().start(startDate).end(endDate).build();
-            } else {
-                Date veryStartDate = applicationPropertyService.getStartDate();
-                log.info("No previous crawling found for " + language + ". We start from scratch: " + veryStartDate);
-                interval = DateInterval.builder().start(veryStartDate).end(endDate).build();
-            }
-
-            if (interval.getStart().after(interval.getStart())) {
-                log.warn("language " + language + " has bad interval range: Start > End | " + interval.getStart() + " > " + interval.getEnd());
+            try {
+                if (startDate != null) {
+                    assert startDate.before(endDate);
+                    dateRange = Ranges.build(startDate, endDate);
+                } else {
+                    Date defaultStartDate = applicationPropertyService.getStartDate();
+                    log.info("No previous crawling found for {}. We start from scratch: {}", language, defaultStartDate);
+                    dateRange = Ranges.build(defaultStartDate, endDate);
+                }
+            } catch (IllegalArgumentException ex) {
+                // Handler for cases where Start > End
+                log.warn("Language " + language + " has bad range: {}", ex.getMessage());
                 continue;
             }
-            crawlUpdatedRepos(interval, language);
+
+            crawlUpdatedRepos(dateRange, language);
         }
         this.running = false;
     }
 
-    private void crawlCreatedRepos(DateInterval interval, String language) throws IOException, InterruptedException {
+    private void crawlCreatedRepos(Range<Date> interval, String language) throws IOException, InterruptedException {
         log.info("Starting crawling " + language + " repositories created through: " + interval);
         crawlRepos(interval, language, false);
         log.info("Finished crawling " + language + " repositories created through: " + interval);
     }
 
-    private void crawlUpdatedRepos(DateInterval interval, String language) throws IOException, InterruptedException {
-        log.info("Starting crawling " + language + " repositories updated through: " + interval);
-        crawlRepos(interval, language, true);
-        log.info("Finished crawling " + language + " repositories updated through: " + interval);
+    private void crawlUpdatedRepos(Range<Date> dateRange, String language) throws IOException, InterruptedException {
+        log.info("Starting crawling " + language + " repositories updated through: " + dateRange);
+        crawlRepos(dateRange, language, true);
+        log.info("Finished crawling " + language + " repositories updated through: " + dateRange);
     }
 
-    private void crawlRepos(DateInterval interval, String language, Boolean crawl_updated_repos)
+    private void crawlRepos(Range<Date> dateRange, String language, Boolean crawl_updated_repos)
             throws IOException, InterruptedException {
-        if (interval.getStart().compareTo(interval.getEnd()) >= 0) {
-            log.warn("Invalid interval Skipped: " + interval);
+        if (dateRange.lowerEndpoint().compareTo(dateRange.upperEndpoint()) >= 0) {
+            log.warn("Invalid interval Skipped: " + dateRange);
             return;
         }
 
-        requestQueue.add(interval);
+        requestQueue.add(dateRange);
         do {
-            log.info("Next Crawl Intervals: " + requestQueue.toString());
+            long maxSize = 5;
+            String nextIntervals = requestQueue.stream()
+                    .limit(maxSize)
+                    .map(range -> Ranges.toString(range, dateFormat))
+                    .collect(Collectors.joining(", "));
+            if (requestQueue.size() > maxSize) nextIntervals += ", ...";
+            log.info("Next Crawl Intervals: [" + nextIntervals + " ]");
 
-            DateInterval first = requestQueue.remove(0);
+            Range<Date> first = requestQueue.remove(0);
             retrieveRepos(first, language, crawl_updated_repos);
         } while (!requestQueue.isEmpty());
     }
 
-    private void retrieveRepos(DateInterval interval, String language, Boolean crawl_updated_repos) {
+    private void retrieveRepos(Range<Date> dateRange, String language, Boolean crawl_updated_repos) {
         int page = 1;
         try {
-            String responseStr = gitHubApiService.searchRepositories(language, interval, page, crawl_updated_repos);
+            String responseStr = gitHubApiService.searchRepositories(language, dateRange, page, crawl_updated_repos);
             if (responseStr != null) {
                 JsonObject result = JsonParser.parseString(responseStr).getAsJsonObject();
                 int totalResults = result.get("total_count").getAsInt();
@@ -150,13 +167,13 @@ public class CrawlProjectsJob {
                 if (totalResults <= 1000) {
                     JsonArray results = result.get("items").getAsJsonArray();
                     saveRetrievedRepos(results, language, 1, totalResults);
-                    retrieveRemainingRepos(interval, language, crawl_updated_repos, totalPages);
-                    crawlJobService.updateCrawlDateForLanguage(language, interval.getEnd());
+                    retrieveRemainingRepos(dateRange, language, crawl_updated_repos, totalPages);
+                    crawlJobService.updateCrawlDateForLanguage(language, dateRange.lowerEndpoint());
                 } else {
-                    Pair<DateInterval, DateInterval> newIntervals = interval.splitInterval();
-                    if (newIntervals != null) {
-                        requestQueue.add(0, newIntervals.getRight());
-                        requestQueue.add(0, newIntervals.getLeft());
+                    List<Range<Date>> newIntervals = Ranges.split(dateRange, dateMedian);
+                    if (newIntervals.size() > 1) {
+                        requestQueue.add(0, newIntervals.get(1));
+                        requestQueue.add(0, newIntervals.get(0));
                     }
                 }
             }
@@ -165,12 +182,12 @@ public class CrawlProjectsJob {
         }
     }
 
-    private void retrieveRemainingRepos(DateInterval interval, String language, Boolean crawl_updated_repos, int totalPages){
+    private void retrieveRemainingRepos(Range<Date> dateRange, String language, Boolean crawl_updated_repos, int totalPages){
         if (totalPages > 1) {
             int page = 2;
             while (page <= totalPages) {
                 try {
-                    String responseStr = gitHubApiService.searchRepositories(language, interval, page, crawl_updated_repos);
+                    String responseStr = gitHubApiService.searchRepositories(language, dateRange, page, crawl_updated_repos);
                     if (responseStr != null) {
                         JsonObject result = JsonParser.parseString(responseStr).getAsJsonObject();
                         int totalResults = result.get("total_count").getAsInt();
