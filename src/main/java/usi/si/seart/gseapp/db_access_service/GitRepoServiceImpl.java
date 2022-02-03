@@ -17,6 +17,7 @@ import usi.si.seart.gseapp.repository.GitRepoLabelRepository;
 import usi.si.seart.gseapp.repository.GitRepoLanguageRepository;
 import usi.si.seart.gseapp.repository.GitRepoRepository;
 
+import javax.persistence.Tuple;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
@@ -197,10 +198,10 @@ public class GitRepoServiceImpl implements GitRepoService {
         return getLanguageStatistics(gitRepoRepository::getLanguageStatistics);
     }
 
-    private Map<String, Long> getLanguageStatistics(Supplier<List<Object[]>> languageSupplier){
-        List<Object[]> languages = languageSupplier.get();
+    private Map<String, Long> getLanguageStatistics(Supplier<List<Tuple>> tupleListSupplier){
+        List<Tuple> languages = tupleListSupplier.get();
         return languages.stream()
-                .map(pair -> Map.entry((String) pair[0], (Long) pair[1]))
+                .map(tuple -> Map.entry(tuple.get(0, String.class), tuple.get(1, Long.class)))
                 .sorted(Map.Entry.comparingByValue(Comparator.reverseOrder()))
                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (x, y) -> y, LinkedHashMap::new));
     }
