@@ -21,6 +21,11 @@ public class RangesTest {
         Assert.assertEquals(Range.closed(5, 10), Ranges.build(5, 10));
     }
 
+    @Test(expected = IllegalArgumentException.class)
+    public void testBuildException() {
+        Ranges.build(5, 1);
+    }
+
     @Test
     public void testSplit() {
         BinaryOperator<Long> average = (a, b) -> (a + b)/2;
@@ -54,5 +59,10 @@ public class RangesTest {
                 "2022-01-01T00:00..2022-01-02T00:00",
                 Ranges.toString(dateRange, new SimpleDateFormat("yyyy-MM-dd'T'HH:mm"))
         );
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testToStringException() {
+        Ranges.toString(Range.closed(new Date(), new Date()), NumberFormat.getInstance());
     }
 }
