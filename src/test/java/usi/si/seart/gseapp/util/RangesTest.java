@@ -4,6 +4,10 @@ import com.google.common.collect.Range;
 import org.junit.Assert;
 import org.junit.Test;
 
+import java.text.NumberFormat;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import java.util.function.BinaryOperator;
 
@@ -29,5 +33,26 @@ public class RangesTest {
         ranges = Ranges.split(Range.closed(2L, 2L), average);
         Assert.assertEquals(1, ranges.size());
         Assert.assertEquals(Range.closed(2L, 2L), ranges.get(0));
+    }
+
+    @Test
+    public void testToString() {
+        Assert.assertEquals("5..10", Ranges.toString(Range.closed(5, 10), NumberFormat.getInstance()));
+        Assert.assertEquals("5..10", Ranges.toString(Range.closed(5L, 10L), NumberFormat.getInstance()));
+        Assert.assertEquals("5..", Ranges.toString(Range.atLeast(5), NumberFormat.getInstance()));
+        Assert.assertEquals("..5", Ranges.toString(Range.atMost(5), NumberFormat.getInstance()));
+        Assert.assertEquals("", Ranges.toString(Range.all(), NumberFormat.getInstance()));
+
+        Calendar calendar = Calendar.getInstance();
+        calendar.set(2022, Calendar.JANUARY, 1, 0, 0);
+        Date lower = calendar.getTime();
+        calendar.set(2022, Calendar.JANUARY, 2, 0, 0);
+        Date upper = calendar.getTime();
+        Range<Date> dateRange = Range.closed(lower, upper);
+        Assert.assertEquals("2022-01-01..2022-01-02", Ranges.toString(dateRange, new SimpleDateFormat("yyyy-MM-dd")));
+        Assert.assertEquals(
+                "2022-01-01T00:00..2022-01-02T00:00",
+                Ranges.toString(dateRange, new SimpleDateFormat("yyyy-MM-dd'T'HH:mm"))
+        );
     }
 }
