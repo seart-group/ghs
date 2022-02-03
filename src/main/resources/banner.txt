@@ -1,0 +1,16 @@
+MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMo
+MMMMMMMMMMMMNy/-.``.-/smMMMMMMs-----------oMMo         oo            +o++++oo+:.    `ooooooosoooooo+
+MMMMMMMMMMMs` .+yhhyo:` yMMMMM+  /ssssssssdMMo        +soo           y+      `-oh-         -m
+MMMMMMMMMMd  .NMMMMMMMNmMMMMMM+  yMMMMMMMMMMMo       .d  h-          y+         :m`        -m
+MMMMMMMMMMd  .NMMMMMMMMMMMMMMM+  yMMMMMMMMMMMo       h-  .d`         y+         `N.        -m
+MMMMMMMMMMMo  `/ydMMMMMMMMMMMM+  yMMMMMMMMMMMo      oo    +s         y+         oh         -m
+MMMMMMMMMMMMNs:`   .:odMMMMMMM+  .-------mMMMo     -d      h:        yo.....-:+s+          -m
+MMMMMMMMMMMMMMMMmhs/.  .yMMMMM+  /sssssssNMMMo    `d-      .d`       yy/////mo`            -m
+MMMMMMMMMMMMMMMMMMMMMd.  hMMMM+  yMMMMMMMMMMMo    ss........sy       y+     `d+            -m
+MMMMMMMMMMMMMMMMMMMMMM+  +MMMM+  yMMMMMMMMMMMo   :d//////////h/      y+      `ys           -m
+MMMMMMMMMMNsmMMMMMMMMm.  hMMMM+  yMMMMMMMMMMMo  `d.          .m.     y+        sh`         -m
+MMMMMMMMMN/  ./osyso:  .hMMMMM+  :oooooooooMMo  y+            +h     y+         +d.        -m
+MMMMMMMMMMMNyo:-...-/ohMMMMMMMs////////////MMo .o              o-    +:          :o`       .o
+MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMo
+
+Powered by Spring Boot ${spring-boot.version}
