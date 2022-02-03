@@ -1,4 +1,4 @@
-package usi.si.seart.gseapp.repository.specification;
+package usi.si.seart.gseapp.repository.criteria;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 import lombok.experimental.FieldDefaults;
+import usi.si.seart.gseapp.repository.operation.BinaryOperation;
 
 @Getter
 @Setter
@@ -16,8 +17,8 @@ import lombok.experimental.FieldDefaults;
 @ToString
 @EqualsAndHashCode
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class SearchCriteria {
+public class KeyValueCriteria implements Criteria {
     String key;
     Object value;
-    SearchOperation operation;
+    BinaryOperation operation;
 }
