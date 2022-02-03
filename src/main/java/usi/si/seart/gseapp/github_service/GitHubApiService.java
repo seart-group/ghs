@@ -1,5 +1,6 @@
 package usi.si.seart.gseapp.github_service;
 
+import com.google.common.collect.Range;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import lombok.AccessLevel;
@@ -16,11 +17,13 @@ import org.apache.commons.lang3.tuple.Triple;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import usi.si.seart.gseapp.util.DateUtils;
-import usi.si.seart.gseapp.util.interval.DateInterval;
+import usi.si.seart.gseapp.util.Ranges;
 
 import java.io.IOException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
@@ -38,6 +41,8 @@ public class GitHubApiService {
     static int STATUS_UNAUTHORIZED = 401;
     static int STATUS_FORBIDDEN = 403;
     static int STATUS_TOO_MANY_REQUESTS = 429;
+
+    static DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
 
     @NonFinal
     GitHubCredentialUtil gitHubCredentialUtil;
@@ -60,19 +65,19 @@ public class GitHubApiService {
 
 
 
-    public String searchRepositories(String language, DateInterval interval, Integer page,
-                                         Boolean crawl_updated_repos) throws IOException, InterruptedException
-    {
+    public String searchRepositories(
+            String language, Range<Date> dateRange, Integer page, Boolean crawl_updated_repos
+    ) throws IOException, InterruptedException {
         String language_encoded = URLEncoder.encode(language, StandardCharsets.UTF_8);
         String url = Endpoints.SEARCH_REPOS.getUrl() + "?q=language:" + language_encoded +
-                (crawl_updated_repos ? "+pushed:" : "+created:") + interval +
+                (crawl_updated_repos ? "+pushed:" : "+created:") + Ranges.toString(dateRange, dateFormat) +
                 "+fork:true+stars:>="+MIN_STARS+"+is:public&page=" + page + "&per_page=100";
 
-        // For debugging specific repository
-//        url = generateSearchRepo("XXXXX/YYYYY");
-//        url = generateSearchRepo("torvalds/linux"); // only pulls
-//        url = generateSearchRepo("davidwernhart/AlDente"); // both issue and pulls
-//        url = generateSearchRepo("seart-group/ghs"); // only issues
+        // For debugging specific repositories
+        // url = generateSearchRepo("XXXXX/YYYYY");
+        // url = generateSearchRepo("torvalds/linux"); // only pulls
+        // url = generateSearchRepo("davidwernhart/AlDente"); // both issue and pulls
+        // url = generateSearchRepo("seart-group/ghs"); // only issues
 
 
         log.info("Github API Call: "+url);
