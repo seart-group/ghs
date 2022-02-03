@@ -121,20 +121,19 @@ public class CrawlProjectsJob {
         this.running = false;
     }
 
-    private void crawlCreatedRepos(Range<Date> interval, String language) throws IOException, InterruptedException {
+    private void crawlCreatedRepos(Range<Date> interval, String language) {
         log.info("Starting crawling " + language + " repositories created through: " + interval);
         crawlRepos(interval, language, false);
         log.info("Finished crawling " + language + " repositories created through: " + interval);
     }
 
-    private void crawlUpdatedRepos(Range<Date> dateRange, String language) throws IOException, InterruptedException {
+    private void crawlUpdatedRepos(Range<Date> dateRange, String language) {
         log.info("Starting crawling " + language + " repositories updated through: " + dateRange);
         crawlRepos(dateRange, language, true);
         log.info("Finished crawling " + language + " repositories updated through: " + dateRange);
     }
 
-    private void crawlRepos(Range<Date> dateRange, String language, Boolean crawl_updated_repos)
-            throws IOException, InterruptedException {
+    private void crawlRepos(Range<Date> dateRange, String language, Boolean crawl_updated_repos) {
         if (dateRange.lowerEndpoint().compareTo(dateRange.upperEndpoint()) >= 0) {
             log.warn("Invalid interval Skipped: " + dateRange);
             return;
