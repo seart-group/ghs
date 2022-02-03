@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.csv.CsvMapper;
 import com.fasterxml.jackson.dataformat.csv.CsvSchema;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
+import com.fasterxml.jackson.dataformat.xml.ser.ToXmlGenerator;
 import com.google.common.collect.Range;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -328,7 +329,9 @@ public class GitRepoController {
                     break;
                 case "xml":
                     mediaType += format;
-                    xmlMapper.writerWithDefaultPrettyPrinter().writeValue(tempFile, dtos);
+                    xmlMapper.configure(ToXmlGenerator.Feature.WRITE_XML_1_1, true)
+                            .writerWithDefaultPrettyPrinter()
+                            .writeValue(tempFile, dtos);
                     break;
             }
         } catch (IOException ex) {

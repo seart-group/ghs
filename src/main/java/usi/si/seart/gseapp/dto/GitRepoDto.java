@@ -1,6 +1,8 @@
 package usi.si.seart.gseapp.dto;
 
 import com.fasterxml.jackson.dataformat.csv.CsvSchema;
+import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlElementWrapper;
+import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
@@ -46,8 +48,11 @@ public class GitRepoDto {
     String lastCommitSHA;
     Boolean hasWiki;
     Boolean isArchived;
+    @JacksonXmlProperty(localName = "languages", isAttribute = true)
     @Builder.Default
     Map<String, Long> languages = new LinkedHashMap<>();
+    @JacksonXmlElementWrapper(localName = "labels")
+    @JacksonXmlProperty(localName = "label")
     @Builder.Default
     List<String> labels = new ArrayList<>();
 
