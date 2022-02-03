@@ -29,8 +29,8 @@ import usi.si.seart.gseapp.db_access_service.ApplicationPropertyService;
 import usi.si.seart.gseapp.db_access_service.GitRepoService;
 import usi.si.seart.gseapp.dto.GitRepoDto;
 import usi.si.seart.gseapp.model.GitRepo;
-import usi.si.seart.gseapp.util.FileSystemResourceCustom;
 import usi.si.seart.gseapp.util.Ranges;
+import usi.si.seart.gseapp.util.SelfDestructingResource;
 
 import java.io.File;
 import java.io.IOException;
@@ -340,7 +340,7 @@ public class GitRepoController {
                 .header("Content-Disposition", "attachment; filename=results." + format)
                 .contentLength(tempFile.length())
                 .contentType(MediaType.parseMediaType(mediaType))
-                .body(new FileSystemResourceCustom(tempFile));
+                .body(new SelfDestructingResource(tempFile));
     }
 
     @GetMapping("/r/{repoId}")
