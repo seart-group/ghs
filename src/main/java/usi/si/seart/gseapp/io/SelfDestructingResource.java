@@ -1,4 +1,4 @@
-package usi.si.seart.gseapp.util;
+package usi.si.seart.gseapp.io;
 
 import org.jetbrains.annotations.NotNull;
 import org.springframework.core.io.FileSystemResource;
@@ -10,6 +10,11 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 
+/**
+ * A file system resource that deletes itself after closing.
+ *
+ * @author dabico
+ */
 public class SelfDestructingResource extends FileSystemResource {
 
     public SelfDestructingResource(File file) {
