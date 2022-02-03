@@ -8,7 +8,7 @@ import java.util.Date;
 import java.util.TimeZone;
 
 @UtilityClass
-public class DateUtils {
+public class Dates {
     public Date fromGitDateString(String date){
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
         dateFormat.setTimeZone(TimeZone.getTimeZone("Universal"));

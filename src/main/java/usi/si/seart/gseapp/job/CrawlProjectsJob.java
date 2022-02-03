@@ -21,7 +21,7 @@ import usi.si.seart.gseapp.model.GitRepoLabel;
 import usi.si.seart.gseapp.model.GitRepoLanguage;
 import usi.si.seart.gseapp.repository.GitRepoRepository;
 import usi.si.seart.gseapp.repository.SupportedLanguageRepository;
-import usi.si.seart.gseapp.util.DateUtils;
+import usi.si.seart.gseapp.util.Dates;
 import usi.si.seart.gseapp.util.Ranges;
 
 import java.io.IOException;
@@ -225,8 +225,8 @@ public class CrawlProjectsJob {
                 Date existing_updatedAt = existingRepInfo.getUpdatedAt();
                 Date existing_pushedAt = existingRepInfo.getPushedAt();
 
-                Date repo_updatedAt = DateUtils.fromGitDateString(repoJson.get("updated_at").getAsString());
-                Date repo_pushedAt = DateUtils.fromGitDateString(repoJson.get("pushed_at").getAsString());
+                Date repo_updatedAt = Dates.fromGitDateString(repoJson.get("updated_at").getAsString());
+                Date repo_pushedAt = Dates.fromGitDateString(repoJson.get("pushed_at").getAsString());
 
                 // boolean incompleteMinedInfo = existingRepInfo.getContributors() == null;
 
@@ -288,9 +288,9 @@ public class CrawlProjectsJob {
         gitRepoBuilder.forks(repoJson.get("forks_count").getAsLong());
         gitRepoBuilder.watchers(repoJson.get("subscribers_count").getAsLong());
         gitRepoBuilder.size(repoJson.get("size").getAsLong());
-        gitRepoBuilder.createdAt(DateUtils.fromGitDateString(repoJson.get("created_at").getAsString()));
-        gitRepoBuilder.pushedAt(DateUtils.fromGitDateString(repoJson.get("pushed_at").getAsString()));
-        gitRepoBuilder.updatedAt(DateUtils.fromGitDateString(repoJson.get("updated_at").getAsString()));
+        gitRepoBuilder.createdAt(Dates.fromGitDateString(repoJson.get("created_at").getAsString()));
+        gitRepoBuilder.pushedAt(Dates.fromGitDateString(repoJson.get("pushed_at").getAsString()));
+        gitRepoBuilder.updatedAt(Dates.fromGitDateString(repoJson.get("updated_at").getAsString()));
         gitRepoBuilder.homepage(homepage.isJsonNull() ? null : homepage.getAsString());
         gitRepoBuilder.mainLanguage(repoJson.get("language").getAsString());
         gitRepoBuilder.hasWiki(repoJson.get("has_wiki").getAsBoolean());
