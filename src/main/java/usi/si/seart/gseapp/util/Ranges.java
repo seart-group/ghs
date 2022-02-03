@@ -38,7 +38,7 @@ public class Ranges {
     public <T extends Comparable> String toString(Range<T> range, Format formatter) {
         StringBuilder builder = new StringBuilder();
         if (range.hasLowerBound()) builder.append(formatter.format(range.lowerEndpoint()));
-        builder.append("..");
+        if (range.hasLowerBound() || range.hasUpperBound()) builder.append("..");
         if (range.hasUpperBound()) builder.append(formatter.format(range.upperEndpoint()));
         return builder.toString();
     }
