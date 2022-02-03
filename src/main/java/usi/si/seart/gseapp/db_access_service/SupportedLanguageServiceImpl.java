@@ -10,7 +10,6 @@ import usi.si.seart.gseapp.repository.SupportedLanguageRepository;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
@@ -20,8 +19,7 @@ public class SupportedLanguageServiceImpl implements SupportedLanguageService {
 
     @Override
     public List<String> getAll(){
-        List<SupportedLanguage> languages = supportedLanguageRepository.findAll();
-        return languages.stream().map(SupportedLanguage::getName).collect(Collectors.toList());
+        return supportedLanguageRepository.findAllLanguages();
     }
 
     @Override
