@@ -8,13 +8,13 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.lang.reflect.Field;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeSet;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
@@ -54,7 +54,7 @@ public class GitRepoDto {
     @JacksonXmlElementWrapper(localName = "labels")
     @JacksonXmlProperty(localName = "label")
     @Builder.Default
-    List<String> labels = new ArrayList<>();
+    Set<String> labels = new TreeSet<>();
 
     public static CsvSchema getCsvSchema(){
         Set<String> exclusions = Set.of("id", "labels", "languages");

@@ -9,6 +9,7 @@ import usi.si.seart.gseapp.model.GitRepoLabel;
 import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.TreeSet;
 import java.util.stream.Collectors;
 
 public class GitRepoToDtoConverter implements Converter<GitRepo, GitRepoDto> {
@@ -57,7 +58,7 @@ public class GitRepoToDtoConverter implements Converter<GitRepo, GitRepoDto> {
                 .labels(
                         source.getLabels().stream()
                                 .map(GitRepoLabel::getLabel)
-                                .collect(Collectors.toList())
+                                .collect(Collectors.toCollection(TreeSet::new))
                 )
                 .build();
     }
