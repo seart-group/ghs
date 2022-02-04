@@ -31,6 +31,8 @@ import usi.si.seart.gseapp.db_access_service.ApplicationPropertyService;
 import usi.si.seart.gseapp.db_access_service.GitRepoService;
 import usi.si.seart.gseapp.dto.GitRepoDto;
 import usi.si.seart.gseapp.io.SelfDestructingResource;
+import usi.si.seart.gseapp.jackson.JsonWrapper;
+import usi.si.seart.gseapp.jackson.XmlWrapper;
 import usi.si.seart.gseapp.model.GitRepo;
 import usi.si.seart.gseapp.util.Ranges;
 
@@ -318,31 +320,33 @@ public class GitRepoController {
         String tempFileName = System.currentTimeMillis() + ".temp";
         File tempFile = new File(downloadFolder + "/" + tempFileName);
 
+        Map<String, Object> searchParams = constructParameterMap(
+                name, nameEquals, language, license, label, commitsMin, commitsMax, contributorsMin,
+                contributorsMax, issuesMin, issuesMax, pullsMin, pullsMax, branchesMin, branchesMax,
+                releasesMin, releasesMax, starsMin, starsMax, watchersMin, watchersMax, forksMin, forksMax,
+                createdMin, createdMax, committedMin, committedMax, excludeForks, onlyForks, hasIssues,
+                hasPulls, hasWiki, hasLicense
+        );
+
         String mediaType = "text/";
         try {
             switch (format){
                 case "csv":
                     mediaType += format;
-                    csvMapper.writerWithDefaultPrettyPrinter().with(csvSchema).writeValue(tempFile, dtos);
+                    csvMapper.writerWithDefaultPrettyPrinter()
+                            .with(csvSchema)
+                            .writeValue(tempFile, dtos);
                     break;
                 case "json":
                     mediaType += "plain";
-                    Map<String, Object> searchParams = constructParameterMap(
-                            name, nameEquals, language, license, label, commitsMin, commitsMax, contributorsMin,
-                            contributorsMax, issuesMin, issuesMax, pullsMin, pullsMax, branchesMin, branchesMax,
-                            releasesMin, releasesMax, starsMin, starsMax, watchersMin, watchersMax, forksMin, forksMax,
-                            createdMin, createdMax, committedMin, committedMax, excludeForks, onlyForks, hasIssues,
-                            hasPulls, hasWiki, hasLicense
-                    );
-                    objMapper.writerWithDefaultPrettyPrinter().writeValue(tempFile, new LinkedHashMap<>(){{
-                        put("parameters", searchParams);
-                        put("count", dtos.size());
-                        put("items", dtos);
-                    }});
+                    objMapper.writerWithDefaultPrettyPrinter()
+                            .writeValue(tempFile, new JsonWrapper(searchParams, dtos.size(), dtos));
                     break;
                 case "xml":
                     mediaType += format;
-                    xmlMapper.writerWithDefaultPrettyPrinter().writeValue(tempFile, dtos);
+                    xmlMapper.writerWithDefaultPrettyPrinter()
+                            .withRootName("result")
+                            .writeValue(tempFile, new XmlWrapper(searchParams, dtos));
                     break;
             }
         } catch (IOException ex) {
