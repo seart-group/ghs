@@ -8,9 +8,10 @@ import usi.si.seart.gseapp.model.SupportedLanguage;
 import java.util.List;
 import java.util.Optional;
 
-public interface SupportedLanguageRepository extends JpaRepository<SupportedLanguage,Long> {
+public interface SupportedLanguageRepository extends JpaRepository<SupportedLanguage, Long> {
     Optional<SupportedLanguage> findByName(String name);
-    @Query("SELECT l.name FROM SupportedLanguage l ORDER BY l.name")
+
+    @Query("select l.name from SupportedLanguage l order by l.name")
     @Cacheable(value = "languages")
     List<String> findAllLanguages();
 }

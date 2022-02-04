@@ -8,9 +8,10 @@ import usi.si.seart.gseapp.model.GitRepoLabel;
 
 import java.util.List;
 
-public interface GitRepoLabelRepository extends JpaRepository<GitRepoLabel,Long> {
+public interface GitRepoLabelRepository extends JpaRepository<GitRepoLabel, Long> {
     @Query("select distinct lower(l.label) as label from GitRepoLabel l group by label order by count(label) desc")
     @Cacheable(value = "labels")
     List<String> findAllLabels();
+
     void deleteAllByRepo(GitRepo repo);
 }
