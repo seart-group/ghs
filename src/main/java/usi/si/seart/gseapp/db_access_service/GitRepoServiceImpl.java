@@ -21,10 +21,6 @@ import usi.si.seart.gseapp.repository.GitRepoRepository;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Tuple;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Expression;
-import javax.persistence.criteria.Root;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
@@ -165,12 +161,12 @@ public class GitRepoServiceImpl implements GitRepoService {
     @Override
     @Cacheable(value = "labels")
     public List<String> getAllLabels(Integer limit){
-        CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
-        CriteriaQuery<String> query = criteriaBuilder.createQuery(String.class);
-        Root<GitRepoLabel> root = query.from(GitRepoLabel.class);
-        Expression<String> label = criteriaBuilder.lower(root.get("label"));
-        query.distinct(true).select(label).groupBy(label).orderBy(criteriaBuilder.desc(criteriaBuilder.count(label)));
-        return entityManager.createQuery(query).setMaxResults(limit).getResultList();
+        String jpqlStr =
+                "select distinct lower(l.label) as label " +
+                "from GitRepoLabel l " +
+                "group by label " +
+                "order by count(label) desc";
+        return entityManager.createQuery(jpqlStr, String.class).setMaxResults(limit).getResultList();
     }
 
     @Override
