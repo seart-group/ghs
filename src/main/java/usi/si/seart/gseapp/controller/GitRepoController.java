@@ -51,7 +51,7 @@ import java.util.stream.Collectors;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
 public class GitRepoController {
-    static String downloadFolder = "download-temp/";
+    public static String downloadFolder = "download-temp";
 
     static CsvSchema csvSchema = GitRepoDto.getCsvSchema();
     static CsvMapper csvMapper;
@@ -315,8 +315,7 @@ public class GitRepoController {
         List<GitRepoDto> dtos = List.of(conversionService.convert(results.toArray(new GitRepo[0]), GitRepoDto[].class));
 
         String tempFileName = System.currentTimeMillis() + ".temp";
-        File tempFile = new File(downloadFolder + tempFileName);
-        tempFile.getParentFile().mkdirs();
+        File tempFile = new File(downloadFolder + "/" + tempFileName);
 
         String mediaType = "text/";
         try {
