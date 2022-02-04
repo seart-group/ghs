@@ -1,5 +1,6 @@
 package usi.si.seart.gseapp.dto;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.dataformat.csv.CsvSchema;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlElementWrapper;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
@@ -22,6 +23,7 @@ import java.util.stream.Collectors;
 @Setter
 @Builder
 public class GitRepoDto {
+    @JsonIgnore
     Long id;
     String name;
     Boolean isFork;
