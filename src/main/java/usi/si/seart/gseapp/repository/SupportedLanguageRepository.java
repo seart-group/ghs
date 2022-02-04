@@ -11,6 +11,6 @@ import java.util.Optional;
 public interface SupportedLanguageRepository extends JpaRepository<SupportedLanguage,Long> {
     Optional<SupportedLanguage> findByName(String name);
     @Query("SELECT l.name FROM SupportedLanguage l ORDER BY l.name")
-    @Cacheable("languages")
+    @Cacheable(value = "languages")
     List<String> findAllLanguages();
 }
