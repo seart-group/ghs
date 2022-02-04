@@ -66,6 +66,7 @@ public class GitRepoController {
         objMapper = new ObjectMapper();
         objMapper.setDateFormat(df);
         xmlMapper = new XmlMapper();
+        xmlMapper.configure(ToXmlGenerator.Feature.WRITE_XML_DECLARATION, true);
         xmlMapper.setDateFormat(df);
     }
 
@@ -341,9 +342,7 @@ public class GitRepoController {
                     break;
                 case "xml":
                     mediaType += format;
-                    xmlMapper.configure(ToXmlGenerator.Feature.WRITE_XML_DECLARATION, true)
-                            .writerWithDefaultPrettyPrinter()
-                            .writeValue(tempFile, dtos);
+                    xmlMapper.writerWithDefaultPrettyPrinter().writeValue(tempFile, dtos);
                     break;
             }
         } catch (IOException ex) {
