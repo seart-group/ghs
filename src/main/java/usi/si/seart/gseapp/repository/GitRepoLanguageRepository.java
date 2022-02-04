@@ -8,10 +8,12 @@ import usi.si.seart.gseapp.model.GitRepoLanguage;
 import javax.persistence.Tuple;
 import java.util.List;
 
-public interface GitRepoLanguageRepository extends JpaRepository<GitRepoLanguage,Long> {
+public interface GitRepoLanguageRepository extends JpaRepository<GitRepoLanguage, Long> {
     @Query("select distinct l.language from GitRepoLanguage l where l is not null")
     List<String> findAllLanguages();
+
     @Query("select distinct l.language, sum(l.sizeOfCode) from GitRepoLanguage l group by l.language order by sum(l.sizeOfCode) desc")
     List<Tuple> getLanguageStatistics();
+
     void deleteAllByRepo(GitRepo repo);
 }
