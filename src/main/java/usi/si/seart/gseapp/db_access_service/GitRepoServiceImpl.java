@@ -6,6 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -17,7 +18,13 @@ import usi.si.seart.gseapp.repository.GitRepoLabelRepository;
 import usi.si.seart.gseapp.repository.GitRepoLanguageRepository;
 import usi.si.seart.gseapp.repository.GitRepoRepository;
 
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import javax.persistence.Tuple;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Expression;
+import javax.persistence.criteria.Root;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
@@ -33,6 +40,9 @@ import java.util.stream.Collectors;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 @AllArgsConstructor(onConstructor_ = @Autowired)
 public class GitRepoServiceImpl implements GitRepoService {
+
+    @PersistenceContext
+    EntityManager entityManager;
 
     GitRepoRepository gitRepoRepository;
     GitRepoLabelRepository gitRepoLabelRepository;
@@ -153,8 +163,14 @@ public class GitRepoServiceImpl implements GitRepoService {
     }
 
     @Override
-    public List<String> getAllLabels(){
-        return gitRepoLabelRepository.findAllLabels();
+    @Cacheable(value = "labels")
+    public List<String> getAllLabels(Integer limit){
+        CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+        CriteriaQuery<String> query = criteriaBuilder.createQuery(String.class);
+        Root<GitRepoLabel> root = query.from(GitRepoLabel.class);
+        Expression<String> label = criteriaBuilder.lower(root.get("label"));
+        query.distinct(true).select(label).groupBy(label).orderBy(criteriaBuilder.desc(criteriaBuilder.count(label)));
+        return entityManager.createQuery(query).setMaxResults(limit).getResultList();
     }
 
     @Override
