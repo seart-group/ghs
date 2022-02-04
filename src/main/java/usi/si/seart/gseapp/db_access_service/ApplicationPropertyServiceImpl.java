@@ -23,6 +23,9 @@ public class ApplicationPropertyServiceImpl implements ApplicationPropertyServic
     @Value(value = "${app.cleanup.scheduling}")
     Long cleanUpScheduling;
 
+    @Value(value = "${app.cache-evict.scheduling}")
+    Long cacheEvictScheduling;
+
     @Value("#{new java.text.SimpleDateFormat(\"yyyy-MM-dd'T'HH:mm:ss\").parse(\"${app.crawl.startdate}\")}")
     Date startDate;
 
