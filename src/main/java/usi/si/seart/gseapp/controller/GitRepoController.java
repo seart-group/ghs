@@ -425,7 +425,7 @@ public class GitRepoController {
 
     @GetMapping("/r/labels")
     public ResponseEntity<?> getAllLabels(){
-        return ResponseEntity.ok(Map.of("items", gitRepoService.getAllLabels()));
+        return ResponseEntity.ok(Map.of("items", gitRepoService.getAllLabels(500)));
     }
 
     @GetMapping("/r/languages")

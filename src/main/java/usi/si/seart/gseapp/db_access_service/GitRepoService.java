@@ -31,7 +31,7 @@ public interface GitRepoService {
     );
 
     GitRepo createOrUpdateRepo(GitRepo repo);
-    List<String> getAllLabels();
+    List<String> getAllLabels(Integer limit);
     List<String> getAllLanguages();
     List<String> getAllLicenses();
     List<String> getAllRepoNames();
