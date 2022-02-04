@@ -8,6 +8,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -161,12 +162,7 @@ public class GitRepoServiceImpl implements GitRepoService {
     @Override
     @Cacheable(value = "labels")
     public List<String> getAllLabels(Integer limit){
-        String jpqlStr =
-                "select distinct lower(l.label) as label " +
-                "from GitRepoLabel l " +
-                "group by label " +
-                "order by count(label) desc";
-        return entityManager.createQuery(jpqlStr, String.class).setMaxResults(limit).getResultList();
+        return gitRepoLabelRepository.findMostFrequentLabels(PageRequest.of(0, limit));
     }
 
     @Override
