@@ -46,6 +46,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -65,6 +66,8 @@ public class GitRepoController {
     static Set<String> supportedFields = Stream.of(GitRepo.class.getDeclaredFields())
             .map(Field::getName)
             .collect(Collectors.toSet());
+
+    static Set<String> supportedFormats = Set.of("csv", "json", "xml");
 
     static {
         SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
@@ -304,7 +307,7 @@ public class GitRepoController {
             @RequestParam(required = false, defaultValue = "false") Boolean hasWiki,
             @RequestParam(required = false, defaultValue = "false") Boolean hasLicense
     ){
-        if(!format.matches("csv|json|xml"))
+        if(!supportedFormats.contains(format))
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
 
         Range<Long> commits = Ranges.build(commitsMin, commitsMax);
