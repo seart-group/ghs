@@ -6,7 +6,6 @@ import lombok.AllArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -155,7 +154,6 @@ public class GitRepoServiceImpl implements GitRepoService {
     }
 
     @Override
-    @Cacheable(value = "labels")
     public List<String> getAllLabels(Integer limit){
         return gitRepoLabelRepository.findMostFrequentLabels(PageRequest.of(0, limit));
     }
