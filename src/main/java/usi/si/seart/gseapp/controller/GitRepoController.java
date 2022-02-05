@@ -38,6 +38,7 @@ import usi.si.seart.gseapp.util.Ranges;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.Field;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -46,6 +47,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @SuppressWarnings("ConstantConditions")
 @Slf4j
@@ -59,6 +61,10 @@ public class GitRepoController {
     static CsvMapper csvMapper;
     static ObjectMapper objMapper;
     static XmlMapper xmlMapper;
+
+    static Set<String> supportedFields = Stream.of(GitRepo.class.getDeclaredFields())
+            .map(Field::getName)
+            .collect(Collectors.toSet());
 
     static {
         SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
@@ -111,8 +117,12 @@ public class GitRepoController {
             @RequestParam(required = false, defaultValue = "false") Boolean hasPulls,
             @RequestParam(required = false, defaultValue = "false") Boolean hasWiki,
             @RequestParam(required = false, defaultValue = "false") Boolean hasLicense,
-            @RequestParam(required = false, defaultValue = "0") Integer page
+            @RequestParam(required = false, defaultValue = "0") Integer page,
+            @RequestParam(required = false, defaultValue = "name") String sort
     ){
+        if (!supportedFields.contains(sort))
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+
         Range<Long> commits = Ranges.build(commitsMin, commitsMax);
         Range<Long> contributors = Ranges.build(contributorsMin, contributorsMax);
         Range<Long> issues = Ranges.build(issuesMin, issuesMax);
@@ -126,8 +136,7 @@ public class GitRepoController {
         Range<Date> committed = Ranges.build(committedMin, committedMax);
 
         Integer pageSize = applicationPropertyService.getPageSize();
-        Sort sort = Sort.by("name").ascending();
-        PageRequest pageRequest = PageRequest.of(page, pageSize, sort);
+        PageRequest pageRequest = PageRequest.of(page, pageSize, Sort.by(sort).ascending());
 
         Page<GitRepo> results = gitRepoService.findDynamically(
                 name, nameEquals, language, license, label, commits, contributors, issues, pulls, branches, releases,
@@ -153,7 +162,7 @@ public class GitRepoController {
                             contributorsMax, issuesMin, issuesMax, pullsMin, pullsMax, branchesMin, branchesMax,
                             releasesMin, releasesMax, starsMin, starsMax, watchersMin, watchersMax, forksMin, forksMax,
                             createdMin, createdMax, committedMin, committedMax, excludeForks, onlyForks, hasIssues,
-                            hasPulls, hasWiki, hasLicense, 0
+                            hasPulls, hasWiki, hasLicense, 0, sort
                     )
             ).withRel(Link.REL_FIRST).expand().toString();
             links.add(first);
@@ -166,7 +175,7 @@ public class GitRepoController {
                             contributorsMax, issuesMin, issuesMax, pullsMin, pullsMax, branchesMin, branchesMax,
                             releasesMin, releasesMax, starsMin, starsMax, watchersMin, watchersMax, forksMin, forksMax,
                             createdMin, createdMax, committedMin, committedMax, excludeForks, onlyForks, hasIssues,
-                            hasPulls, hasWiki, hasLicense, page - 1
+                            hasPulls, hasWiki, hasLicense, page - 1, sort
                     )
             ).withRel(Link.REL_PREVIOUS).expand().toString();
             links.add(prev);
@@ -179,7 +188,7 @@ public class GitRepoController {
                             contributorsMax, issuesMin, issuesMax, pullsMin, pullsMax, branchesMin, branchesMax,
                             releasesMin, releasesMax, starsMin, starsMax, watchersMin, watchersMax, forksMin, forksMax,
                             createdMin, createdMax, committedMin, committedMax, excludeForks, onlyForks, hasIssues,
-                            hasPulls, hasWiki, hasLicense, page + 1
+                            hasPulls, hasWiki, hasLicense, page + 1, sort
                     )
             ).withRel(Link.REL_NEXT).expand().toString();
             links.add(next);
@@ -192,7 +201,7 @@ public class GitRepoController {
                             contributorsMax, issuesMin, issuesMax, pullsMin, pullsMax, branchesMin, branchesMax,
                             releasesMin, releasesMax, starsMin, starsMax, watchersMin, watchersMax, forksMin, forksMax,
                             createdMin, createdMax, committedMin, committedMax, excludeForks, onlyForks, hasIssues,
-                            hasPulls, hasWiki, hasLicense, totalPages - 1
+                            hasPulls, hasWiki, hasLicense, totalPages - 1, sort
                     )
             ).withRel(Link.REL_LAST).expand().toString();
             links.add(last);
@@ -204,7 +213,7 @@ public class GitRepoController {
                         contributorsMax, issuesMin, issuesMax, pullsMin, pullsMax, branchesMin, branchesMax,
                         releasesMin, releasesMax, starsMin, starsMax, watchersMin, watchersMax, forksMin, forksMax,
                         createdMin, createdMax, committedMin, committedMax, excludeForks, onlyForks, hasIssues,
-                        hasPulls, hasWiki, hasLicense, null
+                        hasPulls, hasWiki, hasLicense, null, sort
                 )
         ).withRel("base").expand().toString();
         links.add(base);
