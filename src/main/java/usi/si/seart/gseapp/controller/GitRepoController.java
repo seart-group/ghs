@@ -34,11 +34,11 @@ import usi.si.seart.gseapp.io.SelfDestructingResource;
 import usi.si.seart.gseapp.jackson.JsonWrapper;
 import usi.si.seart.gseapp.jackson.XmlWrapper;
 import usi.si.seart.gseapp.model.GitRepo;
+import usi.si.seart.gseapp.model.GitRepo_;
 import usi.si.seart.gseapp.util.Ranges;
 
 import java.io.File;
 import java.io.IOException;
-import java.lang.reflect.Field;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -48,7 +48,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 @SuppressWarnings("ConstantConditions")
 @Slf4j
@@ -63,9 +62,20 @@ public class GitRepoController {
     static ObjectMapper objMapper;
     static XmlMapper xmlMapper;
 
-    static Set<String> supportedFields = Stream.of(GitRepo.class.getDeclaredFields())
-            .map(Field::getName)
-            .collect(Collectors.toSet());
+    static Set<String> supportedFields = Set.of(
+            GitRepo_.NAME,
+            GitRepo_.COMMITS,
+            GitRepo_.CONTRIBUTORS,
+            GitRepo_.TOTAL_ISSUES,
+            GitRepo_.TOTAL_PULL_REQUESTS,
+            GitRepo_.BRANCHES,
+            GitRepo_.RELEASES,
+            GitRepo_.STARGAZERS,
+            GitRepo_.WATCHERS,
+            GitRepo_.FORKS,
+            GitRepo_.CREATED_AT,
+            GitRepo_.PUSHED_AT
+    );
 
     static Set<String> supportedFormats = Set.of("csv", "json", "xml");
 
@@ -121,7 +131,7 @@ public class GitRepoController {
             @RequestParam(required = false, defaultValue = "false") Boolean hasWiki,
             @RequestParam(required = false, defaultValue = "false") Boolean hasLicense,
             @RequestParam(required = false, defaultValue = "0") Integer page,
-            @RequestParam(required = false, defaultValue = "name") String sort
+            @RequestParam(required = false, defaultValue = GitRepo_.NAME) String sort
     ){
         if (!supportedFields.contains(sort))
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
