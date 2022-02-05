@@ -19,8 +19,6 @@ import usi.si.seart.gseapp.repository.GitRepoLabelRepository;
 import usi.si.seart.gseapp.repository.GitRepoLanguageRepository;
 import usi.si.seart.gseapp.repository.GitRepoRepository;
 
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
 import javax.persistence.Tuple;
 import java.util.Comparator;
 import java.util.Date;
@@ -37,9 +35,6 @@ import java.util.stream.Collectors;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 @AllArgsConstructor(onConstructor_ = @Autowired)
 public class GitRepoServiceImpl implements GitRepoService {
-
-    @PersistenceContext
-    EntityManager entityManager;
 
     GitRepoRepository gitRepoRepository;
     GitRepoLabelRepository gitRepoLabelRepository;
