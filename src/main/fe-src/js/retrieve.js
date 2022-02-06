@@ -28,6 +28,36 @@ function parseLinkHeader(header) {
     return links;
 }
 
+/**
+ * Function used for converting programming language names to CSS compatible format.
+ * List of languages:
+ * <ul>
+ *     <li>Java</li>
+ *     <li>Kotlin</li>
+ *     <li>C</li>
+ *     <li>C++</li>
+ *     <li>C#</li>
+ *     <li>Python</li>
+ *     <li>JavaScript</li>
+ *     <li>TypeScript</li>
+ *     <li>Swift</li>
+ *     <li>Objective-C</li>
+ *     <li>Ruby</li>
+ *     <li>PHP</li>
+ *     <li>Go</li>
+ * </ul>
+ *
+ * @param {string} language
+ * @returns {string}
+ */
+function langToCssLabel(language) {
+    switch (language) {
+        case 'C++': return 'lang-cpp';
+        case 'C#': return 'lang-csharp';
+        default: return 'lang-'+language.toLowerCase();
+    }
+}
+
 function appendResult(item) {
     let repo_id = item.id;
     let repo_name = item.name;
@@ -64,14 +94,7 @@ function appendResult(item) {
 
     let row_1 = '<div class="row mw-100 pt-3 mx-3 border border-bottom-0 bg-lgray"></div>';
 
-    // Converting db-side languages to CSS compatible format
-    // DB languages: Java, Kotlin, C, C++, C#, Python, JavaScript, TypeScript, Swift, Objective-C, Ruby, PHP, Go
-    let repo_class_label;
-    if(repo_mainLanguage === 'C++')     repo_class_label = 'lang-cpp';
-    else if(repo_mainLanguage === 'C#') repo_class_label = 'lang-csharp';
-    else                                repo_class_label = 'lang-'+repo_mainLanguage.toLowerCase();
-
-    let row_1_col_1 = '<div class="col d-flex align-items-center justify-content-start"><span class="mx-1 fa-2x '+repo_class_label+'" title="'+repo_mainLanguage+' Repository"></span><a href="https://github.com/'+repo_name+'" target="_blank" class="mx-1 text-dark rowsublabel">'+repo_name+'</a></div>';
+    let row_1_col_1 = '<div class="col d-flex align-items-center justify-content-start"><span class="mx-1 fa-2x '+langToCssLabel(repo_mainLanguage)+'" title="'+repo_mainLanguage+' Repository"></span><a href="https://github.com/'+repo_name+'" target="_blank" class="mx-1 text-dark rowsublabel">'+repo_name+'</a></div>';
     let row_1_col_2 = '<div class="col-auto d-flex align-items-center justify-content-end"></div>';
 
     if (repo_isArchived) {
