@@ -26,7 +26,10 @@ public class MainConfig {
         return new WebMvcConfigurer() {
             @Override
             public void addCorsMappings(@NotNull final CorsRegistry registry) {
-                registry.addMapping("/**").allowedMethods("GET").allowedOrigins("http://localhost:3030");
+                registry.addMapping("/**")
+                        .allowedMethods("GET")
+                        .allowedOrigins("http://localhost:3030")
+                        .exposedHeaders("Links", "Download", "Content-Type", "Transfer-Encoding", "Date");
             }
 
             @Override
