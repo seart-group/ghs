@@ -7,6 +7,27 @@ function formatBytes(bytes, decimals = 2) {
     return parseFloat((bytes / Math.pow(k, i)).toFixed(dm))+' '+sizes[i];
 }
 
+// https://gist.github.com/niallo/3109252?permalink_comment_id=1474669#gistcomment-1474669
+function parseLinkHeader(header) {
+    if (header.length === 0) {
+        throw new Error("Input must not be of zero length");
+    }
+
+    const parts = header.split(', ');
+    const links = {};
+    for(let i = 0; i < parts.length; i++) {
+        const section = parts[i].split(';');
+        if (section.length !== 2) {
+            throw new Error("Section could not be split on ';'");
+        }
+        const url = section[0].replace(/<(.*)>/, '$1').trim();
+        const name = section[1].replace(/rel="(.*)"/, '$1').trim();
+        links[name] = url;
+    }
+
+    return links;
+}
+
 function appendResult(item) {
     let repo_id = item.id;
     let repo_name = item.name;
@@ -161,38 +182,62 @@ function appendResult(item) {
 function retrieve(url) {
     gtag('event', 'search-pages');
 
-    fetch(url).then(response => {
-        return response.json();
+    fetch(url).then(async response => {
+        return {
+            "results": await response.json(),
+            "links": parseLinkHeader(response.headers.get("links")),
+            "download": parseLinkHeader(response.headers.get("download"))
+        }
     }).then(data => {
-        let items      = data.items;
-        let first      = data.first;
-        let prev       = data.prev;
-        let next       = data.next;
-        let last       = data.last;
-        let page       = data.page;
-        let base       = data.base;
-        let csvLink    = data.csvLink;
-        let jsonLink   = data.jsonLink;
-        let xmlLink    = data.xmlLink;
-        let totalItems = data.totalItems;
-        let totalPages = data.totalPages;
+        let items      = data.results.items;
+        let page       = data.results.page;
+        let totalItems = data.results.totalItems;
+        let totalPages = data.results.totalPages;
 
-        if (jsonLink !== null){
-            $download_json_button.attr('href_emad',jsonLink);
+        if ("json" in data.download){
+            $download_json_button.attr('href_emad', data.download["json"]);
         } else {
             $download_json_button.addClass('disabled');
         }
 
-        if (xmlLink !== null){
-            $download_xml_button.attr('href_emad',xmlLink);
+        if ("xml" in data.download){
+            $download_xml_button.attr('href_emad', data.download["xml"]);
         } else {
             $download_xml_button.addClass('disabled');
         }
 
-        if (csvLink !== null){
-            $download_csv_button.attr('href_emad',csvLink);
+        if ("csv" in data.download){
+            $download_csv_button.attr('href_emad', data.download["csv"]);
         } else {
             $download_csv_button.addClass('disabled');
+        }
+
+        if ("first" in data.links){
+            $first_button.removeClass('d-none');
+            $first_button.attr('onclick','changePage("'+data.links["first"]+'")')
+        } else {
+            $first_button.addClass('d-none');
+        }
+
+        if ("prev" in data.links){
+            $prev_button.removeClass('d-none');
+            $prev_button.attr('onclick','changePage("'+data.links["prev"]+'")')
+        } else {
+            $prev_button.addClass('d-none');
+        }
+
+        if ("next" in data.links){
+            $next_button.removeClass('d-none');
+            $next_button.attr('onclick','changePage("'+data.links["next"]+'")')
+        } else {
+            $next_button.addClass('d-none');
+        }
+
+        if ("last" in data.links){
+            $last_button.removeClass('d-none');
+            $last_button.attr('onclick','changePage("'+data.links["last"]+'")')
+        } else {
+            $last_button.addClass('d-none');
         }
 
         $results_container_items.empty();
@@ -204,8 +249,8 @@ function retrieve(url) {
             if (totalPages > 1){
                 $page.removeClass('d-none');
                 $go_button.removeClass('d-none');
-                $go_button.attr('base-url',base);
-                $go_button.attr('page-limit',totalPages)
+                $go_button.attr('base-url', data.links["base"]);
+                $go_button.attr('page-limit', totalPages)
             }
             items.forEach(item => appendResult(item));
         } else {
@@ -216,34 +261,6 @@ function retrieve(url) {
         }
 
         $loading_modal.modal("hide");
-
-        if (first !== null){
-            $first_button.removeClass('d-none');
-            $first_button.attr('onclick','changePage("'+first+'")')
-        } else {
-            $first_button.addClass('d-none');
-        }
-
-        if (prev !== null){
-            $prev_button.removeClass('d-none');
-            $prev_button.attr('onclick','changePage("'+prev+'")')
-        } else {
-            $prev_button.addClass('d-none');
-        }
-
-        if (next !== null){
-            $next_button.removeClass('d-none');
-            $next_button.attr('onclick','changePage("'+next+'")')
-        } else {
-            $next_button.addClass('d-none');
-        }
-
-        if (last !== null){
-            $last_button.removeClass('d-none');
-            $last_button.attr('onclick','changePage("'+last+'")')
-        } else {
-            $last_button.addClass('d-none');
-        }
     }).catch(err => {
         console.log(err);
         let connect_err = '<div><div class="row mw-100 py-3 mx-3"><div class="col d-flex align-items-center justify-content-center px-0"><i class="mx-1 fa fa-frown-o" style="color: #6c757d"></i><span class="text-secondary">Error connecting to DEVINTA server</span></div></div></div>';
@@ -262,11 +279,9 @@ function jumpToPage(base_url) {
     if (page <= page_limit){
         $loading_modal.modal("show");
         $body_html.animate({ scrollTop: 0 }, 400);
-        let total_result_cache = $('#totalResult_value').text();
-        retrieve(base_url+'&page='+(page - 1)+'&pageSize=20'+'&totalResult='+total_result_cache);
+        retrieve(base_url+'&page='+(page - 1));
     } else {
         alert("Invalid page number: "+page+" should be <= "+page_limit);
-        // retrieve(base_url+'&page='+(page_limit - 1)+'&pageSize=20');
     }
 }
 
