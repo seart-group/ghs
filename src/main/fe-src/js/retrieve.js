@@ -413,7 +413,7 @@ $main_search_form.submit(function () {
 });
 
 $back_button.click(function () {
-    $main_search_form.get(0).reset();
+    // $main_search_form.get(0).reset();
     $form_container.toggleClass('d-none');
     $results_container.toggleClass('d-none');
     $results_container_items.empty();
