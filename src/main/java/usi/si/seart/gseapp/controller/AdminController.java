@@ -28,7 +28,6 @@ import usi.si.seart.gseapp.model.SupportedLanguage;
 
 import javax.persistence.EntityNotFoundException;
 import java.util.List;
-import java.util.Map;
 
 @SuppressWarnings("ConstantConditions")
 @Slf4j
@@ -73,7 +72,7 @@ public class AdminController {
 
     @GetMapping("/l")
     public ResponseEntity<?> getLanguages(){
-        return ResponseEntity.ok(Map.of("items", supportedLanguageService.getAll()));
+        return ResponseEntity.ok(supportedLanguageService.getAll());
     }
 
     @PostMapping("/l")
@@ -106,11 +105,8 @@ public class AdminController {
     @GetMapping("/j")
     public ResponseEntity<?> getCompletedJobs(){
         List<CrawlJob> jobs = crawlJobService.getCompletedJobs();
-        List<CrawlJobDto> dtos = List.of(
-                conversionService.convert(jobs.toArray(new CrawlJob[0]), CrawlJobDto[].class)
-        );
-
-        return ResponseEntity.ok(Map.of("items", dtos));
+        List<CrawlJobDto> dtos = List.of(conversionService.convert(jobs.toArray(new CrawlJob[0]), CrawlJobDto[].class));
+        return ResponseEntity.ok(dtos);
     }
 
     @GetMapping("/s")

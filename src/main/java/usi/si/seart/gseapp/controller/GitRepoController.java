@@ -447,16 +447,16 @@ public class GitRepoController {
 
     @GetMapping("/r/labels")
     public ResponseEntity<?> getAllLabels(){
-        return ResponseEntity.ok(Map.of("items", gitRepoService.getAllLabels(500)));
+        return ResponseEntity.ok(gitRepoService.getAllLabels(500));
     }
 
     @GetMapping("/r/languages")
     public ResponseEntity<?> getAllLanguages(){
-        return ResponseEntity.ok(Map.of("items", gitRepoService.getAllLanguages()));
+        return ResponseEntity.ok(gitRepoService.getAllLanguages());
     }
 
     @GetMapping("/r/licenses")
     public ResponseEntity<?> getAllLicenses() {
-        return ResponseEntity.ok(Map.of("items", gitRepoService.getAllLicenses()));
+        return ResponseEntity.ok(gitRepoService.getAllLicenses());
     }
 }
