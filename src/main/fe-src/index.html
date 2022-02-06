@@ -88,15 +88,15 @@
         <div class="modal fade" id="paper-citation" tabindex="-1" role="dialog" aria-labelledby="paper-citation-title" aria-hidden="true">
             <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-lg" role="document">
                 <div class="modal-content">
-<!--                    <div class="modal-header">-->
-<!--                        <h5 class="modal-title">How to cite this work?</h5>-->
-<!--                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">-->
-<!--                            <span aria-hidden="true">&times;</span>-->
-<!--                        </button>-->
-<!--                    </div>-->
+                    <div class="modal-header">
+                        <h5 class="modal-title">How to cite this work?</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
                     <div class="modal-body">
                         <div class="w-100">
-                            <b class="pr-2">Cite this tool as:</b>
+                            <b class="pr-2">BibTeX Citation:</b>
                             <pre>
                                 <code style="color: #721c24">
 @inproceedings{Dabic:msr2021data,
@@ -111,7 +111,7 @@
                                 </code>
                             </pre>
 
-                            <p class="p-2 text-justify">Link to the paper (PDF): <a href="https://arxiv.org/pdf/2103.04682.pdf" target="_blank" style="color: darkblue; font-size: medium">Sampling Projects in GitHub for MSR Studies</a></p>
+                            <a class="text-justify" href="https://arxiv.org/pdf/2103.04682.pdf" target="_blank" style="font-size: medium;">Link to the paper PDF</a>
                         </div>
                     </div>
                 </div>
@@ -129,19 +129,18 @@
                     </div>
                     <div class="modal-body">
                         <div class="w-100">
-                            <b class="pr-2">SEART GitHub Search Engine</b>
-                            <p class="p-2 text-justify">
+                            <b>SEART GitHub Search Engine</b>
+                            <p class="pt-2 text-justify">
                                 The SEART GitHub search engine (<i>seart-ghs</i>) allows to sample repositories to use for empirical studies by using several combinations of selection criteria. <b>All parameters in the search form are optional</b>. Searching without any specified parameters would result in retrieving all currently available repositories in our database (this search may take up to a few minutes).
                             </p>
                             <br/>
-                            <b class="pr-2">Mined Projects</b>
-                            <p class="p-2 text-justify">
-                                As a design choice, we only mine information about <b>repositories having at least 10 stars</b>. This drastically reduces the number of repositories we store and makes the tool more scalable (e.g., from preliminary analyses we performed on Java, < 5% of repositories have at least 10 stars). While we acknowledge that the number of stars is not a good proxy of repositories quality or relevance, we found the 10 stars threshold to be a reasonable mechanism to remove most of personal/toy projects unlikely to be relevant for empirical studies. <br/>
+                            <b>Mined Projects</b>
+                            <p class="pt-2 text-justify">
+                                As a design choice, we only mine information about <b>repositories having at least 10 stars</b>. This drastically reduces the number of repositories we store and makes the tool more scalable (e.g., from preliminary analyses we performed on Java, < 5% of repositories have at least 10 stars). While we acknowledge that the number of stars is not a good proxy of repositories quality or relevance, we found the 10 stars threshold to be a reasonable mechanism to remove most of personal/toy projects unlikely to be relevant for empirical studies.<br/><br/>
                                 Note that, since <i>seart-ghs</i> continuously updates the information about the mined projects, a project excluded in the first place as having < 10 stars can be mined a few days after once its number of stars reaches the set threshold.
                             </p>
-
                             <br/>
-                            <p class="p-2 text-justify">Report a bug & see known bugs: <a href="https://github.com/seart-group/ghs/issues" target="_blank"> Link to GitHub issue tracker</a></p>
+                            <p class="text-justify">To report a bug & see known bugs, head on over to the project <a href="https://github.com/seart-group/ghs/issues" target="_blank" style="font-size: medium;">issue tracker</a>.</p>
                         </div>
                     </div>
                 </div>
