@@ -87,8 +87,8 @@ input:focus:invalid {
 
 .back-to-top {
     position: fixed;
-    bottom: 24px;
-    right: 24px;
+    bottom: 48px;
+    right: 48px;
     display: none;
 }
 
