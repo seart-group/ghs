@@ -34,7 +34,7 @@ function appendResult(item) {
     let repo_lastCommitSHA = item.lastCommitSHA;
     let repo_hasWiki = item.hasWiki;
     let repo_isArchived = item.isArchived;
-    let repo_languages = item.languages.sort((x,y) => (x.sizeOfCode > y.sizeOfCode) ? -1 : 1);
+    let repo_languages = item.languages;
     let repo_labels = item.labels;
 
     let result = '<div id="repo-'+repo_id+'" class="pt-3"></div>';
@@ -107,17 +107,11 @@ function appendResult(item) {
     let row_8_col_1 = '<div class="col-12 mr-0 d-flex flex-wrap align-items-center align-content-between justify-content-start"></div>';
     let row_8_col_2 = '<div class="col-12 d-flex flex-wrap align-items-center align-content-between justify-content-start"></div>';
 
-    if (repo_languages.length > 0){
+    let entries = Object.keys(repo_languages);
+    let sizes = Object.values(repo_languages);
+    if (entries.length > 1){
         row_8_col_1 = $(row_8_col_1).append('<span class="mx-1">Languages:</span>');
-
-        let entries = [];
-        let sizes = [];
         let percentages = [];
-
-        repo_languages.forEach(lang => {
-            entries.push(lang.language);
-            sizes.push(lang.sizeOfCode);
-        });
 
         let totalSize = sizes.reduce((x,y) => x + y, 0);
 
@@ -148,7 +142,7 @@ function appendResult(item) {
     if (repo_labels.length > 0){
         row_9_col_1 = $(row_9_col_1).append('<span class="mx-1">Issue Labels:</span>');
         repo_labels.forEach(label => {
-            row_9_col_2 = $(row_9_col_2).append('<span class="badge badge-dark m-1">'+label.label+'</span>');
+            row_9_col_2 = $(row_9_col_2).append('<span class="badge badge-dark m-1">'+label+'</span>');
         });
         row_9 = $(row_9).addClass("pb-3");
         row_9 = $(row_9).addClass("border-bottom-0");
