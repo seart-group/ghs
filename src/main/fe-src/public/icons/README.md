@@ -28,50 +28,48 @@ Click **Load**, and you will be taken to a page containing the two aforementione
 
 After loading the project, Icomoon displays previews of each set and its contents.
 
-To add new icons to a set, click on the set options (the three parallel lines in the top right corner of a set: ≡) and choose **Import to Set**.
-Now simply select the SVG(s) you want to add to this set.
+To **add new icons** to a set, click on the set options (the three parallel lines in the top right corner of a set: ≡) and choose **Import to Set**. Now simply select the SVG(s) you want to add to this set.
+- Note: For the sake of consistency, use b&w icons for lannguages
+- Tip: This website seems a good starting point: https://logosear.ch/
 
-Removing icons from a set is also straight forward.
+**Removing icons** from a set is also straight forward.
 Press and hold ⌘ + ⌥ and click on the icon you want to remove.
 
 If you want to edit the icon set metadata (i.e. information related to the designer, project, license, ...), click on **Properties** in the set options.
 
 ## Exporting an Icon Set
+Note: The following steps should be done separately for each icon set (namely `languages` and `octicons-reduced`).
 
-The first step of exporting involves selecting the set icons.
-In the set options, choose **Select All**.
-The icons of the set should all be marked in yellow now.
-You can also manually specify which set icons to include/exclude by simply clicking on each individual icon.
-Once you are satisfied with your selection, click **Generate Font** in the lower right corner.
-
-You will be taken to a new page, where you may be prompted about "strokes being ignored when generating fonts".
-Just click **continue**, and you will be greeted with a set summary page, displaying all the icons.
-Take this opportunity to modify the name of each individual icon to your liking.
-Before downloading the set however, click the **small gear icon** in the lower right corner.
-Make sure that the **Font Name** and **Class Prefix** are set appropriately (`languages` should use `lang-`, while `octicons-reduced` should use `icon-`).
-You can also optionally set the icon set version at the very bottom of this menu.
-Once done, hit **Download** and you will receive an archive containing your new set of icons.
-
-## Importing the Icons Into GHS
-
-Extract the contents of the downloaded archive.
-You should have something like:
-
-```
-/icon-set-name
-├── Read Me.txt
-├── demo-files
-│     ├── demo.css
-│     └── demo.js
-├── demo.html
-├── fonts
-│     ├── icon-set-name.eot
-│     ├── icon-set-name.svg
-│     ├── icon-set-name.ttf
-│     └── icon-set-name.woff
-├── selection.json
-└── style.css
-```
-
-We only really care about `selection.json`, `style.css`, and the contents of `fonts`.
-Copy these aforementioned files into the corresponding icon set directory of `src/main/fe-src/public/icons`.
+1. The first step of exporting involves selecting the set icons.
+   1. For that, in the set options of your target set, choose **Select All**. The icons of the set should all be marked in yellow now.
+   2. You can also manually specify which set icons to include/exclude by simply clicking on each individual icon.
+2. Once you are satisfied with your selection, click **Generate Font** in the lower right corner.
+3. You will be taken to a new page, where you may be prompted about "strokes being ignored when generating fonts". Just click **continue**, and you will be greeted with a set summary page, displaying all the icons.
+4. For languages, make sure the name of each icon is exactly <ins>the name of language in database (`langauges` table) all in lower case</ins>. This is important, because in code we look for icons with `lang-<language-name>`.
+5. Click on the **small gear icon** right next to "Download" button.
+   1. For "languages": 
+      - **Font Name**: `languages`
+      - **Class Prefix**:`lang-`
+   2. For "octicons-reduced":
+      - **Font Name**: `octicons-reduced`
+      - **Class Prefix**:`icon-`
+   3. You can also optionally set the icon set version at the very bottom of this menu.
+6. Once done, hit **Download** and you will receive an archive containing your new set of icons, with the following structure:
+   - We only really care about `selection.json`, `style.css`, and the contents of `fonts`.
+    ```
+    /icon-set-name
+    ├── Read Me.txt
+    ├── demo-files
+    │     ├── demo.css
+    │     └── demo.js
+    ├── demo.html
+    ├── fonts
+    │     ├── icon-set-name.eot
+    │     ├── icon-set-name.svg
+    │     ├── icon-set-name.ttf
+    │     └── icon-set-name.woff
+    ├── selection.json
+    └── style.css
+    ```
+7. Copy these aforementioned files into the corresponding icon set directory of `src/main/fe-src/public/icons`
+8. To update `GHS.json`, TODO
