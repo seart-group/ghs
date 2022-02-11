@@ -30,8 +30,11 @@ Please add a [new issue](https://github.com/seart-group/ghs/issues/) and we will
    1. Flyway migration file (recommended): Create a new file `src/main/resources/db/migration/Vx__NewLangs.sql` containing:
       `INSERT INTO supported_language (name,added) VALUES ('C++',current_timestamp);`
    2. Or, manually editing the table.
-   - **Note**: A comprehensive list of valid languages (and their aliases) are available at [here](https://github.com/github/linguist/blob/master/lib/linguist/languages.yml). Plus you can see a similar list at [GitHub Advanced Search Page](https://github.com/search/advanced). You can use the following link to verify if a language, say "C++" is valid: `https://api.github.com/search/repositories?q=language:C%2B%2B`. 
-2. Add the new **language icon**:
-   See the following commit: [Adding C# on December 17th 2020](https://github.com/seart-group/ghs/commit/2fd9c1da171119f5d33fd157b2275ad6429264ce)
+   - **Note**: 
+     - A comprehensive list of valid languages (and their aliases) are available at [here](https://github.com/github/linguist/blob/master/lib/linguist/languages.yml). 
+     - Plus you can see a similar list at [GitHub Advanced Search Page](https://github.com/search/advanced). 
+     - You can use the following link to verify if a language is valid, and gives an upper-bound for the number of new repositories to be mined:
+       - Example: `C++` -> `C%2B%2B`:`https://api.github.com/search/repositories?q=is:public+stars:%3E10+language:C%2B%2B`. 
+2. Add the new **language icon**: See [this guide](./src/main/fe-src/public/icons/README.md)
    
 
