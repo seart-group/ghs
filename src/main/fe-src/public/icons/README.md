@@ -18,11 +18,11 @@ In this way, we can link each icon to a CSS class, and easily integrate them int
 ## Setting Up the GHS Icomoon Project
 
 To modify the existing icon sets, one must first set up the corresponding Icomoon project that contains them.
-This first step involves navigating to the [icomoon project selection](https://icomoon.io/app/#/projects) page.
-While there, you will be presented with the option to **Import Project**.
-In the file selection pop-up, choose `GHS.json` and click open.
-The list of projects should now contain **GHS**.
-Click **Load**, and you will be taken to a page containing the two aforementioned icon sets.
+1. This first step involves navigating to the [icomoon project selection](https://icomoon.io/app/#/projects) page.
+2. While there, you will be presented with the option to **Import Project**.
+3. In the file selection pop-up, choose `[languages|octicons-reduced]/selection.json` and click open.
+4. The list of projects should now contain a new **Untitled** project.
+5. Click **Load**, and you will be taken to a page containing the two aforementioned icon sets.
 
 ## Modifying Icon Sets
 
@@ -72,4 +72,7 @@ Note: The following steps should be done separately for each icon set (namely `l
     └── style.css
     ```
 7. Copy these aforementioned files into the corresponding icon set directory of `src/main/fe-src/public/icons`
-8. To update `GHS.json`, TODO
+
+
+## Troubleshooting
+- In case you noticed some icons are not shown, look at the browser's console and if it's 403 error for accessing icons try update the folder permission with (eg languages): `chmod -R +rx src/main/fe-src/public/icons/languages/` 
