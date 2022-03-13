@@ -218,9 +218,9 @@ public class GitRepoSpecification implements Specification<GitRepo> {
 
         Range committed = (Range) parameters.get("committed");
         if (committed.hasLowerBound())
-            specification.add(new KeyValueCriteria(GitRepo_.PUSHED_AT, committed.lowerEndpoint(), BinaryOperation.GREATER_THAN_EQUAL));
+            specification.add(new KeyValueCriteria(GitRepo_.LAST_COMMIT, committed.lowerEndpoint(), BinaryOperation.GREATER_THAN_EQUAL));
         if (committed.hasUpperBound())
-            specification.add(new KeyValueCriteria(GitRepo_.PUSHED_AT, committed.upperEndpoint(), BinaryOperation.LESS_THAN_EQUAL));
+            specification.add(new KeyValueCriteria(GitRepo_.LAST_COMMIT, committed.upperEndpoint(), BinaryOperation.LESS_THAN_EQUAL));
 
         boolean excludeForks = (Boolean) parameters.get("excludeForks");
         boolean onlyForks = (Boolean) parameters.get("onlyForks");
