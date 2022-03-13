@@ -56,7 +56,7 @@ import java.util.stream.Collectors;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
 public class GitRepoController {
-    public static String downloadFolder = "download-temp";
+    public static final String downloadFolder = "download-temp";
 
     static CsvSchema csvSchema = GitRepoDto.getCsvSchema();
     static CsvMapper csvMapper;
