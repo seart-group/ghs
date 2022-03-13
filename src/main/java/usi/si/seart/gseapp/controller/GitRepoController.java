@@ -367,6 +367,8 @@ public class GitRepoController {
                     mediaType += format;
                     xmlMapper.writer().withRootName("result").writeValue(tempFile, new XmlWrapper(searchParams, dtos));
                     break;
+                default:
+                    throw new IllegalStateException("Default portion of this switch should not be reachable!");
             }
         } catch (IOException ex) {
             log.error(ex.getMessage());
