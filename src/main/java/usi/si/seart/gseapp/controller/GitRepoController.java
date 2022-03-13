@@ -76,7 +76,7 @@ public class GitRepoController {
             GitRepo_.WATCHERS,
             GitRepo_.FORKS,
             GitRepo_.CREATED_AT,
-            GitRepo_.PUSHED_AT
+            GitRepo_.LAST_COMMIT
     );
 
     static Set<String> supportedFormats = Set.of("csv", "json", "xml");
