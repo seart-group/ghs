@@ -343,7 +343,7 @@ public class GitRepoController {
         List<GitRepoDto> dtos = List.of(conversionService.convert(results.toArray(new GitRepo[0]), GitRepoDto[].class));
 
         String tempFileName = System.currentTimeMillis() + ".temp";
-        File tempFile = new File(downloadFolder + "/" + tempFileName);
+        File tempFile = new File(downloadFolder, tempFileName);
 
         Map<String, Object> searchParams = constructParameterMap(
                 name, nameEquals, language, license, label, commitsMin, commitsMax, contributorsMin,
