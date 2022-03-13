@@ -358,20 +358,15 @@ public class GitRepoController {
             switch (format){
                 case "csv":
                     mediaType += format;
-                    csvMapper.writerWithDefaultPrettyPrinter()
-                            .with(csvSchema)
-                            .writeValue(tempFile, dtos);
+                    csvMapper.writer().with(csvSchema).writeValue(tempFile, dtos);
                     break;
                 case "json":
                     mediaType += "plain";
-                    objMapper.writerWithDefaultPrettyPrinter()
-                            .writeValue(tempFile, new JsonWrapper(searchParams, dtos.size(), dtos));
+                    objMapper.writer().writeValue(tempFile, new JsonWrapper(searchParams, dtos.size(), dtos));
                     break;
                 case "xml":
                     mediaType += format;
-                    xmlMapper.writerWithDefaultPrettyPrinter()
-                            .withRootName("result")
-                            .writeValue(tempFile, new XmlWrapper(searchParams, dtos));
+                    xmlMapper.writer().withRootName("result").writeValue(tempFile, new XmlWrapper(searchParams, dtos));
                     break;
             }
         } catch (IOException ex) {
