@@ -9,21 +9,16 @@ function formatBytes(bytes, decimals = 2) {
 
 // https://gist.github.com/niallo/3109252?permalink_comment_id=1474669#gistcomment-1474669
 function parseLinkHeader(header) {
-    if (header.length === 0) {
-        throw new Error("Input must not be of zero length");
-    }
-
-    const parts = header.split(', ');
     const links = {};
-    for(let i = 0; i < parts.length; i++) {
-        const section = parts[i].split(';');
-        if (section.length !== 2) {
-            throw new Error("Section could not be split on ';'");
-        }
+    const parts = header.split(', ').filter(Boolean);
+
+    parts.forEach(part => {
+        const section = part.split(';');
+        if (section.length !== 2) throw new Error("Malformed header value: " + part);
         const url = section[0].replace(/<(.*)>/, '$1').trim();
         const name = section[1].replace(/rel="(.*)"/, '$1').trim();
         links[name] = url;
-    }
+    })
 
     return links;
 }
