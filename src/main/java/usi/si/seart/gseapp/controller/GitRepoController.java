@@ -18,8 +18,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.format.annotation.DateTimeFormat;
-import org.springframework.hateoas.Link;
-import org.springframework.hateoas.mvc.ControllerLinkBuilder;
+import org.springframework.hateoas.IanaLinkRelations;
+import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -171,59 +171,59 @@ public class GitRepoController {
         List<String> links = new ArrayList<>();
 
         if (!results.isFirst()){
-            String first = ControllerLinkBuilder.linkTo(
-                    ControllerLinkBuilder.methodOn(GitRepoController.class).searchRepos(
+            String first = WebMvcLinkBuilder.linkTo(
+                    WebMvcLinkBuilder.methodOn(GitRepoController.class).searchRepos(
                             name, nameEquals, language, license, label, commitsMin, commitsMax, contributorsMin,
                             contributorsMax, issuesMin, issuesMax, pullsMin, pullsMax, branchesMin, branchesMax,
                             releasesMin, releasesMax, starsMin, starsMax, watchersMin, watchersMax, forksMin, forksMax,
                             createdMin, createdMax, committedMin, committedMax, excludeForks, onlyForks, hasIssues,
                             hasPulls, hasWiki, hasLicense, 0, sort
                     )
-            ).withRel(Link.REL_FIRST).expand().toString();
+            ).withRel(IanaLinkRelations.FIRST).expand().toString();
             links.add(first);
         }
 
         if (results.hasPrevious()){
-            String prev = ControllerLinkBuilder.linkTo(
-                    ControllerLinkBuilder.methodOn(GitRepoController.class).searchRepos(
+            String prev = WebMvcLinkBuilder.linkTo(
+                    WebMvcLinkBuilder.methodOn(GitRepoController.class).searchRepos(
                             name, nameEquals, language, license, label, commitsMin, commitsMax, contributorsMin,
                             contributorsMax, issuesMin, issuesMax, pullsMin, pullsMax, branchesMin, branchesMax,
                             releasesMin, releasesMax, starsMin, starsMax, watchersMin, watchersMax, forksMin, forksMax,
                             createdMin, createdMax, committedMin, committedMax, excludeForks, onlyForks, hasIssues,
                             hasPulls, hasWiki, hasLicense, page - 1, sort
                     )
-            ).withRel(Link.REL_PREVIOUS).expand().toString();
+            ).withRel(IanaLinkRelations.PREV).expand().toString();
             links.add(prev);
         }
 
         if (results.hasNext()){
-            String next = ControllerLinkBuilder.linkTo(
-                    ControllerLinkBuilder.methodOn(GitRepoController.class).searchRepos(
+            String next = WebMvcLinkBuilder.linkTo(
+                    WebMvcLinkBuilder.methodOn(GitRepoController.class).searchRepos(
                             name, nameEquals, language, license, label, commitsMin, commitsMax, contributorsMin,
                             contributorsMax, issuesMin, issuesMax, pullsMin, pullsMax, branchesMin, branchesMax,
                             releasesMin, releasesMax, starsMin, starsMax, watchersMin, watchersMax, forksMin, forksMax,
                             createdMin, createdMax, committedMin, committedMax, excludeForks, onlyForks, hasIssues,
                             hasPulls, hasWiki, hasLicense, page + 1, sort
                     )
-            ).withRel(Link.REL_NEXT).expand().toString();
+            ).withRel(IanaLinkRelations.NEXT).expand().toString();
             links.add(next);
         }
 
         if (!results.isLast()){
-            String last = ControllerLinkBuilder.linkTo(
-                    ControllerLinkBuilder.methodOn(GitRepoController.class).searchRepos(
+            String last = WebMvcLinkBuilder.linkTo(
+                    WebMvcLinkBuilder.methodOn(GitRepoController.class).searchRepos(
                             name, nameEquals, language, license, label, commitsMin, commitsMax, contributorsMin,
                             contributorsMax, issuesMin, issuesMax, pullsMin, pullsMax, branchesMin, branchesMax,
                             releasesMin, releasesMax, starsMin, starsMax, watchersMin, watchersMax, forksMin, forksMax,
                             createdMin, createdMax, committedMin, committedMax, excludeForks, onlyForks, hasIssues,
                             hasPulls, hasWiki, hasLicense, totalPages - 1, sort
                     )
-            ).withRel(Link.REL_LAST).expand().toString();
+            ).withRel(IanaLinkRelations.LAST).expand().toString();
             links.add(last);
         }
 
-        String base = ControllerLinkBuilder.linkTo(
-                ControllerLinkBuilder.methodOn(GitRepoController.class).searchRepos(
+        String base = WebMvcLinkBuilder.linkTo(
+                WebMvcLinkBuilder.methodOn(GitRepoController.class).searchRepos(
                         name, nameEquals, language, license, label, commitsMin, commitsMax, contributorsMin,
                         contributorsMax, issuesMin, issuesMax, pullsMin, pullsMax, branchesMin, branchesMax,
                         releasesMin, releasesMax, starsMin, starsMax, watchersMin, watchersMax, forksMin, forksMax,
@@ -236,8 +236,8 @@ public class GitRepoController {
         List<String> download = new ArrayList<>();
 
         if (totalItems > 0) {
-            String csv = ControllerLinkBuilder.linkTo(
-                    ControllerLinkBuilder.methodOn(GitRepoController.class).downloadRepos(
+            String csv = WebMvcLinkBuilder.linkTo(
+                    WebMvcLinkBuilder.methodOn(GitRepoController.class).downloadRepos(
                             "csv", name, nameEquals, language, license, label, commitsMin, commitsMax, contributorsMin,
                             contributorsMax, issuesMin, issuesMax, pullsMin, pullsMax, branchesMin, branchesMax,
                             releasesMin, releasesMax, starsMin, starsMax, watchersMin, watchersMax, forksMin, forksMax,
@@ -245,8 +245,8 @@ public class GitRepoController {
                             hasPulls, hasWiki, hasLicense
                     )
             ).withRel("csv").expand().toString();
-            String xml = ControllerLinkBuilder.linkTo(
-                    ControllerLinkBuilder.methodOn(GitRepoController.class).downloadRepos(
+            String xml = WebMvcLinkBuilder.linkTo(
+                    WebMvcLinkBuilder.methodOn(GitRepoController.class).downloadRepos(
                             "xml", name, nameEquals, language, license, label, commitsMin, commitsMax, contributorsMin,
                             contributorsMax, issuesMin, issuesMax, pullsMin, pullsMax, branchesMin, branchesMax,
                             releasesMin, releasesMax, starsMin, starsMax, watchersMin, watchersMax, forksMin, forksMax,
@@ -254,8 +254,8 @@ public class GitRepoController {
                             hasPulls, hasWiki, hasLicense
                     )
             ).withRel("xml").expand().toString();
-            String json = ControllerLinkBuilder.linkTo(
-                    ControllerLinkBuilder.methodOn(GitRepoController.class).downloadRepos(
+            String json = WebMvcLinkBuilder.linkTo(
+                    WebMvcLinkBuilder.methodOn(GitRepoController.class).downloadRepos(
                             "json", name, nameEquals, language, license, label, commitsMin, commitsMax, contributorsMin,
                             contributorsMax, issuesMin, issuesMax, pullsMin, pullsMax, branchesMin, branchesMax,
                             releasesMin, releasesMax, starsMin, starsMax, watchersMin, watchersMax, forksMin, forksMax,
