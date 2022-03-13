@@ -47,6 +47,10 @@ public class GitRepoSpecification implements Specification<GitRepo> {
                 handle(predicates, root, criteriaBuilder, (KeyValueCriteria) criteria);
             } else if (criteria instanceof NestedKeyValueCriteria) {
                 handle(predicates, root, criteriaBuilder, (NestedKeyValueCriteria) criteria);
+            } else {
+                throw new UnsupportedOperationException(
+                        "Criteria type: ["+criteria.getClass().getCanonicalName()+"] not supported!"
+                );
             }
         }
 
@@ -63,6 +67,8 @@ public class GitRepoSpecification implements Specification<GitRepo> {
             case IS_NOT_NULL:
                 predicates.add(criteriaBuilder.isNotNull(root.get(key)));
                 break;
+            default:
+                throw new UnsupportedOperationException("Operation: ["+operation+"] not supported!");
         }
     }
 
@@ -102,6 +108,8 @@ public class GitRepoSpecification implements Specification<GitRepo> {
                         )
                 );
                 break;
+            default:
+                throw new UnsupportedOperationException("Operation: ["+operation+"] not supported!");
         }
     }
 
@@ -117,6 +125,8 @@ public class GitRepoSpecification implements Specification<GitRepo> {
             case IN:
                 predicates.add(criteriaBuilder.equal(root.join(outerKey).get(innerKey), value.toString()));
                 break;
+            default:
+                throw new UnsupportedOperationException("Operation: ["+operation+"] not supported!");
         }
     }
 
