@@ -24,6 +24,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -268,19 +269,17 @@ public class GitRepoController {
             download.add(json);
         }
 
-        return new ResponseEntity<>(
-                new LinkedHashMap<>(){{
-                    put("totalPages", totalPages);
-                    put("totalItems", totalItems);
-                    put("page", page + 1);
-                    put("items", dtos);
-                }},
-                new LinkedMultiValueMap<>(){{
-                    add("Links", String.join(", ", links));
-                    add("Download", String.join(", ", download));
-                }},
-                HttpStatus.OK
-        );
+        Map<String, Object> resultPage = new LinkedHashMap<>();
+        resultPage.put("totalPages", totalPages);
+        resultPage.put("totalItems", totalItems);
+        resultPage.put("page", page + 1);
+        resultPage.put("items", dtos);
+
+        MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
+        headers.add("Links", String.join(", ", links));
+        headers.add("Download", String.join(", ", download));
+
+        return new ResponseEntity<>(resultPage, headers, HttpStatus.OK);
     }
 
     @GetMapping(value = "/r/download/{format}")
