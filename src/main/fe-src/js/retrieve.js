@@ -287,6 +287,7 @@ function retrieve(url) {
     }).catch(err => {
         console.log(err);
         let connect_err = '<div><div class="row mw-100 py-3 mx-3"><div class="col d-flex align-items-center justify-content-center px-0"><i class="mx-1 fa fa-frown-o" style="color: #6c757d"></i><span class="text-secondary">Error connecting to DEVINTA server</span></div></div></div>';
+        $loading_modal.modal("hide");
         $download_json_button.addClass('disabled');
         $download_xml_button.addClass('disabled');
         $download_csv_button.addClass('disabled');
