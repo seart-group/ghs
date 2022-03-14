@@ -18,12 +18,13 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.format.annotation.DateTimeFormat;
-import org.springframework.hateoas.Link;
-import org.springframework.hateoas.mvc.ControllerLinkBuilder;
+import org.springframework.hateoas.IanaLinkRelations;
+import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -56,7 +57,7 @@ import java.util.stream.Collectors;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
 public class GitRepoController {
-    public static String downloadFolder = "download-temp";
+    public static final String downloadFolder = "download-temp";
 
     static CsvSchema csvSchema = GitRepoDto.getCsvSchema();
     static CsvMapper csvMapper;
@@ -75,7 +76,7 @@ public class GitRepoController {
             GitRepo_.WATCHERS,
             GitRepo_.FORKS,
             GitRepo_.CREATED_AT,
-            GitRepo_.PUSHED_AT
+            GitRepo_.LAST_COMMIT
     );
 
     static Set<String> supportedFormats = Set.of("csv", "json", "xml");
@@ -89,6 +90,7 @@ public class GitRepoController {
         objMapper.setDateFormat(df);
         xmlMapper = new XmlMapper();
         xmlMapper.configure(ToXmlGenerator.Feature.WRITE_XML_DECLARATION, true);
+        xmlMapper.configure(ToXmlGenerator.Feature.WRITE_XML_1_1, true);
         xmlMapper.setDateFormat(df);
     }
 
@@ -121,10 +123,10 @@ public class GitRepoController {
             @RequestParam(required = false) Long watchersMax,
             @RequestParam(required = false) Long forksMin,
             @RequestParam(required = false) Long forksMax,
-            @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Date createdMin,
-            @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Date createdMax,
-            @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Date committedMin,
-            @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Date committedMax,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) Date createdMin,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) Date createdMax,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) Date committedMin,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) Date committedMax,
             @RequestParam(required = false, defaultValue = "false") Boolean excludeForks,
             @RequestParam(required = false, defaultValue = "false") Boolean onlyForks,
             @RequestParam(required = false, defaultValue = "false") Boolean hasIssues,
@@ -170,59 +172,59 @@ public class GitRepoController {
         List<String> links = new ArrayList<>();
 
         if (!results.isFirst()){
-            String first = ControllerLinkBuilder.linkTo(
-                    ControllerLinkBuilder.methodOn(GitRepoController.class).searchRepos(
+            String first = WebMvcLinkBuilder.linkTo(
+                    WebMvcLinkBuilder.methodOn(GitRepoController.class).searchRepos(
                             name, nameEquals, language, license, label, commitsMin, commitsMax, contributorsMin,
                             contributorsMax, issuesMin, issuesMax, pullsMin, pullsMax, branchesMin, branchesMax,
                             releasesMin, releasesMax, starsMin, starsMax, watchersMin, watchersMax, forksMin, forksMax,
                             createdMin, createdMax, committedMin, committedMax, excludeForks, onlyForks, hasIssues,
                             hasPulls, hasWiki, hasLicense, 0, sort
                     )
-            ).withRel(Link.REL_FIRST).expand().toString();
+            ).withRel(IanaLinkRelations.FIRST).expand().toString();
             links.add(first);
         }
 
         if (results.hasPrevious()){
-            String prev = ControllerLinkBuilder.linkTo(
-                    ControllerLinkBuilder.methodOn(GitRepoController.class).searchRepos(
+            String prev = WebMvcLinkBuilder.linkTo(
+                    WebMvcLinkBuilder.methodOn(GitRepoController.class).searchRepos(
                             name, nameEquals, language, license, label, commitsMin, commitsMax, contributorsMin,
                             contributorsMax, issuesMin, issuesMax, pullsMin, pullsMax, branchesMin, branchesMax,
                             releasesMin, releasesMax, starsMin, starsMax, watchersMin, watchersMax, forksMin, forksMax,
                             createdMin, createdMax, committedMin, committedMax, excludeForks, onlyForks, hasIssues,
                             hasPulls, hasWiki, hasLicense, page - 1, sort
                     )
-            ).withRel(Link.REL_PREVIOUS).expand().toString();
+            ).withRel(IanaLinkRelations.PREV).expand().toString();
             links.add(prev);
         }
 
         if (results.hasNext()){
-            String next = ControllerLinkBuilder.linkTo(
-                    ControllerLinkBuilder.methodOn(GitRepoController.class).searchRepos(
+            String next = WebMvcLinkBuilder.linkTo(
+                    WebMvcLinkBuilder.methodOn(GitRepoController.class).searchRepos(
                             name, nameEquals, language, license, label, commitsMin, commitsMax, contributorsMin,
                             contributorsMax, issuesMin, issuesMax, pullsMin, pullsMax, branchesMin, branchesMax,
                             releasesMin, releasesMax, starsMin, starsMax, watchersMin, watchersMax, forksMin, forksMax,
                             createdMin, createdMax, committedMin, committedMax, excludeForks, onlyForks, hasIssues,
                             hasPulls, hasWiki, hasLicense, page + 1, sort
                     )
-            ).withRel(Link.REL_NEXT).expand().toString();
+            ).withRel(IanaLinkRelations.NEXT).expand().toString();
             links.add(next);
         }
 
         if (!results.isLast()){
-            String last = ControllerLinkBuilder.linkTo(
-                    ControllerLinkBuilder.methodOn(GitRepoController.class).searchRepos(
+            String last = WebMvcLinkBuilder.linkTo(
+                    WebMvcLinkBuilder.methodOn(GitRepoController.class).searchRepos(
                             name, nameEquals, language, license, label, commitsMin, commitsMax, contributorsMin,
                             contributorsMax, issuesMin, issuesMax, pullsMin, pullsMax, branchesMin, branchesMax,
                             releasesMin, releasesMax, starsMin, starsMax, watchersMin, watchersMax, forksMin, forksMax,
                             createdMin, createdMax, committedMin, committedMax, excludeForks, onlyForks, hasIssues,
                             hasPulls, hasWiki, hasLicense, totalPages - 1, sort
                     )
-            ).withRel(Link.REL_LAST).expand().toString();
+            ).withRel(IanaLinkRelations.LAST).expand().toString();
             links.add(last);
         }
 
-        String base = ControllerLinkBuilder.linkTo(
-                ControllerLinkBuilder.methodOn(GitRepoController.class).searchRepos(
+        String base = WebMvcLinkBuilder.linkTo(
+                WebMvcLinkBuilder.methodOn(GitRepoController.class).searchRepos(
                         name, nameEquals, language, license, label, commitsMin, commitsMax, contributorsMin,
                         contributorsMax, issuesMin, issuesMax, pullsMin, pullsMax, branchesMin, branchesMax,
                         releasesMin, releasesMax, starsMin, starsMax, watchersMin, watchersMax, forksMin, forksMax,
@@ -235,8 +237,8 @@ public class GitRepoController {
         List<String> download = new ArrayList<>();
 
         if (totalItems > 0) {
-            String csv = ControllerLinkBuilder.linkTo(
-                    ControllerLinkBuilder.methodOn(GitRepoController.class).downloadRepos(
+            String csv = WebMvcLinkBuilder.linkTo(
+                    WebMvcLinkBuilder.methodOn(GitRepoController.class).downloadRepos(
                             "csv", name, nameEquals, language, license, label, commitsMin, commitsMax, contributorsMin,
                             contributorsMax, issuesMin, issuesMax, pullsMin, pullsMax, branchesMin, branchesMax,
                             releasesMin, releasesMax, starsMin, starsMax, watchersMin, watchersMax, forksMin, forksMax,
@@ -244,8 +246,8 @@ public class GitRepoController {
                             hasPulls, hasWiki, hasLicense
                     )
             ).withRel("csv").expand().toString();
-            String xml = ControllerLinkBuilder.linkTo(
-                    ControllerLinkBuilder.methodOn(GitRepoController.class).downloadRepos(
+            String xml = WebMvcLinkBuilder.linkTo(
+                    WebMvcLinkBuilder.methodOn(GitRepoController.class).downloadRepos(
                             "xml", name, nameEquals, language, license, label, commitsMin, commitsMax, contributorsMin,
                             contributorsMax, issuesMin, issuesMax, pullsMin, pullsMax, branchesMin, branchesMax,
                             releasesMin, releasesMax, starsMin, starsMax, watchersMin, watchersMax, forksMin, forksMax,
@@ -253,8 +255,8 @@ public class GitRepoController {
                             hasPulls, hasWiki, hasLicense
                     )
             ).withRel("xml").expand().toString();
-            String json = ControllerLinkBuilder.linkTo(
-                    ControllerLinkBuilder.methodOn(GitRepoController.class).downloadRepos(
+            String json = WebMvcLinkBuilder.linkTo(
+                    WebMvcLinkBuilder.methodOn(GitRepoController.class).downloadRepos(
                             "json", name, nameEquals, language, license, label, commitsMin, commitsMax, contributorsMin,
                             contributorsMax, issuesMin, issuesMax, pullsMin, pullsMax, branchesMin, branchesMax,
                             releasesMin, releasesMax, starsMin, starsMax, watchersMin, watchersMax, forksMin, forksMax,
@@ -268,19 +270,17 @@ public class GitRepoController {
             download.add(json);
         }
 
-        return new ResponseEntity<>(
-                new LinkedHashMap<>(){{
-                    put("totalPages", totalPages);
-                    put("totalItems", totalItems);
-                    put("page", page + 1);
-                    put("items", dtos);
-                }},
-                new LinkedMultiValueMap<>(){{
-                    add("Links", String.join(", ", links));
-                    add("Download", String.join(", ", download));
-                }},
-                HttpStatus.OK
-        );
+        Map<String, Object> resultPage = new LinkedHashMap<>();
+        resultPage.put("totalPages", totalPages);
+        resultPage.put("totalItems", totalItems);
+        resultPage.put("page", page + 1);
+        resultPage.put("items", dtos);
+
+        MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
+        headers.add("Links", String.join(", ", links));
+        headers.add("Download", String.join(", ", download));
+
+        return new ResponseEntity<>(resultPage, headers, HttpStatus.OK);
     }
 
     @GetMapping(value = "/r/download/{format}")
@@ -309,10 +309,10 @@ public class GitRepoController {
             @RequestParam(required = false) Long watchersMax,
             @RequestParam(required = false) Long forksMin,
             @RequestParam(required = false) Long forksMax,
-            @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Date createdMin,
-            @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Date createdMax,
-            @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Date committedMin,
-            @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Date committedMax,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) Date createdMin,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) Date createdMax,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) Date committedMin,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) Date committedMax,
             @RequestParam(required = false, defaultValue = "false") Boolean excludeForks,
             @RequestParam(required = false, defaultValue = "false") Boolean onlyForks,
             @RequestParam(required = false, defaultValue = "false") Boolean hasIssues,
@@ -343,7 +343,7 @@ public class GitRepoController {
         List<GitRepoDto> dtos = List.of(conversionService.convert(results.toArray(new GitRepo[0]), GitRepoDto[].class));
 
         String tempFileName = System.currentTimeMillis() + ".temp";
-        File tempFile = new File(downloadFolder + "/" + tempFileName);
+        File tempFile = new File(downloadFolder, tempFileName);
 
         Map<String, Object> searchParams = constructParameterMap(
                 name, nameEquals, language, license, label, commitsMin, commitsMax, contributorsMin,
@@ -358,21 +358,18 @@ public class GitRepoController {
             switch (format){
                 case "csv":
                     mediaType += format;
-                    csvMapper.writerWithDefaultPrettyPrinter()
-                            .with(csvSchema)
-                            .writeValue(tempFile, dtos);
+                    csvMapper.writer().with(csvSchema).writeValue(tempFile, dtos);
                     break;
                 case "json":
                     mediaType += "plain";
-                    objMapper.writerWithDefaultPrettyPrinter()
-                            .writeValue(tempFile, new JsonWrapper(searchParams, dtos.size(), dtos));
+                    objMapper.writer().writeValue(tempFile, new JsonWrapper(searchParams, dtos.size(), dtos));
                     break;
                 case "xml":
                     mediaType += format;
-                    xmlMapper.writerWithDefaultPrettyPrinter()
-                            .withRootName("result")
-                            .writeValue(tempFile, new XmlWrapper(searchParams, dtos));
+                    xmlMapper.writer().withRootName("result").writeValue(tempFile, new XmlWrapper(searchParams, dtos));
                     break;
+                default:
+                    throw new IllegalStateException("Default portion of this switch should not be reachable!");
             }
         } catch (IOException ex) {
             log.error(ex.getMessage());

@@ -1,6 +1,8 @@
 package usi.si.seart.gseapp.job;
 
 import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.experimental.NonFinal;
 import lombok.extern.slf4j.Slf4j;
@@ -23,20 +25,16 @@ import java.util.concurrent.TimeUnit;
 @Service
 @EnableScheduling
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
+@RequiredArgsConstructor(onConstructor_ = @Autowired)
 public class CleanUpProjectsJob {
 
     private static final int RUN_COMMAND_TIMEOUT = -3;
 
-    @NonFinal boolean running = false;
+    @NonFinal
+    boolean running = false;
+
     GitRepoRepository gitRepoRepository;
 
-    @Autowired
-    public CleanUpProjectsJob(GitRepoRepository gitRepoRepository)
-    {
-        this.gitRepoRepository = gitRepoRepository;
-    }
-
-//  @EventListener(ApplicationReadyEvent.class) // instead of scheduling, this line runs the method once server is up
     @Scheduled(fixedRateString = "#{@applicationPropertyServiceImpl.getCleanUpScheduling()}")
     public void run(){
         if (this.running) {
@@ -44,51 +42,48 @@ public class CleanUpProjectsJob {
             return;
         }
         this.running = true;
-        CleanUp();
+        cleanUp();
         this.running = false;
     }
 
-    private void CleanUp() {
-        log.info("CleanUpProjectsJob started ....");
+    private void cleanUp() {
+        log.info("CleanUpProjectsJob started ...");
         List<String> allRepos = gitRepoRepository.findAllRepoNames();
 
-        final int TOTAL = allRepos.size();
-        log.info("CleanUpProjectsJob started on {} repositories ...", TOTAL);
+        final int totalRepos = allRepos.size();
+        log.info("CleanUpProjectsJob started on {} repositories ...", totalRepos);
 
-        int cur=0, nDeleted=0;
-        for(String repo: allRepos)
-        {
-            cur++;
+        int totalDeleted = 0;
+        for (int i = 0; i < allRepos.size(); i++) {
+            String repo = allRepos.get(i);
             String repoURL = String.format("https://github.com/%s", repo);
-//            logger.debug("{}/{}\tChecking if repo exists: {}",cur, TOTAL, repoURL);
-            boolean exists = CheckIfRepoExists(repoURL);
-            if(exists==false) {
-                log.info("{}/{}\tChecking if repo exists: {} ==> TO BE DELETED", cur, TOTAL, repoURL);
-                Optional<GitRepo> opt = gitRepoRepository.findGitRepoByName(repo.toLowerCase());
-                if (opt.isPresent()) {
-                    GitRepo existing = opt.get();
+            boolean exists = checkIfRepoExists(repoURL);
+            if (!exists) {
+                log.info("{}/{}\tChecking if repo exists: {} ==> TO BE DELETED", i, totalRepos, repoURL);
+                Optional<GitRepo> optional = gitRepoRepository.findGitRepoByName(repo.toLowerCase());
+                if (optional.isPresent()) {
+                    GitRepo existing = optional.get();
                     gitRepoRepository.delete(existing);
-                    nDeleted++;
+                    totalDeleted++;
                 }
             }
         }
-        log.info("CleanUpProjectsJob finished on {} repositories. {} DELETED.", TOTAL, nDeleted);
+
+        log.info("CleanUpProjectsJob finished on {} repositories. {} DELETED.", totalRepos, totalDeleted);
     }
 
 
 
     /**
      * Check if a repo at given url is publicly available.
-     * @param repo_http_url The http url of the repo. Technically the same code should also work for ssh url, but in my
-     *                      tests, ssh prompts (for adding fingerprint, whatsoever) which kills the command as we disabled
-     *                      prompts. (Prompts should remain disabled, otherwise GitHub asks user/pass for private repos)
+     * @param repoUrl The http url of the repo. Technically the same code should also work for ssh url, but in my tests,
+     *                ssh prompts (for adding fingerprint, whatsoever) which kills the command as we disabled prompts.
+     *                (Prompts should remain disabled, otherwise GitHub asks user/pass for private repos)
      */
-    private boolean CheckIfRepoExists(String repo_http_url)
-    {
+    private boolean checkIfRepoExists(String repoUrl) {
         boolean res;
         try {
-            String[] cmd_array = List.of("git", "ls-remote", repo_http_url).toArray(new String[0]);
-            ProcessBuilder pb = new ProcessBuilder(cmd_array);
+            ProcessBuilder pb = new ProcessBuilder("git", "ls-remote", repoUrl);
             pb.environment().put("GIT_TERMINAL_PROMPT", "0");
             Process process = pb.start();
 
@@ -98,43 +93,36 @@ public class CleanUpProjectsJob {
             errorConsumer.start();
 
             boolean noTimeout = process.waitFor(60, TimeUnit.SECONDS);
-            int returnCode = 0;
-            if(noTimeout)
+            int returnCode;
+            if (noTimeout) {
                 returnCode = process.exitValue();
-            else {
-                while(process.isAlive()) {
-                    System.err.println("Trying to kill timed-out process "+process.pid()+" ...");
-                    process.destroyForcibly();
-                }
-                returnCode =  RUN_COMMAND_TIMEOUT;
+            } else {
+                long pid = process.pid();
+                log.error("Attempting to terminate timed-out process: [{}] ...", pid);
+                while (process.isAlive()) process.destroyForcibly();
+                log.info("Process [{}] terminated!", pid);
+                returnCode = RUN_COMMAND_TIMEOUT;
             }
 
             // Why also RUN_COMMAND_TIMEOUT? Because it's safer to keep projects which we fail to check, than removing them
             // from db. Let's say there is a bug with our implementation, do we prefer to lose repos one by one? nope.
             // Once the code is reviewed, we can drop the "res == RUN_COMMAND_TIMEOUT" part.
             res = (returnCode == 0 || returnCode == RUN_COMMAND_TIMEOUT);
-        } catch (Exception e) {
-            System.err.println("Exception: "+e);
-            e.printStackTrace();
+        } catch (Exception ex) {
+            log.error("An exception has occurred during cleanup!", ex);
             res = true; // We return "true" to prevent deleting repos from GHS database in case of errors
         }
 
         return res;
     }
 
-    public static class InputStreamConsumerThread extends Thread
-    {
+    @AllArgsConstructor(access = AccessLevel.PRIVATE)
+    private static class InputStreamConsumerThread extends Thread {
         private final InputStream is;
 
-        public InputStreamConsumerThread (InputStream is)
-        {
-            this.is=is;
-        }
-
-        public void run()
-        {
-            try(BufferedReader br = new BufferedReader(new InputStreamReader(is)))
-            {
+        @Override
+        public void run() {
+            try (BufferedReader br = new BufferedReader(new InputStreamReader(is))) {
                 for (String line = br.readLine(); line != null; line = br.readLine());
             } catch (IOException e) {
                 e.printStackTrace();
