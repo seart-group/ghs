@@ -47,6 +47,10 @@ public class GitRepoSpecification implements Specification<GitRepo> {
                 handle(predicates, root, criteriaBuilder, (KeyValueCriteria) criteria);
             } else if (criteria instanceof NestedKeyValueCriteria) {
                 handle(predicates, root, criteriaBuilder, (NestedKeyValueCriteria) criteria);
+            } else {
+                throw new UnsupportedOperationException(
+                        "Criteria type: ["+criteria.getClass().getCanonicalName()+"] not supported!"
+                );
             }
         }
 
@@ -63,6 +67,8 @@ public class GitRepoSpecification implements Specification<GitRepo> {
             case IS_NOT_NULL:
                 predicates.add(criteriaBuilder.isNotNull(root.get(key)));
                 break;
+            default:
+                throw new UnsupportedOperationException("Operation: ["+operation+"] not supported!");
         }
     }
 
@@ -102,6 +108,8 @@ public class GitRepoSpecification implements Specification<GitRepo> {
                         )
                 );
                 break;
+            default:
+                throw new UnsupportedOperationException("Operation: ["+operation+"] not supported!");
         }
     }
 
@@ -117,6 +125,8 @@ public class GitRepoSpecification implements Specification<GitRepo> {
             case IN:
                 predicates.add(criteriaBuilder.equal(root.join(outerKey).get(innerKey), value.toString()));
                 break;
+            default:
+                throw new UnsupportedOperationException("Operation: ["+operation+"] not supported!");
         }
     }
 
@@ -125,7 +135,7 @@ public class GitRepoSpecification implements Specification<GitRepo> {
         GitRepoSpecification specification = new GitRepoSpecification();
 
         String name = (String) parameters.get("name");
-        Boolean nameEquals = (Boolean) parameters.get("nameEquals");
+        boolean nameEquals = (Boolean) parameters.get("nameEquals");
         if (StringUtils.isNotBlank(name)) {
             if (nameEquals){
                 specification.add(new KeyValueCriteria(GitRepo_.NAME, name, BinaryOperation.EQUAL));
@@ -208,28 +218,28 @@ public class GitRepoSpecification implements Specification<GitRepo> {
 
         Range committed = (Range) parameters.get("committed");
         if (committed.hasLowerBound())
-            specification.add(new KeyValueCriteria(GitRepo_.PUSHED_AT, committed.lowerEndpoint(), BinaryOperation.GREATER_THAN_EQUAL));
+            specification.add(new KeyValueCriteria(GitRepo_.LAST_COMMIT, committed.lowerEndpoint(), BinaryOperation.GREATER_THAN_EQUAL));
         if (committed.hasUpperBound())
-            specification.add(new KeyValueCriteria(GitRepo_.PUSHED_AT, committed.upperEndpoint(), BinaryOperation.LESS_THAN_EQUAL));
+            specification.add(new KeyValueCriteria(GitRepo_.LAST_COMMIT, committed.upperEndpoint(), BinaryOperation.LESS_THAN_EQUAL));
 
-        Boolean excludeForks = (Boolean) parameters.get("excludeForks");
-        Boolean onlyForks = (Boolean) parameters.get("onlyForks");
+        boolean excludeForks = (Boolean) parameters.get("excludeForks");
+        boolean onlyForks = (Boolean) parameters.get("onlyForks");
         if (excludeForks) {
             specification.add(new KeyValueCriteria(GitRepo_.IS_FORK, false, BinaryOperation.EQUAL));
         } else if (onlyForks) {
             specification.add(new KeyValueCriteria(GitRepo_.IS_FORK, true, BinaryOperation.EQUAL));
         }
 
-        Boolean hasIssues = (Boolean) parameters.get("hasIssues");
+        boolean hasIssues = (Boolean) parameters.get("hasIssues");
         if (hasIssues) specification.add(new KeyValueCriteria(GitRepo_.OPEN_ISSUES, 0, BinaryOperation.GREATER_THAN));
 
-        Boolean hasPulls = (Boolean) parameters.get("hasPulls");
+        boolean hasPulls = (Boolean) parameters.get("hasPulls");
         if (hasPulls) specification.add(new KeyValueCriteria(GitRepo_.OPEN_PULL_REQUESTS, 0, BinaryOperation.GREATER_THAN));
 
-        Boolean hasWiki = (Boolean) parameters.get("hasWiki");
+        boolean hasWiki = (Boolean) parameters.get("hasWiki");
         if (hasWiki) specification.add(new KeyValueCriteria(GitRepo_.HAS_WIKI, true, BinaryOperation.EQUAL));
 
-        Boolean hasLicense = (Boolean) parameters.get("hasLicense");
+        boolean hasLicense = (Boolean) parameters.get("hasLicense");
         if (hasLicense) specification.add(new KeyCriteria(GitRepo_.LICENSE, UnaryOperation.IS_NOT_NULL));
 
         return specification;
