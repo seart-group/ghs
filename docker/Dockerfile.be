@@ -10,4 +10,4 @@ WORKDIR /usr/local/
 
 EXPOSE 8080
 
-ENTRYPOINT ["/bin/bash", "-c", "sleep 30 && java -jar target/ghs-application-1.3.0.jar"]
+ENTRYPOINT ["/bin/bash", "-c", "sleep 30 && java -jar target/ghs-application-*.jar"]
