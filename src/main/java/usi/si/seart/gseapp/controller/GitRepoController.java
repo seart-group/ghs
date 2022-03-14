@@ -90,6 +90,7 @@ public class GitRepoController {
         objMapper.setDateFormat(df);
         xmlMapper = new XmlMapper();
         xmlMapper.configure(ToXmlGenerator.Feature.WRITE_XML_DECLARATION, true);
+        xmlMapper.configure(ToXmlGenerator.Feature.WRITE_XML_1_1, true);
         xmlMapper.setDateFormat(df);
     }
 
