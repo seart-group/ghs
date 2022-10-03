@@ -5,7 +5,6 @@ import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.format.FormatterRegistry;
-import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import org.springframework.web.filter.ForwardedHeaderFilter;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
@@ -42,24 +41,5 @@ public class MainConfig {
         FilterRegistrationBean<ForwardedHeaderFilter> bean = new FilterRegistrationBean<>();
         bean.setFilter(new ForwardedHeaderFilter());
         return bean;
-    }
-
-    /**
-     * By default, Spring Boot will use just a single thread for all scheduled tasks to run.
-     * Since we have three scheduler jobs:
-     *
-     * <ul>
-     *     <li>Crawler</li>
-     *     <li>CleanUp</li>
-     *     <li>CacheEvict</li>
-     * </ul>
-     *
-     * We configure the threads here.
-     */
-    @Bean
-    public ThreadPoolTaskScheduler threadPoolTaskScheduler() {
-        ThreadPoolTaskScheduler threadPoolTaskScheduler = new ThreadPoolTaskScheduler();
-        threadPoolTaskScheduler.setPoolSize(3);
-        return threadPoolTaskScheduler;
     }
 }
