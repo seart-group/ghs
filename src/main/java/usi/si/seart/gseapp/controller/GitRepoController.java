@@ -6,8 +6,9 @@ import com.fasterxml.jackson.dataformat.csv.CsvSchema;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import com.google.common.collect.Range;
 import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import lombok.experimental.NonFinal;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -52,7 +53,7 @@ import java.util.stream.Collectors;
 @SuppressWarnings("ConstantConditions")
 @Slf4j
 @RestController
-@AllArgsConstructor(onConstructor_ = @Autowired)
+@RequiredArgsConstructor(onConstructor_ = @Autowired)
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class GitRepoController {
 
@@ -71,6 +72,7 @@ public class GitRepoController {
             GitRepo_.LAST_COMMIT
     );
 
+    @NonFinal
     @Value(value = "${app.search.page-size}")
     Integer pageSize;
 
