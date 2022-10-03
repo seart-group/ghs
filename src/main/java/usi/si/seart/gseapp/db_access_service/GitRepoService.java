@@ -14,6 +14,7 @@ import java.util.Optional;
 
 public interface GitRepoService {
     Optional<GitRepo> getRepoById(Long id);
+    Optional<GitRepo> getByName(String name);
 
     List<GitRepo> findDynamically(
             String name, Boolean nameEquals, String language, String license, String label, Range<Long> commits,

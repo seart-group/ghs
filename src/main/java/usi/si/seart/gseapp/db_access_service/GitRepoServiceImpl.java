@@ -44,6 +44,11 @@ public class GitRepoServiceImpl implements GitRepoService {
         return gitRepoRepository.findGitRepoById(repoId);
     }
 
+    @Override
+    public Optional<GitRepo> getByName(String name) {
+        return gitRepoRepository.findGitRepoByName(name);
+    }
+
     private Map<String, Object> constructParameterMap(
             String name, Boolean nameEquals, String language, String license, String label, Range<Long> commits,
             Range<Long> contributors, Range<Long> issues, Range<Long> pulls, Range<Long> branches, Range<Long> releases,
