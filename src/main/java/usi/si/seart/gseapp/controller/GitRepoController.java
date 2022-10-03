@@ -1,18 +1,17 @@
 package usi.si.seart.gseapp.controller;
 
-import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.json.JsonMapper;
 import com.fasterxml.jackson.dataformat.csv.CsvMapper;
 import com.fasterxml.jackson.dataformat.csv.CsvSchema;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
-import com.fasterxml.jackson.dataformat.xml.ser.ToXmlGenerator;
 import com.google.common.collect.Range;
 import lombok.AccessLevel;
-import lombok.RequiredArgsConstructor;
+import lombok.AllArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -41,7 +40,6 @@ import usi.si.seart.gseapp.util.Ranges;
 
 import java.io.File;
 import java.io.IOException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.LinkedHashMap;
@@ -54,15 +52,9 @@ import java.util.stream.Collectors;
 @SuppressWarnings("ConstantConditions")
 @Slf4j
 @RestController
+@AllArgsConstructor(onConstructor_ = @Autowired)
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
-@RequiredArgsConstructor(onConstructor_ = @Autowired)
 public class GitRepoController {
-    public static final String downloadFolder = "download-temp";
-
-    static CsvSchema csvSchema = GitRepoDto.getCsvSchema();
-    static CsvMapper csvMapper;
-    static ObjectMapper objMapper;
-    static XmlMapper xmlMapper;
 
     static Set<String> supportedFields = Set.of(
             GitRepo_.NAME,
@@ -79,24 +71,21 @@ public class GitRepoController {
             GitRepo_.LAST_COMMIT
     );
 
-    static Set<String> supportedFormats = Set.of("csv", "json", "xml");
+    String exportFolder;
+    Set<String> exportFormats;
 
-    static {
-        SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
-        csvMapper = new CsvMapper();
-        csvMapper.setDateFormat(df);
-        csvMapper.configure(JsonGenerator.Feature.IGNORE_UNKNOWN, true);
-        objMapper = new ObjectMapper();
-        objMapper.setDateFormat(df);
-        xmlMapper = new XmlMapper();
-        xmlMapper.configure(ToXmlGenerator.Feature.WRITE_XML_DECLARATION, true);
-        xmlMapper.configure(ToXmlGenerator.Feature.WRITE_XML_1_1, true);
-        xmlMapper.setDateFormat(df);
-    }
+    CsvSchema csvSchema;
 
+    @Qualifier("csvMapper")
+    CsvMapper csvMapper;
+    @Qualifier("jsonMapper")
+    JsonMapper jsonMapper;
+    @Qualifier("xmlMapper")
+    XmlMapper xmlMapper;
+
+    GitRepoService gitRepoService;
     ConversionService conversionService;
     ApplicationPropertyService applicationPropertyService;
-    GitRepoService gitRepoService;
 
     @GetMapping("/r/search")
     public ResponseEntity<?> searchRepos(
@@ -320,7 +309,7 @@ public class GitRepoController {
             @RequestParam(required = false, defaultValue = "false") Boolean hasWiki,
             @RequestParam(required = false, defaultValue = "false") Boolean hasLicense
     ){
-        if(!supportedFormats.contains(format))
+        if(!exportFormats.contains(format))
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
 
         Range<Long> commits = Ranges.build(commitsMin, commitsMax);
@@ -343,7 +332,7 @@ public class GitRepoController {
         List<GitRepoDto> dtos = List.of(conversionService.convert(results.toArray(new GitRepo[0]), GitRepoDto[].class));
 
         String tempFileName = System.currentTimeMillis() + ".temp";
-        File tempFile = new File(downloadFolder, tempFileName);
+        File tempFile = new File(exportFolder, tempFileName);
 
         Map<String, Object> searchParams = constructParameterMap(
                 name, nameEquals, language, license, label, commitsMin, commitsMax, contributorsMin,
@@ -362,7 +351,7 @@ public class GitRepoController {
                     break;
                 case "json":
                     mediaType += "plain";
-                    objMapper.writer().writeValue(tempFile, new JsonWrapper(searchParams, dtos.size(), dtos));
+                    jsonMapper.writer().writeValue(tempFile, new JsonWrapper(searchParams, dtos.size(), dtos));
                     break;
                 case "xml":
                     mediaType += format;
