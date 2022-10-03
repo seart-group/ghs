@@ -12,6 +12,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -28,7 +29,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import usi.si.seart.gseapp.db_access_service.ApplicationPropertyService;
 import usi.si.seart.gseapp.db_access_service.GitRepoService;
 import usi.si.seart.gseapp.dto.GitRepoDto;
 import usi.si.seart.gseapp.io.SelfDestructingResource;
@@ -71,6 +71,9 @@ public class GitRepoController {
             GitRepo_.LAST_COMMIT
     );
 
+    @Value(value = "${app.search.page-size}")
+    Integer pageSize;
+
     String exportFolder;
     Set<String> exportFormats;
 
@@ -85,7 +88,6 @@ public class GitRepoController {
 
     GitRepoService gitRepoService;
     ConversionService conversionService;
-    ApplicationPropertyService applicationPropertyService;
 
     @GetMapping("/r/search")
     public ResponseEntity<?> searchRepos(
@@ -140,7 +142,6 @@ public class GitRepoController {
         Range<Date> created = Ranges.build(createdMin, createdMax);
         Range<Date> committed = Ranges.build(committedMin, committedMax);
 
-        Integer pageSize = applicationPropertyService.getPageSize();
         PageRequest pageRequest = PageRequest.of(page, pageSize, Sort.by(sort).ascending());
 
         Page<GitRepo> results = gitRepoService.findDynamically(

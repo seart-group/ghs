@@ -6,27 +6,28 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.experimental.NonFinal;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
-import usi.si.seart.gseapp.db_access_service.ApplicationPropertyService;
 import usi.si.seart.gseapp.db_access_service.CrawlJobService;
 import usi.si.seart.gseapp.db_access_service.GitRepoService;
+import usi.si.seart.gseapp.db_access_service.SupportedLanguageService;
 import usi.si.seart.gseapp.github_service.GitHubApiService;
 import usi.si.seart.gseapp.model.GitRepo;
 import usi.si.seart.gseapp.model.GitRepoLabel;
 import usi.si.seart.gseapp.model.GitRepoLanguage;
-import usi.si.seart.gseapp.repository.GitRepoRepository;
-import usi.si.seart.gseapp.repository.SupportedLanguageRepository;
 import usi.si.seart.gseapp.util.Dates;
 import usi.si.seart.gseapp.util.Ranges;
 
 import java.io.IOException;
 import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
@@ -39,11 +40,11 @@ import java.util.stream.Collectors;
 
 @Slf4j
 @Service
+@ConditionalOnProperty(value = "app.crawl.enabled", havingValue = "true")
+@RequiredArgsConstructor(onConstructor_ = @Autowired)
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class CrawlProjectsJob {
 
-    @NonFinal
-    public boolean running = false;
     List<Range<Date>> requestQueue = new ArrayList<>();
 
     List<String> languages = new ArrayList<>();
@@ -51,47 +52,35 @@ public class CrawlProjectsJob {
     @NonFinal
     // Temporary. Because I'm keep restarting server, but I don't care about
     // very new Java updates, but finishing all language at least once.
-    static String startingLanguage = "Nix";
-
-    static DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+    static String startingLanguage = "Java";
 
     static BinaryOperator<Date> dateMedian = (a, b) -> new Date((a.getTime() + b.getTime())/2);
 
-    SupportedLanguageRepository supportedLanguageRepository;
-    GitRepoRepository gitRepoRepository;
-
-    GitHubApiService gitHubApiService;
     GitRepoService gitRepoService;
     CrawlJobService crawlJobService;
-    ApplicationPropertyService applicationPropertyService;
+    SupportedLanguageService supportedLanguageService;
 
-    @Autowired
-    public CrawlProjectsJob(SupportedLanguageRepository supportedLanguageRepository,
-                            GitHubApiService gitHubApiService,
-                            GitRepoService gitRepoService,
-                            CrawlJobService crawlJobService,
-                            ApplicationPropertyService applicationPropertyService,
-                            GitRepoRepository gitRepoRepository) {
-        this.supportedLanguageRepository = supportedLanguageRepository;
-        this.gitHubApiService = gitHubApiService;
-        this.gitRepoService = gitRepoService;
-        this.crawlJobService = crawlJobService;
-        this.applicationPropertyService = applicationPropertyService;
-        this.gitRepoRepository = gitRepoRepository;
-    }
+    GitHubApiService gitHubApiService;
 
+    @NonFinal
+    @Value(value = "${app.crawl.scheduling}")
+    Long schedulingRate;
+
+    @NonFinal
+    @Value("#{new java.text.SimpleDateFormat(\"yyyy-MM-dd'T'HH:mm:ss\").parse(\"${app.crawl.startdate}\")}")
+    Date defaultStartDate;
+
+    DateFormat utcTimestampFormat;
+
+    @Scheduled(fixedRateString = "${app.crawl.scheduling}")
     public void run() throws IOException, InterruptedException {
-        this.running = true;
-        getLanguagesToMine();
+        languages.clear();
+        languages.addAll(supportedLanguageService.getAll());
 
         log.info("New Crawling for all languages: " + languages);
         Date endDate = Date.from(Instant.now().minus(Duration.ofHours(2)));
 
         for (String language : languages) {
-
-            // if(language.equals("JavaScript"))
-            //     continue; // Temporary
-
             if (language.equals(startingLanguage))
                 startingLanguage = null;
             else if (startingLanguage != null && !language.equals(startingLanguage))
@@ -106,34 +95,33 @@ public class CrawlProjectsJob {
                     assert startDate.before(endDate);
                     dateRange = Ranges.build(startDate, endDate);
                 } else {
-                    Date defaultStartDate = applicationPropertyService.getStartDate();
                     log.info("No previous crawling found for {}. We start from scratch: {}", language, defaultStartDate);
                     dateRange = Ranges.build(defaultStartDate, endDate);
                 }
             } catch (IllegalArgumentException ex) {
                 // Handler for cases where Start > End
-                log.warn("Language " + language + " has bad range: {}", ex.getMessage());
+                log.warn("Language {} has bad range: {}", language, ex.getMessage());
                 continue;
             }
 
             crawlUpdatedRepos(dateRange, language);
         }
-        this.running = false;
+        log.info("Next crawl scheduled for: {}", Date.from(Instant.now().plusMillis(schedulingRate)));
     }
 
     private void crawlCreatedRepos(Range<Date> interval, String language) {
-        log.info("Starting crawling " + language + " repositories created through: " + interval);
+        log.info("Starting crawling {} repositories created through: {}", language, interval);
         crawlRepos(interval, language, false);
-        log.info("Finished crawling " + language + " repositories created through: " + interval);
+        log.info("Finished crawling {} repositories created through: {}", language, interval);
     }
 
     private void crawlUpdatedRepos(Range<Date> dateRange, String language) {
-        log.info("Starting crawling " + language + " repositories updated through: " + dateRange);
+        log.info("Starting crawling {} repositories updated through: {}", language, dateRange);
         crawlRepos(dateRange, language, true);
-        log.info("Finished crawling " + language + " repositories updated through: " + dateRange);
+        log.info("Finished crawling {} repositories updated through: {}", language, dateRange);
     }
 
-    private void crawlRepos(Range<Date> dateRange, String language, Boolean crawl_updated_repos) {
+    private void crawlRepos(Range<Date> dateRange, String language, Boolean crawlUpdatedRepos) {
         if (dateRange.lowerEndpoint().compareTo(dateRange.upperEndpoint()) >= 0) {
             log.warn("Invalid interval Skipped: " + dateRange);
             return;
@@ -144,20 +132,20 @@ public class CrawlProjectsJob {
             long maxSize = 5;
             String nextIntervals = requestQueue.stream()
                     .limit(maxSize)
-                    .map(range -> Ranges.toString(range, dateFormat))
+                    .map(range -> Ranges.toString(range, utcTimestampFormat))
                     .collect(Collectors.joining(", "));
             if (requestQueue.size() > maxSize) nextIntervals += ", ...";
-            log.info("Next Crawl Intervals: [" + nextIntervals + " ]");
+            log.info("Next Crawl Intervals: [{}]", nextIntervals);
 
             Range<Date> first = requestQueue.remove(0);
-            retrieveRepos(first, language, crawl_updated_repos);
+            retrieveRepos(first, language, crawlUpdatedRepos);
         } while (!requestQueue.isEmpty());
     }
 
-    private void retrieveRepos(Range<Date> dateRange, String language, Boolean crawl_updated_repos) {
+    private void retrieveRepos(Range<Date> dateRange, String language, Boolean crawlUpdatedRepos) {
         int page = 1;
         try {
-            String responseStr = gitHubApiService.searchRepositories(language, dateRange, page, crawl_updated_repos);
+            String responseStr = gitHubApiService.searchRepositories(language, dateRange, page, crawlUpdatedRepos);
             if (responseStr != null) {
                 JsonObject result = JsonParser.parseString(responseStr).getAsJsonObject();
                 int totalResults = result.get("total_count").getAsInt();
@@ -166,7 +154,7 @@ public class CrawlProjectsJob {
                 if (totalResults <= 1000) {
                     JsonArray results = result.get("items").getAsJsonArray();
                     saveRetrievedRepos(results, language, 1, totalResults);
-                    retrieveRemainingRepos(dateRange, language, crawl_updated_repos, totalPages);
+                    retrieveRemainingRepos(dateRange, language, crawlUpdatedRepos, totalPages);
                     crawlJobService.updateCrawlDateForLanguage(language, dateRange.lowerEndpoint());
                 } else {
                     List<Range<Date>> newIntervals = Ranges.split(dateRange, dateMedian);
@@ -181,12 +169,12 @@ public class CrawlProjectsJob {
         }
     }
 
-    private void retrieveRemainingRepos(Range<Date> dateRange, String language, Boolean crawl_updated_repos, int totalPages){
+    private void retrieveRemainingRepos(Range<Date> dateRange, String language, Boolean crawlUpdatedRepos, int totalPages){
         if (totalPages > 1) {
             int page = 2;
             while (page <= totalPages) {
                 try {
-                    String responseStr = gitHubApiService.searchRepositories(language, dateRange, page, crawl_updated_repos);
+                    String responseStr = gitHubApiService.searchRepositories(language, dateRange, page, crawlUpdatedRepos);
                     if (responseStr != null) {
                         JsonObject result = JsonParser.parseString(responseStr).getAsJsonObject();
                         int totalResults = result.get("total_count").getAsInt();
@@ -210,12 +198,13 @@ public class CrawlProjectsJob {
             JsonObject repoJson = element.getAsJsonObject();
 
             String repoFullName = repoJson.get("full_name").getAsString().toLowerCase();
-            Optional<GitRepo> opt = gitRepoRepository.findGitRepoByName(repoFullName);
+            Optional<GitRepo> opt = gitRepoService.getByName(repoFullName);
 
-            if (!opt.isPresent())
+            if (opt.isEmpty()) {
                 log.info(repo_num_start + "/" + repo_num_total + " saving new repo: " + repoFullName);
-            else
+            } else {
                 log.info(repo_num_start + "/" + repo_num_total + " updating repo: " + repoFullName);
+            }
 
             repo_num_start++;
 
@@ -283,7 +272,7 @@ public class CrawlProjectsJob {
         gitRepoBuilder.license((license.isJsonNull()) ? null : license.getAsJsonObject()
                 .get("name")
                 .getAsString()
-                .replaceAll("\"", ""));
+                .replace("\"", ""));
         gitRepoBuilder.stargazers(repoJson.get("stargazers_count").getAsLong());
         gitRepoBuilder.forks(repoJson.get("forks_count").getAsLong());
         gitRepoBuilder.watchers(repoJson.get("subscribers_count").getAsLong());
@@ -295,7 +284,7 @@ public class CrawlProjectsJob {
         gitRepoBuilder.mainLanguage(repoJson.get("language").getAsString());
         gitRepoBuilder.hasWiki(repoJson.get("has_wiki").getAsBoolean());
         gitRepoBuilder.isArchived(repoJson.get("archived").getAsBoolean());
-        boolean has_issues = repoJson.get("has_issues").getAsBoolean();
+        boolean hasIssues = repoJson.get("has_issues").getAsBoolean();
         // // open_issues in the response refers to sum of "issues" and "pull requests"
         // gitRepoBuilder.openIssues(repoJson.get("open_issues").getAsLong());
 
@@ -306,8 +295,8 @@ public class CrawlProjectsJob {
         Long numberOfContributors = gitHubApiService.fetchNumberOfContributors(repoFullName);
         Long numberOfAllPulls = gitHubApiService.fetchNumberOfAllPulls(repoFullName);
         Long numberOfOpenPulls = gitHubApiService.fetchNumberOfOpenPulls(repoFullName);
-        Long numberOfAllIssues = (!has_issues) ? 0L : gitHubApiService.fetchNumberOfAllIssuesAndPulls(repoFullName) - numberOfAllPulls;
-        Long numberOfOpenIssues = (!has_issues) ? 0L : gitHubApiService.fetchNumberOfOpenIssuesAndPulls(repoFullName) - numberOfOpenPulls;
+        Long numberOfAllIssues = (!hasIssues) ? 0L : gitHubApiService.fetchNumberOfAllIssuesAndPulls(repoFullName) - numberOfAllPulls;
+        Long numberOfOpenIssues = (!hasIssues) ? 0L : gitHubApiService.fetchNumberOfOpenIssuesAndPulls(repoFullName) - numberOfOpenPulls;
         Pair<String, Date> lastCommitInfo = gitHubApiService.fetchLastCommitInfo(repoFullName);
         String lastCommitSHA = lastCommitInfo.getLeft();
         Date lastCommitDate = lastCommitInfo.getRight();
@@ -348,28 +337,28 @@ public class CrawlProjectsJob {
                     newResults = true;
                 }
             }
-            if(newResults)
+            if (newResults) {
                 gitRepoService.createUpdateLabels(repo, repo_labels);
+            }
         } catch (Exception e) {
             log.error("Failed to add labels: {}", e.getMessage());
         }
     }
 
     private void retrieveRepoLanguages(GitRepo repo) {
-        List<GitRepoLanguage> repo_languages = new ArrayList<>();
+        List<GitRepoLanguage> repoLanguages = new ArrayList<>();
         boolean newResults = false;
         try {
             Long totalLanguages = gitHubApiService.fetchNumberOfLanguages(repo.getName());
             int totalPages = (int) Math.ceil(totalLanguages / 100.0);
-            for(int page=1; page<=totalPages; page++)
-            {
+            for (int page = 1; page <= totalPages; page++) {
                 String responseStr = gitHubApiService.fetchRepoLanguages(repo.getName(), page);
                 if (responseStr != null) {
                     JsonObject result = JsonParser.parseString(responseStr).getAsJsonObject();
                     Set<String> keySet = result.keySet();
                     log.info("\tAdding: " + keySet.size() + " languages.");
 
-                    keySet.forEach(key -> repo_languages.add(GitRepoLanguage.builder()
+                    keySet.forEach(key -> repoLanguages.add(GitRepoLanguage.builder()
                             .repo(repo)
                             .language(key)
                             .sizeOfCode(result.get(key).getAsLong())
@@ -378,16 +367,12 @@ public class CrawlProjectsJob {
                     newResults = true;
                 }
             }
-            if(newResults)
-                gitRepoService.createUpdateLanguages(repo, repo_languages);
+            if (newResults) {
+                gitRepoService.createUpdateLanguages(repo, repoLanguages);
+            }
         } catch (Exception e) {
             log.error("Failed to add languages: {}", e.getMessage());
         }
 
-    }
-
-    private void getLanguagesToMine() {
-        languages.clear();
-        supportedLanguageRepository.findAll().forEach(language -> languages.add(language.getName()));
     }
 }
