@@ -35,7 +35,7 @@ public class CleanUpProjectsJob {
 
     GitRepoRepository gitRepoRepository;
 
-    @Scheduled(fixedRateString = "#{@applicationPropertyServiceImpl.getCleanUpScheduling()}")
+    @Scheduled(fixedRateString = "${app.cleanup.scheduling}")
     public void run(){
         if (this.running) {
             log.error("CleanUpProjectsJob wanted to run while the prior job still running!!!!");

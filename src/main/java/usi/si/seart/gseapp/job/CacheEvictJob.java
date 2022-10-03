@@ -23,8 +23,8 @@ public class CacheEvictJob {
     CacheManager cacheManager;
 
     @Scheduled(
-            fixedRateString = "#{@applicationPropertyServiceImpl.getCacheEvictScheduling()}",
-            initialDelayString = "#{@applicationPropertyServiceImpl.getCacheEvictScheduling()}"
+            fixedRateString = "${app.cache-evict.scheduling}",
+            initialDelayString = "${app.cache-evict.scheduling}"
     )
     public void run() {
         log.info("Clearing caches...");
