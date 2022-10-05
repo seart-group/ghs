@@ -3,6 +3,7 @@ package usi.si.seart.gseapp.config;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.json.JsonMapper;
+import com.fasterxml.jackson.dataformat.csv.CsvGenerator;
 import com.fasterxml.jackson.dataformat.csv.CsvMapper;
 import com.fasterxml.jackson.dataformat.csv.CsvSchema;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
@@ -59,6 +60,7 @@ public class ExportConfig {
         CsvMapper csvMapper = new CsvMapper();
         csvMapper.setDateFormat(exportTimeFormat());
         csvMapper.configure(JsonGenerator.Feature.IGNORE_UNKNOWN, true);
+        csvMapper.configure(CsvGenerator.Feature.ALWAYS_QUOTE_STRINGS, true);
         return csvMapper;
     }
 
