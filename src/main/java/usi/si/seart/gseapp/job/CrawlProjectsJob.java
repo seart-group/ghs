@@ -23,6 +23,7 @@ import usi.si.seart.gseapp.github_service.GitHubApiService;
 import usi.si.seart.gseapp.model.GitRepo;
 import usi.si.seart.gseapp.model.GitRepoLabel;
 import usi.si.seart.gseapp.model.GitRepoLanguage;
+import usi.si.seart.gseapp.model.SupportedLanguage;
 import usi.si.seart.gseapp.util.Dates;
 import usi.si.seart.gseapp.util.Ranges;
 
@@ -31,6 +32,7 @@ import java.text.DateFormat;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -48,11 +50,6 @@ public class CrawlProjectsJob {
     List<Range<Date>> requestQueue = new ArrayList<>();
 
     List<String> languages = new ArrayList<>();
-
-    @NonFinal
-    // Temporary. Because I'm keep restarting server, but I don't care about
-    // very new Java updates, but finishing all language at least once.
-    static String startingLanguage = "Java";
 
     static BinaryOperator<Date> dateMedian = (a, b) -> new Date((a.getTime() + b.getTime())/2);
 
@@ -74,18 +71,19 @@ public class CrawlProjectsJob {
 
     @Scheduled(fixedDelayString = "${app.crawl.scheduling}")
     public void run() throws IOException, InterruptedException {
+        List<SupportedLanguage> supportedLanguages = supportedLanguageService.getAll();
+        supportedLanguages.sort(Comparator.comparing(SupportedLanguage::getAdded).reversed());
         languages.clear();
-        languages.addAll(supportedLanguageService.getAll());
+        languages.addAll(
+                supportedLanguages.stream()
+                        .map(SupportedLanguage::getName)
+                        .collect(Collectors.toList())
+        );
 
         log.info("New Crawling for all languages: " + languages);
         Date endDate = Date.from(Instant.now().minus(Duration.ofHours(2)));
 
         for (String language : languages) {
-            if (language.equals(startingLanguage))
-                startingLanguage = null;
-            else if (startingLanguage != null && !language.equals(startingLanguage))
-                continue;
-
             this.requestQueue.clear();
             Date startDate = crawlJobService.getCrawlDateByLanguage(language);
             Range<Date> dateRange;

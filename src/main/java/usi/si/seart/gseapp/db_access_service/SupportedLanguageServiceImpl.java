@@ -15,21 +15,17 @@ import java.util.Optional;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 @AllArgsConstructor(onConstructor_ = @Autowired)
 public class SupportedLanguageServiceImpl implements SupportedLanguageService {
+
     SupportedLanguageRepository supportedLanguageRepository;
 
     @Override
-    public List<String> getAll(){
-        return supportedLanguageRepository.findAllLanguages();
+    public List<SupportedLanguage> getAll(){
+        return supportedLanguageRepository.findAll();
     }
 
     @Override
     public SupportedLanguage create(SupportedLanguage language){
         Optional<SupportedLanguage> opt = supportedLanguageRepository.findByName(language.getName());
         return opt.orElseGet(() -> supportedLanguageRepository.save(language));
-    }
-
-    @Override
-    public void delete(Long id){
-        supportedLanguageRepository.deleteById(id);
     }
 }
