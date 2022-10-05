@@ -12,6 +12,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import usi.si.seart.gseapp.converter.AccessTokenToDtoConverter;
 import usi.si.seart.gseapp.converter.CrawlJobToDtoConverter;
 import usi.si.seart.gseapp.converter.GitRepoToDtoConverter;
+import usi.si.seart.gseapp.converter.JsonObjectToGitRepoConverter;
 import usi.si.seart.gseapp.converter.SupportedLanguageToDtoConverter;
 
 import java.text.DateFormat;
@@ -52,6 +53,7 @@ public class MainConfig {
                  registry.addConverter(new SupportedLanguageToDtoConverter());
                  registry.addConverter(new CrawlJobToDtoConverter());
                  registry.addConverter(new GitRepoToDtoConverter());
+                 registry.addConverter(new JsonObjectToGitRepoConverter());
             }
         };
     }
