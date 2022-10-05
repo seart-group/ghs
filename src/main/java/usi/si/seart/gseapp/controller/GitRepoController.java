@@ -76,7 +76,10 @@ public class GitRepoController {
     @Value(value = "${app.search.page-size}")
     Integer pageSize;
 
+    @Qualifier("exportFolder")
     String exportFolder;
+
+    @Qualifier("exportFormats")
     Set<String> exportFormats;
 
     CsvSchema csvSchema;
