@@ -17,8 +17,10 @@ import usi.si.seart.gseapp.dto.AccessTokenDto;
 import usi.si.seart.gseapp.dto.CrawlJobDto;
 import usi.si.seart.gseapp.model.AccessToken;
 import usi.si.seart.gseapp.model.CrawlJob;
+import usi.si.seart.gseapp.model.SupportedLanguage;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @SuppressWarnings("ConstantConditions")
 @Slf4j
@@ -45,7 +47,13 @@ public class AdminController {
 
     @GetMapping("/l")
     public ResponseEntity<?> getLanguages(){
-        return ResponseEntity.ok(supportedLanguageService.getAll());
+        return ResponseEntity.ok(
+                supportedLanguageService.getAll()
+                        .stream()
+                        .map(SupportedLanguage::getName)
+                        .sorted()
+                        .collect(Collectors.toList())
+        );
     }
 
     @GetMapping("/l/stats")
