@@ -55,6 +55,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @SuppressWarnings("ConstantConditions")
 @Slf4j
@@ -181,8 +182,9 @@ public class GitRepoController {
                         .entrySet()
                         .stream()
                         .map(entry -> {
-                            List<String> regular = Lists.newArrayList(entry.getValue());
-                            List<String> encoded = Lists.transform(regular, value -> URLEncoder.encode(value, StandardCharsets.UTF_8));
+                            List<String> encoded = Stream.of(entry.getValue())
+                                    .map(value -> URLEncoder.encode(value, StandardCharsets.UTF_8))
+                                    .collect(Collectors.toList());
                             return Map.entry(entry.getKey(), encoded);
                         })
                         .collect(Collectors.toMap(
