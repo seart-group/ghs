@@ -1,6 +1,5 @@
 package usi.si.seart.gseapp.db_access_service;
 
-import com.google.common.collect.Range;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -20,8 +19,6 @@ import usi.si.seart.gseapp.repository.GitRepoRepository;
 
 import javax.persistence.Tuple;
 import java.util.Comparator;
-import java.util.Date;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -49,68 +46,13 @@ public class GitRepoServiceImpl implements GitRepoService {
         return gitRepoRepository.findGitRepoByName(name);
     }
 
-    private Map<String, Object> constructParameterMap(
-            String name, Boolean nameEquals, String language, String license, String label, Range<Long> commits,
-            Range<Long> contributors, Range<Long> issues, Range<Long> pulls, Range<Long> branches, Range<Long> releases,
-            Range<Long> stars, Range<Long> watchers, Range<Long> forks, Range<Date> created, Range<Date> committed,
-            Boolean excludeForks, Boolean onlyForks, Boolean hasIssues, Boolean hasPulls, Boolean hasWiki, Boolean hasLicense
-    ){
-        Map<String, Object> parameters = new HashMap<>();
-
-        parameters.put("name", name);
-        parameters.put("nameEquals", nameEquals);
-        parameters.put("language", language);
-        parameters.put("license", license);
-        parameters.put("label", label);
-        parameters.put("commits", commits);
-        parameters.put("contributors", contributors);
-        parameters.put("issues", issues);
-        parameters.put("pulls", pulls);
-        parameters.put("branches", branches);
-        parameters.put("releases", releases);
-        parameters.put("stars", stars);
-        parameters.put("watchers", watchers);
-        parameters.put("forks", forks);
-        parameters.put("created", created);
-        parameters.put("committed", committed);
-        parameters.put("excludeForks", excludeForks);
-        parameters.put("onlyForks", onlyForks);
-        parameters.put("hasIssues", hasIssues);
-        parameters.put("hasPulls", hasPulls);
-        parameters.put("hasWiki", hasWiki);
-        parameters.put("hasLicense", hasLicense);
-
-        return parameters;
-    }
-
     @Override
-    public List<GitRepo> findDynamically(
-            String name, Boolean nameEquals, String language, String license, String label, Range<Long> commits,
-            Range<Long> contributors, Range<Long> issues, Range<Long> pulls, Range<Long> branches, Range<Long> releases,
-            Range<Long> stars, Range<Long> watchers, Range<Long> forks, Range<Date> created, Range<Date> committed,
-            Boolean excludeForks, Boolean onlyForks, Boolean hasIssues, Boolean hasPulls, Boolean hasWiki, Boolean hasLicense)
-    {
-        Map<String, Object> parameters = constructParameterMap(
-                name, nameEquals, language, license, label, commits, contributors, issues, pulls, branches, releases, stars,
-                watchers, forks, created, committed, excludeForks, onlyForks, hasIssues, hasPulls, hasWiki, hasLicense
-        );
-
+    public List<GitRepo> findDynamically(Map<String, Object> parameters) {
         return gitRepoRepository.findAllDynamically(parameters);
     }
 
     @Override
-    public Page<GitRepo> findDynamically(
-            String name, Boolean nameEquals, String language, String license, String label, Range<Long> commits,
-            Range<Long> contributors, Range<Long> issues, Range<Long> pulls, Range<Long> branches, Range<Long> releases,
-            Range<Long> stars, Range<Long> watchers, Range<Long> forks, Range<Date> created, Range<Date> committed,
-            Boolean excludeForks, Boolean onlyForks, Boolean hasIssues, Boolean hasPulls, Boolean hasWiki, Boolean hasLicense,
-            Pageable pageable
-    ){
-        Map<String, Object> parameters = constructParameterMap(
-                name, nameEquals, language, license, label, commits, contributors, issues, pulls, branches, releases, stars,
-                watchers, forks, created, committed, excludeForks, onlyForks, hasIssues, hasPulls, hasWiki, hasLicense
-        );
-
+    public Page<GitRepo> findDynamically(Map<String, Object> parameters, Pageable pageable) {
         return gitRepoRepository.findAllDynamically(parameters, pageable);
     }
 
