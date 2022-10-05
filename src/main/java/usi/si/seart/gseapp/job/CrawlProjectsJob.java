@@ -72,7 +72,7 @@ public class CrawlProjectsJob {
 
     DateFormat utcTimestampFormat;
 
-    @Scheduled(fixedRateString = "${app.crawl.scheduling}")
+    @Scheduled(fixedDelayString = "${app.crawl.scheduling}")
     public void run() throws IOException, InterruptedException {
         languages.clear();
         languages.addAll(supportedLanguageService.getAll());
