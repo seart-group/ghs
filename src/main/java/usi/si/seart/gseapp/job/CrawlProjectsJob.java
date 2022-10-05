@@ -14,6 +14,7 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.core.convert.ConversionService;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import usi.si.seart.gseapp.db_access_service.CrawlJobService;
@@ -56,6 +57,8 @@ public class CrawlProjectsJob {
     GitRepoService gitRepoService;
     CrawlJobService crawlJobService;
     SupportedLanguageService supportedLanguageService;
+
+    ConversionService conversionService;
 
     GitHubApiService gitHubApiService;
 
@@ -190,36 +193,32 @@ public class CrawlProjectsJob {
     /**
      * Given JSON info of 100 repos, store them in DB
      */
-    private void saveRetrievedRepos(JsonArray results, String language, int repo_num_start, int repo_num_total) {
-        log.info("Adding: " + results.size() + " repositories (" + repo_num_start + "-" + (repo_num_start + results.size() - 1) + " | total: " + repo_num_total + ")");
+    private void saveRetrievedRepos(JsonArray results, String language, int repoNumStart, int repoNumTotal) {
+        log.info("Adding: " + results.size() + " repositories (" + repoNumStart + "-" + (repoNumStart + results.size() - 1) + " | total: " + repoNumTotal + ")");
         for (JsonElement element : results) {
             JsonObject repoJson = element.getAsJsonObject();
 
             String repoFullName = repoJson.get("full_name").getAsString().toLowerCase();
             Optional<GitRepo> opt = gitRepoService.getByName(repoFullName);
 
-            if (opt.isEmpty()) {
-                log.info(repo_num_start + "/" + repo_num_total + " saving new repo: " + repoFullName);
-            } else {
-                log.info(repo_num_start + "/" + repo_num_total + " updating repo: " + repoFullName);
-            }
+            log.info(
+                    "{}/{} {} repo: {}",
+                    repoNumStart,
+                    repoNumTotal,
+                    (opt.isEmpty()) ? "saving" : "updating",
+                    repoFullName
+            );
 
-            repo_num_start++;
+            repoNumStart++;
 
             // Optimization thing
             if (opt.isPresent()) {
-                GitRepo existingRepInfo = opt.get();
-                Date existing_updatedAt = existingRepInfo.getUpdatedAt();
-                Date existing_pushedAt = existingRepInfo.getPushedAt();
-
-                Date repo_updatedAt = Dates.fromGitDateString(repoJson.get("updated_at").getAsString());
-                Date repo_pushedAt = Dates.fromGitDateString(repoJson.get("pushed_at").getAsString());
-
-                // boolean incompleteMinedInfo = existingRepInfo.getContributors() == null;
-
-                if (existing_updatedAt.compareTo(repo_updatedAt) == 0 && existing_pushedAt.compareTo(repo_pushedAt) == 0) {
-                    log.info("\tSKIPPED. We already have the latest info up to " + existing_updatedAt + "(updated)  " + existing_pushedAt + "(pushed)");
-                    continue; // we already have the latest info for this repo
+                GitRepo existing = opt.get();
+                if (hasNotBeenUpdated(existing, repoJson)) {
+                    Date updatedAt = existing.getUpdatedAt();
+                    Date pushedAt = existing.getPushedAt();
+                    log.info("\tSKIPPED. We already have the latest info up to [{}](updated) [{}](pushed)", updatedAt, pushedAt);
+                    continue;
                 }
             }
 
@@ -228,10 +227,9 @@ public class CrawlProjectsJob {
                 if (responseStr != null) {
                     JsonObject result = JsonParser.parseString(responseStr).getAsJsonObject();
 
-
                     if (result.get("language").isJsonNull())
                         result.addProperty("language", language); // This can happen. Example Repo: "aquynh/iVM"
-                    else if (false == result.get("language").getAsString().equals(language)) {
+                    else if (!result.get("language").getAsString().equals(language)) {
                         // This can happen. Example Repo: https://api.github.com/search/repositories?q=baranowski/habit-vim
                         // And if you go to repo homepage or repo "language_url" (api that shows language distribution),
                         // you will see that main_language is only wrong in the above link.
@@ -239,7 +237,7 @@ public class CrawlProjectsJob {
                         result.addProperty("language", language);
                     }
 
-                    GitRepo repo = createGitRepoRowObjectFromGitHubAPIResultJson(result);
+                    GitRepo repo = createRepoFromResponse(result);
                     repo = gitRepoService.createOrUpdateRepo(repo);
                     if (repo != null) {
                         log.info("\tBasic information saved (repo Table).");
@@ -255,72 +253,54 @@ public class CrawlProjectsJob {
         }
     }
 
-    // TODO: 03.02.22 Migrate this into a converter! We can use something like JsonObjectToGitRepoConverter...
-    private GitRepo createGitRepoRowObjectFromGitHubAPIResultJson(JsonObject repoJson) throws IOException, InterruptedException {
-        GitRepo.GitRepoBuilder gitRepoBuilder = GitRepo.builder();
+    private boolean hasNotBeenUpdated(GitRepo repo, JsonObject response) {
+        Date dbUpdated = repo.getUpdatedAt();
+        Date dbPushed = repo.getPushedAt();
+        Date apiUpdated = Dates.fromGitDateString(response.get("updated_at").getAsString());
+        Date apiPushed = Dates.fromGitDateString(response.get("pushed_at").getAsString());
+        return dbUpdated.compareTo(apiUpdated) == 0 && dbPushed.compareTo(apiPushed) == 0;
+    }
 
-        String repoFullName = repoJson.get("full_name").getAsString();
+    @SuppressWarnings("ConstantConditions")
+    private GitRepo createRepoFromResponse(JsonObject repoJson) throws IOException, InterruptedException {
+        GitRepo gitRepo = conversionService.convert(repoJson, GitRepo.class);
 
-        JsonElement license = repoJson.get("license");
-        JsonElement homepage = repoJson.get("homepage");
-
-        gitRepoBuilder.name(repoFullName.toLowerCase());
-        gitRepoBuilder.isFork(repoJson.get("fork").getAsBoolean());
-        gitRepoBuilder.defaultBranch(repoJson.get("default_branch").getAsString());
-        gitRepoBuilder.license((license.isJsonNull()) ? null : license.getAsJsonObject()
-                .get("name")
-                .getAsString()
-                .replace("\"", ""));
-        gitRepoBuilder.stargazers(repoJson.get("stargazers_count").getAsLong());
-        gitRepoBuilder.forks(repoJson.get("forks_count").getAsLong());
-        gitRepoBuilder.watchers(repoJson.get("subscribers_count").getAsLong());
-        gitRepoBuilder.size(repoJson.get("size").getAsLong());
-        gitRepoBuilder.createdAt(Dates.fromGitDateString(repoJson.get("created_at").getAsString()));
-        gitRepoBuilder.pushedAt(Dates.fromGitDateString(repoJson.get("pushed_at").getAsString()));
-        gitRepoBuilder.updatedAt(Dates.fromGitDateString(repoJson.get("updated_at").getAsString()));
-        gitRepoBuilder.homepage(homepage.isJsonNull() ? null : homepage.getAsString());
-        gitRepoBuilder.mainLanguage(repoJson.get("language").getAsString());
-        gitRepoBuilder.hasWiki(repoJson.get("has_wiki").getAsBoolean());
-        gitRepoBuilder.isArchived(repoJson.get("archived").getAsBoolean());
+        String repoName = repoJson.get("full_name").getAsString();
         boolean hasIssues = repoJson.get("has_issues").getAsBoolean();
-        // // open_issues in the response refers to sum of "issues" and "pull requests"
-        // gitRepoBuilder.openIssues(repoJson.get("open_issues").getAsLong());
 
-
-        Long numberOfCommits = gitHubApiService.fetchNumberOfCommits(repoFullName);
-        Long numberOfBranches = gitHubApiService.fetchNumberOfBranches(repoFullName);
-        Long numberOfReleases = gitHubApiService.fetchNumberOfReleases(repoFullName);
-        Long numberOfContributors = gitHubApiService.fetchNumberOfContributors(repoFullName);
-        Long numberOfAllPulls = gitHubApiService.fetchNumberOfAllPulls(repoFullName);
-        Long numberOfOpenPulls = gitHubApiService.fetchNumberOfOpenPulls(repoFullName);
-        Long numberOfAllIssues = (!hasIssues) ? 0L : gitHubApiService.fetchNumberOfAllIssuesAndPulls(repoFullName) - numberOfAllPulls;
-        Long numberOfOpenIssues = (!hasIssues) ? 0L : gitHubApiService.fetchNumberOfOpenIssuesAndPulls(repoFullName) - numberOfOpenPulls;
-        Pair<String, Date> lastCommitInfo = gitHubApiService.fetchLastCommitInfo(repoFullName);
+        Long commits = gitHubApiService.fetchNumberOfCommits(repoName);
+        Long branches = gitHubApiService.fetchNumberOfBranches(repoName);
+        Long releases = gitHubApiService.fetchNumberOfReleases(repoName);
+        Long contributors = gitHubApiService.fetchNumberOfContributors(repoName);
+        Long totalPullRequests = gitHubApiService.fetchNumberOfAllPulls(repoName);
+        Long openPullRequests = gitHubApiService.fetchNumberOfOpenPulls(repoName);
+        Long totalIssues = (!hasIssues) ? 0L : gitHubApiService.fetchNumberOfAllIssuesAndPulls(repoName) - totalPullRequests;
+        Long openIssues = (!hasIssues) ? 0L : gitHubApiService.fetchNumberOfOpenIssuesAndPulls(repoName) - openPullRequests;
+        Pair<String, Date> lastCommitInfo = gitHubApiService.fetchLastCommitInfo(repoName);
+        Date lastCommit = lastCommitInfo.getRight();
         String lastCommitSHA = lastCommitInfo.getLeft();
-        Date lastCommitDate = lastCommitInfo.getRight();
 
-        gitRepoBuilder.commits(numberOfCommits);
-        gitRepoBuilder.branches(numberOfBranches);
-        gitRepoBuilder.releases(numberOfReleases);
-        gitRepoBuilder.contributors(numberOfContributors);
-        gitRepoBuilder.totalIssues(numberOfAllIssues);
-        gitRepoBuilder.openIssues(numberOfOpenIssues);
-        gitRepoBuilder.totalPullRequests(numberOfAllPulls);
-        gitRepoBuilder.openPullRequests(numberOfOpenPulls);
-        gitRepoBuilder.lastCommit(lastCommitDate);
-        gitRepoBuilder.lastCommitSHA(lastCommitSHA);
+        gitRepo.setCommits(commits);
+        gitRepo.setBranches(branches);
+        gitRepo.setReleases(releases);
+        gitRepo.setContributors(contributors);
+        gitRepo.setTotalIssues(totalIssues);
+        gitRepo.setOpenIssues(openIssues);
+        gitRepo.setTotalPullRequests(totalPullRequests);
+        gitRepo.setOpenPullRequests(openPullRequests);
+        gitRepo.setLastCommit(lastCommit);
+        gitRepo.setLastCommitSHA(lastCommitSHA);
 
-        return gitRepoBuilder.build();
+        return gitRepo;
     }
 
     private void retrieveRepoLabels(GitRepo repo) {
-        List<GitRepoLabel> repo_labels = new ArrayList<>();
+        List<GitRepoLabel> repoLabels = new ArrayList<>();
         boolean newResults = false;
         try {
             Long totalLabels = gitHubApiService.fetchNumberOfLabels(repo.getName());
             int totalPages = (int) Math.ceil(totalLabels / 100.0);
-            for(int page=1; page<=totalPages; page++)
-            {
+            for (int page = 1; page <= totalPages; page++) {
                 String responseStr = gitHubApiService.fetchRepoLabels(repo.getName(), page);
                 if (responseStr != null) {
                     JsonArray result = JsonParser.parseString(responseStr).getAsJsonArray();
@@ -330,13 +310,13 @@ public class CrawlProjectsJob {
                         String label = item.getAsJsonObject().get("name").getAsString();
                         label = label.trim();
                         label = label.substring(0, Math.min(label.length(), 60));  // 60: due to db column limit
-                        repo_labels.add(GitRepoLabel.builder().repo(repo).label(label).build());
+                        repoLabels.add(GitRepoLabel.builder().repo(repo).label(label).build());
                     }
                     newResults = true;
                 }
             }
             if (newResults) {
-                gitRepoService.createUpdateLabels(repo, repo_labels);
+                gitRepoService.createUpdateLabels(repo, repoLabels);
             }
         } catch (Exception e) {
             log.error("Failed to add labels: {}", e.getMessage());
