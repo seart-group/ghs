@@ -6,17 +6,10 @@ import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.convert.ConversionService;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import usi.si.seart.gseapp.db_access_service.AccessTokenService;
-import usi.si.seart.gseapp.db_access_service.ApplicationPropertyService;
 import usi.si.seart.gseapp.db_access_service.CrawlJobService;
 import usi.si.seart.gseapp.db_access_service.GitRepoService;
 import usi.si.seart.gseapp.db_access_service.SupportedLanguageService;
@@ -26,8 +19,8 @@ import usi.si.seart.gseapp.model.AccessToken;
 import usi.si.seart.gseapp.model.CrawlJob;
 import usi.si.seart.gseapp.model.SupportedLanguage;
 
-import javax.persistence.EntityNotFoundException;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @SuppressWarnings("ConstantConditions")
 @Slf4j
@@ -37,7 +30,6 @@ import java.util.List;
 public class AdminController {
 
     ConversionService conversionService;
-    ApplicationPropertyService applicationPropertyService;
     AccessTokenService accessTokenService;
     SupportedLanguageService supportedLanguageService;
     CrawlJobService crawlJobService;
@@ -53,32 +45,15 @@ public class AdminController {
         return ResponseEntity.ok(dtos);
     }
 
-    @PostMapping("/t")
-    public ResponseEntity<?> addToken(@RequestBody String value){
-        AccessToken created = accessTokenService.create(AccessToken.builder().value(value).build());
-        return new ResponseEntity<>(created, HttpStatus.CREATED);
-    }
-
-    @DeleteMapping("/t/{tokenId}")
-    public ResponseEntity<?> deleteToken(@PathVariable(value = "tokenId") Long tokenId){
-        try {
-            accessTokenService.delete(tokenId);
-            return ResponseEntity.noContent().build();
-        } catch (EntityNotFoundException ex){
-            log.error(ex.getMessage());
-            return ResponseEntity.notFound().build();
-        }
-    }
-
     @GetMapping("/l")
     public ResponseEntity<?> getLanguages(){
-        return ResponseEntity.ok(supportedLanguageService.getAll());
-    }
-
-    @PostMapping("/l")
-    public ResponseEntity<?> addLanguage(@RequestBody String language){
-        SupportedLanguage created = supportedLanguageService.create(SupportedLanguage.builder().name(language).build());
-        return new ResponseEntity<>(created, HttpStatus.CREATED);
+        return ResponseEntity.ok(
+                supportedLanguageService.getAll()
+                        .stream()
+                        .map(SupportedLanguage::getName)
+                        .sorted()
+                        .collect(Collectors.toList())
+        );
     }
 
     @GetMapping("/l/stats")
@@ -91,32 +66,10 @@ public class AdminController {
         return ResponseEntity.ok(gitRepoService.getMainLanguageStatistics());
     }
 
-    @DeleteMapping("/l/{langId}")
-    public ResponseEntity<?> deleteLanguage(@PathVariable(value = "langId") Long langId){
-        try {
-            supportedLanguageService.delete(langId);
-            return ResponseEntity.noContent().build();
-        } catch (EntityNotFoundException ex){
-            log.error(ex.getMessage());
-            return ResponseEntity.notFound().build();
-        }
-    }
-
     @GetMapping("/j")
     public ResponseEntity<?> getCompletedJobs(){
         List<CrawlJob> jobs = crawlJobService.getCompletedJobs();
         List<CrawlJobDto> dtos = List.of(conversionService.convert(jobs.toArray(new CrawlJob[0]), CrawlJobDto[].class));
         return ResponseEntity.ok(dtos);
-    }
-
-    @GetMapping("/s")
-    public ResponseEntity<?> getSchedulingRate(){
-        return ResponseEntity.ok(applicationPropertyService.getCrawlScheduling());
-    }
-
-    @PutMapping("/s")
-    public ResponseEntity<?> setSchedulingRate(@RequestBody Long rate){
-        applicationPropertyService.setCrawlScheduling(rate);
-        return ResponseEntity.ok().build();
     }
 }

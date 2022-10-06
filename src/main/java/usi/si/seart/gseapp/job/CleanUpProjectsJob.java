@@ -4,7 +4,6 @@ import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import lombok.experimental.NonFinal;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.EnableScheduling;
@@ -30,23 +29,10 @@ public class CleanUpProjectsJob {
 
     private static final int RUN_COMMAND_TIMEOUT = -3;
 
-    @NonFinal
-    boolean running = false;
-
     GitRepoRepository gitRepoRepository;
 
-    @Scheduled(fixedRateString = "#{@applicationPropertyServiceImpl.getCleanUpScheduling()}")
+    @Scheduled(fixedDelayString = "${app.cleanup.scheduling}")
     public void run(){
-        if (this.running) {
-            log.error("CleanUpProjectsJob wanted to run while the prior job still running!!!!");
-            return;
-        }
-        this.running = true;
-        cleanUp();
-        this.running = false;
-    }
-
-    private void cleanUp() {
         log.info("CleanUpProjectsJob started ...");
         List<String> allRepos = gitRepoRepository.findAllRepoNames();
 
@@ -71,7 +57,6 @@ public class CleanUpProjectsJob {
 
         log.info("CleanUpProjectsJob finished on {} repositories. {} DELETED.", totalRepos, totalDeleted);
     }
-
 
 
     /**
