@@ -3,6 +3,7 @@ package usi.si.seart.gseapp.github_service;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import lombok.AccessLevel;
+import lombok.Getter;
 import lombok.experimental.FieldDefaults;
 import lombok.experimental.NonFinal;
 import lombok.extern.slf4j.Slf4j;
@@ -26,9 +27,10 @@ public class GitHubCredentialUtil {
     GitHubApiService gitHubApiService;
     AccessTokenRepository accessTokenRepository;
 
-
     @NonFinal
     int currentTokenIndex;
+
+    @Getter
     @NonFinal
     String currentToken;
 
@@ -42,98 +44,84 @@ public class GitHubCredentialUtil {
         this.gitHubApiService = gitHubApiService;
         this.gitHubApiService.setGitHubCredentialUtil(this);
 
-
-        FetchListOfTokensFromDB();
+        getTokensFromDB();
         currentTokenIndex = 0;
         currentToken = accessTokens.get(currentTokenIndex);
     }
 
-    public String getCurrentToken()
-    {
-        return currentToken;
-    }
-
-    void GetANewToken(){
+    void getNewToken(){
         currentTokenIndex = (currentTokenIndex + 1) % accessTokens.size();
         currentToken = accessTokens.get(currentTokenIndex);
     }
 
-    private void FetchListOfTokensFromDB(){
+    private void getTokensFromDB(){
         accessTokens.clear();
         accessTokenRepository.findAll().forEach(accessToken -> accessTokens.add(accessToken.getValue()));
-        if(accessTokens.size()==0)
-        {
+        if (accessTokens.isEmpty()) {
             log.error("**************** No Access Token Found ****************");
             System.exit(1);
         }
     }
 
     public void replaceTokenIfExpired() throws IOException, InterruptedException {
-
         Triple<Integer, Headers, String> response = gitHubApiService.makeAPICall(Endpoints.LIMIT.getUrl());
         String bodyStr = response.getRight();
 
-        if(bodyStr!=null)
-        {
+        if (bodyStr != null) {
             JsonObject result = JsonParser.parseString(bodyStr).getAsJsonObject();
+            JsonObject resources = result.get("resources").getAsJsonObject();
 
-            int remaining_core = result.get("resources").getAsJsonObject().get("core").getAsJsonObject().get("remaining").getAsInt();
-            int remaining_search = result.get("resources").getAsJsonObject().get("search").getAsJsonObject().get("remaining").getAsInt();
-//            logger.debug("******** TOKEN: {} -- CORE: {} -- SEARCH: {} **********", currentToken, remaining_core, remaining_search);
-            boolean isTokenLimitExceeded = (remaining_core <= 0 || remaining_search<=0);
-            if(isTokenLimitExceeded)
-            {
-                GetANewToken();
+            int remainingCore = resources.get("core").getAsJsonObject().get("remaining").getAsInt();
+            int remainingSearch = resources.get("search").getAsJsonObject().get("remaining").getAsInt();
+            boolean isTokenLimitExceeded = (remainingCore <= 0 || remainingSearch <= 0);
+            if (isTokenLimitExceeded) {
+                getNewToken();
                 long l = calculateWaitingTime(result);
-                if(l>0)
-                {
-                    try
-                    {
+                if (l > 0) {
+                    try {
                         log.info("[[Sleeping {} Sec]]", l);
-                        TimeUnit.SECONDS.sleep(l+1);
-                    } catch (InterruptedException e)
-                    {
-                        log.error("I was interrupted while I was waiting for GitHub cool-down.");
-                        e.printStackTrace();
+                        TimeUnit.SECONDS.sleep(l + 1);
+                    } catch (InterruptedException e) {
+                        log.error("I was interrupted while I was waiting for GitHub cool-down.", e);
                     }
                 }
             }
-        }
-        else
-        {
+        } else {
             log.error("Failed to use GitHub Limit API");
         }
     }
 
-    public long calculateWaitingTime(JsonObject rateLimitResponseJson)
-    {
-        long search_wait_sec=-1, core_wait_sec = -1;
+    public long calculateWaitingTime(JsonObject rateLimitJson) {
+        long searchWaitSec;
+        long coreWaitSec;
 
-        long now_epochSecond = Instant.now().getEpochSecond();
-        JsonObject resourcesObj = rateLimitResponseJson.getAsJsonObject("resources");
+        long nowEpochSecond = Instant.now().getEpochSecond();
+        JsonObject resourcesObj = rateLimitJson.getAsJsonObject("resources");
         ///////////// Core
         JsonObject coreObj = resourcesObj.getAsJsonObject("core");
-        int core_limit = coreObj.get("limit").getAsInt();
-        int core_remaining = coreObj.get("remaining").getAsInt();
-        long core_reset_epochSecond = coreObj.get("reset").getAsLong();
-        if(core_remaining>0)
-            core_wait_sec = 0;
-        else
-            core_wait_sec = core_reset_epochSecond-now_epochSecond;
+        int coreLimit = coreObj.get("limit").getAsInt();
+        int coreRemaining = coreObj.get("remaining").getAsInt();
+        long coreResetEpochSecond = coreObj.get("reset").getAsLong();
+        if (coreRemaining > 0) {
+            coreWaitSec = 0;
+        } else {
+            coreWaitSec = coreResetEpochSecond - nowEpochSecond;
+        }
         ///////////// Search
         JsonObject searchObj = resourcesObj.getAsJsonObject("search");
-        int search_limit = searchObj.get("limit").getAsInt();
-        int search_remaining = searchObj.get("remaining").getAsInt();
-        long search_reset_epochSecond = searchObj.get("reset").getAsLong();
-        if(search_remaining>0)
-            search_wait_sec = 0;
-        else
-            search_wait_sec = search_reset_epochSecond-now_epochSecond;
+        int searchLimit = searchObj.get("limit").getAsInt();
+        int searchRemaining = searchObj.get("remaining").getAsInt();
+        long searchResetEpochSecond = searchObj.get("reset").getAsLong();
+        if (searchRemaining > 0) {
+            searchWaitSec = 0;
+        } else {
+            searchWaitSec = searchResetEpochSecond - nowEpochSecond;
+        }
         log.info("Search Limit: {}/min  Remaining: {}  -- Reset: {}  Now: {} => Search Wait {} Sec | Core Limit: {}/min  Remaining: {}  -- Reset: {}  Now: {} => Core Wait {} Sec ",
-                search_limit, search_remaining, search_reset_epochSecond, now_epochSecond, search_wait_sec,
-                core_limit, core_remaining, core_reset_epochSecond, now_epochSecond, core_wait_sec);
+                searchLimit, searchRemaining, searchResetEpochSecond, nowEpochSecond, searchWaitSec,
+                coreLimit, coreRemaining, coreResetEpochSecond, nowEpochSecond, coreWaitSec);
 
-        return Math.max(core_wait_sec, search_wait_sec);
+        return Math.max(coreWaitSec, searchWaitSec);
     }
 
 }

@@ -4,6 +4,7 @@ import com.google.common.collect.Range;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.experimental.NonFinal;
 import lombok.extern.slf4j.Slf4j;
@@ -15,6 +16,7 @@ import okhttp3.ResponseBody;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.commons.lang3.tuple.Triple;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import usi.si.seart.gseapp.util.Dates;
 import usi.si.seart.gseapp.util.Ranges;
@@ -23,55 +25,36 @@ import java.io.IOException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.concurrent.TimeUnit;
 
 @Slf4j
 @Service
+@RequiredArgsConstructor(onConstructor_ = @Autowired)
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class GitHubApiService {
 
+    private static final int minStars = 10;
+
+    private static final long retrySleepPeriod = 60000L;
+    private static final int maxRetryCount = 3;
+
     OkHttpClient client;
-    static int MIN_STARS = 10;
-
-    static long retrySleepPeriod_ms = 60000L;
-    static int maxRetryCount = 3;
-
-    static int STATUS_UNAUTHORIZED = 401;
-    static int STATUS_FORBIDDEN = 403;
-    static int STATUS_TOO_MANY_REQUESTS = 429;
-
-    static DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+    DateFormat utcTimestampFormat;
 
     @NonFinal
     GitHubCredentialUtil gitHubCredentialUtil;
-
-
-    @Autowired
-    public GitHubApiService()
-    {
-        this.client = new OkHttpClient.Builder()
-                                      .connectTimeout(1, TimeUnit.MINUTES)
-                                      .writeTimeout(1, TimeUnit.MINUTES)
-                                      .readTimeout(1, TimeUnit.MINUTES)
-                                      .build();
-
-    }
 
     public void setGitHubCredentialUtil(GitHubCredentialUtil gitHubCredentialUtil) {
         this.gitHubCredentialUtil = gitHubCredentialUtil;
     }
 
-
-
     public String searchRepositories(
-            String language, Range<Date> dateRange, Integer page, Boolean crawl_updated_repos
+            String language, Range<Date> dateRange, Integer page, boolean crawlUpdatedRepos
     ) throws IOException, InterruptedException {
-        String language_encoded = URLEncoder.encode(language, StandardCharsets.UTF_8);
-        String url = Endpoints.SEARCH_REPOS.getUrl() + "?q=language:" + language_encoded +
-                (crawl_updated_repos ? "+pushed:" : "+created:") + Ranges.toString(dateRange, dateFormat) +
-                "+fork:true+stars:>="+MIN_STARS+"+is:public&page=" + page + "&per_page=100";
+        String languageEncoded = URLEncoder.encode(language, StandardCharsets.UTF_8);
+        String url = Endpoints.SEARCH_REPOS.getUrl() + "?q=language:" + languageEncoded +
+                (crawlUpdatedRepos ? "+pushed:" : "+created:") + Ranges.toString(dateRange, utcTimestampFormat) +
+                "+fork:true+stars:>="+ minStars +"+is:public&page=" + page + "&per_page=100";
 
         // For debugging specific repositories
         // url = generateSearchRepo("XXXXX/YYYYY");
@@ -79,8 +62,7 @@ public class GitHubApiService {
         // url = generateSearchRepo("davidwernhart/AlDente"); // both issue and pulls
         // url = generateSearchRepo("seart-group/ghs"); // only issues
 
-
-        log.info("Github API Call: "+url);
+        log.info("Github API Call: {}", url);
         Triple<Integer, Headers, String> response = makeAPICall(url);
         String bodyStr = response.getRight();
 
@@ -99,8 +81,7 @@ public class GitHubApiService {
 
     public Long fetchNumberOfCommits(String repoFullName) throws IOException, InterruptedException {
         // https://api.github.com/repos/07th-mod/higurashi-console-arcs/commits?per_page=1
-        Long n = fetchLastPageNumberFromHeader(generateCommitsURL(repoFullName) + "?page=1&per_page=1");
-        return n;
+        return fetchLastPageNumberFromHeader(generateCommitsURL(repoFullName) + "?page=1&per_page=1");
     }
 
     public Pair<String, Date> fetchLastCommitInfo(String repoFullName) throws IOException, InterruptedException {
@@ -116,77 +97,67 @@ public class GitHubApiService {
 
     public Long fetchNumberOfBranches(String repoFullName) throws IOException, InterruptedException {
         //Branches: https://api.github.com/repos/07th-mod/higurashi-console-arcs/branches?per_page=1
-        Long n = fetchLastPageNumberFromHeader(generateBranchesURL(repoFullName) + "?page=1&per_page=1");
-        return n;
+        return fetchLastPageNumberFromHeader(generateBranchesURL(repoFullName) + "?page=1&per_page=1");
     }
 
     public Long fetchNumberOfReleases(String repoFullName) throws IOException, InterruptedException {
         //Releases: https://api.github.com/repos/07th-mod/higurashi-console-arcs/releases?per_page=1
-        Long n = fetchLastPageNumberFromHeader(generateReleasesURL(repoFullName) + "?page=1&per_page=1");
-        return n;
+        return fetchLastPageNumberFromHeader(generateReleasesURL(repoFullName) + "?page=1&per_page=1");
     }
 
 
     public Long fetchNumberOfContributors(String repoFullName) throws IOException, InterruptedException {
         //Releases: https://api.github.com/repos/07th-mod/higurashi-console-arcs/contributors?per_page=1
-        Long n = fetchLastPageNumberFromHeader(generateContributorsURL(repoFullName) + "?page=1&per_page=1");
-        return n;
+        return fetchLastPageNumberFromHeader(generateContributorsURL(repoFullName) + "?page=1&per_page=1");
     }
 
     public Long fetchNumberOfOpenIssuesAndPulls(String repoFullName) throws IOException, InterruptedException {
         //Issues+Pull Open: https://api.github.com/repos/07th-mod/higurashi-console-arcs/issues?state=open&per_page=1
-        Long n = fetchLastPageNumberFromHeader(generateIssuesURL(repoFullName) + "?state=open&page=1&per_page=1");
-        return n;
+        return fetchLastPageNumberFromHeader(generateIssuesURL(repoFullName) + "?state=open&page=1&per_page=1");
     }
     public Long fetchNumberOfAllIssuesAndPulls(String repoFullName) throws IOException, InterruptedException {
         //Issues+Pull All: https://api.github.com/repos/07th-mod/higurashi-console-arcs/issues?state=all&per_page=1
-        Long n = fetchLastPageNumberFromHeader(generateIssuesURL(repoFullName) + "?state=all&page=1&per_page=1");
-        return n;
+        return fetchLastPageNumberFromHeader(generateIssuesURL(repoFullName) + "?state=all&page=1&per_page=1");
     }
 
     public Long fetchNumberOfOpenPulls(String repoFullName) throws IOException, InterruptedException {
         //Pull Open: https://api.github.com/repos/07th-mod/higurashi-console-arcs/pulls?state=open&per_page=1
-        Long n = fetchLastPageNumberFromHeader(generatePullsURL(repoFullName) + "?state=open&page=1&per_page=1");
-        return n;
+        return fetchLastPageNumberFromHeader(generatePullsURL(repoFullName) + "?state=open&page=1&per_page=1");
     }
     public Long fetchNumberOfAllPulls(String repoFullName) throws IOException, InterruptedException {
         //Pull All: https://api.github.com/repos/07th-mod/higurashi-console-arcs/pulls?state=all&per_page=1
-        Long n = fetchLastPageNumberFromHeader(generatePullsURL(repoFullName) + "?state=all&page=1&per_page=1");
-        return n;
+        return fetchLastPageNumberFromHeader(generatePullsURL(repoFullName) + "?state=all&page=1&per_page=1");
     }
 
     public Long fetchNumberOfLabels(String repoFullName) throws IOException, InterruptedException {
-        Long n = fetchLastPageNumberFromHeader(generateLabelsURL(repoFullName) + "?page=1&per_page=1");
-        return n;
+        return fetchLastPageNumberFromHeader(generateLabelsURL(repoFullName) + "?page=1&per_page=1");
     }
 
     public Long fetchNumberOfLanguages(String repoFullName) throws IOException, InterruptedException {
-        Long n = fetchLastPageNumberFromHeader(generateLanguagesURL(repoFullName) + "?page=1&per_page=1");
-        return n;
+        return fetchLastPageNumberFromHeader(generateLanguagesURL(repoFullName) + "?page=1&per_page=1");
     }
 
     private Long fetchLastPageNumberFromHeader(String url) throws IOException, InterruptedException {
         Triple<Integer, Headers, String> response = makeAPICall(url);
         Integer retCode = response.getLeft();
 
-        Long lastPageCount;
-        if(retCode == STATUS_FORBIDDEN)
+        long lastPageCount;
+        if(retCode == HttpStatus.FORBIDDEN.value())
             // Forbidden 403 - two possibilities: (1) Token limit is exceeded, (2) too expensive computation as for https://api.github.com/repos/torvalds/linux/contributors
             // but makeAPICall doesn't return value if token limit is exceeded, so it's the latter case.
             lastPageCount = Long.MAX_VALUE;
-        else
-        {
+        else {
             Headers headers = response.getMiddle();
-            String link_field = headers.get("link");
-            if(link_field != null) {
-                String link_lastPage = link_field.split(",")[1];
-                String lastPageStr = link_lastPage.substring(link_lastPage.indexOf("page=") + ("page=".length()), link_lastPage.indexOf("&", link_lastPage.indexOf("page=")));
+            String linkField = headers.get("link");
+            if (linkField != null) {
+                String lastPageLink = linkField.split(",")[1];
+                String lastPageStr = lastPageLink.substring(lastPageLink.indexOf("page=") + ("page=".length()), lastPageLink.indexOf("&", lastPageLink.indexOf("page=")));
                 lastPageCount = Long.parseLong(lastPageStr);
-            }
-            else if(response.getRight().equals("[]"))
+            } else if(response.getRight().equals("[]")) {
                 lastPageCount = 0L;
-            else
+            } else {
                 lastPageCount = 1L;
+            }
         }
         return lastPageCount;
     }
@@ -216,10 +187,9 @@ public class GitHubApiService {
             Headers headers = response.headers();
             ResponseBody body = response.body();
             String bodyStr = null;
-            if (body != null)
+            if (body != null) {
                 bodyStr = body.string();
-            else
-            {
+            } else {
                 log.error("**********************************************************************");
                 log.error("How come 'body' object is null? reqURL = {}\", reqURL", reqURL);
                 log.error("**********************************************************************");
@@ -228,15 +198,15 @@ public class GitHubApiService {
 
             if (response.isSuccessful() && body != null) {
                 return Triple.of(response.code(), headers, bodyStr);
-            } else if (response.code() == STATUS_UNAUTHORIZED) {
+            } else if (response.code() == HttpStatus.UNAUTHORIZED.value()) {
                 log.error("**************** Invalid Access Token [401 Unauthorized]: {} ****************", gitHubCredentialUtil.getCurrentToken());
                 // Here we should not call `replaceTokenIfExpired()`, otherwise it leads to an infinite loop,
                 // because that method calls Rate API with the very same unauthorized token.
-                gitHubCredentialUtil.GetANewToken();
+                gitHubCredentialUtil.getNewToken();
                 Thread.sleep(5000);
-            } else if (response.code() == STATUS_TOO_MANY_REQUESTS) {
+            } else if (response.code() == HttpStatus.TOO_MANY_REQUESTS.value()) {
                 gitHubCredentialUtil.replaceTokenIfExpired();
-            } else if (response.code() == STATUS_FORBIDDEN) {
+            } else if (response.code() == HttpStatus.FORBIDDEN.value()) {
                 // Forbidden 403 - two possibilities: (1) Token limit is exceeded, (2) too expensive computation as for https://api.github.com/repos/torvalds/linux/contributors
                 String rateLimitRemainingStr = headers.get("X-RateLimit-Remaining");
                 if (rateLimitRemainingStr != null) {
@@ -255,7 +225,7 @@ public class GitHubApiService {
                 gitHubCredentialUtil.replaceTokenIfExpired();
             } else if (response.code() >= 500) {
                 log.error("Try #{}: GitHub Server Error Encountered: {}", tryNum, response.code());
-                Thread.sleep(retrySleepPeriod_ms);
+                Thread.sleep(retrySleepPeriod);
                 log.error("Retrying...");
             } else {
                 log.error("Try #{}: Failed to execute API call. retCode={} isSuccess={} - reqURL={}", tryNum, response.code(), response.isSuccessful(), reqURL);

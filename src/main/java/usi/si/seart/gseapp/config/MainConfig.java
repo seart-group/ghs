@@ -1,28 +1,41 @@
 package usi.si.seart.gseapp.config;
 
+import okhttp3.OkHttpClient;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
-import org.springframework.cache.CacheManager;
-import org.springframework.cache.annotation.EnableCaching;
-import org.springframework.cache.concurrent.ConcurrentMapCache;
-import org.springframework.cache.support.SimpleCacheManager;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.format.FormatterRegistry;
-import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import org.springframework.web.filter.ForwardedHeaderFilter;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import usi.si.seart.gseapp.converter.AccessTokenToDtoConverter;
 import usi.si.seart.gseapp.converter.CrawlJobToDtoConverter;
 import usi.si.seart.gseapp.converter.GitRepoToDtoConverter;
+import usi.si.seart.gseapp.converter.JsonObjectToGitRepoConverter;
 import usi.si.seart.gseapp.converter.SupportedLanguageToDtoConverter;
 
-import java.util.List;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.concurrent.TimeUnit;
 
 @Configuration
-@EnableCaching
 public class MainConfig {
+
+    @Bean
+    public DateFormat utcTimestampFormat() {
+        return new SimpleDateFormat("yyyy-MM-dd'T'hh:mm:ss");
+    }
+
+    @Bean
+    public OkHttpClient httpClient() {
+        return new OkHttpClient.Builder()
+                .connectTimeout(1, TimeUnit.MINUTES)
+                .writeTimeout(1, TimeUnit.MINUTES)
+                .readTimeout(1, TimeUnit.MINUTES)
+                .build();
+    }
+
     @Bean
     public WebMvcConfigurer webConfigurer() {
         return new WebMvcConfigurer() {
@@ -40,6 +53,7 @@ public class MainConfig {
                  registry.addConverter(new SupportedLanguageToDtoConverter());
                  registry.addConverter(new CrawlJobToDtoConverter());
                  registry.addConverter(new GitRepoToDtoConverter());
+                 registry.addConverter(new JsonObjectToGitRepoConverter());
             }
         };
     }
@@ -49,36 +63,5 @@ public class MainConfig {
         FilterRegistrationBean<ForwardedHeaderFilter> bean = new FilterRegistrationBean<>();
         bean.setFilter(new ForwardedHeaderFilter());
         return bean;
-    }
-
-    /**
-     * By default, Spring Boot will use just a single thread for all scheduled tasks to run.
-     * Since we have three scheduler jobs:
-     *
-     * <ul>
-     *     <li>Crawler</li>
-     *     <li>CleanUp</li>
-     *     <li>CacheEvict</li>
-     * </ul>
-     *
-     * We configure the threads here.
-     */
-    @Bean
-    public ThreadPoolTaskScheduler threadPoolTaskScheduler() {
-        ThreadPoolTaskScheduler threadPoolTaskScheduler = new ThreadPoolTaskScheduler();
-        threadPoolTaskScheduler.setPoolSize(3);
-        return threadPoolTaskScheduler;
-    }
-
-    @Bean
-    public CacheManager cacheManager() {
-        SimpleCacheManager cacheManager = new SimpleCacheManager();
-        cacheManager.setCaches(List.of(
-                new ConcurrentMapCache("labels"),
-                new ConcurrentMapCache("languageStatistics"),
-                new ConcurrentMapCache("licenses"),
-                new ConcurrentMapCache("languages")
-        ));
-        return cacheManager;
     }
 }

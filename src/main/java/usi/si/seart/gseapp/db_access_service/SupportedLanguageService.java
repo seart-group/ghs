@@ -5,7 +5,6 @@ import usi.si.seart.gseapp.model.SupportedLanguage;
 import java.util.List;
 
 public interface SupportedLanguageService {
-    List<String> getAll();
+    List<SupportedLanguage> getAll();
     SupportedLanguage create(SupportedLanguage language);
-    void delete(Long id);
 }
