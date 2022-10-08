@@ -37,7 +37,7 @@ public class ExportConfig {
 
     @Bean
     public DateFormat exportTimeFormat() {
-        return new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+        return new SimpleDateFormat("yyyy-MM-dd'T'hh:mm:ss");
     }
 
     @Bean
