@@ -20,7 +20,7 @@ import org.springframework.stereotype.Service;
 import usi.si.seart.gseapp.db_access_service.CrawlJobService;
 import usi.si.seart.gseapp.db_access_service.GitRepoService;
 import usi.si.seart.gseapp.db_access_service.SupportedLanguageService;
-import usi.si.seart.gseapp.github_service.GitHubApiService;
+import usi.si.seart.gseapp.github.GitHubApiService;
 import usi.si.seart.gseapp.model.GitRepo;
 import usi.si.seart.gseapp.model.GitRepoLabel;
 import usi.si.seart.gseapp.model.GitRepoLanguage;

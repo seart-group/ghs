@@ -1,4 +1,4 @@
-package usi.si.seart.gseapp.github_service;
+package usi.si.seart.gseapp.github;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
