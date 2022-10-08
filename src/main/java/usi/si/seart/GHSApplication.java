@@ -15,12 +15,12 @@ import java.io.IOException;
 @Slf4j
 @AllArgsConstructor(onConstructor_ = @Autowired)
 @SpringBootApplication
-public class GSEApplication {
+public class GHSApplication {
 
 	String exportFolder;
 
 	public static void main(String[] args) {
-		SpringApplication.run(GSEApplication.class, args);
+		SpringApplication.run(GHSApplication.class, args);
 	}
 
 	@PostConstruct
