@@ -1,4 +1,4 @@
-package usi.si.seart.gseapp.github_service;
+package usi.si.seart.gseapp.github;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;

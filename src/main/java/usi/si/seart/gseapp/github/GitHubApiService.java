@@ -1,4 +1,4 @@
-package usi.si.seart.gseapp.github_service;
+package usi.si.seart.gseapp.github;
 
 import com.google.common.collect.Range;
 import com.google.gson.JsonObject;
