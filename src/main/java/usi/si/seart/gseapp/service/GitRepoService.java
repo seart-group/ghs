@@ -1,4 +1,4 @@
-package usi.si.seart.gseapp.db_access_service;
+package usi.si.seart.gseapp.service;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

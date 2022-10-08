@@ -1,4 +1,4 @@
-package usi.si.seart.gseapp.db_access_service;
+package usi.si.seart.gseapp.service;
 
 import usi.si.seart.gseapp.model.CrawlJob;
 

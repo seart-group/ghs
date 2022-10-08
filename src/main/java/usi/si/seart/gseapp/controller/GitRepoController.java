@@ -29,7 +29,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import org.springframework.web.util.UriComponentsBuilder;
-import usi.si.seart.gseapp.db_access_service.GitRepoService;
+import usi.si.seart.gseapp.service.GitRepoService;
 import usi.si.seart.gseapp.dto.GitRepoDto;
 import usi.si.seart.gseapp.dto.SearchParameterDto;
 import usi.si.seart.gseapp.io.SelfDestructingResource;
