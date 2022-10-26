@@ -67,7 +67,7 @@ import java.util.stream.Stream;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class GitRepoController {
 
-    static Set<String> supportedFields = Set.of(
+    private static final Set<String> supportedFields = Set.of(
             GitRepo_.NAME,
             GitRepo_.COMMITS,
             GitRepo_.CONTRIBUTORS,
