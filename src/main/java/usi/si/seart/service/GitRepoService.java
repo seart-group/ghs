@@ -9,12 +9,14 @@ import usi.si.seart.model.GitRepoLanguage;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 public interface GitRepoService {
     Optional<GitRepo> getRepoById(Long id);
     Optional<GitRepo> getByName(String name);
     List<GitRepo> findDynamically(Map<String, Object> parameters);
     Page<GitRepo> findDynamically(Map<String, Object> parameters, Pageable pageable);
+    Stream<GitRepo> streamDynamically(Map<String, Object> parameters);
     GitRepo createOrUpdateRepo(GitRepo repo);
     List<String> getAllLabels(Integer limit);
     List<String> getAllLanguages();
