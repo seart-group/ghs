@@ -9,8 +9,6 @@ import org.springframework.format.FormatterRegistry;
 import org.springframework.web.filter.ForwardedHeaderFilter;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
-import usi.si.seart.converter.AccessTokenToDtoConverter;
-import usi.si.seart.converter.CrawlJobToDtoConverter;
 import usi.si.seart.converter.GitRepoToDtoConverter;
 import usi.si.seart.converter.JsonObjectToGitRepoConverter;
 import usi.si.seart.converter.SupportedLanguageToDtoConverter;
@@ -49,9 +47,7 @@ public class MainConfig {
 
             @Override
             public void addFormatters(@NotNull final FormatterRegistry registry) {
-                 registry.addConverter(new AccessTokenToDtoConverter());
                  registry.addConverter(new SupportedLanguageToDtoConverter());
-                 registry.addConverter(new CrawlJobToDtoConverter());
                  registry.addConverter(new GitRepoToDtoConverter());
                  registry.addConverter(new JsonObjectToGitRepoConverter());
             }

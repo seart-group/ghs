@@ -17,29 +17,7 @@ import java.io.IOException;
 @SpringBootApplication
 public class GHSApplication {
 
-	String exportFolder;
-
 	public static void main(String[] args) {
 		SpringApplication.run(GHSApplication.class, args);
-	}
-
-	@PostConstruct
-	private void createDownloadsFolder() {
-		log.info("Creating downloads folder: ./{}", exportFolder);
-		try {
-			FileUtils.forceMkdir(new File(exportFolder));
-		} catch (IOException ex) {
-			log.error("Could not create downloads folder!", ex);
-		}
-	}
-
-	@PreDestroy
-	private void deleteDownloadsFolder() {
-		log.info("Clearing downloads folder: ./{}", exportFolder);
-		try {
-			FileUtils.forceDelete(new File(exportFolder));
-		} catch (IOException ex) {
-			log.error("Could not clear downloads folder!", ex);
-		}
 	}
 }

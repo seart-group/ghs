@@ -1,0 +1,5 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="GET /r/languages" type="HttpClient.HttpRequestRunConfigurationType" factoryName="HTTP Request" path="$PROJECT_DIR$/http/GitRepoController.http" index="4" requestIdentifier="GET /r/languages" runType="Run single request">
+    <method v="2" />
+  </configuration>
+</component>
