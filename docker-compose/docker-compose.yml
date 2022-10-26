@@ -46,7 +46,6 @@ services:
       - "traefik.http.routers.gse-fe.tls.certresolver=myresolver"
       - "traefik.http.services.gse-fe-service.loadbalancer.server.port=3030"
     volumes:
-      - ./nginx-gse-fe/timeout.conf:/etc/nginx/conf.d/timeout.conf
       - ./nginx-gse-fe/default.conf.template:/etc/nginx/conf.d/default.conf.template
     #    ports:
     #      - "7030:3030"
