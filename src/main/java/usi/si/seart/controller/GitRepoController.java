@@ -1,14 +1,22 @@
 package usi.si.seart.controller;
 
+import com.fasterxml.jackson.core.JsonFactory;
+import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.core.TokenStreamFactory;
 import com.fasterxml.jackson.databind.json.JsonMapper;
+import com.fasterxml.jackson.dataformat.csv.CsvFactory;
+import com.fasterxml.jackson.dataformat.csv.CsvGenerator;
 import com.fasterxml.jackson.dataformat.csv.CsvMapper;
 import com.fasterxml.jackson.dataformat.csv.CsvSchema;
+import com.fasterxml.jackson.dataformat.xml.XmlFactory;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
+import com.fasterxml.jackson.dataformat.xml.ser.ToXmlGenerator;
 import lombok.AccessLevel;
+import lombok.Cleanup;
 import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.core.convert.ConversionService;
@@ -20,8 +28,8 @@ import org.springframework.data.web.SortDefault;
 import org.springframework.hateoas.IanaLinkRelations;
 import org.springframework.hateoas.Link;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -29,18 +37,18 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import org.springframework.web.util.UriComponentsBuilder;
-import usi.si.seart.service.GitRepoService;
 import usi.si.seart.dto.GitRepoDto;
 import usi.si.seart.dto.SearchParameterDto;
-import usi.si.seart.io.SelfDestructingResource;
-import usi.si.seart.jackson.JsonWrapper;
-import usi.si.seart.jackson.XmlWrapper;
 import usi.si.seart.model.GitRepo;
 import usi.si.seart.model.GitRepo_;
+import usi.si.seart.service.GitRepoService;
 
+import javax.persistence.EntityManager;
 import javax.servlet.http.HttpServletRequest;
-import java.io.File;
+import javax.servlet.http.HttpServletResponse;
+import javax.xml.namespace.QName;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
@@ -91,6 +99,8 @@ public class GitRepoController {
 
     GitRepoService gitRepoService;
     ConversionService conversionService;
+
+    EntityManager entityManager;
 
     @GetMapping("/r/search")
     public ResponseEntity<?> searchRepos(
@@ -196,59 +206,120 @@ public class GitRepoController {
         return new ResponseEntity<>(resultPage, headers, HttpStatus.OK);
     }
 
-    @GetMapping(value = "/r/download/{format}")
-    public ResponseEntity<?> downloadRepos(
+    @Transactional(readOnly = true)
+    @GetMapping("/r/download/{format}")
+    @SneakyThrows({ IOException.class })
+    public void downloadRepos(
             @PathVariable("format") String format,
-            SearchParameterDto searchParameterDto
-    ){
-        if (!exportFormats.contains(format))
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
-
-        Map<String, Object> paramMap = searchParameterDto.toParameterMap();
-        List<GitRepo> results = gitRepoService.findDynamically(paramMap);
-
-        List<GitRepoDto> dtos = List.of(conversionService.convert(results.toArray(new GitRepo[0]), GitRepoDto[].class));
-
-        String tempFileName = System.currentTimeMillis() + ".temp";
-        File tempFile = new File(exportFolder, tempFileName);
-
-        Map<String, Object> searchParams = searchParameterDto.toMap().entrySet().stream()
-                .filter(entry -> ObjectUtils.isNotEmpty(entry.getValue()))
-                .collect(Collectors.toMap(
-                        Map.Entry::getKey,
-                        Map.Entry::getValue,
-                        (x, y) -> y,
-                        LinkedHashMap::new
-                ));
-
-        String mediaType = "text/";
-        try {
-            switch (format){
-                case "csv":
-                    mediaType += format;
-                    csvMapper.writer().with(csvSchema).writeValue(tempFile, dtos);
-                    break;
-                case "json":
-                    mediaType += "plain";
-                    jsonMapper.writer().writeValue(tempFile, new JsonWrapper(searchParams, dtos.size(), dtos));
-                    break;
-                case "xml":
-                    mediaType += format;
-                    xmlMapper.writer().withRootName("result").writeValue(tempFile, new XmlWrapper(searchParams, dtos));
-                    break;
-                default:
-                    throw new IllegalStateException("Default portion of this switch should not be reachable!");
-            }
-        } catch (IOException ex) {
-            log.error(ex.getMessage());
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+            SearchParameterDto searchParameterDto,
+            HttpServletResponse response
+    ) {
+        if (!exportFormats.contains(format)) {
+            response.sendError(HttpServletResponse.SC_BAD_REQUEST);
+            return;
         }
 
-        return ResponseEntity.ok()
-                .header("Content-Disposition", "attachment; filename=results." + format)
-                .contentLength(tempFile.length())
-                .contentType(MediaType.parseMediaType(mediaType))
-                .body(new SelfDestructingResource(tempFile));
+        response.setContentType("text/" + format);
+        response.setHeader("Content-Disposition", "attachment;filename=results." + format);
+
+        @Cleanup PrintWriter printWriter = response.getWriter();
+        TokenStreamFactory factory;
+        JsonGenerator generator;
+
+        switch (format) {
+            case "csv":
+                factory = new CsvFactory();
+                break;
+            case "json":
+                factory = new JsonFactory();
+                break;
+            case "xml":
+                factory = new XmlFactory();
+                break;
+            default:
+                throw new IllegalStateException("Default portion of this switch should not be reachable!");
+        }
+
+        Map<String, Object> paramMap = searchParameterDto.toParameterMap();
+        @Cleanup Stream<GitRepoDto> results = gitRepoService.streamDynamically(paramMap)
+                .map(gitRepo -> {
+                    GitRepoDto dto = conversionService.convert(gitRepo, GitRepoDto.class);
+                    entityManager.detach(gitRepo);
+                    return dto;
+                });
+        Iterable<GitRepoDto> dtos = results::iterator;
+
+        generator = factory.createGenerator(printWriter);
+
+        switch (format) {
+            case "csv":
+                generator.setCodec(csvMapper);
+                generator.setSchema(csvSchema);
+                writeCsv(generator, dtos, searchParameterDto);
+                break;
+            case "json":
+                generator.setCodec(jsonMapper);
+                writeJson(generator, dtos, searchParameterDto);
+                break;
+            case "xml":
+                generator.setCodec(xmlMapper);
+                writeXml(generator, dtos, searchParameterDto);
+                break;
+            default:
+                throw new IllegalStateException("Default portion of this switch should not be reachable!");
+        }
+
+        generator.close();
+    }
+
+    private void writeJson(
+            JsonGenerator generator, Iterable<GitRepoDto> dtos, SearchParameterDto searchParameterDto
+    ) throws IOException {
+        generator.writeStartObject();
+        generator.writeObjectField("parameters", searchParameterDto);
+        generator.writeArrayFieldStart("items");
+        for (GitRepoDto dto : dtos) {
+            generator.writePOJO(dto);
+        }
+        generator.writeEndArray();
+        generator.writeEndObject();
+    }
+
+    private void writeXml(
+            JsonGenerator generator, Iterable<GitRepoDto> dtos, SearchParameterDto searchParameterDto
+    ) throws IOException {
+        ToXmlGenerator xmlGenerator = (ToXmlGenerator) generator;
+        xmlGenerator.configure(ToXmlGenerator.Feature.WRITE_XML_DECLARATION, true);
+        xmlGenerator.configure(ToXmlGenerator.Feature.WRITE_XML_1_1, true);
+        xmlGenerator.initGenerator();
+        xmlGenerator.setNextName(new QName("results"));
+        xmlGenerator.writeStartObject();
+
+        String attributes = searchParameterDto.toMap().entrySet().stream()
+                .map(entry -> String.format("%s=\"%s\"", entry.getKey(), entry.getValue()))
+                .collect(Collectors.joining(" "));
+        String parameters = String.format("<parameters %s/>", attributes);
+        xmlGenerator.writeRaw(parameters);
+
+        xmlGenerator.writeFieldName("items");
+        xmlGenerator.writeStartObject();
+        for (GitRepoDto dto : dtos) {
+            xmlGenerator.writePOJOField("item", dto);
+        }
+        xmlGenerator.writeEndObject();
+
+        xmlGenerator.writeEndObject();
+    }
+
+    private void writeCsv(
+            JsonGenerator generator, Iterable<GitRepoDto> dtos, SearchParameterDto searchParameterDto
+    ) throws IOException {
+        CsvGenerator csvGenerator = (CsvGenerator) generator;
+        csvGenerator.configure(JsonGenerator.Feature.IGNORE_UNKNOWN, true);
+        csvGenerator.configure(CsvGenerator.Feature.ALWAYS_QUOTE_STRINGS, true);
+        for (GitRepoDto dto : dtos) {
+            generator.writePOJO(dto);
+        }
     }
 
     @GetMapping("/r/{repoId}")
