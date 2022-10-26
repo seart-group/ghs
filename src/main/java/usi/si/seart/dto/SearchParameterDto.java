@@ -1,5 +1,6 @@
 package usi.si.seart.dto;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AccessLevel;
@@ -18,6 +19,7 @@ import java.util.Map;
 @Setter
 @NoArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
+@JsonInclude(JsonInclude.Include.NON_EMPTY)
 public class SearchParameterDto {
 
     private static final ObjectMapper mapper = new ObjectMapper();
