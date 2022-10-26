@@ -22,10 +22,4 @@ public class SupportedLanguageServiceImpl implements SupportedLanguageService {
     public List<SupportedLanguage> getAll(){
         return supportedLanguageRepository.findAll();
     }
-
-    @Override
-    public SupportedLanguage create(SupportedLanguage language){
-        Optional<SupportedLanguage> opt = supportedLanguageRepository.findByName(language.getName());
-        return opt.orElseGet(() -> supportedLanguageRepository.save(language));
-    }
 }
