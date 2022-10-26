@@ -1,0 +1,5 @@
+### GET /l
+GET http://localhost:8080/api/l
+
+### GET /l/stats
+GET http://localhost:8080/api/l/stats
