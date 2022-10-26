@@ -48,11 +48,6 @@ public class GitRepoServiceImpl implements GitRepoService {
     }
 
     @Override
-    public List<GitRepo> findDynamically(Map<String, Object> parameters) {
-        return gitRepoRepository.findAllDynamically(parameters);
-    }
-
-    @Override
     public Page<GitRepo> findDynamically(Map<String, Object> parameters, Pageable pageable) {
         return gitRepoRepository.findAllDynamically(parameters, pageable);
     }

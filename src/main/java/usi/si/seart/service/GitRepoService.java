@@ -14,7 +14,6 @@ import java.util.stream.Stream;
 public interface GitRepoService {
     Optional<GitRepo> getRepoById(Long id);
     Optional<GitRepo> getByName(String name);
-    List<GitRepo> findDynamically(Map<String, Object> parameters);
     Page<GitRepo> findDynamically(Map<String, Object> parameters, Pageable pageable);
     Stream<GitRepo> streamDynamically(Map<String, Object> parameters);
     GitRepo createOrUpdateRepo(GitRepo repo);
