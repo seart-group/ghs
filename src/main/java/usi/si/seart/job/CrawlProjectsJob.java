@@ -52,7 +52,7 @@ public class CrawlProjectsJob {
 
     List<String> languages = new ArrayList<>();
 
-    static BinaryOperator<Date> dateMedian = (a, b) -> new Date((a.getTime() + b.getTime())/2);
+    private static final BinaryOperator<Date> dateMedian = (a, b) -> new Date((a.getTime() + b.getTime())/2);
 
     GitRepoService gitRepoService;
     CrawlJobService crawlJobService;
