@@ -34,6 +34,7 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -63,6 +64,7 @@ import java.util.stream.Stream;
 @SuppressWarnings("ConstantConditions")
 @Slf4j
 @RestController
+@RequestMapping("/r")
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class GitRepoController {
@@ -99,7 +101,7 @@ public class GitRepoController {
 
     EntityManager entityManager;
 
-    @GetMapping("/r/search")
+    @GetMapping("/search")
     public ResponseEntity<?> searchRepos(
             SearchParameterDto searchParameterDto,
             @SortDefault(sort = GitRepo_.NAME) Pageable pageable,
@@ -204,7 +206,7 @@ public class GitRepoController {
     }
 
     @Transactional(readOnly = true)
-    @GetMapping("/r/download/{format}")
+    @GetMapping("/download/{format}")
     @SneakyThrows({ IOException.class })
     public void downloadRepos(
             @PathVariable("format") String format,
@@ -319,27 +321,32 @@ public class GitRepoController {
         }
     }
 
-    @GetMapping("/r/{repoId}")
-    public ResponseEntity<?> getRepoById(@PathVariable(value = "repoId") Long repoId){
-        Optional<GitRepo> optional = gitRepoService.getRepoById(repoId);
+    @GetMapping("/{id}")
+    public ResponseEntity<?> getRepoById(@PathVariable(value = "id") Long id){
+        Optional<GitRepo> optional = gitRepoService.getRepoById(id);
         return optional.map(gitRepo -> {
             GitRepoDto dto = conversionService.convert(optional.get(), GitRepoDto.class);
             return ResponseEntity.ok(dto);
         }).orElse(ResponseEntity.notFound().build());
     }
 
-    @GetMapping("/r/labels")
+    @GetMapping("/labels")
     public ResponseEntity<?> getAllLabels(){
         return ResponseEntity.ok(gitRepoService.getAllLabels(500));
     }
 
-    @GetMapping("/r/languages")
+    @GetMapping("/languages")
     public ResponseEntity<?> getAllLanguages(){
         return ResponseEntity.ok(gitRepoService.getAllLanguages());
     }
 
-    @GetMapping("/r/licenses")
+    @GetMapping("/licenses")
     public ResponseEntity<?> getAllLicenses() {
         return ResponseEntity.ok(gitRepoService.getAllLicenses());
+    }
+
+    @GetMapping("/stats")
+    public ResponseEntity<?> getRepoStatistics(){
+        return ResponseEntity.ok(gitRepoService.getMainLanguageStatistics());
     }
 }

@@ -7,6 +7,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import usi.si.seart.model.SupportedLanguage;
 import usi.si.seart.service.GitRepoService;
@@ -16,14 +17,15 @@ import java.util.stream.Collectors;
 
 @Slf4j
 @RestController
+@RequestMapping("/l")
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
-public class AdminController {
+public class SupportedLanguageController {
 
     SupportedLanguageService supportedLanguageService;
     GitRepoService gitRepoService;
 
-    @GetMapping("/l")
+    @GetMapping
     public ResponseEntity<?> getLanguages(){
         return ResponseEntity.ok(
                 supportedLanguageService.getAll()
@@ -34,13 +36,8 @@ public class AdminController {
         );
     }
 
-    @GetMapping("/l/stats")
+    @GetMapping("/stats")
     public ResponseEntity<?> getLanguageStatistics(){
         return ResponseEntity.ok(gitRepoService.getAllLanguageStatistics());
-    }
-
-    @GetMapping("/r/stats")
-    public ResponseEntity<?> getRepoStatistics(){
-        return ResponseEntity.ok(gitRepoService.getMainLanguageStatistics());
     }
 }
