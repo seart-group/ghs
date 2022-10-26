@@ -8,13 +8,19 @@ import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
 import usi.si.seart.model.GitRepo;
 import usi.si.seart.repository.specification.GitRepoSpecification;
+import usi.si.seart.repository.specification.JpaStreamableSpecificationRepository;
 
 import javax.persistence.Tuple;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Stream;
 
-public interface GitRepoRepository extends JpaRepository<GitRepo, Long>, JpaSpecificationExecutor<GitRepo> {
+public interface GitRepoRepository extends
+        JpaRepository<GitRepo, Long>,
+        JpaSpecificationExecutor<GitRepo>,
+        JpaStreamableSpecificationRepository<GitRepo>
+{
     Optional<GitRepo> findGitRepoById(Long id);
 
     Optional<GitRepo> findGitRepoByName(String name);
@@ -30,13 +36,13 @@ public interface GitRepoRepository extends JpaRepository<GitRepo, Long>, JpaSpec
     @Query("select r.name from GitRepo r order by r.crawled asc")
     List<String> findAllRepoNames();
 
-    default List<GitRepo> findAllDynamically(Map<String, ?> parameters) {
-        GitRepoSpecification specification = GitRepoSpecification.from(parameters);
-        return findAll(specification);
-    }
-
     default Page<GitRepo> findAllDynamically(Map<String, ?> parameters, Pageable pageable) {
         GitRepoSpecification specification = GitRepoSpecification.from(parameters);
         return findAll(specification, pageable);
+    }
+
+    default Stream<GitRepo> streamAllDynamically(Map<String, ?> parameters) {
+        GitRepoSpecification specification = GitRepoSpecification.from(parameters);
+        return stream(specification, GitRepo.class);
     }
 }

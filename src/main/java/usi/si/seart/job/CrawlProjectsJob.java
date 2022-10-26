@@ -52,7 +52,7 @@ public class CrawlProjectsJob {
 
     List<String> languages = new ArrayList<>();
 
-    static BinaryOperator<Date> dateMedian = (a, b) -> new Date((a.getTime() + b.getTime())/2);
+    private static final BinaryOperator<Date> dateMedian = (a, b) -> new Date((a.getTime() + b.getTime())/2);
 
     GitRepoService gitRepoService;
     CrawlJobService crawlJobService;
@@ -73,7 +73,7 @@ public class CrawlProjectsJob {
     DateFormat utcTimestampFormat;
 
     @Scheduled(fixedDelayString = "${app.crawl.scheduling}")
-    public void run() throws IOException, InterruptedException {
+    public void run() {
         List<SupportedLanguage> supportedLanguages = supportedLanguageService.getAll();
         supportedLanguages.sort(Comparator.comparing(SupportedLanguage::getAdded).reversed());
         languages.clear();
