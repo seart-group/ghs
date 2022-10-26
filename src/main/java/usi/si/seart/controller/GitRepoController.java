@@ -82,9 +82,6 @@ public class GitRepoController {
             GitRepo_.LAST_COMMIT
     );
 
-    @Qualifier("exportFolder")
-    String exportFolder;
-
     @Qualifier("exportFormats")
     Set<String> exportFormats;
 

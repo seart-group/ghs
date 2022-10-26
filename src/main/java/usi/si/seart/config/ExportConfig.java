@@ -26,11 +26,6 @@ import java.util.stream.Collectors;
 public class ExportConfig {
 
     @Bean
-    public String exportFolder() {
-        return "export_tmp";
-    }
-
-    @Bean
     public Set<String> exportFormats() {
         return Set.of("csv", "json", "xml");
     }
