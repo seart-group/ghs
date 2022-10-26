@@ -36,11 +36,6 @@ public interface GitRepoRepository extends
     @Query("select r.name from GitRepo r order by r.crawled asc")
     List<String> findAllRepoNames();
 
-    default List<GitRepo> findAllDynamically(Map<String, ?> parameters) {
-        GitRepoSpecification specification = GitRepoSpecification.from(parameters);
-        return findAll(specification);
-    }
-
     default Page<GitRepo> findAllDynamically(Map<String, ?> parameters, Pageable pageable) {
         GitRepoSpecification specification = GitRepoSpecification.from(parameters);
         return findAll(specification, pageable);
