@@ -9,15 +9,12 @@ import org.springframework.core.convert.ConversionService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
-import usi.si.seart.service.AccessTokenService;
+import usi.si.seart.dto.CrawlJobDto;
+import usi.si.seart.model.CrawlJob;
+import usi.si.seart.model.SupportedLanguage;
 import usi.si.seart.service.CrawlJobService;
 import usi.si.seart.service.GitRepoService;
 import usi.si.seart.service.SupportedLanguageService;
-import usi.si.seart.dto.AccessTokenDto;
-import usi.si.seart.dto.CrawlJobDto;
-import usi.si.seart.model.AccessToken;
-import usi.si.seart.model.CrawlJob;
-import usi.si.seart.model.SupportedLanguage;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -30,20 +27,9 @@ import java.util.stream.Collectors;
 public class AdminController {
 
     ConversionService conversionService;
-    AccessTokenService accessTokenService;
     SupportedLanguageService supportedLanguageService;
     CrawlJobService crawlJobService;
     GitRepoService gitRepoService;
-
-    @GetMapping("/t")
-    public ResponseEntity<?> getTokens(){
-        List<AccessToken> tokens = accessTokenService.getAll();
-        List<AccessTokenDto> dtos = List.of(
-                conversionService.convert(tokens.toArray(new AccessToken[0]), AccessTokenDto[].class)
-        );
-
-        return ResponseEntity.ok(dtos);
-    }
 
     @GetMapping("/l")
     public ResponseEntity<?> getLanguages(){
