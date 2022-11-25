@@ -141,19 +141,22 @@ public class GitHubApiService {
         Triple<Integer, Headers, String> response = makeAPICall(url);
         Integer retCode = response.getLeft();
 
-        long lastPageCount;
-        if(retCode == HttpStatus.FORBIDDEN.value())
-            // Forbidden 403 - two possibilities: (1) Token limit is exceeded, (2) too expensive computation as for https://api.github.com/repos/torvalds/linux/contributors
-            // but makeAPICall doesn't return value if token limit is exceeded, so it's the latter case.
-            lastPageCount = Long.MAX_VALUE;
-        else {
+        Long lastPageCount;
+        if (retCode == HttpStatus.FORBIDDEN.value()) {
+            // Forbidden 403 - two possibilities:
+            // (1) The token limit is exceeded
+            // (2) The computation is too expensive (e.g. https://api.github.com/repos/torvalds/linux/contributors)
+            // Since we make use of guards for the former case, then the latter is always the response cause.
+            // As a result we return null value to denote the metric as uncountable
+            lastPageCount = null;
+        } else {
             Headers headers = response.getMiddle();
             String linkField = headers.get("link");
             if (linkField != null) {
                 String lastPageLink = linkField.split(",")[1];
                 String lastPageStr = lastPageLink.substring(lastPageLink.indexOf("page=") + ("page=".length()), lastPageLink.indexOf("&", lastPageLink.indexOf("page=")));
                 lastPageCount = Long.parseLong(lastPageStr);
-            } else if(response.getRight().equals("[]")) {
+            } else if (response.getRight().equals("[]")) {
                 lastPageCount = 0L;
             } else {
                 lastPageCount = 1L;

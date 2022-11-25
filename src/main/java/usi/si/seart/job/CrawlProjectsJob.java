@@ -239,11 +239,9 @@ public class CrawlProjectsJob {
 
                     GitRepo repo = createRepoFromResponse(result);
                     repo = gitRepoService.createOrUpdateRepo(repo);
-                    if (repo != null) {
-                        log.info("\tBasic information saved (repo Table).");
-                        retrieveRepoLabels(repo);
-                        retrieveRepoLanguages(repo);
-                    }
+                    log.info("\tBasic information saved (repo Table).");
+                    retrieveRepoLabels(repo);
+                    retrieveRepoLanguages(repo);
                 } else {
                     log.error("SKIPPING due to null response from server");
                 }
