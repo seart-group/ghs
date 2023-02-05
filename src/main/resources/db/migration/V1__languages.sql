@@ -1,0 +1,22 @@
+INSERT INTO supported_language (added, name)
+VALUES
+    (current_timestamp, 'JavaScript'),
+    (current_timestamp, 'Python'),
+    (current_timestamp, 'Java'),
+    (current_timestamp, 'C++'),
+    (current_timestamp, 'TypeScript'),
+    (current_timestamp, 'PHP'),
+    (current_timestamp, 'C'),
+    (current_timestamp, 'Go'),
+    (current_timestamp, 'C#'),
+    (current_timestamp, 'Shell'),
+    (current_timestamp, 'Ruby'),
+    (current_timestamp, 'Objective-C'),
+    (current_timestamp, 'Rust'),
+    (current_timestamp, 'Swift'),
+    (current_timestamp, 'Kotlin'),
+    (current_timestamp, 'Dart'),
+    (current_timestamp, 'Elixir'),
+    (current_timestamp, 'Groovy'),
+    (current_timestamp, 'Nix'),
+    (current_timestamp, 'Smalltalk');
