@@ -1,13 +1,16 @@
-FROM openjdk:11.0.4-jre-slim
+FROM maven:3.8.4-jdk-11-slim AS build
 
-RUN apt-get -y update
-RUN apt-get -y install git
+COPY ./pom.xml /pom.xml
+COPY ./src ./src
 
+RUN mvn -e --no-transfer-progress clean package -am -DskipTests
 
-COPY target /usr/local/target
+FROM adoptopenjdk/openjdk11:jre-11.0.11_9-alpine
 
-WORKDIR /usr/local/
+COPY --from=build /target/ghs-application-*.jar /server.jar
+
+RUN apk update && apk add git
 
 EXPOSE 8080
 
-ENTRYPOINT ["/bin/bash", "-c", "sleep 30 && java -jar target/ghs-application-*.jar"]
+ENTRYPOINT java -jar server.jar
