@@ -1,6 +1,0 @@
--- ********************************************
--- ************* DO NOT DELETE ME *************
--- ********************************************
--- We need at least one file in src/main/resources/db/migration/.
--- Otherwise Maven sometimes doesn't copy the directory to target if it's empty and you will get: "Flyway: Cannot find migrations location in: [classpath:db/migration]"
--- To add real migration Flyway, follow V1__xxx.sql, V2__yyy.sql, ... pattern.
