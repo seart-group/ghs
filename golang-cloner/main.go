@@ -21,7 +21,7 @@ type CloneStats struct {
 func cloneRepo(repoURL *string, folderPath *string) CloneStats {
 	startTime := time.Now()
 	// Clone repository
-	cmd := exec.Command("git", "clone", "--progress", "--verbose", *repoURL)
+	cmd := exec.Command("git", "clone", "--depth", "1", "--progress", "--verbose", *repoURL)
 	cmd.Dir = *folderPath
 
 	// Capture output in order to derive the cloned folder name
