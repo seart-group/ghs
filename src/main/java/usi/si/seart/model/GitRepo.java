@@ -128,6 +128,11 @@ public class GitRepo {
     @Fetch(value = FetchMode.JOIN)
     Set<GitRepoLanguage> languages = new HashSet<>();
 
+    @Builder.Default
+    @OneToMany(mappedBy="repo", cascade=CascadeType.ALL, orphanRemoval = true)
+    @Fetch(value = FetchMode.JOIN)
+    Set<GitRepoMetric> metrics = new HashSet<>();
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
