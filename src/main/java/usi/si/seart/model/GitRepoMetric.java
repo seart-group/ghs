@@ -4,7 +4,6 @@ import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 import javax.persistence.*;
-import java.io.Serializable;
 import java.util.Objects;
 
 
@@ -23,7 +22,7 @@ import java.util.Objects;
 public class GitRepoMetric {
     @Builder.Default
     @EmbeddedId
-    GitRepoMetricsKey id = new GitRepoMetricsKey();
+    GitRepoMetricKey id = new GitRepoMetricKey();
 
     @ManyToOne
     @MapsId("repoId")
@@ -68,37 +67,4 @@ public class GitRepoMetric {
 
 }
 
-
-/**
- * Composite key for the metric.
- */
-@Embeddable
-@AllArgsConstructor
-@NoArgsConstructor
-@Setter
-@Getter
-class GitRepoMetricsKey implements Serializable {
-    @Column(name = "repo_id")
-    Long repoId;
-
-    @Column(name = "metric_language_id")
-    String metricLanguageId;
-
-
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj)
-            return true;
-        if (obj == null || getClass() != obj.getClass()) {
-            return false;
-        }
-
-        return repoId.equals(((GitRepoMetricsKey) obj).repoId) && metricLanguageId.equals(((GitRepoMetricsKey) obj).metricLanguageId);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(repoId, metricLanguageId);
-    }
-}
 

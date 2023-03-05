@@ -8,11 +8,14 @@ import lombok.AllArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.context.event.ApplicationReadyEvent;
+import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
 import usi.si.seart.exception.StaticCodeAnalysisException;
 import usi.si.seart.exception.TerminalExecutionException;
 import usi.si.seart.model.GitRepo;
 import usi.si.seart.model.GitRepoMetric;
+import usi.si.seart.model.GitRepoMetricKey;
 import usi.si.seart.model.MetricLanguage;
 import usi.si.seart.repository.GitRepoMetricRepository;
 import usi.si.seart.repository.GitRepoRepository;
@@ -40,8 +43,6 @@ import java.util.stream.Collectors;
 public class StaticCodeAnalysisService {
     //    ConversionService conversionService;
     GitRepoClonerService gitRepoClonerService;
-
-    GitRepoMetricRepository gitRepoMetricRepository;
 
     GitRepoRepository gitRepoRepository;
 
@@ -80,7 +81,8 @@ public class StaticCodeAnalysisService {
             GitRepo gitrepo = repo.get();
             // Converts the string output from 'cloc' into a set of code metrics.
             metrics = convert(gitrepo, g.fromJson(output, JsonObject.class));
-            gitRepoMetricRepository.saveAll(metrics);
+            gitrepo.setMetrics(metrics);
+            gitRepoRepository.save(gitrepo);
 
 
         } catch (InterruptedException | ExecutionException | TerminalExecutionException | MalformedURLException e) {
@@ -98,8 +100,12 @@ public class StaticCodeAnalysisService {
             JsonObject stat = entry.getValue().getAsJsonObject();
             GitRepoMetric.GitRepoMetricBuilder builder = GitRepoMetric.builder();
 
-            builder.repo(repo);
-            builder.language(MetricLanguage.builder().language(entry.getKey()).build());
+            MetricLanguage language = MetricLanguage.builder().language(entry.getKey()).build();
+            builder.language(language);
+            if (repo != null) {
+                builder.repo(repo);
+                builder.id(new GitRepoMetricKey(repo.getId(), language.getLanguage()));
+            }
             builder.blankLines(stat.get("blank").getAsLong());
             builder.commentLines(stat.get("comment").getAsLong());
             builder.codeLines(stat.get("code").getAsLong());
