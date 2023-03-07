@@ -46,7 +46,6 @@ public class GitRepoClonerService {
      * @return the handle of the cloned repository.
      * @throws CloneException if the cloning operation was unsuccessful.
      */
-    @Async
     public Future<ClonedRepo> cloneRepo(URL gitRepoURL) throws CloneException {
         // TODO: What if I just wrap everything in a try-catch and buonanotte ?
         Path tempRepoDir = null;
@@ -71,7 +70,7 @@ public class GitRepoClonerService {
             } catch (IOException ex) {
                 throw new CloneException(ex);
             }
-            throw new CloneException("'git clone' process did not exit successfully");
+            throw new CloneException("'git clone' process did not start/exit successfully",e);
         }
         return new AsyncResult<>(new ClonedRepo(tempRepoDir));
     }
@@ -85,6 +84,8 @@ public class GitRepoClonerService {
             new TerminalExecution(Files.createTempDirectory(repofolderprefix).getParent(), "rm -rf ", repofolderprefix + "*").start().waitSuccessfulExit();
         } catch (Exception e) {
             log.error("Failed to cleanup cloned repository folders", e);
+            return;
         }
+        log.info("Successfully cleaned up repository folder");
     }
 }

@@ -1,5 +1,8 @@
 
 # TODO: is naming good ?
+ALTER TABLE repo ADD COLUMN cloned TIMESTAMP NULL;
+
+
 
 CREATE TABLE metric_language
 (

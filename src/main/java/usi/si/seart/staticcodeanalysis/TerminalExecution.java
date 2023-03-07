@@ -13,6 +13,7 @@ import java.nio.file.Path;
 import java.util.Map;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.ExecutionException;
+import java.util.stream.Collectors;
 
 /**
  * A useful wrapper for managing the lifecycle of terminal processes.
@@ -82,6 +83,11 @@ public class TerminalExecution {
         return new BufferedReader(new InputStreamReader(process.getInputStream()));
     }
 
+
+    public BufferedReader getStdErr() {
+        return new BufferedReader(new InputStreamReader(process.getErrorStream()));
+    }
+
     public boolean isRunning() {
         return process != null && process.isAlive();
     }
@@ -112,10 +118,12 @@ public class TerminalExecution {
             return this;
 
         int exitCode = 0;
+        BufferedReader stderr;
         try {
+            stderr = new BufferedReader(new InputStreamReader(process.getErrorStream()));
             exitCode = process.onExit().get().exitValue();
             if (exitCode != 0) {
-                throw new Exception("Terminal process returned error code "+exitCode);
+                throw new Exception("Terminal process returned error code "+exitCode+"\n== stderr:\n"+stderr.lines().collect(Collectors.joining("\n"))+"\n===");
             }
         } catch (Exception e) {
             throw new TerminalExecutionException("Error occurred while waiting on the successful exit of the terminal process", e);
