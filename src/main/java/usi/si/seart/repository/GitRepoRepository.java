@@ -36,6 +36,8 @@ public interface GitRepoRepository extends
     @Query("select r.name from GitRepo r order by r.crawled asc")
     List<String> findAllRepoNames();
 
+    Stream<GitRepo> findByOrderByCloned();
+
     default Page<GitRepo> findAllDynamically(Map<String, ?> parameters, Pageable pageable) {
         GitRepoSpecification specification = GitRepoSpecification.from(parameters);
         return findAll(specification, pageable);

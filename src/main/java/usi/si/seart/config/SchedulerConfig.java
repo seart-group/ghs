@@ -5,14 +5,19 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.EnableScheduling;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import org.springframework.util.ErrorHandler;
 
 import java.time.Clock;
+import java.util.concurrent.Executor;
+import java.util.concurrent.ThreadPoolExecutor;
 
 @Configuration
 @EnableScheduling
+@EnableAsync
 public class SchedulerConfig {
 
     /**
@@ -23,6 +28,7 @@ public class SchedulerConfig {
      *     <li>Crawler</li>
      *     <li>CleanUp</li>
      *     <li>CacheEvict</li>
+     *     <li>CodeAnalysis</li>
      * </ul>
      *
      * We configure the threads here.
@@ -31,7 +37,7 @@ public class SchedulerConfig {
     public ThreadPoolTaskScheduler threadPoolTaskScheduler() {
         ThreadPoolTaskScheduler threadPoolTaskScheduler = new ThreadPoolTaskScheduler();
         threadPoolTaskScheduler.setClock(Clock.systemUTC());
-        threadPoolTaskScheduler.setPoolSize(3);
+        threadPoolTaskScheduler.setPoolSize(4);
         threadPoolTaskScheduler.setThreadNamePrefix("GHSThread");
         threadPoolTaskScheduler.setErrorHandler(new SchedulerErrorHandler());
         threadPoolTaskScheduler.initialize();
@@ -46,5 +52,21 @@ public class SchedulerConfig {
         public void handleError(@NotNull Throwable t) {
             log.error("Unhandled exception occurred while performing a scheduled job.", t);
         }
+    }
+
+
+
+    @Bean(name = "GitCloning")
+    public Executor asyncExecutor() {
+        ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
+        executor.setCorePoolSize(1); // minimum number of threads
+        executor.setMaxPoolSize(6); // maximum number of threads
+        executor.setQueueCapacity(Integer.MAX_VALUE); // maximum number of tasks in the queue
+        executor.setKeepAliveSeconds(60); // keep-alive time for idle threads
+        executor.setThreadNamePrefix("CloningThread");
+        // To make sure just this thread-pool executes these tasks
+        executor.setRejectedExecutionHandler(new ThreadPoolExecutor.AbortPolicy()); // policy to abort
+        executor.initialize();
+        return executor;
     }
 }

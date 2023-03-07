@@ -118,6 +118,9 @@ public class GitRepo {
     @Column(name = "crawled")
     Date crawled;
 
+    @Column(name = "cloned")
+    Date cloned;
+
     @Builder.Default
     @OneToMany(mappedBy="repo", cascade=CascadeType.ALL, orphanRemoval = true)
     @Fetch(value = FetchMode.JOIN)
@@ -151,4 +154,7 @@ public class GitRepo {
     private void onPersistAndUpdate() {
         crawled = new Date();
     }
+
+    public void setCloned() { cloned = new Date(); }
+
 }
