@@ -8,11 +8,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import usi.si.seart.exception.StaticCodeAnalysisException;
 import usi.si.seart.model.GitRepo;
 import usi.si.seart.repository.GitRepoRepository;
 import usi.si.seart.service.StaticCodeAnalysisService;
+
+import java.util.concurrent.ExecutionException;
 
 @Slf4j
 @Service
@@ -28,12 +31,15 @@ public class CodeAnalysisJob {
     @Transactional
     @Scheduled(fixedDelayString = "${app.crawl.cloning.scheduling}")
     public void run() {
-        gitRepoRepository.findByOrderByCloned().forEach((GitRepo repo) -> {
-            try {
-                staticCodeAnalysisService.getCodeMetrics(repo, true);
-            } catch (StaticCodeAnalysisException e) {
-                log.error("Error during code analysis job: ", e);
-            }
-        });
+        gitRepoRepository.findByOrderByCloned().forEach(this::analyze);
+    }
+
+    @Transactional(propagation = Propagation.NESTED)
+    void analyze(GitRepo repo) {
+        try {
+            staticCodeAnalysisService.getCodeMetrics(repo, true);
+        } catch (StaticCodeAnalysisException e) {
+            log.error("Error during code analysis job: ", e);
+        }
     }
 }

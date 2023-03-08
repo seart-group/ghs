@@ -95,6 +95,7 @@ public class StaticCodeAnalysisService {
      * @param repo_name the name of the git repository (eg "/AlbertCerfeda/example" )
      * @see StaticCodeAnalysisService::getCodeMetrics(GitRepo, boolean)
      */
+    @Async("GitCloning")
     public Future<HashSet<GitRepoMetric>> getCodeMetrics(@NotNull String repo_name, boolean persist) throws StaticCodeAnalysisException {
         GitRepo repo = gitRepoRepository.findGitRepoByName(repo_name).orElse(null);
         if (repo==null)

@@ -59,13 +59,12 @@ public class SchedulerConfig {
     @Bean(name = "GitCloning")
     public Executor asyncExecutor() {
         ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
-        executor.setCorePoolSize(1); // minimum number of threads
-        executor.setMaxPoolSize(6); // maximum number of threads
-        executor.setQueueCapacity(Integer.MAX_VALUE); // maximum number of tasks in the queue
+        executor.setCorePoolSize(0);
+        executor.setMaxPoolSize(6);
+        executor.setQueueCapacity(1000); // maximum number of tasks in the queue
         executor.setKeepAliveSeconds(60); // keep-alive time for idle threads
         executor.setThreadNamePrefix("CloningThread");
-        // To make sure just this thread-pool executes these tasks
-        executor.setRejectedExecutionHandler(new ThreadPoolExecutor.AbortPolicy()); // policy to abort
+        executor.setRejectedExecutionHandler(new ThreadPoolExecutor.CallerRunsPolicy()); // policy to abort
         executor.initialize();
         return executor;
     }
