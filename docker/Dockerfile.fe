@@ -1,6 +1,6 @@
 FROM nginx
 
-COPY src/main/fe-src /usr/share/nginx/html
+COPY html /usr/share/nginx/html
 
 EXPOSE 3030
 
