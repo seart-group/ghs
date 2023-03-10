@@ -1,71 +1,73 @@
-let supported_languages = [];
-let num_of_repos = [];
-let colors = [];
+(function (base, $, Chart) {
+    const [ canvas ] = $("#statistics-chart").get();
+    const $statistics_count = $("#statistics-count");
 
-function dynamicColors(i, total) {
-    let c = 100 + i * 155/total;
-    return "rgb(" + c + "," + c + "," + c + ")";
-}
+    // https://nagix.github.io/chartjs-plugin-colorschemes/colorchart.html#:~:text=tableau.Brown20%3A-,tableau.Gray20,-%3A
+    const colors = [
+        "#49525e", "#4f5864", "#555f6a", "#5b6570",
+        "#616c77", "#67737c", "#6e7a81", "#758087",
+        "#7c878d", "#848e93", "#8b9598", "#939c9e",
+        "#9ca3a4", "#a4a9ab", "#acb0b1", "#b4b7b7",
+        "#bcbfbe", "#c5c7c6", "#cdcecd", "#d5d5d5"
+    ];
 
-fetch("http://localhost:8080/api/r/stats").then(response => {
-    return response.json();
-}).then(data => {
-    let i = 0;
-    let total_repos = 0;
+    Chart.defaults.font.family = "Trebuchet MS";
 
-    let entries = Object.entries(data);
-
-    for (const [language, repos] of entries) {
-        supported_languages.push(language);
-        num_of_repos.push(repos);
-        total_repos += repos;
-        colors.push(dynamicColors(i, entries.length));
-        i++;
-    }
-
-    document.getElementById("total_num_of_repos").innerText = total_repos.toLocaleString('en', {useGrouping: true});
-}).catch(error => {
-    console.error('Error (/r/stats):', error);
-});
-
-Chart.defaults.global.defaultFontFamily = "Trebuchet MS";
-
-let ctx = document.getElementById('myChart').getContext('2d');
-
-let config = {
-    type: 'bar',
-    data: {
-        labels: supported_languages,
-        datasets: [{
-            label: '# of repos',
-            data: num_of_repos,
-            backgroundColor: colors,
-            hoverBackgroundColor: colors
-        }]
-    },
-    options: {
-        legend: {
-            display: false
-        },
-        tooltips: {
-            yAlign: 'bottom'
+    const options = {
+        animation: {
+            duration: 0
         },
         layout: {
             padding: {
-                left: 15,
-                right: 15,
-                top: 45,
-                bottom: 15
+                top: 30
             }
         },
+        responsive: true,
         scales: {
-            yAxes: [{
+            y: {
+                beginAtZero: true,
                 ticks: {
-                    beginAtZero: true
+                    callback: function (label, _idx, _labels) {
+                        return `${label / 1000}k`;
+                    }
+                },
+                title: {
+                    display: true,
+                    text: "# of projects"
                 }
-            }]
+            }
+        },
+        plugins: {
+            tooltip: {
+                yAlign: "bottom",
+                titleAlign: "center",
+                cornerRadius: 0
+            },
+            legend: {
+                display: false
+            }
         }
-    }
-};
+    };
 
-new Chart(ctx,config);
+    fetch(`${base}/r/stats`)
+        .then(response => response.json())
+        .then(json => ({
+            _count: Object.values(json).reduce((_sum, _i) => _sum + _i, 0),
+            labels: Object.keys(json),
+            datasets: [{
+                label: "Projects",
+                data: Object.values(json),
+                borderWidth: 2,
+                borderColor: colors,
+                backgroundColor: colors.map(color => `${color}bf`)
+            }]
+        }))
+        .then(data => {
+            $statistics_count.replaceWith(`<span id="statistics-count">${data._count.toLocaleString()}</span>`);
+            new Chart(canvas, {
+                type: "bar",
+                data: data,
+                options: options
+            });
+        });
+}(base, jQuery, Chart));

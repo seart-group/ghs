@@ -1,15 +1,26 @@
-function generateOptions(dataset) {
-    return { showHintOnFocus: true, source: dataset, items: 15, minLength: 2 }
-}
+(function (base, $) {
+    const typeaheadOptions = {
+        items: 10,
+        delay: 125,
+        scrollHeight: 2,
+        autoSelect: false,
+        fitToElement: true,
+        showHintOnFocus: true
+    };
 
-function fetchTypeaheadData(url, jqElement) {
-    fetch(url).then(response => {
-        return response.json();
-    }).then(data => {
-        jqElement.typeahead(generateOptions(data));
-    }).catch(_ => {});
-}
+    const $search_label = $("#search-label");
+    const $search_license = $("#search-license");
+    const $search_language = $("#search-language");
 
-fetchTypeaheadData("http://localhost:8080/api/r/labels", $label)
-fetchTypeaheadData("http://localhost:8080/api/l", $language)
-fetchTypeaheadData("http://localhost:8080/api/r/licenses", $license)
+    fetch(`${base}/r/labels`)
+        .then(response => response.json())
+        .then(data => $search_label.typeahead({ ...typeaheadOptions, source: data }));
+
+    fetch(`${base}/r/licenses`)
+        .then(response => response.json())
+        .then(data => $search_license.typeahead({ ...typeaheadOptions, source: data }));
+
+    fetch(`${base}/l`)
+        .then(response => response.json())
+        .then(data => $search_language.typeahead({ ...typeaheadOptions, source: data }));
+}(base, jQuery));
