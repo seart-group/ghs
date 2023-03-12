@@ -17,7 +17,6 @@ import usi.si.seart.model.GitRepo;
 import usi.si.seart.model.GitRepoMetric;
 import usi.si.seart.model.GitRepoMetricKey;
 import usi.si.seart.model.MetricLanguage;
-import usi.si.seart.repository.GitRepoMetricRepository;
 import usi.si.seart.repository.GitRepoRepository;
 import usi.si.seart.staticcodeanalysis.ClonedRepo;
 import usi.si.seart.staticcodeanalysis.TerminalExecution;
