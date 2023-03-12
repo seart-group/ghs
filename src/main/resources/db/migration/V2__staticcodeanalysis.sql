@@ -3,7 +3,6 @@
 ALTER TABLE repo ADD COLUMN cloned TIMESTAMP NULL;
 
 
-
 CREATE TABLE metric_language
 (
     language VARCHAR(256) NOT NULL PRIMARY KEY
