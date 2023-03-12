@@ -12,10 +12,13 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import usi.si.seart.exception.StaticCodeAnalysisException;
 import usi.si.seart.model.GitRepo;
+import usi.si.seart.model.GitRepoMetric;
 import usi.si.seart.repository.GitRepoRepository;
 import usi.si.seart.service.StaticCodeAnalysisService;
 
-import java.util.concurrent.ExecutionException;
+import java.util.HashSet;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Future;
 
 @Slf4j
 @Service
@@ -31,15 +34,24 @@ public class CodeAnalysisJob {
     @Transactional
     @Scheduled(fixedDelayString = "${app.crawl.cloning.scheduling}")
     public void run() {
-        gitRepoRepository.findByOrderByCloned().forEach(this::analyze);
+        final long outdatedRepos = gitRepoRepository.countAllRepoWithOutdatedCodeMetrics();
+        final long allRepos = gitRepoRepository.count();
+
+        log.info("CodeAnalysis job started on " + outdatedRepos + "/" + allRepos + " repositories");
+//        TODO: Find a way to measure code execution
+//        Instant start = Instant.now();
+        gitRepoRepository.findAllRepoWithOutdatedCodeMetrics().forEach(this::analyze);
+//        Instant end = Instant.now();
+//        log.info("Finished CodeAnalysis job on "+outdatedRepos+"/"+allRepos+" repositories in "+ Durations.fromDuration(Duration.between(start,end)));
     }
 
     @Transactional(propagation = Propagation.NESTED)
-    void analyze(GitRepo repo) {
+    Future<HashSet<GitRepoMetric>> analyze(GitRepo repo) {
         try {
-            staticCodeAnalysisService.getCodeMetrics(repo, true);
+            return staticCodeAnalysisService.getCodeMetrics(repo, true);
         } catch (StaticCodeAnalysisException e) {
             log.error("Error during code analysis job: ", e);
+            return CompletableFuture.completedFuture(new HashSet<>());
         }
     }
 }

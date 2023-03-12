@@ -36,7 +36,12 @@ public interface GitRepoRepository extends
     @Query("select r.name from GitRepo r order by r.crawled asc")
     List<String> findAllRepoNames();
 
-    Stream<GitRepo> findByOrderByCloned();
+
+    // Code metrics are outdated if the repository has new commits since the last cloned date or if there are no metrics at all
+    @Query("SELECT r FROM GitRepo r WHERE r.cloned is null OR r.cloned < r.pushedAt ORDER BY r.cloned ASC")
+    Stream<GitRepo> findAllRepoWithOutdatedCodeMetrics();
+    @Query("SELECT COUNT(r) FROM GitRepo r WHERE r.cloned is null OR r.cloned < r.pushedAt")
+    Long countAllRepoWithOutdatedCodeMetrics();
 
     default Page<GitRepo> findAllDynamically(Map<String, ?> parameters, Pageable pageable) {
         GitRepoSpecification specification = GitRepoSpecification.from(parameters);
