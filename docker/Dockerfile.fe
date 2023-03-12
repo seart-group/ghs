@@ -1,6 +1,18 @@
-FROM nginx
+FROM node:18.15-alpine AS build
 
-COPY src/main/fe-src /usr/share/nginx/html
+RUN apk update && apk add moreutils
+
+RUN npm install minify -g
+
+COPY html html/
+
+RUN for file in html/js/*.js; \
+    do minify $file | sponge $file; \
+    done
+
+FROM nginx:1.23.3-alpine-slim
+
+COPY --from=build html /usr/share/nginx/html
 
 EXPOSE 3030
 
