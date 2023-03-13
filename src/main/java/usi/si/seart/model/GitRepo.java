@@ -17,8 +17,6 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
-import javax.persistence.PrePersist;
-import javax.persistence.PreUpdate;
 import javax.persistence.Table;
 import java.util.Date;
 import java.util.HashSet;
@@ -152,7 +150,9 @@ public class GitRepo {
     /**
      * To be called when the repository has been crawled through GitHub's API.
      */
-    public void setCrawled() { crawled = new Date(); }
+    public void setCrawled() {
+        crawled = new Date();
+    }
 
     /**
      * To be called when the repository's code metrics have been mined.

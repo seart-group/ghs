@@ -17,6 +17,7 @@ import usi.si.seart.repository.GitRepoRepository;
 import usi.si.seart.service.StaticCodeAnalysisService;
 
 import java.util.HashSet;
+import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Future;
 
@@ -37,16 +38,16 @@ public class CodeAnalysisJob {
         final long outdatedRepos = gitRepoRepository.countAllRepoWithOutdatedCodeMetrics();
         final long allRepos = gitRepoRepository.count();
 
-        log.info("CodeAnalysis job started on " + outdatedRepos + "/" + allRepos + " repositories");
+        log.info("CodeAnalysis job started on {}/{} repositories", outdatedRepos, allRepos);
         gitRepoRepository.findAllRepoWithOutdatedCodeMetrics().forEach(this::analyze);
     }
 
     @Transactional(propagation = Propagation.NESTED)
-    Future<HashSet<GitRepoMetric>> analyze(GitRepo repo) {
+    Future<Set<GitRepoMetric>> analyze(GitRepo repo) {
         try {
             return staticCodeAnalysisService.getCodeMetrics(repo, true);
         } catch (StaticCodeAnalysisException e) {
-            log.error("Error during code analysis job: ", e);
+            log.error("Error during code analysis job", e);
             return CompletableFuture.completedFuture(new HashSet<>());
         }
     }

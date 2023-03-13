@@ -62,8 +62,12 @@ public class SchedulerConfig {
         }
     }
 
-
-
+    /**
+     * Configuration for the thread pool responsible for code analysis and repository cloning.
+     *  No threads are instantiated when the pool is idle.
+     *  Idle threads die after 60 seconds.
+     *  The maximum pool size is configurable through the application.properties
+     */
     @Bean(name = "GitCloning")
     public Executor asyncExecutor() {
         ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();

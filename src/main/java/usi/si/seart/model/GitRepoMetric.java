@@ -1,9 +1,21 @@
 package usi.si.seart.model;
 
-import lombok.*;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import lombok.experimental.FieldDefaults;
 
-import javax.persistence.*;
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.EmbeddedId;
+import javax.persistence.Entity;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.MapsId;
+import javax.persistence.Table;
 import java.util.Objects;
 
 
@@ -20,6 +32,7 @@ import java.util.Objects;
 @Table(name = "repo_metrics")
 @Entity
 public class GitRepoMetric {
+
     @Builder.Default
     @EmbeddedId
     GitRepoMetricKey id = new GitRepoMetricKey();
@@ -52,12 +65,14 @@ public class GitRepoMetric {
             return false;
         }
 
-        return id.equals(((GitRepoMetric) obj).id)
-                && repo.equals(((GitRepoMetric) obj).repo)
-                && language.equals(((GitRepoMetric) obj).language)
-                && blankLines.equals(((GitRepoMetric) obj).blankLines)
-                && codeLines.equals(((GitRepoMetric) obj).codeLines)
-                && commentLines.equals(((GitRepoMetric) obj).commentLines);
+        GitRepoMetric metric = (GitRepoMetric) obj;
+
+        return id.equals(metric.id)
+                && repo.equals(metric.repo)
+                && language.equals(metric.language)
+                && blankLines.equals(metric.blankLines)
+                && codeLines.equals(metric.codeLines)
+                && commentLines.equals(metric.commentLines);
     }
 
     @Override

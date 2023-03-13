@@ -11,8 +11,6 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.file.Path;
 import java.util.Map;
-import java.util.concurrent.CancellationException;
-import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 
 /**
@@ -25,7 +23,6 @@ public class TerminalExecution {
 
     ProcessBuilder processBuilder;
 
-
     /**
      * Prepares a new terminal command.
      * @param cwd The Current Working Directory in which the command will be invoked.
@@ -37,16 +34,8 @@ public class TerminalExecution {
         if (cwd != null)
             processBuilder.directory(cwd.toFile());
 
-        switch (System.getProperty("os.name")) {
-            case "windows":
-                processBuilder.command("cmd.exe", "/c", String.join(" ", args));
-                break;
-            default:
-                processBuilder.command("bash", "-c", String.join(" ", args));
-                break;
-        }
+        processBuilder.command("bash", "-c", String.join(" ", args));
     }
-
 
     /**
      * Invokes the command in the shell.
@@ -69,7 +58,7 @@ public class TerminalExecution {
      *  If the process is not running, does nothing.
      */
     public TerminalExecution stop() {
-        if(process == null)
+        if (process == null)
             return this;
         process.destroy();
         return this;
@@ -79,10 +68,9 @@ public class TerminalExecution {
      * Returns a BufferedReader for reading from the process' normal output.
      * @return the BufferedReader for reading the normal output piped from the process.
      */
-    public BufferedReader getStdout() {
+    public BufferedReader getStdOut() {
         return new BufferedReader(new InputStreamReader(process.getInputStream()));
     }
-
 
     public BufferedReader getStdErr() {
         return new BufferedReader(new InputStreamReader(process.getErrorStream()));
@@ -90,23 +78,6 @@ public class TerminalExecution {
 
     public boolean isRunning() {
         return process != null && process.isAlive();
-    }
-
-    /**
-     * Waits for the process to end.
-     *  Method returns without error regardless of the process terminating abnormally, or if the waiting thread is interrupted.
-     */
-    public TerminalExecution waitEnd() {
-        if (process == null)
-            return this;
-
-        try {
-            process.onExit().get();
-        } catch (ExecutionException | CancellationException e) {
-
-        } finally {
-            return this;
-        }
     }
 
     /**
@@ -123,7 +94,8 @@ public class TerminalExecution {
             stderr = new BufferedReader(new InputStreamReader(process.getErrorStream()));
             exitCode = process.onExit().get().exitValue();
             if (exitCode != 0) {
-                throw new Exception("Terminal process returned error code "+exitCode+"\n== stderr:\n"+stderr.lines().collect(Collectors.joining("\n"))+"\n===");
+                final String stringErr = stderr.lines().collect(Collectors.joining("\n"));
+                throw new Exception("Terminal process returned error code "+exitCode+"\n== stderr:\n"+ stringErr +"\n===");
             }
         } catch (Exception e) {
             throw new TerminalExecutionException("Error occurred while waiting on the successful exit of the terminal process", e);
@@ -131,7 +103,6 @@ public class TerminalExecution {
 
         return this;
     }
-
 
     /**
      * Adds a shell environment variable.
@@ -141,7 +112,6 @@ public class TerminalExecution {
      */
     public TerminalExecution setEnv(String key, String value) {
         processBuilder.environment().put(key, value);
-
         return this;
     }
 

@@ -35,7 +35,7 @@ class ClonedRepo implements AutoCloseable {
                     .map(Path::toFile)
                     .forEach(File::delete);
         } catch (IOException e) {
-            log.warn("Exception when trying to delete cloned repo folder", e);
+            log.error("Exception when trying to delete cloned repo folder", e);
         }
     }
 }

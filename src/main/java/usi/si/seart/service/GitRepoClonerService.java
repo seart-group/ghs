@@ -7,9 +7,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
-import org.springframework.context.event.ContextClosedEvent;
 import org.springframework.context.event.EventListener;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.AsyncResult;
 import org.springframework.stereotype.Service;
 import usi.si.seart.exception.CloneException;
@@ -24,6 +22,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Comparator;
 import java.util.concurrent.Future;
+import java.util.stream.Stream;
 
 /**
  * Service responsible for cloning git repositories into a temporary folder.
@@ -48,7 +47,7 @@ public class GitRepoClonerService {
      */
     public Future<ClonedRepo> cloneRepo(URL gitRepoURL) throws CloneException {
         // TODO: What if I just wrap everything in a try-catch and buonanotte ?
-        Path tempRepoDir = null;
+        Path tempRepoDir;
         try {
             tempRepoDir = Files.createTempDirectory(repofolderprefix);
         } catch (IOException e) {
@@ -61,16 +60,15 @@ public class GitRepoClonerService {
             // clone process did either not start or failed
         } catch (TerminalExecutionException e) {
             cloneProcess.stop();
-            try {
+            try (Stream<Path> walk = Files.walk(tempRepoDir);) {
                 // Deletes the temporary folder
-                Files.walk(tempRepoDir)
-                        .sorted(Comparator.reverseOrder())
+                walk.sorted(Comparator.reverseOrder())
                         .map(Path::toFile)
                         .forEach(File::delete);
             } catch (IOException ex) {
                 throw new CloneException(ex);
             }
-            throw new CloneException("'git clone' process did not start/exit successfully",e);
+            throw new CloneException("'git clone' process did not start/exit successfully", e);
         }
         return new AsyncResult<>(new ClonedRepo(tempRepoDir));
     }
@@ -78,7 +76,7 @@ public class GitRepoClonerService {
     /**
      * Deleted leftover temporary folders on startup and on shutdown.
      */
-    @EventListener({ApplicationReadyEvent.class, ContextClosedEvent.class})
+    @EventListener({ApplicationReadyEvent.class})
     public void cleanupAllTempFolders() {
         try {
             new TerminalExecution(Files.createTempDirectory(repofolderprefix).getParent(), "rm -rf ", repofolderprefix + "*").start().waitSuccessfulExit();
