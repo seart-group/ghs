@@ -86,6 +86,9 @@ public class GitRepoServiceImpl implements GitRepoService {
             existing.setLastCommitSHA(repo.getLastCommitSHA());
             existing.setHasWiki(repo.getHasWiki());
             existing.setIsArchived(repo.getIsArchived());
+            existing.setMetrics(repo.getMetrics());
+            existing.setCrawled(repo.getCrawled());
+            existing.setCloned(repo.getCloned());
             return gitRepoRepository.save(existing);
         } else {
             return gitRepoRepository.save(repo);
