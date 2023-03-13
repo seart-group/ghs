@@ -24,8 +24,8 @@ import javax.annotation.Nullable;
 import javax.validation.constraints.NotNull;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.stream.Collectors;
@@ -42,13 +42,13 @@ public class StaticCodeAnalysisServiceImpl implements StaticCodeAnalysisService 
     GitRepoRepository gitRepoRepository;
 
 
-    public Future<HashSet<GitRepoMetric>> getCodeMetrics(@NotNull GitRepo repo, boolean persist) throws StaticCodeAnalysisException {
+    public Future<Set<GitRepoMetric>> getCodeMetrics(@NotNull GitRepo repo, boolean persist) throws StaticCodeAnalysisException {
         Gson g = new Gson();
-        HashSet<GitRepoMetric> metrics;
+        Set<GitRepoMetric> metrics;
         // Deletes the temporary folder of the repo once outside of this clause.
         try (ClonedRepo clonedRepo = gitRepoClonerService.cloneRepo(new URL("https://github.com/" + repo.getName())).get()) {
             // Runs cloc for gathering code metrics
-            String output = new TerminalExecution(clonedRepo.getPath(), "cloc --json --quiet .").start().getStdout().lines().collect(Collectors.joining("\n"));
+            String output = new TerminalExecution(clonedRepo.getPath(), "cloc --json --quiet .").start().getStdOut().lines().collect(Collectors.joining("\n"));
 
             // TODO: I think this can lead to side effects
 //            metrics = conversionService.convert(Pair.of(repo,g.fromJson(output, JsonObject.class)), HashSet.class);
@@ -62,11 +62,11 @@ public class StaticCodeAnalysisServiceImpl implements StaticCodeAnalysisService 
             repo.setMetrics(metrics);
             repo.setCloned();
             gitRepoRepository.save(repo);
-            log.info("Stored code metrics for repository '"+repo.getName()+"'");
+            log.info("Stored code metrics for repository '{}'", repo.getName());
 
 
         } catch (InterruptedException | ExecutionException | TerminalExecutionException | MalformedURLException e) {
-            log.error("Could not compute code metrics for repository '"+repo.getName()+"'", e);
+            log.error("Could not compute code metrics for repository '{}'", repo.getName(), e);
             throw new StaticCodeAnalysisException(e);
         }
 
@@ -74,20 +74,19 @@ public class StaticCodeAnalysisServiceImpl implements StaticCodeAnalysisService 
     }
 
 
-    public Future<HashSet<GitRepoMetric>> getCodeMetrics(@NotNull String repo_name, boolean persist) throws StaticCodeAnalysisException {
+    public Future<Set<GitRepoMetric>> getCodeMetrics(@NotNull String repo_name, boolean persist) throws StaticCodeAnalysisException {
         GitRepo repo = gitRepoRepository.findGitRepoByName(repo_name).orElse(null);
-        if (repo==null)
-            log.warn("Computing metrics for '"+repo_name+"' but did NOT find repo in the database.");
+        if (repo == null)
+            log.warn("Computing metrics for '{}' but did NOT find repo in the database.", repo_name);
 
         return getCodeMetrics(repo, persist);
 
     }
 
-    private HashSet<GitRepoMetric> convert(@Nullable GitRepo repo, @NotNull JsonObject source) {
-        HashSet<GitRepoMetric> set = new HashSet<>();
-        source.entrySet().stream().filter((Map.Entry<String, JsonElement> entry) ->
+    private Set<GitRepoMetric> convert(@Nullable GitRepo repo, @NotNull JsonObject source) {
+        return source.entrySet().stream().filter((Map.Entry<String, JsonElement> entry) ->
                 !entry.getKey().equals("header") && !entry.getKey().equals("SUM")
-        ).forEach(entry -> {
+        ).map(entry -> {
             JsonObject stat = entry.getValue().getAsJsonObject();
             GitRepoMetric.GitRepoMetricBuilder builder = GitRepoMetric.builder();
 
@@ -101,9 +100,8 @@ public class StaticCodeAnalysisServiceImpl implements StaticCodeAnalysisService 
             builder.commentLines(stat.get("comment").getAsLong());
             builder.codeLines(stat.get("code").getAsLong());
 
-            set.add(builder.build());
-        });
-        return set;
+            return builder.build();
+        }).collect(Collectors.toSet());
     }
 
 }

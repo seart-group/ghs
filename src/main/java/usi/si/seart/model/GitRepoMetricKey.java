@@ -34,7 +34,9 @@ public class GitRepoMetricKey implements Serializable {
             return false;
         }
 
-        return repoId.equals(((GitRepoMetricKey) obj).repoId) && metricLanguageId.equals(((GitRepoMetricKey) obj).metricLanguageId);
+        GitRepoMetricKey key = (GitRepoMetricKey) obj;
+
+        return repoId.equals(key.repoId) && metricLanguageId.equals(key.metricLanguageId);
     }
 
     @Override

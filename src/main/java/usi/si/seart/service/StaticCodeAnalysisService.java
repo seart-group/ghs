@@ -6,7 +6,7 @@ import usi.si.seart.model.GitRepo;
 import usi.si.seart.model.GitRepoMetric;
 
 import javax.validation.constraints.NotNull;
-import java.util.HashSet;
+import java.util.Set;
 import java.util.concurrent.Future;
 
 /**
@@ -14,31 +14,26 @@ import java.util.concurrent.Future;
  */
 public interface StaticCodeAnalysisService {
 
-
     /**
      * Computes the set of code metrics of a given repository.
      *
-     * @param repo the git repo
-     * @param persist   whether to persist metrics for the given repository.
-     *                  If true, a repo with that repo_name needs to exist in the DB.
-     *                  If false, the GitRepo object won't be fetched.
+     * @param repo    the git repo
+     * @param persist whether to persist metrics for the given repository.
+     *                If true, a repo with that repo_name needs to exist in the DB.
+     *                If false, the GitRepo object won't be fetched.
      * @return the set of code metrics
      * @throws StaticCodeAnalysisException if an error occurred while performing static code analysis.
      */
     @Async("GitCloning")
-    Future<HashSet<GitRepoMetric>> getCodeMetrics(@NotNull GitRepo repo, boolean persist) throws StaticCodeAnalysisException;
+    Future<Set<GitRepoMetric>> getCodeMetrics(@NotNull GitRepo repo, boolean persist) throws StaticCodeAnalysisException;
 
     /**
      * Computes the set of code metrics of a given repository.
      *
      * @param repo_name the name of the git repository (eg "/AlbertCerfeda/example" )
-     * @see StaticCodeAnalysisService::getCodeMetrics(GitRepo, boolean)
+     * @see StaticCodeAnalysisService#getCodeMetrics(GitRepo, boolean)
      */
     @Async("GitCloning")
-    Future<HashSet<GitRepoMetric>> getCodeMetrics(@NotNull String repo_name, boolean persist) throws StaticCodeAnalysisException;
-
+    Future<Set<GitRepoMetric>> getCodeMetrics(@NotNull String repo_name, boolean persist) throws StaticCodeAnalysisException;
 
 }
-
-
-
