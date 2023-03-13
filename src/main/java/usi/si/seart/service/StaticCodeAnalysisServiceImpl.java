@@ -16,7 +16,6 @@ import usi.si.seart.model.GitRepo;
 import usi.si.seart.model.GitRepoMetric;
 import usi.si.seart.model.GitRepoMetricKey;
 import usi.si.seart.model.MetricLanguage;
-import usi.si.seart.repository.GitRepoRepository;
 import usi.si.seart.staticcodeanalysis.ClonedRepo;
 import usi.si.seart.staticcodeanalysis.TerminalExecution;
 
@@ -39,7 +38,7 @@ public class StaticCodeAnalysisServiceImpl implements StaticCodeAnalysisService 
 
     GitRepoClonerService gitRepoClonerService;
 
-    GitRepoRepository gitRepoRepository;
+    GitRepoService gitRepoService;
 
 
     public Future<Set<GitRepoMetric>> getCodeMetrics(@NotNull GitRepo repo, boolean persist) throws StaticCodeAnalysisException {
@@ -50,9 +49,6 @@ public class StaticCodeAnalysisServiceImpl implements StaticCodeAnalysisService 
             // Runs cloc for gathering code metrics
             String output = new TerminalExecution(clonedRepo.getPath(), "cloc --json --quiet .").start().getStdOut().lines().collect(Collectors.joining("\n"));
 
-            // TODO: I think this can lead to side effects
-//            metrics = conversionService.convert(Pair.of(repo,g.fromJson(output, JsonObject.class)), HashSet.class);
-//            metrics = (new JsonObjectToRepoMetrics()).convert(g.fromJson(output, JsonObject.class)));
             if (!persist) {
                 return new AsyncResult<>(convert(null, g.fromJson(output, JsonObject.class)));
             }
@@ -61,7 +57,7 @@ public class StaticCodeAnalysisServiceImpl implements StaticCodeAnalysisService 
             metrics = convert(repo, g.fromJson(output, JsonObject.class));
             repo.setMetrics(metrics);
             repo.setCloned();
-            gitRepoRepository.save(repo);
+            gitRepoService.createOrUpdateRepo(repo);
             log.info("Stored code metrics for repository '{}'", repo.getName());
 
 
@@ -75,7 +71,7 @@ public class StaticCodeAnalysisServiceImpl implements StaticCodeAnalysisService 
 
 
     public Future<Set<GitRepoMetric>> getCodeMetrics(@NotNull String repo_name, boolean persist) throws StaticCodeAnalysisException {
-        GitRepo repo = gitRepoRepository.findGitRepoByName(repo_name).orElse(null);
+        GitRepo repo = gitRepoService.getByName(repo_name).orElse(null);
         if (repo == null)
             log.warn("Computing metrics for '{}' but did NOT find repo in the database.", repo_name);
 
