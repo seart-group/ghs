@@ -1,8 +1,11 @@
 package usi.si.seart.config;
 
+import lombok.AccessLevel;
+import lombok.experimental.FieldDefaults;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.EnableAsync;
@@ -18,7 +21,12 @@ import java.util.concurrent.ThreadPoolExecutor;
 @Configuration
 @EnableScheduling
 @EnableAsync
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class SchedulerConfig {
+
+    @Value("${app.crawl.cloning.maxpoolthreads}")
+    int maxPoolThreads;
+
 
     /**
      * By default, Spring Boot will use just a single thread for all scheduled tasks to run.
@@ -60,8 +68,8 @@ public class SchedulerConfig {
     public Executor asyncExecutor() {
         ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
         executor.setCorePoolSize(0);
-        executor.setMaxPoolSize(6);
-        executor.setQueueCapacity(1000); // maximum number of tasks in the queue
+        executor.setMaxPoolSize(maxPoolThreads);
+        executor.setQueueCapacity(10); // maximum number of tasks in the queue, after which more threads would be created
         executor.setKeepAliveSeconds(60); // keep-alive time for idle threads
         executor.setThreadNamePrefix("CloningThread");
         executor.setRejectedExecutionHandler(new ThreadPoolExecutor.CallerRunsPolicy()); // policy to abort
