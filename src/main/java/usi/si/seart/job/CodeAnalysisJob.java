@@ -38,11 +38,7 @@ public class CodeAnalysisJob {
         final long allRepos = gitRepoRepository.count();
 
         log.info("CodeAnalysis job started on " + outdatedRepos + "/" + allRepos + " repositories");
-//        TODO: Find a way to measure code execution
-//        Instant start = Instant.now();
         gitRepoRepository.findAllRepoWithOutdatedCodeMetrics().forEach(this::analyze);
-//        Instant end = Instant.now();
-//        log.info("Finished CodeAnalysis job on "+outdatedRepos+"/"+allRepos+" repositories in "+ Durations.fromDuration(Duration.between(start,end)));
     }
 
     @Transactional(propagation = Propagation.NESTED)
