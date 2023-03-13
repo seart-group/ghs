@@ -149,12 +149,14 @@ public class GitRepo {
         return Objects.hash(id, name);
     }
 
-    @PreUpdate
-    @PrePersist
-    private void onPersistAndUpdate() {
-        crawled = new Date();
-    }
+    /**
+     * To be called when the repository has been crawled through GitHub's API.
+     */
+    public void setCrawled() { crawled = new Date(); }
 
+    /**
+     * To be called when the repository's code metrics have been mined.
+     */
     public void setCloned() { cloned = new Date(); }
 
 }
