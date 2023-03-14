@@ -5,13 +5,14 @@ ALTER TABLE repo ADD COLUMN cloned TIMESTAMP NULL;
 
 CREATE TABLE metric_language
 (
-    language VARCHAR(256) NOT NULL PRIMARY KEY
+    language_id BIGINT NOT NULL PRIMARY KEY,
+    language VARCHAR(256) NOT NULL UNIQUE
 );
 
 CREATE TABLE repo_metrics
 (
     repo_id BIGINT NOT NULL,
-    metric_language_id VARCHAR(256) NOT NULL,
+    metric_language_id BIGINT NOT NULL,
 
     lines_blank BIGINT DEFAULT 0,
     lines_code BIGINT DEFAULT 0,
@@ -20,6 +21,14 @@ CREATE TABLE repo_metrics
     CONSTRAINT unique_composite_key
         UNIQUE (repo_id, metric_language_id),
     FOREIGN KEY (repo_id) REFERENCES repo(id),
-    FOREIGN KEY (metric_language_id) REFERENCES metric_language(language),
+    FOREIGN KEY (metric_language_id) REFERENCES metric_language(language_id),
     PRIMARY KEY (repo_id, metric_language_id)
 );
+
+#
+# DROP TABLE repo_metrics, metric_language;
+# ALTER TABLE repo DROP COLUMN cloned;
+
+# UPDATE repo SET cloned=null WHERE TRUE;
+# DELETE FROM repo_metrics WHERE TRUE;
+# DELETE FROM metric_language WHERE TRUE;

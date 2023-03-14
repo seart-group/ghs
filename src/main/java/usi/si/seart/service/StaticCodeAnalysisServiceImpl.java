@@ -41,6 +41,9 @@ public class StaticCodeAnalysisServiceImpl implements StaticCodeAnalysisService 
     GitRepoService gitRepoService;
 
 
+    MetricLanguageService metricLanguageService;
+
+
     public Future<Set<GitRepoMetric>> getCodeMetrics(@NotNull GitRepo repo, boolean persist) throws StaticCodeAnalysisException {
         Gson g = new Gson();
         Set<GitRepoMetric> metrics;
@@ -86,11 +89,14 @@ public class StaticCodeAnalysisServiceImpl implements StaticCodeAnalysisService 
             JsonObject stat = entry.getValue().getAsJsonObject();
             GitRepoMetric.GitRepoMetricBuilder builder = GitRepoMetric.builder();
 
-            MetricLanguage language = MetricLanguage.builder().language(entry.getKey()).build();
+            MetricLanguage language = MetricLanguage.builder()
+                    .language(entry.getKey())
+                    .language_id(metricLanguageService.getLanguageId(entry.getKey()).orElse(null))
+                    .build();
             builder.language(language);
             if (repo != null) {
                 builder.repo(repo);
-                builder.id(new GitRepoMetricKey(repo.getId(), language.getLanguage()));
+                builder.id(new GitRepoMetricKey(repo.getId(), language.getLanguage_id()));
             }
             builder.blankLines(stat.get("blank").getAsLong());
             builder.commentLines(stat.get("comment").getAsLong());
