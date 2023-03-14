@@ -23,7 +23,7 @@ public class GitRepoMetricKey implements Serializable {
     Long repoId;
 
     @Column(name = "metric_language_id")
-    String metricLanguageId;
+    Long metricLanguageId;
 
 
     @Override

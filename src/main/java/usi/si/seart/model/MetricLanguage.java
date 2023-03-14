@@ -12,6 +12,7 @@ import org.hibernate.annotations.FetchMode;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
@@ -31,6 +32,10 @@ import java.util.Set;
 public class MetricLanguage {
 
     @Id
+    @GeneratedValue
+    @Column(name = "language_id")
+    Long language_id;
+
     @Column(name = "language")
     String language;
 
