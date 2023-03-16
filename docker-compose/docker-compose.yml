@@ -8,7 +8,8 @@ services:
     container_name: gse-db
     restart: always
     volumes:
-      - ./dbdata:/var/lib/mysql
+      - data:/var/lib/mysql
+      - ./initdb:/docker-entrypoint-initdb.d
       - ./mysql.cnf:/etc/mysql/conf.d/mysql.cnf
     environment:
       MYSQL_ROOT_PASSWORD: 9ijn8uhb7ygv
@@ -64,6 +65,10 @@ services:
         condition: service_healthy
     networks:
       - default
+
+volumes:
+  data:
+    name: gse-data
 
 networks:
   default:
