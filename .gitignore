@@ -168,7 +168,7 @@ Temporary Items
 # General
 *.prod.yml
 *.prod.conf
-dbdata/
+.*.sh
 
 # dotenv environment variable files
 .env
