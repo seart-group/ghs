@@ -41,7 +41,11 @@ public class MainConfig {
             public void addCorsMappings(@NotNull final CorsRegistry registry) {
                 registry.addMapping("/**")
                         .allowedMethods("GET")
-                        .allowedOrigins("http://localhost:3030")
+                        .allowedOrigins(
+                                "http://localhost:3030",
+                                "http://localhost:7030",
+                                "https://seart-ghs.si.usi.ch"
+                        )
                         .exposedHeaders("Links", "Download", "Content-Type", "Transfer-Encoding", "Date");
             }
 
