@@ -1,25 +1,20 @@
 package usi.si.seart.job;
 
 import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
-import usi.si.seart.model.GitRepo;
 import usi.si.seart.repository.GitRepoRepository;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.util.List;
-import java.util.Optional;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicLong;
 
 @Slf4j
 @Service
@@ -29,91 +24,68 @@ import java.util.concurrent.TimeUnit;
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
 public class CleanUpProjectsJob {
 
-    private static final int RUN_COMMAND_TIMEOUT = -3;
+    // It's safer to keep projects which we fail to check, rather than removing them from DB.
+    // Let's say there is a bug with our implementation, do we prefer to lose repos one by one?
+    private static final int TIMEOUT_RETURN_CODE = -3;
 
     GitRepoRepository gitRepoRepository;
 
     @Scheduled(fixedDelayString = "${app.cleanup.scheduling}")
     public void run(){
-        log.info("CleanUpProjectsJob started ...");
-        List<String> allRepos = gitRepoRepository.findAllRepoNames();
+        long totalRepositories = gitRepoRepository.count();
+        log.info("Started cleanup on {} repositories...", totalRepositories);
 
-        final int totalRepos = allRepos.size();
-        log.info("CleanUpProjectsJob started on {} repositories ...", totalRepos);
-
-        int totalDeleted = 0;
-        for (int i = 0; i < allRepos.size(); i++) {
-            String repo = allRepos.get(i);
-            String repoURL = String.format("https://github.com/%s", repo);
-            boolean exists = checkIfRepoExists(repoURL);
+        List<String> names = gitRepoRepository.findAllRepoNames();
+        AtomicLong totalDeleted = new AtomicLong();
+        for (String name : names) {
+            String url = String.format("https://github.com/%s", name);
+            boolean exists = checkIfRepoExists(url);
             if (!exists) {
-                log.info("{}/{}\tChecking if repo exists: {} ==> TO BE DELETED", i, totalRepos, repoURL);
-                Optional<GitRepo> optional = gitRepoRepository.findGitRepoByName(repo.toLowerCase());
-                if (optional.isPresent()) {
-                    GitRepo existing = optional.get();
-                    gitRepoRepository.delete(existing);
-                    totalDeleted++;
-                }
+                log.info("Found repository without remote [{}], deleting...", name);
+                gitRepoRepository.findGitRepoByName(name.toLowerCase()).ifPresent(gitRepo -> {
+                    gitRepoRepository.delete(gitRepo);
+                    totalDeleted.getAndIncrement();
+                });
             }
         }
 
-        log.info("CleanUpProjectsJob finished on {} repositories. {} DELETED.", totalRepos, totalDeleted);
+        log.info("Finished! {}/{} repositories deleted.", totalRepositories, totalDeleted);
     }
 
 
     /**
      * Check if a repo at given url is publicly available.
-     * @param repoUrl The http url of the repo. Technically the same code should also work for ssh url, but in my tests,
-     *                ssh prompts (for adding fingerprint, whatsoever) which kills the command as we disabled prompts.
-     *                (Prompts should remain disabled, otherwise GitHub asks user/pass for private repos)
+     * @param url The HTTP URL of the repository.
+     * @implNote Technically the same code should also work for an SSH URL,
+     * but in my tests SSH would trigger prompts (for adding fingerprint, etc.)
+     * which kill the command as we disabled prompts.
+     * Prompts should remain disabled, otherwise
+     * GitHub asks credentials for private repos.
      */
-    private boolean checkIfRepoExists(String repoUrl) {
-        boolean res;
+    private boolean checkIfRepoExists(String url) {
+        boolean exists = true;
         try {
-            ProcessBuilder pb = new ProcessBuilder("git", "ls-remote", repoUrl);
-            pb.environment().put("GIT_TERMINAL_PROMPT", "0");
-            Process process = pb.start();
-
-            InputStreamConsumerThread inputConsumer = new InputStreamConsumerThread(process.getInputStream());
-            InputStreamConsumerThread errorConsumer = new InputStreamConsumerThread(process.getErrorStream());
-            inputConsumer.start();
-            errorConsumer.start();
-
-            boolean noTimeout = process.waitFor(60, TimeUnit.SECONDS);
+            ProcessBuilder builder = new ProcessBuilder("git", "ls-remote", url, "--exit-code");
+            builder.environment().put("GIT_TERMINAL_PROMPT", "0");
+            Process process = builder.start();
+            String stderr = IOUtils.toString(process.getErrorStream());
+            boolean exited = process.waitFor(60, TimeUnit.SECONDS);
+            log.debug("Command stderr:\n{}", stderr);
             int returnCode;
-            if (noTimeout) {
+            if (exited) {
                 returnCode = process.exitValue();
             } else {
                 long pid = process.pid();
-                log.error("Attempting to terminate timed-out process: [{}] ...", pid);
+                log.warn("Process [{}]: Timed out! Attempting to terminate...", pid);
                 while (process.isAlive()) process.destroyForcibly();
-                log.info("Process [{}] terminated!", pid);
-                returnCode = RUN_COMMAND_TIMEOUT;
+                log.info("Process [{}]: Terminated!", pid);
+                returnCode = TIMEOUT_RETURN_CODE;
             }
-
-            // Why also RUN_COMMAND_TIMEOUT? Because it's safer to keep projects which we fail to check, than removing them
-            // from db. Let's say there is a bug with our implementation, do we prefer to lose repos one by one? nope.
-            // Once the code is reviewed, we can drop the "res == RUN_COMMAND_TIMEOUT" part.
-            res = (returnCode == 0 || returnCode == RUN_COMMAND_TIMEOUT);
+            exists = returnCode <= 0;
         } catch (Exception ex) {
             log.error("An exception has occurred during cleanup!", ex);
-            res = true; // We return "true" to prevent deleting repos from GHS database in case of errors
         }
 
-        return res;
-    }
-
-    @AllArgsConstructor(access = AccessLevel.PRIVATE)
-    private static class InputStreamConsumerThread extends Thread {
-        private final InputStream is;
-
-        @Override
-        public void run() {
-            try (BufferedReader br = new BufferedReader(new InputStreamReader(is))) {
-                for (String line = br.readLine(); line != null; line = br.readLine());
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
+        return exists;
     }
 }
