@@ -7,5 +7,5 @@ import java.util.Optional;
 
 public interface MetricLanguageRepository extends JpaRepository<MetricLanguage, Long> {
 
-    Optional<Long> findLanguageIdByLanguage(String language);
+    Optional<MetricLanguage> findByLanguage(String language);
 }

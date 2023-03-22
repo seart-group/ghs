@@ -50,11 +50,12 @@ public class MetricLanguage {
         if (obj == null || getClass() != obj.getClass())
             return false;
 
-        return language.equals(((MetricLanguage) obj).language);
+        return language_id.equals(((MetricLanguage) obj).language_id)
+                && language.equals(((MetricLanguage) obj).language);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(language);
+        return Objects.hash(language_id, language);
     }
 }

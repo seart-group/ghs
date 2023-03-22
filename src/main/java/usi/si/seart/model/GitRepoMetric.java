@@ -33,9 +33,8 @@ import java.util.Objects;
 @Entity
 public class GitRepoMetric {
 
-    @Builder.Default
     @EmbeddedId
-    GitRepoMetricKey id = new GitRepoMetricKey();
+    GitRepoMetricKey id;
 
     @ManyToOne
     @MapsId("repoId")

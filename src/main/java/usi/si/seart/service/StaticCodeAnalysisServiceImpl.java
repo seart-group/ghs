@@ -40,7 +40,6 @@ public class StaticCodeAnalysisServiceImpl implements StaticCodeAnalysisService 
 
     GitRepoService gitRepoService;
 
-
     MetricLanguageService metricLanguageService;
 
 
@@ -72,16 +71,6 @@ public class StaticCodeAnalysisServiceImpl implements StaticCodeAnalysisService 
         return new AsyncResult<>(metrics);
     }
 
-
-    public Future<Set<GitRepoMetric>> getCodeMetrics(@NotNull String repo_name, boolean persist) throws StaticCodeAnalysisException {
-        GitRepo repo = gitRepoService.getByName(repo_name).orElse(null);
-        if (repo == null)
-            log.warn("Computing metrics for '{}' but did NOT find repo in the database.", repo_name);
-
-        return getCodeMetrics(repo, persist);
-
-    }
-
     private Set<GitRepoMetric> convert(@Nullable GitRepo repo, @NotNull JsonObject source) {
         return source.entrySet().stream().filter((Map.Entry<String, JsonElement> entry) ->
                 !entry.getKey().equals("header") && !entry.getKey().equals("SUM")
@@ -89,10 +78,7 @@ public class StaticCodeAnalysisServiceImpl implements StaticCodeAnalysisService 
             JsonObject stat = entry.getValue().getAsJsonObject();
             GitRepoMetric.GitRepoMetricBuilder builder = GitRepoMetric.builder();
 
-            MetricLanguage language = MetricLanguage.builder()
-                    .language(entry.getKey())
-                    .language_id(metricLanguageService.getLanguageId(entry.getKey()).orElse(null))
-                    .build();
+            MetricLanguage language = metricLanguageService.getOrCreateMetricLanguage(entry.getKey());
             builder.language(language);
             if (repo != null) {
                 builder.repo(repo);
