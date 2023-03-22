@@ -156,7 +156,7 @@ public class CrawlProjectsJob {
                     JsonArray results = result.get("items").getAsJsonArray();
                     saveRetrievedRepos(results, language, 1, totalResults);
                     retrieveRemainingRepos(dateRange, language, crawlUpdatedRepos, totalPages);
-                    crawlJobService.updateCrawlDateForLanguage(language, dateRange.lowerEndpoint());
+                    crawlJobService.updateCrawlDateForLanguage(language, dateRange.upperEndpoint());
                 } else {
                     List<Range<Date>> newIntervals = Ranges.split(dateRange, dateMedian);
                     if (newIntervals.size() > 1) {
