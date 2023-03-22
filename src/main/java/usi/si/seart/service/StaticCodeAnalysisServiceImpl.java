@@ -49,13 +49,15 @@ public class StaticCodeAnalysisServiceImpl implements StaticCodeAnalysisService 
         // Deletes the temporary folder of the repo once outside of this clause.
         try (ClonedRepo clonedRepo = gitRepoClonerService.cloneRepo(new URL("https://github.com/" + repo.getName())).get()) {
             // Runs cloc for gathering code metrics
+            log.debug("Extracting code metrics...");
             String output = new TerminalExecution(clonedRepo.getPath(), "cloc --json --quiet .").start().getStdOut().lines().collect(Collectors.joining("\n"));
-
+            log.debug("Code metrics extracted.");
             if (!persist) {
                 return new AsyncResult<>(convert(null, g.fromJson(output, JsonObject.class)));
             }
 
             // Converts the string output from 'cloc' into a set of code metrics.
+            log.debug("Storing code metrics  for repository...");
             metrics = convert(repo, g.fromJson(output, JsonObject.class));
             repo.setMetrics(metrics);
             repo.setCloned();
