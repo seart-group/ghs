@@ -1,15 +1,19 @@
 <component name="ProjectRunConfigurationManager">
   <configuration default="false" name="GHSApplication" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot" nameIsGenerated="true">
-    <option name="ACTIVE_PROFILES" />
     <additionalParameters>
       <param>
         <option name="enabled" value="true" />
         <option name="name" value="app.crawl.enabled" />
         <option name="value" value="false" />
       </param>
+      <param>
+        <option name="enabled" value="true" />
+        <option name="name" value="app.cleanup.enabled" />
+        <option name="value" value="false" />
+      </param>
     </additionalParameters>
     <option name="HIDE_BANNER" value="true" />
-    <module name="ghs-application" />
+    <module name="ghs" />
     <option name="SPRING_BOOT_MAIN_CLASS" value="usi.si.seart.GHSApplication" />
     <extension name="coverage">
       <pattern>
