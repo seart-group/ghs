@@ -5,7 +5,7 @@ ALTER TABLE repo ADD COLUMN cloned TIMESTAMP NULL;
 
 CREATE TABLE metric_language
 (
-    language_id BIGINT NOT NULL PRIMARY KEY,
+    id BIGINT NOT NULL PRIMARY KEY,
     language VARCHAR(256) NOT NULL UNIQUE
 );
 
@@ -21,7 +21,7 @@ CREATE TABLE repo_metrics
     CONSTRAINT unique_composite_key
         UNIQUE (repo_id, metric_language_id),
     FOREIGN KEY (repo_id) REFERENCES repo(id),
-    FOREIGN KEY (metric_language_id) REFERENCES metric_language(language_id),
+    FOREIGN KEY (metric_language_id) REFERENCES metric_language(id),
     PRIMARY KEY (repo_id, metric_language_id)
 );
 

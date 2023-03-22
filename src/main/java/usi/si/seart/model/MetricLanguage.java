@@ -33,8 +33,8 @@ public class MetricLanguage {
 
     @Id
     @GeneratedValue
-    @Column(name = "language_id")
-    Long language_id;
+    @Column(name = "id")
+    Long id;
 
     @Column(name = "language")
     String language;
@@ -50,12 +50,12 @@ public class MetricLanguage {
         if (obj == null || getClass() != obj.getClass())
             return false;
 
-        return language_id.equals(((MetricLanguage) obj).language_id)
+        return id.equals(((MetricLanguage) obj).id)
                 && language.equals(((MetricLanguage) obj).language);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(language_id, language);
+        return Objects.hash(id, language);
     }
 }
