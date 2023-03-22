@@ -27,13 +27,4 @@ public interface StaticCodeAnalysisService {
     @Async("GitCloning")
     Future<Set<GitRepoMetric>> getCodeMetrics(@NotNull GitRepo repo, boolean persist) throws StaticCodeAnalysisException;
 
-    /**
-     * Computes the set of code metrics of a given repository.
-     *
-     * @param repo_name the name of the git repository (eg "/AlbertCerfeda/example" )
-     * @see StaticCodeAnalysisService#getCodeMetrics(GitRepo, boolean)
-     */
-    @Async("GitCloning")
-    Future<Set<GitRepoMetric>> getCodeMetrics(@NotNull String repo_name, boolean persist) throws StaticCodeAnalysisException;
-
 }

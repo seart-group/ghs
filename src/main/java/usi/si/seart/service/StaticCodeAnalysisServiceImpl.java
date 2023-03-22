@@ -82,7 +82,7 @@ public class StaticCodeAnalysisServiceImpl implements StaticCodeAnalysisService 
             builder.language(language);
             if (repo != null) {
                 builder.repo(repo);
-                builder.id(new GitRepoMetricKey(repo.getId(), language.getLanguage_id()));
+                builder.id(new GitRepoMetricKey(repo.getId(), language.getId()));
             }
             builder.blankLines(stat.get("blank").getAsLong());
             builder.commentLines(stat.get("comment").getAsLong());
