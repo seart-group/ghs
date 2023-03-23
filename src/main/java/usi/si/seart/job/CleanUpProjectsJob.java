@@ -87,7 +87,7 @@ public class CleanUpProjectsJob {
 
     private boolean executeCommand(String... command) throws IOException, InterruptedException, TimeoutException {
         String joined = String.join(" ", command);
-        log.trace("Executing command: {}", joined);
+        log.trace("\tExecuting command: {}", joined);
         ProcessBuilder builder = new ProcessBuilder(command);
         builder.environment().put("GIT_TERMINAL_PROMPT", "0");
         Process process = builder.start();
@@ -99,9 +99,9 @@ public class CleanUpProjectsJob {
             returnCode = process.exitValue();
         } else {
             long pid = process.pid();
-            log.debug("Process [{}]: Timed out! Attempting to terminate...", pid);
+            log.debug("\tProcess [{}]: Timed out! Attempting to terminate...", pid);
             while (process.isAlive()) process.destroyForcibly();
-            log.debug("Process [{}]: Terminated!", pid);
+            log.debug("\tProcess [{}]: Terminated!", pid);
             returnCode = TIMEOUT_RETURN_CODE;
         }
 
