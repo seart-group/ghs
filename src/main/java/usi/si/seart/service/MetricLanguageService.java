@@ -6,6 +6,6 @@ import javax.validation.constraints.NotNull;
 
 public interface MetricLanguageService {
 
-    MetricLanguage getOrCreateMetricLanguage(@NotNull String language_name);
+    MetricLanguage getOrCreateMetricLanguage(@NotNull String languageName);
 
 }
