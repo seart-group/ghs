@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
 import usi.si.seart.model.GitRepo;
+import usi.si.seart.projection.GitRepoView;
 import usi.si.seart.repository.specification.GitRepoSpecification;
 import usi.si.seart.repository.specification.JpaStreamableSpecificationRepository;
 
@@ -25,6 +26,8 @@ public interface GitRepoRepository extends
 
     Optional<GitRepo> findGitRepoByName(String name);
 
+    Optional<GitRepoView> findFirstByIdGreaterThanOrderByIdAsc(Long id);
+
     @Query("select distinct r.mainLanguage, count(r) from GitRepo r group by r.mainLanguage order by count(r) desc")
     @Cacheable(value = "languageStatistics")
     List<Tuple> getLanguageStatistics();
@@ -32,9 +35,6 @@ public interface GitRepoRepository extends
     @Query("select distinct r.license from GitRepo r where r.license is not null group by r.license order by count(r.license) desc")
     @Cacheable(value = "licenses")
     List<String> findAllLicenses();
-
-    @Query("select r.name from GitRepo r order by r.crawled asc")
-    List<String> findAllRepoNames();
 
     default Page<GitRepo> findAllDynamically(Map<String, ?> parameters, Pageable pageable) {
         GitRepoSpecification specification = GitRepoSpecification.from(parameters);
