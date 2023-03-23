@@ -165,5 +165,14 @@ Temporary Items
 .apdisk
 
 ### Docker Compose
+# General
 *.prod.yml
-dbdata/
+*.prod.conf
+.*.sh
+
+# dotenv environment variable files
+.env
+.env.development.local
+.env.test.local
+.env.production.local
+.env.local
