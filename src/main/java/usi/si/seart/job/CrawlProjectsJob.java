@@ -239,7 +239,7 @@ public class CrawlProjectsJob {
 
                     GitRepo repo = createRepoFromResponse(result);
                     repo = gitRepoService.createOrUpdateRepo(repo);
-                    log.info("\tBasic information saved (repo Table).");
+                    log.debug("\tBasic information saved (repo Table).");
                     retrieveRepoLabels(repo);
                     retrieveRepoLanguages(repo);
                 } else {
@@ -302,7 +302,7 @@ public class CrawlProjectsJob {
                 String responseStr = gitHubApiService.fetchRepoLabels(repo.getName(), page);
                 if (responseStr != null) {
                     JsonArray result = JsonParser.parseString(responseStr).getAsJsonArray();
-                    log.info("\tAdding: " + result.size() + " labels.");
+                    log.debug("\tAdding: " + result.size() + " labels.");
 
                     for (JsonElement item : result) {
                         String label = item.getAsJsonObject().get("name").getAsString();
@@ -332,7 +332,7 @@ public class CrawlProjectsJob {
                 if (responseStr != null) {
                     JsonObject result = JsonParser.parseString(responseStr).getAsJsonObject();
                     Set<String> keySet = result.keySet();
-                    log.info("\tAdding: " + keySet.size() + " languages.");
+                    log.debug("\tAdding: " + keySet.size() + " languages.");
 
                     keySet.forEach(key -> repoLanguages.add(GitRepoLanguage.builder()
                             .repo(repo)
