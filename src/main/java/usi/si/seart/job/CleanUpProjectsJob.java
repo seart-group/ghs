@@ -15,6 +15,7 @@ import usi.si.seart.repository.GitRepoRepository;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.concurrent.TimeoutException;
 
 @Slf4j
 @Service
@@ -59,29 +60,36 @@ public class CleanUpProjectsJob {
      * Prompts should remain disabled otherwise GitHub asks credentials for private repos.
      */
     private boolean checkIfRepoExists(String url) {
-        boolean exists = true;
         try {
             ProcessBuilder builder = new ProcessBuilder("git", "ls-remote", url, "--exit-code");
             builder.environment().put("GIT_TERMINAL_PROMPT", "0");
             Process process = builder.start();
             String stderr = IOUtils.toString(process.getErrorStream());
             boolean exited = process.waitFor(60, TimeUnit.SECONDS);
-            log.debug("Command stderr:\n{}", stderr);
             int returnCode;
             if (exited) {
                 returnCode = process.exitValue();
             } else {
                 long pid = process.pid();
-                log.warn("Process [{}]: Timed out! Attempting to terminate...", pid);
+                log.debug("Process [{}]: Timed out! Attempting to terminate...", pid);
                 while (process.isAlive()) process.destroyForcibly();
-                log.info("Process [{}]: Terminated!", pid);
+                log.debug("Process [{}]: Terminated!", pid);
                 returnCode = TIMEOUT_RETURN_CODE;
             }
-            exists = returnCode <= 0;
+            switch (returnCode) {
+                case 0:
+                    return true;
+                case -3:
+                    throw new TimeoutException("Timed out while using ls-remote!");
+                case 130:
+                    throw new InterruptedException("Process terminated with SIGTERM, exit code " + returnCode);
+                default:
+                    log.debug("Command returned with exit code {}, stderr:\n{}", returnCode, stderr);
+                    return false;
+            }
         } catch (Exception ex) {
             log.error("An exception has occurred during cleanup!", ex);
+            return true;
         }
-
-        return exists;
     }
 }
