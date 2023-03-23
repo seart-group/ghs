@@ -1,4 +1,5 @@
 version: '3.9'
+name: 'gse'
 
 services:
 
@@ -7,7 +8,8 @@ services:
     container_name: gse-db
     restart: always
     volumes:
-      - ./dbdata:/var/lib/mysql
+      - data:/var/lib/mysql
+      - ./initdb:/docker-entrypoint-initdb.d
       - ./mysql.cnf:/etc/mysql/conf.d/mysql.cnf
     environment:
       MYSQL_ROOT_PASSWORD: 9ijn8uhb7ygv
@@ -22,18 +24,50 @@ services:
       timeout: 5s
       retries: 5
 
+  gse-bkp:
+    build:
+      context: ../
+      dockerfile: docker/Dockerfile.bkp
+    image: 'gse/backup:latest'
+    container_name: gse-bkp
+    restart: "no"
+    volumes:
+      - backup:/backup
+      - ./bkpdb:/assets/custom-scripts
+    environment:
+      TZ: UTC
+      TIMEZONE: Etc/UTC
+      DB_TYPE: mysql
+      DB_HOST: gse-db
+      DB_NAME: gse
+      DB_USER: gseadmin
+      DB_PASS: Lugano2020
+      DB_DUMP_FREQ: "1440"
+      DB_DUMP_BEGIN: "0000"
+      DB_CLEANUP_TIME: "+10080"
+      SPLIT_DB: FALSE
+      CHECKSUM: SHA1
+      COMPRESSION: GZ
+      CONTAINER_ENABLE_MONITORING: FALSE
+      DEBUG_MODE: FALSE
+    entrypoint: "true"
+    depends_on:
+      gse-db:
+        condition: service_healthy
+    links:
+      - gse-db
+    networks:
+      - default
+
   gse-fe:
     build:
       context: ../
       dockerfile: docker/Dockerfile.fe
     image: 'gse/frontend:latest'
     container_name: gse-fe
-    environment:
-      API_HOST: gse-app
-      API_PORT: 8080
     volumes:
-      - ./nginx-gse-fe/default.conf.template:/etc/nginx/conf.d/default.conf.template
-    ports: [ "7030:3030" ]
+      - ./nginx/default.dev.conf:/etc/nginx/conf.d/default.conf
+    ports: [ "7030:80" ]
     deploy:
       restart_policy:
         condition: on-failure
@@ -66,6 +100,12 @@ services:
         condition: service_healthy
     networks:
       - default
+
+volumes:
+  data:
+    name: gse-data
+  backup:
+    name: gse-data-backups
 
 networks:
   default:
