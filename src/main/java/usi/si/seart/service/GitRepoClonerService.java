@@ -71,7 +71,6 @@ public class GitRepoClonerService {
             }
             throw new CloneException("'git clone' process did not start/exit successfully", e);
         }
-        log.debug("Cloned repo '{}'.",gitRepoURL);
         return new AsyncResult<>(new ClonedRepo(tempRepoDir));
     }
 

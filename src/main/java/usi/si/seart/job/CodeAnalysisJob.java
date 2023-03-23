@@ -43,7 +43,7 @@ public class CodeAnalysisJob {
     }
 
     @Transactional(propagation = Propagation.NESTED)
-    Future<Set<GitRepoMetric>> analyze(GitRepo repo) {
+    public Future<Set<GitRepoMetric>> analyze(GitRepo repo) {
         try {
             return staticCodeAnalysisService.getCodeMetrics(repo, true);
         } catch (StaticCodeAnalysisException e) {
