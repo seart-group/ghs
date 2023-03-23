@@ -49,9 +49,8 @@ public class CleanUpProjectsJob {
             }
         }
 
-        log.info("Finished! {}/{} repositories deleted.", totalRepositories, totalDeleted);
+        log.info("Finished! {}/{} repositories deleted.", totalDeleted, totalRepositories);
     }
-
 
     /*
      * Check if a repo at given url is publicly available.
