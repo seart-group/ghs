@@ -82,25 +82,26 @@ public class SchedulerConfig {
         executor.initialize();
         return executor;
     }
-}
 
-class GitCloningThreadPoolExecutor extends ThreadPoolTaskExecutor {
+    static class GitCloningThreadPoolExecutor extends ThreadPoolTaskExecutor {
 
-    @NotNull
-    @Override
-    protected String nextThreadName() {
-        ThreadGroup currentGroup = Thread.currentThread().getThreadGroup();
-        int numThreads = currentGroup.activeCount();
-        Thread[] threads = new Thread[numThreads];
-        currentGroup.enumerate(threads);
+        @NotNull
+        @Override
+        protected String nextThreadName() {
+            ThreadGroup currentGroup = Thread.currentThread().getThreadGroup();
+            int numThreads = currentGroup.activeCount();
+            Thread[] threads = new Thread[numThreads];
+            currentGroup.enumerate(threads);
 
-        for(int i=1; i<=getMaxPoolSize();i++) {
-            int finalI = i;
-            if(Arrays.stream(threads).noneMatch((Thread t)-> Objects.equals(t.getName(), getThreadNamePrefix() + finalI))) {
-                return getThreadNamePrefix()+i;
+            for (int i = 1; i <= getMaxPoolSize(); i++) {
+                int finalI = i;
+                if (Arrays.stream(threads).noneMatch((Thread t)-> Objects.equals(t.getName(), getThreadNamePrefix() + finalI))) {
+                    return getThreadNamePrefix()+i;
+                }
             }
-        }
 
-        return super.nextThreadName();
+            return super.nextThreadName();
+        }
     }
 }
+
