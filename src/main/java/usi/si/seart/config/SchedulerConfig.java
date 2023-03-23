@@ -18,7 +18,6 @@ import java.time.Clock;
 import java.util.Arrays;
 import java.util.Objects;
 import java.util.concurrent.Executor;
-import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.ThreadPoolExecutor;
 
 @Configuration
@@ -77,7 +76,7 @@ public class SchedulerConfig {
         executor.setCorePoolSize(0);
         executor.setMaxPoolSize(maxPoolThreads);
         executor.setQueueCapacity(10); // maximum number of tasks in the queue, after which more threads would be created
-        executor.setKeepAliveSeconds(10); // keep-alive time for idle threads
+        executor.setKeepAliveSeconds(60); // keep-alive time for idle threads
         executor.setThreadNamePrefix("CloningThread");
         executor.setRejectedExecutionHandler(new ThreadPoolExecutor.CallerRunsPolicy()); // policy to abort
         executor.initialize();
