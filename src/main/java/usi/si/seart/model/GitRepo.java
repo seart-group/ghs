@@ -17,8 +17,6 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
-import javax.persistence.PrePersist;
-import javax.persistence.PreUpdate;
 import javax.persistence.Table;
 import java.util.Date;
 import java.util.HashSet;
@@ -118,6 +116,9 @@ public class GitRepo {
     @Column(name = "crawled")
     Date crawled;
 
+    @Column(name = "cloned")
+    Date cloned;
+
     @Builder.Default
     @OneToMany(mappedBy="repo", cascade=CascadeType.ALL, orphanRemoval = true)
     @Fetch(value = FetchMode.JOIN)
@@ -127,6 +128,11 @@ public class GitRepo {
     @OneToMany(mappedBy="repo", cascade= CascadeType.ALL, orphanRemoval = true)
     @Fetch(value = FetchMode.JOIN)
     Set<GitRepoLanguage> languages = new HashSet<>();
+
+    @Builder.Default
+    @OneToMany(mappedBy="repo", cascade=CascadeType.ALL, orphanRemoval = true)
+    @Fetch(value = FetchMode.JOIN)
+    Set<GitRepoMetric> metrics = new HashSet<>();
 
     @Override
     public boolean equals(Object o) {
@@ -141,9 +147,16 @@ public class GitRepo {
         return Objects.hash(id, name);
     }
 
-    @PreUpdate
-    @PrePersist
-    private void onPersistAndUpdate() {
+    /**
+     * To be called when the repository has been crawled through GitHub's API.
+     */
+    public void setCrawled() {
         crawled = new Date();
     }
+
+    /**
+     * To be called when the repository's code metrics have been mined.
+     */
+    public void setCloned() { cloned = new Date(); }
+
 }
