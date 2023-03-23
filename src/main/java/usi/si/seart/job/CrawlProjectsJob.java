@@ -202,11 +202,11 @@ public class CrawlProjectsJob {
             Optional<GitRepo> opt = gitRepoService.getByName(repoFullName);
 
             log.info(
-                    "{}/{} {} repo: {}",
+                    "{} repository: {} [{}/{}]",
+                    (opt.isEmpty()) ? "Saving" : "Updating",
+                    repoFullName,
                     repoNumStart,
-                    repoNumTotal,
-                    (opt.isEmpty()) ? "saving" : "updating",
-                    repoFullName
+                    repoNumTotal
             );
 
             repoNumStart++;
