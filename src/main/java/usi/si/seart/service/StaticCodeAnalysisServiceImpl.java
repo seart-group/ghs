@@ -77,7 +77,7 @@ public class StaticCodeAnalysisServiceImpl implements StaticCodeAnalysisService 
         return source.entrySet().stream().filter((Map.Entry<String, JsonElement> entry) ->
                 !entry.getKey().equals("header") && !entry.getKey().equals("SUM")
         ).map(entry -> {
-            JsonObject stat = entry.getValue().getAsJsonObject();
+            JsonObject languageMetricJson = entry.getValue().getAsJsonObject();
             GitRepoMetric.GitRepoMetricBuilder builder = GitRepoMetric.builder();
 
             MetricLanguage language = metricLanguageService.getOrCreateMetricLanguage(entry.getKey());
@@ -86,9 +86,9 @@ public class StaticCodeAnalysisServiceImpl implements StaticCodeAnalysisService 
                 builder.repo(repo);
                 builder.id(new GitRepoMetricKey(repo.getId(), language.getId()));
             }
-            builder.blankLines(stat.get("blank").getAsLong());
-            builder.commentLines(stat.get("comment").getAsLong());
-            builder.codeLines(stat.get("code").getAsLong());
+            builder.blankLines(languageMetricJson.get("blank").getAsLong());
+            builder.commentLines(languageMetricJson.get("comment").getAsLong());
+            builder.codeLines(languageMetricJson.get("code").getAsLong());
 
             return builder.build();
         }).collect(Collectors.toSet());
