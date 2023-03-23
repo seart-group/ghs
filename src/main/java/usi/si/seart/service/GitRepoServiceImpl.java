@@ -107,11 +107,6 @@ public class GitRepoServiceImpl implements GitRepoService {
         return gitRepoRepository.findAllLicenses();
     }
 
-    @Override
-    public List<String> getAllRepoNames(){
-        return gitRepoRepository.findAllRepoNames();
-    }
-
 
     /**
      * Retrieve the cumulative size (in bytes) of all source files written in a language,
