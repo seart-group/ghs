@@ -10,12 +10,13 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
+import usi.si.seart.projection.GitRepoView;
 import usi.si.seart.repository.GitRepoRepository;
 
-import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.TimeoutException;
+import java.util.function.LongFunction;
 
 @Slf4j
 @Service
@@ -36,18 +37,25 @@ public class CleanUpProjectsJob {
         long totalRepositories = gitRepoRepository.count();
         log.info("Started cleanup on {} repositories...", totalRepositories);
 
-        List<String> names = gitRepoRepository.findAllRepoNames();
-        AtomicLong totalDeleted = new AtomicLong();
-        for (String name : names) {
+        long currentId = -1;
+        long totalDeleted = 0;
+        LongFunction<Optional<GitRepoView>> query = gitRepoRepository::findFirstByIdGreaterThanOrderByIdAsc;
+        Optional<GitRepoView> optional = query.apply(currentId);
+        while (optional.isPresent()) {
+            GitRepoView view = optional.get();
+            Long id = view.getId();
+            String name = view.getName();
             String url = String.format("https://github.com/%s", name);
+            log.debug("Checking if {} [id: {}] exists...", name, id);
             boolean exists = checkIfRepoExists(url);
             if (!exists) {
                 log.info("Found repository without remote [{}], deleting...", name);
-                gitRepoRepository.findGitRepoByName(name.toLowerCase()).ifPresent(gitRepo -> {
-                    gitRepoRepository.delete(gitRepo);
-                    totalDeleted.getAndIncrement();
-                });
+                gitRepoRepository.deleteById(id);
+                gitRepoRepository.flush();
+                totalDeleted++;
             }
+            currentId = id;
+            optional = query.apply(currentId);
         }
 
         log.info("Finished! {}/{} repositories deleted.", totalDeleted, totalRepositories);
