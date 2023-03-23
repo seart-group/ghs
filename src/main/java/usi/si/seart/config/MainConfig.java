@@ -10,7 +10,6 @@ import org.springframework.web.filter.ForwardedHeaderFilter;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import usi.si.seart.converter.GitRepoToDtoConverter;
-import usi.si.seart.converter.JsonObjectToGitRepoConverter;
 import usi.si.seart.converter.SupportedLanguageToDtoConverter;
 
 import java.text.DateFormat;
@@ -49,7 +48,6 @@ public class MainConfig {
             public void addFormatters(@NotNull final FormatterRegistry registry) {
                  registry.addConverter(new SupportedLanguageToDtoConverter());
                  registry.addConverter(new GitRepoToDtoConverter());
-                 registry.addConverter(new JsonObjectToGitRepoConverter());
             }
         };
     }
