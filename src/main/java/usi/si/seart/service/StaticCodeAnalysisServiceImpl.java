@@ -36,6 +36,8 @@ import java.util.stream.Collectors;
 @AllArgsConstructor(onConstructor_ = @Autowired)
 public class StaticCodeAnalysisServiceImpl implements StaticCodeAnalysisService {
 
+    Gson g;
+
     GitRepoClonerService gitRepoClonerService;
 
     GitRepoService gitRepoService;
@@ -53,12 +55,12 @@ public class StaticCodeAnalysisServiceImpl implements StaticCodeAnalysisService 
             String output = new TerminalExecution(clonedRepo.getPath(), "cloc --json --quiet .").start().getStdOut().lines().collect(Collectors.joining("\n"));
             log.debug("Code metrics extracted.");
             if (!persist) {
-                return new AsyncResult<>(convert(null, g.fromJson(output, JsonObject.class)));
+                return new AsyncResult<>(parseCodeMetrics(null, output));
             }
 
             // Converts the string output from 'cloc' into a set of code metrics.
             log.debug("Storing code metrics  for repository...");
-            metrics = convert(repo, g.fromJson(output, JsonObject.class));
+            metrics = parseCodeMetrics(repo, output);
             repo.setMetrics(metrics);
             repo.setCloned();
             gitRepoService.createOrUpdateRepo(repo);
@@ -73,7 +75,9 @@ public class StaticCodeAnalysisServiceImpl implements StaticCodeAnalysisService 
         return new AsyncResult<>(metrics);
     }
 
-    private Set<GitRepoMetric> convert(@Nullable GitRepo repo, @NotNull JsonObject source) {
+    private Set<GitRepoMetric> parseCodeMetrics(@Nullable GitRepo repo, @NotNull String clocStdout) {
+        JsonObject source = g.fromJson(clocStdout, JsonObject.class);
+
         return source.entrySet().stream().filter((Map.Entry<String, JsonElement> entry) ->
                 !entry.getKey().equals("header") && !entry.getKey().equals("SUM")
         ).map(entry -> {
