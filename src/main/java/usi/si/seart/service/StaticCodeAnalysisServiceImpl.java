@@ -36,7 +36,7 @@ import java.util.stream.Collectors;
 @AllArgsConstructor(onConstructor_ = @Autowired)
 public class StaticCodeAnalysisServiceImpl implements StaticCodeAnalysisService {
 
-    Gson g;
+    Gson gson;
 
     GitRepoClonerService gitRepoClonerService;
 
@@ -46,7 +46,6 @@ public class StaticCodeAnalysisServiceImpl implements StaticCodeAnalysisService 
 
 
     public Future<Set<GitRepoMetric>> getCodeMetrics(@NotNull GitRepo repo, boolean persist) throws StaticCodeAnalysisException {
-        Gson g = new Gson();
         Set<GitRepoMetric> metrics;
         // Deletes the temporary folder of the repo once outside of this clause.
         try (ClonedRepo clonedRepo = gitRepoClonerService.cloneRepo(new URL("https://github.com/" + repo.getName())).get()) {
@@ -76,7 +75,7 @@ public class StaticCodeAnalysisServiceImpl implements StaticCodeAnalysisService 
     }
 
     private Set<GitRepoMetric> parseCodeMetrics(@Nullable GitRepo repo, @NotNull String clocStdout) {
-        JsonObject source = g.fromJson(clocStdout, JsonObject.class);
+        JsonObject source = gson.fromJson(clocStdout, JsonObject.class);
 
         return source.entrySet().stream().filter((Map.Entry<String, JsonElement> entry) ->
                 !entry.getKey().equals("header") && !entry.getKey().equals("SUM")

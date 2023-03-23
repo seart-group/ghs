@@ -1,5 +1,6 @@
 package usi.si.seart.config;
 
+import com.google.gson.Gson;
 import okhttp3.OkHttpClient;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
@@ -31,6 +32,11 @@ public class MainConfig {
                 .writeTimeout(1, TimeUnit.MINUTES)
                 .readTimeout(1, TimeUnit.MINUTES)
                 .build();
+    }
+
+    @Bean
+    public Gson gson() {
+        return new Gson();
     }
 
     @Bean
