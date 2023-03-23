@@ -217,7 +217,9 @@ public class CrawlProjectsJob {
                 if (hasNotBeenUpdated(existing, repoJson)) {
                     Date updatedAt = existing.getUpdatedAt();
                     Date pushedAt = existing.getPushedAt();
-                    log.info("\tSKIPPED. We already have the latest info up to [{}](updated) [{}](pushed)", updatedAt, pushedAt);
+                    log.debug("\tSKIPPED: We already have the latest info!");
+                    log.trace("\t\tUpdated: {}", updatedAt);
+                    log.trace("\t\tPushed:  {}", pushedAt);
                     continue;
                 }
             }
