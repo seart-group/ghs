@@ -53,14 +53,11 @@ public class CleanUpProjectsJob {
     }
 
 
-    /**
+    /*
      * Check if a repo at given url is publicly available.
-     * @param url The HTTP URL of the repository.
-     * @implNote Technically the same code should also work for an SSH URL,
-     * but in my tests SSH would trigger prompts (for adding fingerprint, etc.)
-     * which kill the command as we disabled prompts.
-     * Prompts should remain disabled, otherwise
-     * GitHub asks credentials for private repos.
+     * Technically the same code should also work for an SSH URL,
+     * but in my tests SSH would trigger prompts which kill the command.
+     * Prompts should remain disabled otherwise GitHub asks credentials for private repos.
      */
     private boolean checkIfRepoExists(String url) {
         boolean exists = true;
