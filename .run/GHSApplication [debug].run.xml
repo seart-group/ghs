@@ -15,12 +15,16 @@
         <option name="value" value="true" />
       </param>
       <param>
-        <option name="name" value="logging.level.org.hibernate.type.descriptor.sql" />
-        <option name="value" value="TRACE" />
+        <option name="name" value="logging.level.usi.si.seart" />
+        <option name="value" value="DEBUG" />
       </param>
       <param>
-        <option name="name" value="logging.level.usi" />
+        <option name="name" value="logging.level.org.flywaydb" />
         <option name="value" value="DEBUG" />
+      </param>
+      <param>
+        <option name="name" value="logging.level.org.hibernate.type.descriptor.sql" />
+        <option name="value" value="TRACE" />
       </param>
     </additionalParameters>
     <option name="HIDE_BANNER" value="true" />
