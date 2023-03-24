@@ -13,7 +13,6 @@ import usi.si.seart.repository.SupportedLanguageRepository;
 
 import javax.persistence.EntityNotFoundException;
 import java.util.Date;
-import java.util.List;
 import java.util.Optional;
 
 @Slf4j
