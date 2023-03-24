@@ -4,9 +4,11 @@ updates:
     directory: "/"
     schedule:
       interval: daily
+    target-branch: "develop"
     ignore:
       - dependency-name: org.apache.maven:*
   - package-ecosystem: "docker"
     directory: "/"
     schedule:
       interval: "weekly"
+    target-branch: "develop"
