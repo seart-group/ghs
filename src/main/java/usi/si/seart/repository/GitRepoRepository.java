@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
 import usi.si.seart.model.GitRepo;
+import usi.si.seart.projection.GitRepoView;
 import usi.si.seart.repository.specification.GitRepoSpecification;
 import usi.si.seart.repository.specification.JpaStreamableSpecificationRepository;
 
@@ -34,9 +35,6 @@ public interface GitRepoRepository extends
     @Query("select distinct r.license from GitRepo r where r.license is not null group by r.license order by count(r.license) desc")
     @Cacheable(value = "licenses")
     List<String> findAllLicenses();
-
-    @Query("select r.name from GitRepo r order by r.crawled asc")
-    List<String> findAllRepoNames();
 
     // Code metrics are outdated if the repository has new commits since the last cloned date or if there are no metrics at all
     @Query("SELECT r FROM GitRepo r WHERE r.cloned is null OR r.cloned < r.lastCommit ORDER BY r.cloned ASC")
