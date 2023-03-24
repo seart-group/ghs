@@ -31,13 +31,16 @@
 		</license>
 	</licenses>
 
-	<contributors>
-		<contributor>
+	<developers>
+		<developer>
 			<name>Ozren Dabić</name>
 			<email>ozren.dabic@usi.ch</email>
 			<organization>SEART</organization>
 			<organizationUrl>https://seart.si.usi.ch/</organizationUrl>
-		</contributor>
+		</developer>
+	</developers>
+
+	<contributors>
 		<contributor>
 			<name>Emad Aghajani</name>
 			<email>emad.aghajani@usi.ch</email>
