@@ -20,7 +20,6 @@ public interface GitRepoService {
     List<String> getAllLabels(Integer limit);
     List<String> getAllLanguages();
     List<String> getAllLicenses();
-    List<String> getAllRepoNames();
     Map<String, Long> getAllLanguageStatistics();
     Map<String, Long> getMainLanguageStatistics();
     void createUpdateLabels(GitRepo repo, List<GitRepoLabel> labels);
