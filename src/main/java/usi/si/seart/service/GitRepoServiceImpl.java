@@ -86,9 +86,6 @@ public class GitRepoServiceImpl implements GitRepoService {
             existing.setLastCommitSHA(repo.getLastCommitSHA());
             existing.setHasWiki(repo.getHasWiki());
             existing.setIsArchived(repo.getIsArchived());
-            existing.setCrawled(repo.getCrawled());
-            existing.setMetrics(repo.getMetrics() == null ? existing.getMetrics() : repo.getMetrics());
-            existing.setCloned(repo.getCloned() == null ? existing.getCloned() : repo.getCloned());
             return gitRepoRepository.save(existing);
         } else {
             return gitRepoRepository.save(repo);
@@ -108,11 +105,6 @@ public class GitRepoServiceImpl implements GitRepoService {
     @Override
     public List<String> getAllLicenses(){
         return gitRepoRepository.findAllLicenses();
-    }
-
-    @Override
-    public List<String> getAllRepoNames(){
-        return gitRepoRepository.findAllRepoNames();
     }
 
 

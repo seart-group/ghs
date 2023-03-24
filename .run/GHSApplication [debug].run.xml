@@ -1,6 +1,5 @@
 <component name="ProjectRunConfigurationManager">
   <configuration default="false" name="GHSApplication [debug]" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot">
-    <option name="ACTIVE_PROFILES" />
     <additionalParameters>
       <param>
         <option name="enabled" value="true" />
@@ -19,9 +18,13 @@
         <option name="name" value="logging.level.org.hibernate.type.descriptor.sql" />
         <option name="value" value="TRACE" />
       </param>
+      <param>
+        <option name="name" value="logging.level.usi" />
+        <option name="value" value="DEBUG" />
+      </param>
     </additionalParameters>
     <option name="HIDE_BANNER" value="true" />
-    <module name="ghs-application" />
+    <module name="ghs" />
     <option name="SPRING_BOOT_MAIN_CLASS" value="usi.si.seart.GHSApplication" />
     <extension name="coverage">
       <pattern>
