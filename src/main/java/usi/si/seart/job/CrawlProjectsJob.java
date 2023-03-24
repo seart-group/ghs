@@ -18,13 +18,13 @@ import org.springframework.core.convert.ConversionService;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import usi.si.seart.github.GitHubApiService;
-import usi.si.seart.service.CrawlJobService;
-import usi.si.seart.service.GitRepoService;
-import usi.si.seart.service.SupportedLanguageService;
 import usi.si.seart.model.GitRepo;
 import usi.si.seart.model.GitRepoLabel;
 import usi.si.seart.model.GitRepoLanguage;
 import usi.si.seart.model.SupportedLanguage;
+import usi.si.seart.service.CrawlJobService;
+import usi.si.seart.service.GitRepoService;
+import usi.si.seart.service.SupportedLanguageService;
 import usi.si.seart.util.Dates;
 import usi.si.seart.util.Ranges;
 
@@ -33,7 +33,6 @@ import java.text.DateFormat;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -74,16 +73,12 @@ public class CrawlProjectsJob {
 
     @Scheduled(fixedDelayString = "${app.crawl.scheduling}")
     public void run() {
-        List<SupportedLanguage> supportedLanguages = supportedLanguageService.getAll();
-        supportedLanguages.sort(Comparator.comparing(SupportedLanguage::getAdded).reversed());
+        log.info("Initializing language queue...");
         languages.clear();
-        languages.addAll(
-                supportedLanguages.stream()
-                        .map(SupportedLanguage::getName)
-                        .collect(Collectors.toList())
-        );
-
-        log.info("New Crawling for all languages: " + languages);
+        supportedLanguageService.getQueue().stream()
+                .map(SupportedLanguage::getName)
+                .forEach(languages::add);
+        log.info("Language crawling order: " + languages);
         Date endDate = Date.from(Instant.now().minus(Duration.ofHours(2)));
 
         for (String language : languages) {
