@@ -18,13 +18,13 @@ import org.springframework.core.convert.ConversionService;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import usi.si.seart.github.GitHubApiService;
-import usi.si.seart.service.CrawlJobService;
-import usi.si.seart.service.GitRepoService;
-import usi.si.seart.service.SupportedLanguageService;
 import usi.si.seart.model.GitRepo;
 import usi.si.seart.model.GitRepoLabel;
 import usi.si.seart.model.GitRepoLanguage;
 import usi.si.seart.model.SupportedLanguage;
+import usi.si.seart.service.CrawlJobService;
+import usi.si.seart.service.GitRepoService;
+import usi.si.seart.service.SupportedLanguageService;
 import usi.si.seart.util.Dates;
 import usi.si.seart.util.Ranges;
 
@@ -156,7 +156,7 @@ public class CrawlProjectsJob {
                     JsonArray results = result.get("items").getAsJsonArray();
                     saveRetrievedRepos(results, language, 1, totalResults);
                     retrieveRemainingRepos(dateRange, language, crawlUpdatedRepos, totalPages);
-                    crawlJobService.updateCrawlDateForLanguage(language, dateRange.lowerEndpoint());
+                    crawlJobService.updateCrawlDateForLanguage(language, dateRange.upperEndpoint());
                 } else {
                     List<Range<Date>> newIntervals = Ranges.split(dateRange, dateMedian);
                     if (newIntervals.size() > 1) {
