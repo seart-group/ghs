@@ -6,4 +6,5 @@ import java.util.List;
 
 public interface SupportedLanguageService {
     List<SupportedLanguage> getAll();
+    List<SupportedLanguage> getQueue();
 }

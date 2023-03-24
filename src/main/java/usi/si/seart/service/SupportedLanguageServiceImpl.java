@@ -9,7 +9,6 @@ import usi.si.seart.model.SupportedLanguage;
 import usi.si.seart.repository.SupportedLanguageRepository;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
@@ -21,5 +20,10 @@ public class SupportedLanguageServiceImpl implements SupportedLanguageService {
     @Override
     public List<SupportedLanguage> getAll(){
         return supportedLanguageRepository.findAll();
+    }
+
+    @Override
+    public List<SupportedLanguage> getQueue() {
+        return supportedLanguageRepository.findAllOrderByCrawled();
     }
 }
