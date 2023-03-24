@@ -18,13 +18,13 @@ import org.springframework.core.convert.ConversionService;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import usi.si.seart.github.GitHubApiService;
-import usi.si.seart.service.CrawlJobService;
-import usi.si.seart.service.GitRepoService;
-import usi.si.seart.service.SupportedLanguageService;
 import usi.si.seart.model.GitRepo;
 import usi.si.seart.model.GitRepoLabel;
 import usi.si.seart.model.GitRepoLanguage;
 import usi.si.seart.model.SupportedLanguage;
+import usi.si.seart.service.CrawlJobService;
+import usi.si.seart.service.GitRepoService;
+import usi.si.seart.service.SupportedLanguageService;
 import usi.si.seart.util.Dates;
 import usi.si.seart.util.Ranges;
 
@@ -288,6 +288,8 @@ public class CrawlProjectsJob {
         gitRepo.setOpenPullRequests(openPullRequests);
         gitRepo.setLastCommit(lastCommit);
         gitRepo.setLastCommitSHA(lastCommitSHA);
+
+        gitRepo.setCrawled();
 
         return gitRepo;
     }
