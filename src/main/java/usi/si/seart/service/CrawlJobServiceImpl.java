@@ -33,7 +33,7 @@ public class CrawlJobServiceImpl implements CrawlJobService {
 
     @Override
     public void updateCrawlDateForLanguage(String language, Date date){
-        log.info("Crawling "+language+" repositories secured upto: "+date);
+        log.info("{} repositories crawled up to: {}", language, date);
         SupportedLanguage supportedLanguage = supportedLanguageRepository.findByName(language)
                 .orElseThrow(EntityNotFoundException::new);
         Optional<CrawlJob> crawlJobOpt = crawlJobRepository.findByLanguage(supportedLanguage.getName());
