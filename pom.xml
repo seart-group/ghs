@@ -65,6 +65,7 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 		<java.version>1.11</java.version>
+		<kotlin.version>1.8.10</kotlin.version>
 		<jackson.version>2.13.4</jackson.version>
 		<springframework.version>2.6.4</springframework.version>
 	</properties>
@@ -136,7 +137,7 @@
 		<dependency>
 			<groupId>org.jetbrains.kotlin</groupId>
 			<artifactId>kotlin-stdlib</artifactId>
-			<version>1.7.10</version>
+			<version>${kotlin.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>com.google.guava</groupId>
@@ -234,7 +235,7 @@
 			<plugin>
 				<groupId>org.jetbrains.kotlin</groupId>
 				<artifactId>kotlin-maven-plugin</artifactId>
-				<version>1.6.10</version>
+				<version>${kotlin.version}</version>
 				<executions>
 					<execution>
 						<id>compile</id>
