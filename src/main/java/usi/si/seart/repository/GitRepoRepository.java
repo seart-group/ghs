@@ -25,6 +25,8 @@ public interface GitRepoRepository extends
 
     Optional<GitRepo> findGitRepoByName(String name);
 
+    Optional<GitRepoView> findFirstByIdGreaterThanOrderByIdAsc(Long id);
+
     @Query("select distinct r.mainLanguage, count(r) from GitRepo r group by r.mainLanguage order by count(r) desc")
     @Cacheable(value = "languageStatistics")
     List<Tuple> getLanguageStatistics();
@@ -36,10 +38,10 @@ public interface GitRepoRepository extends
     @Query("select r.name from GitRepo r order by r.crawled asc")
     List<String> findAllRepoNames();
 
-
     // Code metrics are outdated if the repository has new commits since the last cloned date or if there are no metrics at all
     @Query("SELECT r FROM GitRepo r WHERE r.cloned is null OR r.cloned < r.lastCommit ORDER BY r.cloned ASC")
     Stream<GitRepo> findAllRepoWithOutdatedCodeMetrics();
+
     @Query("SELECT COUNT(r) FROM GitRepo r WHERE r.cloned is null OR r.cloned < r.lastCommit")
     Long countAllRepoWithOutdatedCodeMetrics();
 
