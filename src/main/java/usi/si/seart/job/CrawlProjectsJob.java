@@ -202,11 +202,11 @@ public class CrawlProjectsJob {
             Optional<GitRepo> opt = gitRepoService.getByName(repoFullName);
 
             log.info(
-                    "{}/{} {} repo: {}",
+                    "{} repository: {} [{}/{}]",
+                    (opt.isEmpty()) ? "Saving" : "Updating",
+                    repoFullName,
                     repoNumStart,
-                    repoNumTotal,
-                    (opt.isEmpty()) ? "saving" : "updating",
-                    repoFullName
+                    repoNumTotal
             );
 
             repoNumStart++;
@@ -217,7 +217,9 @@ public class CrawlProjectsJob {
                 if (hasNotBeenUpdated(existing, repoJson)) {
                     Date updatedAt = existing.getUpdatedAt();
                     Date pushedAt = existing.getPushedAt();
-                    log.info("\tSKIPPED. We already have the latest info up to [{}](updated) [{}](pushed)", updatedAt, pushedAt);
+                    log.debug("\tSKIPPED: We already have the latest info!");
+                    log.trace("\t\tUpdated: {}", updatedAt);
+                    log.trace("\t\tPushed:  {}", pushedAt);
                     continue;
                 }
             }
@@ -239,7 +241,7 @@ public class CrawlProjectsJob {
 
                     GitRepo repo = createRepoFromResponse(result);
                     repo = gitRepoService.createOrUpdateRepo(repo);
-                    log.info("\tBasic information saved (repo Table).");
+                    log.debug("\tBasic information saved (repo Table).");
                     retrieveRepoLabels(repo);
                     retrieveRepoLanguages(repo);
                 } else {
@@ -304,7 +306,7 @@ public class CrawlProjectsJob {
                 String responseStr = gitHubApiService.fetchRepoLabels(repo.getName(), page);
                 if (responseStr != null) {
                     JsonArray result = JsonParser.parseString(responseStr).getAsJsonArray();
-                    log.info("\tAdding: " + result.size() + " labels.");
+                    log.debug("\tAdding: " + result.size() + " labels.");
 
                     for (JsonElement item : result) {
                         String label = item.getAsJsonObject().get("name").getAsString();
@@ -334,7 +336,7 @@ public class CrawlProjectsJob {
                 if (responseStr != null) {
                     JsonObject result = JsonParser.parseString(responseStr).getAsJsonObject();
                     Set<String> keySet = result.keySet();
-                    log.info("\tAdding: " + keySet.size() + " languages.");
+                    log.debug("\tAdding: " + keySet.size() + " languages.");
 
                     keySet.forEach(key -> repoLanguages.add(GitRepoLanguage.builder()
                             .repo(repo)
