@@ -189,7 +189,14 @@ public class CrawlProjectsJob {
      * Given JSON info of 100 repos, store them in DB
      */
     private void saveRetrievedRepos(JsonArray results, String language, int repoNumStart, int repoNumTotal) {
-        log.info("Adding: " + results.size() + " repositories (" + repoNumStart + "-" + (repoNumStart + results.size() - 1) + " | total: " + repoNumTotal + ")");
+        int repoNumEnd = repoNumStart + results.size() - 1;
+        log.info(
+                "Adding {} repositories ({} - {} | total: {})",
+                results.size(),
+                repoNumStart,
+                repoNumEnd,
+                repoNumTotal
+        );
         for (JsonElement element : results) {
             JsonObject repoJson = element.getAsJsonObject();
 
