@@ -161,7 +161,7 @@ public class CrawlProjectsJob {
                 }
             }
         } catch (Exception e) {
-            log.error("Failed to parse GitHubAPI response {} (retrieveRepos)", e.getMessage());
+            log.error("Failed to retrieve repositories", e);
         }
     }
 
@@ -179,7 +179,7 @@ public class CrawlProjectsJob {
                         page++;
                     }
                 } catch (Exception e) {
-                    log.error("Failed to parse GitHubAPI response {} (retrieveRemainingRepos)", e.getMessage());
+                    log.error("Failed to retrieve the remaining repositories", e);
                 }
             }
         }
@@ -243,7 +243,7 @@ public class CrawlProjectsJob {
                     log.error("SKIPPING due to null response from server");
                 }
             } catch (Exception e) {
-                log.error("Failed to fetch repo info from GitHubAPI: {} (saveRetrievedRepos)", e.getMessage());
+                log.error("Failed to save retrieved repositories", e);
             }
         }
     }
@@ -314,7 +314,7 @@ public class CrawlProjectsJob {
                 gitRepoService.createUpdateLabels(repo, repoLabels);
             }
         } catch (Exception e) {
-            log.error("Failed to add labels: {}", e.getMessage());
+            log.error("Failed to add repository labels", e);
         }
     }
 
@@ -344,7 +344,7 @@ public class CrawlProjectsJob {
                 gitRepoService.createUpdateLanguages(repo, repoLanguages);
             }
         } catch (Exception e) {
-            log.error("Failed to add languages: {}", e.getMessage());
+            log.error("Failed to add repository languages", e);
         }
 
     }
