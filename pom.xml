@@ -73,6 +73,7 @@
 		<java.version>1.11</java.version>
 		<kotlin.version>1.8.10</kotlin.version>
 		<jackson.version>2.14.2</jackson.version>
+		<okhttp.version>4.10.0</okhttp.version>
 		<springframework.version>2.7.10</springframework.version>
 	</properties>
 
@@ -82,6 +83,13 @@
 				<groupId>com.fasterxml.jackson</groupId>
 				<artifactId>jackson-bom</artifactId>
 				<version>${jackson.version}</version>
+				<type>pom</type>
+				<scope>import</scope>
+			</dependency>
+			<dependency>
+				<groupId>com.squareup.okhttp3</groupId>
+				<artifactId>okhttp-bom</artifactId>
+				<version>${okhttp.version}</version>
 				<type>pom</type>
 				<scope>import</scope>
 			</dependency>
@@ -147,7 +155,6 @@
 		<dependency>
 			<groupId>com.squareup.okhttp3</groupId>
 			<artifactId>okhttp</artifactId>
-			<version>4.10.0</version>
 		</dependency>
 		<dependency>
 			<groupId>org.jetbrains.kotlin</groupId>
