@@ -1,273 +1,370 @@
 package usi.si.seart.github;
 
+import com.google.common.base.Joiner;
+import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Range;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 import lombok.experimental.FieldDefaults;
-import lombok.experimental.NonFinal;
 import lombok.extern.slf4j.Slf4j;
 import okhttp3.Headers;
+import okhttp3.HttpUrl;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
-import okhttp3.ResponseBody;
-import org.apache.commons.lang3.tuple.Pair;
 import org.apache.commons.lang3.tuple.Triple;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.convert.ConversionService;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
-import org.springframework.stereotype.Service;
-import usi.si.seart.util.Dates;
+import org.springframework.stereotype.Component;
 import usi.si.seart.util.Ranges;
 
 import java.io.IOException;
+import java.net.URL;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.text.DateFormat;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.TimeUnit;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
+@SuppressWarnings("ConstantConditions")
 @Slf4j
-@Service
+@Component
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class GitHubApiService {
 
-    private static final int minStars = 10;
+    private static final int MIN_STARS = 10;
 
-    private static final long retrySleepPeriod = 60000L;
-    private static final int maxRetryCount = 3;
+    private static final int RETRY_MAX_ATTEMPTS = 3;
+    private static final int RETRY_SLEEP_DURATION = 1;
+    private static final TimeUnit RETRY_SLEEP_TIME_UNIT = TimeUnit.MINUTES;
+
+    /*
+     * Pattern for matching Link header values of GitHub API responses.
+     * https://www.debuggex.com/r/A5_ziqVy-vFaesKK
+     */
+    private static final Pattern HEADER_LINK_PATTERN = Pattern.compile("(?:,\\s)?<([^>]+)>;\\srel=\"(\\w+)\"");
 
     OkHttpClient client;
     DateFormat utcTimestampFormat;
 
-    @NonFinal
-    GitHubCredentialUtil gitHubCredentialUtil;
+    GitHubTokenManager gitHubTokenManager;
 
-    public void setGitHubCredentialUtil(GitHubCredentialUtil gitHubCredentialUtil) {
-        this.gitHubCredentialUtil = gitHubCredentialUtil;
+    ConversionService conversionService;
+
+    @SneakyThrows(InterruptedException.class)
+    private static void waitBeforeRetry() {
+        RETRY_SLEEP_TIME_UNIT.sleep(RETRY_SLEEP_DURATION);
     }
 
-    public String searchRepositories(
-            String language, Range<Date> dateRange, Integer page, boolean crawlUpdatedRepos
-    ) throws IOException, InterruptedException {
-        String languageEncoded = URLEncoder.encode(language, StandardCharsets.UTF_8);
-        String url = Endpoints.SEARCH_REPOS.getUrl() + "?q=language:" + languageEncoded +
-                (crawlUpdatedRepos ? "+pushed:" : "+created:") + Ranges.toString(dateRange, utcTimestampFormat) +
-                "+fork:true+stars:>="+ minStars +"+is:public&page=" + page + "&per_page=100";
+    @SneakyThrows(InterruptedException.class)
+    public JsonObject searchRepositories(String language, Range<Date> dateRange, Integer page, boolean crawlUpdatedRepos) {
+        Map<String, String> query = ImmutableMap.<String, String>builder()
+                .put("language", URLEncoder.encode(language, StandardCharsets.UTF_8))
+                .put(crawlUpdatedRepos ? "pushed" : "created", Ranges.toString(dateRange, utcTimestampFormat))
+                .put("stars", String.format(">=%d", MIN_STARS))
+                .put("fork", "true")
+                .put("is", "public")
+                .build();
 
-        // For debugging specific repositories
-        // url = generateSearchRepo("XXXXX/YYYYY");
-        // url = generateSearchRepo("torvalds/linux"); // only pulls
-        // url = generateSearchRepo("davidwernhart/AlDente"); // both issue and pulls
-        // url = generateSearchRepo("seart-group/ghs"); // only issues
+        String joined = Joiner.on("+").withKeyValueSeparator(":").join(query);
 
-        log.info("Github API Call: {}", url);
-        Triple<Integer, Headers, String> response = makeAPICall(url);
-        String bodyStr = response.getRight();
+        URL url = HttpUrl.get(Endpoint.SEARCH.toURL())
+                .newBuilder()
+                .setEncodedQueryParameter("q", joined)
+                .addQueryParameter("page", page.toString())
+                .addQueryParameter("per_page", "100")
+                .build()
+                .url();
 
-        Thread.sleep(1000);
-        return bodyStr;
-    }
-
-
-    public String fetchRepoInfo(String repoFullName) throws IOException, InterruptedException {
-        Triple<Integer, Headers, String> response = makeAPICall(generateRepoURL(repoFullName));
-        String bodyStr = response.getRight();
-        Thread.sleep(500);
-        return bodyStr;
+        Triple<HttpStatus, Headers, JsonElement> response = makeAPICall(url);
+        TimeUnit.MILLISECONDS.sleep(500);
+        return response.getRight().getAsJsonObject();
     }
 
 
-    public Long fetchNumberOfCommits(String repoFullName) throws IOException, InterruptedException {
-        // https://api.github.com/repos/07th-mod/higurashi-console-arcs/commits?per_page=1
-        return fetchLastPageNumberFromHeader(generateCommitsURL(repoFullName) + "?page=1&per_page=1");
+    @SneakyThrows(InterruptedException.class)
+    public JsonObject fetchRepoInfo(String name) {
+        URL url = Endpoint.REPOSITORY.toURL(name.split("/"));
+        Triple<HttpStatus, Headers, JsonElement> response = makeAPICall(url);
+        TimeUnit.MILLISECONDS.sleep(500);
+        return response.getRight().getAsJsonObject();
     }
 
-    public Pair<String, Date> fetchLastCommitInfo(String repoFullName) throws IOException, InterruptedException {
-        // https://api.github.com/repos/07th-mod/higurashi-console-arcs/commits?per_page=1
-        Triple<Integer, Headers, String> response = makeAPICall(generateCommitsURL(repoFullName) + "?page=1&per_page=1");
-        String bodyStr = response.getRight();
-        JsonObject latestCommitJson = JsonParser.parseString(bodyStr).getAsJsonArray().get(0).getAsJsonObject();
-        String sha = latestCommitJson.get("sha").getAsString();
-        String dateStr = latestCommitJson.get("commit").getAsJsonObject().get("committer").getAsJsonObject().get("date").getAsString();
-        Date date = Dates.fromGitDateString(dateStr);
-        return Pair.of(sha,date);
+    public GitCommit fetchLastCommitInfo(String name) {
+        URL url = HttpUrl.get(Endpoint.REPOSITORY_COMMITS.toURL(name.split("/")))
+                .newBuilder()
+                .addQueryParameter("page", "1")
+                .addQueryParameter("per_page", "1")
+                .build()
+                .url();
+        Triple<HttpStatus, Headers, JsonElement> response = makeAPICall(url);
+        JsonArray commits = response.getRight().getAsJsonArray();
+        try {
+            JsonObject latest = commits.get(0).getAsJsonObject();
+            return conversionService.convert(latest, GitCommit.class);
+        } catch (IndexOutOfBoundsException ignored) {
+            /*
+             * It might be possible for a repository to have no commits.
+             * However, such repositories should never appear in the search,
+             * because we target repositories written in a specific language!
+             * Still, better safe than sorry...
+            */
+            return GitCommit.NULL_COMMIT;
+        }
     }
 
-    public Long fetchNumberOfBranches(String repoFullName) throws IOException, InterruptedException {
-        //Branches: https://api.github.com/repos/07th-mod/higurashi-console-arcs/branches?per_page=1
-        return fetchLastPageNumberFromHeader(generateBranchesURL(repoFullName) + "?page=1&per_page=1");
+    public Long fetchNumberOfCommits(String name) {
+        URL url = HttpUrl.get(Endpoint.REPOSITORY_COMMITS.toURL(name.split("/")))
+                .newBuilder()
+                .addQueryParameter("page", "1")
+                .addQueryParameter("per_page", "1")
+                .build()
+                .url();
+        return fetchLastPageNumberFromHeader(url);
     }
 
-    public Long fetchNumberOfReleases(String repoFullName) throws IOException, InterruptedException {
-        //Releases: https://api.github.com/repos/07th-mod/higurashi-console-arcs/releases?per_page=1
-        return fetchLastPageNumberFromHeader(generateReleasesURL(repoFullName) + "?page=1&per_page=1");
+    public Long fetchNumberOfBranches(String name) {
+        URL url = HttpUrl.get(Endpoint.REPOSITORY_BRANCHES.toURL(name.split("/")))
+                .newBuilder()
+                .addQueryParameter("page", "1")
+                .addQueryParameter("per_page", "1")
+                .build()
+                .url();
+        return fetchLastPageNumberFromHeader(url);
     }
 
-
-    public Long fetchNumberOfContributors(String repoFullName) throws IOException, InterruptedException {
-        //Releases: https://api.github.com/repos/07th-mod/higurashi-console-arcs/contributors?per_page=1
-        return fetchLastPageNumberFromHeader(generateContributorsURL(repoFullName) + "?page=1&per_page=1");
+    public Long fetchNumberOfReleases(String name) {
+        URL url = HttpUrl.get(Endpoint.REPOSITORY_RELEASES.toURL(name.split("/")))
+                .newBuilder()
+                .addQueryParameter("page", "1")
+                .addQueryParameter("per_page", "1")
+                .build()
+                .url();
+        return fetchLastPageNumberFromHeader(url);
     }
 
-    public Long fetchNumberOfOpenIssuesAndPulls(String repoFullName) throws IOException, InterruptedException {
-        //Issues+Pull Open: https://api.github.com/repos/07th-mod/higurashi-console-arcs/issues?state=open&per_page=1
-        return fetchLastPageNumberFromHeader(generateIssuesURL(repoFullName) + "?state=open&page=1&per_page=1");
-    }
-    public Long fetchNumberOfAllIssuesAndPulls(String repoFullName) throws IOException, InterruptedException {
-        //Issues+Pull All: https://api.github.com/repos/07th-mod/higurashi-console-arcs/issues?state=all&per_page=1
-        return fetchLastPageNumberFromHeader(generateIssuesURL(repoFullName) + "?state=all&page=1&per_page=1");
-    }
-
-    public Long fetchNumberOfOpenPulls(String repoFullName) throws IOException, InterruptedException {
-        //Pull Open: https://api.github.com/repos/07th-mod/higurashi-console-arcs/pulls?state=open&per_page=1
-        return fetchLastPageNumberFromHeader(generatePullsURL(repoFullName) + "?state=open&page=1&per_page=1");
-    }
-    public Long fetchNumberOfAllPulls(String repoFullName) throws IOException, InterruptedException {
-        //Pull All: https://api.github.com/repos/07th-mod/higurashi-console-arcs/pulls?state=all&per_page=1
-        return fetchLastPageNumberFromHeader(generatePullsURL(repoFullName) + "?state=all&page=1&per_page=1");
+    public Long fetchNumberOfContributors(String name) {
+        URL url = HttpUrl.get(Endpoint.REPOSITORY_CONTRIBUTORS.toURL(name.split("/")))
+                .newBuilder()
+                .addQueryParameter("page", "1")
+                .addQueryParameter("per_page", "1")
+                .build()
+                .url();
+        return fetchLastPageNumberFromHeader(url);
     }
 
-    public Long fetchNumberOfLabels(String repoFullName) throws IOException, InterruptedException {
-        return fetchLastPageNumberFromHeader(generateLabelsURL(repoFullName) + "?page=1&per_page=1");
+    public Long fetchNumberOfOpenIssuesAndPulls(String name) {
+        URL url = HttpUrl.get(Endpoint.REPOSITORY_ISSUES.toURL(name.split("/")))
+                .newBuilder()
+                .addQueryParameter("page", "1")
+                .addQueryParameter("per_page", "1")
+                .addQueryParameter("state", "open")
+                .build()
+                .url();
+        return fetchLastPageNumberFromHeader(url);
     }
 
-    public Long fetchNumberOfLanguages(String repoFullName) throws IOException, InterruptedException {
-        return fetchLastPageNumberFromHeader(generateLanguagesURL(repoFullName) + "?page=1&per_page=1");
+    public Long fetchNumberOfAllIssuesAndPulls(String name) {
+        URL url = HttpUrl.get(Endpoint.REPOSITORY_ISSUES.toURL(name.split("/")))
+                .newBuilder()
+                .addQueryParameter("page", "1")
+                .addQueryParameter("per_page", "1")
+                .addQueryParameter("state", "all")
+                .build()
+                .url();
+        return fetchLastPageNumberFromHeader(url);
     }
 
-    private Long fetchLastPageNumberFromHeader(String url) throws IOException, InterruptedException {
-        Triple<Integer, Headers, String> response = makeAPICall(url);
-        Integer retCode = response.getLeft();
+    public Long fetchNumberOfOpenPulls(String name) {
+        URL url = HttpUrl.get(Endpoint.REPOSITORY_PULLS.toURL(name.split("/")))
+                .newBuilder()
+                .addQueryParameter("page", "1")
+                .addQueryParameter("per_page", "1")
+                .addQueryParameter("state", "open")
+                .build()
+                .url();
+        return fetchLastPageNumberFromHeader(url);
+    }
 
-        Long lastPageCount;
-        if (retCode == HttpStatus.FORBIDDEN.value()) {
-            // Forbidden 403 - two possibilities:
-            // (1) The token limit is exceeded
-            // (2) The computation is too expensive (e.g. https://api.github.com/repos/torvalds/linux/contributors)
-            // Since we make use of guards for the former case, then the latter is always the response cause.
-            // As a result we return null value to denote the metric as uncountable
-            lastPageCount = null;
+    public Long fetchNumberOfAllPulls(String name) {
+        
+        URL url = HttpUrl.get(Endpoint.REPOSITORY_PULLS.toURL(name.split("/")))
+                .newBuilder()
+                .addQueryParameter("page", "1")
+                .addQueryParameter("per_page", "1")
+                .addQueryParameter("state", "all")
+                .build()
+                .url();
+        return fetchLastPageNumberFromHeader(url);
+    }
+
+    public Long fetchNumberOfLabels(String name) {
+        URL url = HttpUrl.get(Endpoint.REPOSITORY_LABELS.toURL(name.split("/")))
+                .newBuilder()
+                .addQueryParameter("page", "1")
+                .addQueryParameter("per_page", "1")
+                .build()
+                .url();
+        return fetchLastPageNumberFromHeader(url);
+    }
+
+    public Long fetchNumberOfLanguages(String name) {
+        URL url = HttpUrl.get(Endpoint.REPOSITORY_LANGUAGES.toURL(name.split("/")))
+                .newBuilder()
+                .addQueryParameter("page", "1")
+                .addQueryParameter("per_page", "1")
+                .build()
+                .url();
+        return fetchLastPageNumberFromHeader(url);
+    }
+
+    private Long fetchLastPageNumberFromHeader(URL url) {
+        Triple<HttpStatus, Headers, JsonElement> response = makeAPICall(url);
+        HttpStatus status = response.getLeft();
+
+        Long count;
+        if (status == HttpStatus.FORBIDDEN) {
+            /*
+             * Response status code 403, two possibilities:
+             * (1) The rate limit for the current token is exceeded
+             * (2) The request is too expensive for GitHub to compute
+             * (eg. https://api.github.com/repos/torvalds/linux/contributors)
+             *
+             * Since we make use of guards for the former case,
+             * then the latter is always the response cause.
+             * As a result we return null value to denote the metric as unobtainable.
+             */
+            count = null;
         } else {
+            JsonElement element = response.getRight();
             Headers headers = response.getMiddle();
-            String linkField = headers.get("link");
-            if (linkField != null) {
-                String lastPageLink = linkField.split(",")[1];
-                String lastPageStr = lastPageLink.substring(lastPageLink.indexOf("page=") + ("page=".length()), lastPageLink.indexOf("&", lastPageLink.indexOf("page=")));
-                lastPageCount = Long.parseLong(lastPageStr);
-            } else if (response.getRight().equals("[]")) {
-                lastPageCount = 0L;
+            String link = headers.get("link");
+            if (link != null) {
+                Map<String, String> links = new HashMap<>();
+                Matcher matcher = HEADER_LINK_PATTERN.matcher(link);
+                while (matcher.find()) {
+                    links.put(matcher.group(2), matcher.group(1));
+                }
+                HttpUrl last = HttpUrl.get(links.get("last"));
+                count = Long.parseLong(last.queryParameter("page"));
+            } else if (element.isJsonArray()) {
+                count = (long) element.getAsJsonArray().size();
+            } else if (element.isJsonObject()) {
+                count = (long) element.getAsJsonObject().size();
             } else {
-                lastPageCount = 1L;
+                count = 1L;
             }
         }
-        return lastPageCount;
+        return count;
     }
 
-    public String fetchRepoLabels(String repoFullName, int page) throws IOException, InterruptedException {
-        String url = String.format("%s?page=%d&per_page=100", generateLabelsURL(repoFullName), page);
-        Triple<Integer, Headers, String> response = makeAPICall(url);
-        String responseStr = response.getRight();
-        Thread.sleep(1000);
-        return responseStr;
+    @SneakyThrows(InterruptedException.class)
+    public JsonArray fetchRepoLabels(String name, Integer page) {
+        URL url = HttpUrl.get(Endpoint.REPOSITORY_LABELS.toURL(name.split("/")))
+                .newBuilder()
+                .addQueryParameter("page", page.toString())
+                .addQueryParameter("per_page", "100")
+                .build()
+                .url();
+        Triple<HttpStatus, Headers, JsonElement> response = makeAPICall(url);
+        TimeUnit.MILLISECONDS.sleep(500);
+        return response.getRight().getAsJsonArray();
     }
 
-    public String fetchRepoLanguages(String repoFullName, int page) throws IOException, InterruptedException {
-        String url = String.format("%s?page=%d&per_page=100", generateLanguagesURL(repoFullName), page);
-        Triple<Integer, Headers, String> response = makeAPICall(url);
-        String responseStr = response.getRight();
-        Thread.sleep(1000);
-        return responseStr;
+    @SneakyThrows(InterruptedException.class)
+    public JsonObject fetchRepoLanguages(String name, Integer page) {
+        URL url = HttpUrl.get(Endpoint.REPOSITORY_LANGUAGES.toURL(name.split("/")))
+                .newBuilder()
+                .addQueryParameter("page", page.toString())
+                .addQueryParameter("per_page", "100")
+                .build()
+                .url();
+        Triple<HttpStatus, Headers, JsonElement> response = makeAPICall(url);
+        TimeUnit.MILLISECONDS.sleep(500);
+        return response.getRight().getAsJsonObject();
     }
 
 
-    Triple<Integer, Headers, String> makeAPICall(String reqURL) throws IOException, InterruptedException {
+    @SuppressWarnings({ "ConstantConditions", "resource" })
+    @SneakyThrows({ IOException.class, InterruptedException.class })
+    Triple<HttpStatus, Headers, JsonElement> makeAPICall(URL url) {
         int tryNum = 0;
-        while (tryNum < maxRetryCount) {
+        while (tryNum < RETRY_MAX_ATTEMPTS) {
             tryNum++;
-            Response response = client.newCall(generateRequest(reqURL, gitHubCredentialUtil.getCurrentToken())).execute();
-            Headers headers = response.headers();
-            ResponseBody body = response.body();
-            String bodyStr = null;
-            if (body != null) {
-                bodyStr = body.string();
-            } else {
-                log.error("**********************************************************************");
-                log.error("How come 'body' object is null? reqURL = {}\", reqURL", reqURL);
-                log.error("**********************************************************************");
-            }
-            response.close();
+            Request.Builder builder = new Request.Builder();
+            builder.url(url);
+            String currentToken = gitHubTokenManager.getCurrentToken();
+            if (currentToken != null)
+                builder.addHeader(HttpHeaders.AUTHORIZATION, "Bearer " + currentToken);
+            Request request = builder.build();
 
-            if (response.isSuccessful() && body != null) {
-                return Triple.of(response.code(), headers, bodyStr);
-            } else if (response.code() == HttpStatus.UNAUTHORIZED.value()) {
-                log.error("**************** Invalid Access Token [401 Unauthorized]: {} ****************", gitHubCredentialUtil.getCurrentToken());
-                // Here we should not call `replaceTokenIfExpired()`, otherwise it leads to an infinite loop,
-                // because that method calls Rate API with the very same unauthorized token.
-                gitHubCredentialUtil.getNewToken();
-                Thread.sleep(5000);
-            } else if (response.code() == HttpStatus.TOO_MANY_REQUESTS.value()) {
-                gitHubCredentialUtil.replaceTokenIfExpired();
-            } else if (response.code() == HttpStatus.FORBIDDEN.value()) {
-                // Forbidden 403 - two possibilities: (1) Token limit is exceeded, (2) too expensive computation as for https://api.github.com/repos/torvalds/linux/contributors
-                String rateLimitRemainingStr = headers.get("X-RateLimit-Remaining");
-                if (rateLimitRemainingStr != null) {
-                    int rateLimitRemaining = Integer.parseInt(rateLimitRemainingStr);
+            Response response = client.newCall(request).execute();
+            HttpStatus status = HttpStatus.valueOf(response.code());
+            Headers headers = response.headers();
+            String body = response.body().string();
+
+            if (response.isSuccessful()) {
+                return Triple.of(status, headers, JsonParser.parseString(body));
+            } else if (status == HttpStatus.UNAUTHORIZED) {
+                /*
+                 * Here we should not call `replaceTokenIfExpired()`
+                 * since it would lead to an infinite loop,
+                 * because we are checking the Rate Limit API
+                 * with the very same unauthorized token.
+                */
+                gitHubTokenManager.replaceToken();
+                TimeUnit.SECONDS.sleep(5);
+            } else if (status == HttpStatus.FORBIDDEN) {
+                /*
+                 * Response status code 403, two possibilities:
+                 * (1) The rate limit for the current token is exceeded
+                 * (2) The request is too expensive for GitHub to compute
+                 * (eg. https://api.github.com/repos/torvalds/linux/contributors)
+                */
+                String xRateLimitRemaining = headers.get("X-RateLimit-Remaining");
+                if (xRateLimitRemaining != null) {
+                    int rateLimitRemaining = Integer.parseInt(xRateLimitRemaining);
                     if (rateLimitRemaining > 0) {
-                        if(bodyStr.contains("too large")==false) {
-                            log.error("**********************************************************************");
-                            log.error("403 but limit not exceeded. So we expected 'too long' in message. but not found!");
-                            log.error("Update the logic. reqURL = {}", reqURL);
-                            log.error("**********************************************************************");
+                        if(!body.contains("too large")) {
+                            log.error(
+                                    "\n**********************************************************************\n" +
+                                    "- Status code is 403, but the rate limit is not exceeded!\n" +
+                                    "- The returned response contains no mention of the result being 'too long'!\n" +
+                                    " ################ AN UPDATE TO THE LOGIC IS REQUIRED ################ \n" +
+                                    "**********************************************************************"
+                            );
                         }
-                        return Triple.of(response.code(), headers, bodyStr);
+                        return Triple.of(status, headers, JsonParser.parseString(body));
                     }
                 }
-                log.info("Try #{}: 403 Error. response code = {} - X-RateLimit-Remaining={}", tryNum, response.code(), rateLimitRemainingStr);
-                gitHubCredentialUtil.replaceTokenIfExpired();
-            } else if (response.code() >= 500) {
-                log.error("Try #{}: GitHub Server Error Encountered: {}", tryNum, response.code());
-                Thread.sleep(retrySleepPeriod);
-                log.error("Retrying...");
+                log.info("Try #{}: Response Code = {}, X-RateLimit-Remaining = {}", tryNum, status, xRateLimitRemaining);
+                gitHubTokenManager.replaceTokenIfExpired();
+            } else if (status == HttpStatus.TOO_MANY_REQUESTS) {
+                gitHubTokenManager.replaceTokenIfExpired();
+            } else if (status.is4xxClientError()) {
+                log.error("Try #{}: GitHub Client Error Encountered [{}]", tryNum, status);
+                waitBeforeRetry();
+            } else if (status.is5xxServerError()) {
+                log.error("Try #{}: GitHub Server Error Encountered [{}]", tryNum, status);
+                waitBeforeRetry();
             } else {
-                log.error("Try #{}: Failed to execute API call. retCode={} isSuccess={} - reqURL={}", tryNum, response.code(), response.isSuccessful(), reqURL);
-                gitHubCredentialUtil.replaceTokenIfExpired();
+                log.error("Try #{}: Response Code = {}, Request URL = {}", tryNum, status, url);
+                gitHubTokenManager.replaceTokenIfExpired();
             }
         }
-        log.error("Failed after {} try. SKIPPING.", maxRetryCount);
+        log.error("Failed after {} try. SKIPPING.", RETRY_MAX_ATTEMPTS);
         return null;
     }
-
-    private Request generateRequest(String reqURL, String token){
-        return new Request.Builder()
-                          .url(reqURL)
-                          .addHeader("Authorization", "token " + token)
-                          .addHeader("Accept", "application/vnd.github.v3+json")
-                          .build();
-    }
-
-    private String generateRepoURL(String repoFullName){
-        return Endpoints.REPOS.getUrl() + "/" + repoFullName;
-    }
-
-    private String generateSearchRepo(String repoFullName) {
-        return Endpoints.SEARCH_REPOS.getUrl() + "?q=fork:true+repo:" + repoFullName;
-    }
-
-    private String generateCommitsURL(String repoFullName){ return generateRepoURL(repoFullName) + "/commits"; }
-
-    private String generateBranchesURL(String repoFullName){ return generateRepoURL(repoFullName) + "/branches"; }
-
-    private String generateReleasesURL(String repoFullName){ return generateRepoURL(repoFullName) + "/releases"; }
-
-    private String generateLabelsURL(String repoFullName){ return generateRepoURL(repoFullName) + "/labels"; }
-
-    private String generateLanguagesURL(String repoFullName){ return generateRepoURL(repoFullName) + "/languages"; }
-
-    private String generateContributorsURL(String repoFullName){ return generateRepoURL(repoFullName) + "/contributors"; }
-
-    private String generateIssuesURL(String repoFullName){ return generateRepoURL(repoFullName) + "/issues"; }
-
-    private String generatePullsURL(String repoFullName){ return generateRepoURL(repoFullName) + "/pulls"; }
 }
