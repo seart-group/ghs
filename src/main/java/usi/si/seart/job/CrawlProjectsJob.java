@@ -4,19 +4,18 @@ import com.google.common.collect.Range;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.experimental.NonFinal;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
+import usi.si.seart.github.GitCommit;
 import usi.si.seart.github.GitHubApiService;
 import usi.si.seart.model.GitRepo;
 import usi.si.seart.model.GitRepoLabel;
@@ -28,13 +27,13 @@ import usi.si.seart.service.SupportedLanguageService;
 import usi.si.seart.util.Dates;
 import usi.si.seart.util.Ranges;
 
-import java.io.IOException;
 import java.text.DateFormat;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.BinaryOperator;
@@ -141,23 +140,20 @@ public class CrawlProjectsJob {
     private void retrieveRepos(Range<Date> dateRange, String language, Boolean crawlUpdatedRepos) {
         int page = 1;
         try {
-            String responseStr = gitHubApiService.searchRepositories(language, dateRange, page, crawlUpdatedRepos);
-            if (responseStr != null) {
-                JsonObject result = JsonParser.parseString(responseStr).getAsJsonObject();
-                int totalResults = result.get("total_count").getAsInt();
-                int totalPages = (int) Math.ceil(totalResults / 100.0);
-                log.info("Retrieved results: " + totalResults);
-                if (totalResults <= 1000) {
-                    JsonArray results = result.get("items").getAsJsonArray();
-                    saveRetrievedRepos(results, language, 1, totalResults);
-                    retrieveRemainingRepos(dateRange, language, crawlUpdatedRepos, totalPages);
-                    crawlJobService.updateCrawlDateForLanguage(language, dateRange.upperEndpoint());
-                } else {
-                    List<Range<Date>> newIntervals = Ranges.split(dateRange, dateMedian);
-                    if (newIntervals.size() > 1) {
-                        requestQueue.add(0, newIntervals.get(1));
-                        requestQueue.add(0, newIntervals.get(0));
-                    }
+            JsonObject json = gitHubApiService.searchRepositories(language, dateRange, page, crawlUpdatedRepos);
+            int totalResults = json.get("total_count").getAsInt();
+            int totalPages = (int) Math.ceil(totalResults / 100.0);
+            log.info("Retrieved results: " + totalResults);
+            if (totalResults <= 1000) {
+                JsonArray results = json.get("items").getAsJsonArray();
+                saveRetrievedRepos(results, language, 1, totalResults);
+                retrieveRemainingRepos(dateRange, language, crawlUpdatedRepos, totalPages);
+                crawlJobService.updateCrawlDateForLanguage(language, dateRange.upperEndpoint());
+            } else {
+                List<Range<Date>> newIntervals = Ranges.split(dateRange, dateMedian);
+                if (newIntervals.size() > 1) {
+                    requestQueue.add(0, newIntervals.get(1));
+                    requestQueue.add(0, newIntervals.get(0));
                 }
             }
         } catch (Exception e) {
@@ -165,19 +161,18 @@ public class CrawlProjectsJob {
         }
     }
 
-    private void retrieveRemainingRepos(Range<Date> dateRange, String language, Boolean crawlUpdatedRepos, int totalPages){
-        if (totalPages > 1) {
+    private void retrieveRemainingRepos(
+            Range<Date> dateRange, String language, Boolean crawlUpdatedRepos, int pages
+    ) {
+        if (pages > 1) {
             int page = 2;
-            while (page <= totalPages) {
+            while (page <= pages) {
                 try {
-                    String responseStr = gitHubApiService.searchRepositories(language, dateRange, page, crawlUpdatedRepos);
-                    if (responseStr != null) {
-                        JsonObject result = JsonParser.parseString(responseStr).getAsJsonObject();
-                        int totalResults = result.get("total_count").getAsInt();
-                        JsonArray results = result.get("items").getAsJsonArray();
-                        saveRetrievedRepos(results, language, (page - 1) * 100 + 1, totalResults);
-                        page++;
-                    }
+                    JsonObject json = gitHubApiService.searchRepositories(language, dateRange, page, crawlUpdatedRepos);
+                    int totalResults = json.get("total_count").getAsInt();
+                    JsonArray results = json.get("items").getAsJsonArray();
+                    saveRetrievedRepos(results, language, (page - 1) * 100 + 1, totalResults);
+                    page++;
                 } catch (Exception e) {
                     log.error("Failed to retrieve the remaining repositories", e);
                 }
@@ -205,7 +200,7 @@ public class CrawlProjectsJob {
 
             log.info(
                     "{} repository: {} [{}/{}]",
-                    (opt.isEmpty()) ? "Saving" : "Updating",
+                    (opt.isEmpty()) ? "  Saving" : "Updating",
                     repoFullName,
                     repoNumStart,
                     repoNumTotal
@@ -227,28 +222,31 @@ public class CrawlProjectsJob {
             }
 
             try {
-                String responseStr = gitHubApiService.fetchRepoInfo(repoFullName);
-                if (responseStr != null) {
-                    JsonObject result = JsonParser.parseString(responseStr).getAsJsonObject();
-
-                    if (result.get("language").isJsonNull())
-                        result.addProperty("language", language); // This can happen. Example Repo: "aquynh/iVM"
-                    else if (!result.get("language").getAsString().equals(language)) {
-                        // This can happen. Example Repo: https://api.github.com/search/repositories?q=baranowski/habit-vim
-                        // And if you go to repo homepage or repo "language_url" (api that shows language distribution),
-                        // you will see that main_language is only wrong in the above link.
-                        log.warn("**** Mismatch language: searched-for: " + language + " | repo: " + repoJson.get("language").getAsString());
-                        result.addProperty("language", language);
-                    }
-
-                    GitRepo repo = createRepoFromResponse(result);
-                    repo = gitRepoService.createOrUpdateRepo(repo);
-                    log.debug("\tBasic information saved (repo Table).");
-                    retrieveRepoLabels(repo);
-                    retrieveRepoLanguages(repo);
-                } else {
-                    log.error("SKIPPING due to null response from server");
+                JsonObject json = gitHubApiService.fetchRepoInfo(repoFullName);
+                JsonElement jsonLanguage = json.get("language");
+                if (jsonLanguage.isJsonNull()) {
+                    // This can happen (e.g. https://api.github.com/repos/aquynh/iVM).
+                    json.addProperty("language", language);
+                }  else if (!jsonLanguage.getAsString().equals(language)) {
+                    /*
+                     * This can happen (e.g. https://api.github.com/search/repositories?q=baranowski/habit-vim).
+                     * If you go to repository `homepage`, or the `language_url`
+                     * (endpoint that shows language distribution),
+                     * you will see that `main_language` is only wrong in the above link.
+                    */
+                    String format =
+                            "Search language mismatch, while searching for {} repositories, " +
+                            "the crawler encountered a repository erroneously reported as written in {}. " +
+                            "Overwriting...";
+                    log.warn(format, language, jsonLanguage.getAsString());
+                    json.addProperty("language", language);
                 }
+
+                GitRepo repo = createRepoFromResponse(json);
+                repo = gitRepoService.createOrUpdateRepo(repo);
+                log.debug("\tAdding: Basic repository information.");
+                retrieveRepoLabels(repo);
+                retrieveRepoLanguages(repo);
             } catch (Exception e) {
                 log.error("Failed to save retrieved repositories", e);
             }
@@ -264,23 +262,23 @@ public class CrawlProjectsJob {
     }
 
     @SuppressWarnings("ConstantConditions")
-    private GitRepo createRepoFromResponse(JsonObject repoJson) throws IOException, InterruptedException {
-        GitRepo gitRepo = conversionService.convert(repoJson, GitRepo.class);
+    private GitRepo createRepoFromResponse(JsonObject json) {
+        GitRepo gitRepo = conversionService.convert(json, GitRepo.class);
 
-        String repoName = repoJson.get("full_name").getAsString();
-        boolean hasIssues = repoJson.get("has_issues").getAsBoolean();
+        String name = json.get("full_name").getAsString();
+        boolean hasIssues = json.get("has_issues").getAsBoolean();
 
-        Long commits = gitHubApiService.fetchNumberOfCommits(repoName);
-        Long branches = gitHubApiService.fetchNumberOfBranches(repoName);
-        Long releases = gitHubApiService.fetchNumberOfReleases(repoName);
-        Long contributors = gitHubApiService.fetchNumberOfContributors(repoName);
-        Long totalPullRequests = gitHubApiService.fetchNumberOfAllPulls(repoName);
-        Long openPullRequests = gitHubApiService.fetchNumberOfOpenPulls(repoName);
-        Long totalIssues = (!hasIssues) ? 0L : gitHubApiService.fetchNumberOfAllIssuesAndPulls(repoName) - totalPullRequests;
-        Long openIssues = (!hasIssues) ? 0L : gitHubApiService.fetchNumberOfOpenIssuesAndPulls(repoName) - openPullRequests;
-        Pair<String, Date> lastCommitInfo = gitHubApiService.fetchLastCommitInfo(repoName);
-        Date lastCommit = lastCommitInfo.getRight();
-        String lastCommitSHA = lastCommitInfo.getLeft();
+        Long commits = gitHubApiService.fetchNumberOfCommits(name);
+        Long branches = gitHubApiService.fetchNumberOfBranches(name);
+        Long releases = gitHubApiService.fetchNumberOfReleases(name);
+        Long contributors = gitHubApiService.fetchNumberOfContributors(name);
+        Long totalPullRequests = gitHubApiService.fetchNumberOfAllPulls(name);
+        Long openPullRequests = gitHubApiService.fetchNumberOfOpenPulls(name);
+        Long totalIssues = (!hasIssues) ? 0L : gitHubApiService.fetchNumberOfAllIssuesAndPulls(name) - totalPullRequests;
+        Long openIssues = (!hasIssues) ? 0L : gitHubApiService.fetchNumberOfOpenIssuesAndPulls(name) - openPullRequests;
+        GitCommit gitCommit = gitHubApiService.fetchLastCommitInfo(name);
+        Date lastCommit = gitCommit.getDate();
+        String lastCommitSHA = gitCommit.getSha();
 
         gitRepo.setCommits(commits);
         gitRepo.setBranches(branches);
@@ -297,28 +295,27 @@ public class CrawlProjectsJob {
     }
 
     private void retrieveRepoLabels(GitRepo repo) {
-        List<GitRepoLabel> repoLabels = new ArrayList<>();
-        boolean newResults = false;
+        List<GitRepoLabel> labels = new ArrayList<>();
+        boolean store = false;
         try {
-            Long totalLabels = gitHubApiService.fetchNumberOfLabels(repo.getName());
-            int totalPages = (int) Math.ceil(totalLabels / 100.0);
-            for (int page = 1; page <= totalPages; page++) {
-                String responseStr = gitHubApiService.fetchRepoLabels(repo.getName(), page);
-                if (responseStr != null) {
-                    JsonArray result = JsonParser.parseString(responseStr).getAsJsonArray();
-                    log.debug("\tAdding: " + result.size() + " labels.");
+            Long count = gitHubApiService.fetchNumberOfLabels(repo.getName());
+            int pages = (int) Math.ceil(count / 100.0);
+            for (int page = 1; page <= pages; page++) {
+                JsonArray objects = gitHubApiService.fetchRepoLabels(repo.getName(), page);
+                log.debug("\tAdding: {} labels.", objects.size());
 
-                    for (JsonElement item : result) {
-                        String label = item.getAsJsonObject().get("name").getAsString();
-                        label = label.trim();
-                        label = label.substring(0, Math.min(label.length(), 60));  // 60: due to db column limit
-                        repoLabels.add(GitRepoLabel.builder().repo(repo).label(label).build());
-                    }
-                    newResults = true;
+                for (JsonElement element : objects) {
+                    JsonObject object = element.getAsJsonObject();
+                    String label = object.get("name").getAsString();
+                    label = label.trim();
+                    label = label.substring(0, Math.min(label.length(), 60));  // 60: due to db column limit
+                    labels.add(GitRepoLabel.builder().repo(repo).label(label).build());
                 }
+
+                store = true;
             }
-            if (newResults) {
-                gitRepoService.createUpdateLabels(repo, repoLabels);
+            if (store) {
+                gitRepoService.createUpdateLabels(repo, labels);
             }
         } catch (Exception e) {
             log.error("Failed to add repository labels", e);
@@ -326,33 +323,31 @@ public class CrawlProjectsJob {
     }
 
     private void retrieveRepoLanguages(GitRepo repo) {
-        List<GitRepoLanguage> repoLanguages = new ArrayList<>();
-        boolean newResults = false;
+        List<GitRepoLanguage> languages = new ArrayList<>();
+        boolean store = false;
         try {
-            Long totalLanguages = gitHubApiService.fetchNumberOfLanguages(repo.getName());
-            int totalPages = (int) Math.ceil(totalLanguages / 100.0);
-            for (int page = 1; page <= totalPages; page++) {
-                String responseStr = gitHubApiService.fetchRepoLanguages(repo.getName(), page);
-                if (responseStr != null) {
-                    JsonObject result = JsonParser.parseString(responseStr).getAsJsonObject();
-                    Set<String> keySet = result.keySet();
-                    log.debug("\tAdding: " + keySet.size() + " languages.");
+            Long count = gitHubApiService.fetchNumberOfLanguages(repo.getName());
+            int pages = (int) Math.ceil(count / 100.0);
+            for (int page = 1; page <= pages; page++) {
+                JsonObject result = gitHubApiService.fetchRepoLanguages(repo.getName(), page);
+                Set<Map.Entry<String, JsonElement>> entries = result.entrySet();
+                log.debug("\tAdding: {} languages.", entries.size());
 
-                    keySet.forEach(key -> repoLanguages.add(GitRepoLanguage.builder()
-                            .repo(repo)
-                            .language(key)
-                            .sizeOfCode(result.get(key).getAsLong())
-                            .build())
-                    );
-                    newResults = true;
-                }
+                languages = entries.stream()
+                        .map(entry -> GitRepoLanguage.builder()
+                                .repo(repo)
+                                .language(entry.getKey())
+                                .sizeOfCode(entry.getValue().getAsLong())
+                                .build())
+                        .collect(Collectors.toList());
+
+                store = true;
             }
-            if (newResults) {
-                gitRepoService.createUpdateLanguages(repo, repoLanguages);
+            if (store) {
+                gitRepoService.createUpdateLanguages(repo, languages);
             }
         } catch (Exception e) {
             log.error("Failed to add repository languages", e);
         }
-
     }
 }

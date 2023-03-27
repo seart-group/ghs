@@ -1,6 +1,5 @@
 package usi.si.seart.config;
 
-import okhttp3.OkHttpClient;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
@@ -10,12 +9,13 @@ import org.springframework.web.filter.ForwardedHeaderFilter;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import usi.si.seart.converter.GitRepoToDtoConverter;
+import usi.si.seart.converter.JsonObjectToGitCommitConverter;
 import usi.si.seart.converter.JsonObjectToGitRepoConverter;
+import usi.si.seart.converter.JsonObjectToRateLimitConverter;
 import usi.si.seart.converter.SupportedLanguageToDtoConverter;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.concurrent.TimeUnit;
 
 @Configuration
 public class MainConfig {
@@ -23,15 +23,6 @@ public class MainConfig {
     @Bean
     public DateFormat utcTimestampFormat() {
         return new SimpleDateFormat("yyyy-MM-dd'T'hh:mm:ss");
-    }
-
-    @Bean
-    public OkHttpClient httpClient() {
-        return new OkHttpClient.Builder()
-                .connectTimeout(1, TimeUnit.MINUTES)
-                .writeTimeout(1, TimeUnit.MINUTES)
-                .readTimeout(1, TimeUnit.MINUTES)
-                .build();
     }
 
     @Bean
@@ -54,6 +45,8 @@ public class MainConfig {
                  registry.addConverter(new SupportedLanguageToDtoConverter());
                  registry.addConverter(new GitRepoToDtoConverter());
                  registry.addConverter(new JsonObjectToGitRepoConverter());
+                 registry.addConverter(new JsonObjectToGitCommitConverter());
+                 registry.addConverter(new JsonObjectToRateLimitConverter());
             }
         };
     }
