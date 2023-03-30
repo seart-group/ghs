@@ -23,14 +23,5 @@ public interface SupportedLanguageRepository extends JpaRepository<SupportedLang
     )
     List<SupportedLanguage> findAllByNameInOrderByCrawled(@Param("names") Collection<String> names);
 
-    @Query(
-            "select sl " +
-            "from SupportedLanguage as sl " +
-            "inner join CrawlJob as cj " +
-            "on cj.language.id = sl.id " +
-            "order by cj.crawled"
-    )
-    List<SupportedLanguage> findAllOrderByCrawled();
-
     Boolean existsByName(String name);
 }
