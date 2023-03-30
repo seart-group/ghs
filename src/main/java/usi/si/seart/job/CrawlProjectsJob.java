@@ -48,11 +48,11 @@ import java.util.stream.Collectors;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class CrawlProjectsJob {
 
+    private static final BinaryOperator<Date> dateMedian = (a, b) -> new Date((a.getTime() + b.getTime())/2);
+
     Deque<Range<Date>> requestQueue = new ArrayDeque<>();
 
     List<String> languages = new ArrayList<>();
-
-    private static final BinaryOperator<Date> dateMedian = (a, b) -> new Date((a.getTime() + b.getTime())/2);
 
     GitRepoService gitRepoService;
     CrawlJobService crawlJobService;
