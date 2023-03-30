@@ -30,8 +30,10 @@ import usi.si.seart.util.Ranges;
 import java.text.DateFormat;
 import java.time.Duration;
 import java.time.Instant;
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Deque;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -46,7 +48,7 @@ import java.util.stream.Collectors;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class CrawlProjectsJob {
 
-    List<Range<Date>> requestQueue = new ArrayList<>();
+    Deque<Range<Date>> requestQueue = new ArrayDeque<>();
 
     List<String> languages = new ArrayList<>();
 
@@ -122,7 +124,7 @@ public class CrawlProjectsJob {
             return;
         }
 
-        requestQueue.add(dateRange);
+        requestQueue.push(dateRange);
         do {
             long maxSize = 5;
             String nextIntervals = requestQueue.stream()
@@ -132,7 +134,7 @@ public class CrawlProjectsJob {
             if (requestQueue.size() > maxSize) nextIntervals += ", ...";
             log.info("Next Crawl Intervals: [{}]", nextIntervals);
 
-            Range<Date> first = requestQueue.remove(0);
+            Range<Date> first = requestQueue.pop();
             retrieveRepos(first, language, crawlUpdatedRepos);
         } while (!requestQueue.isEmpty());
     }
@@ -152,8 +154,8 @@ public class CrawlProjectsJob {
             } else {
                 List<Range<Date>> newIntervals = Ranges.split(dateRange, dateMedian);
                 if (newIntervals.size() > 1) {
-                    requestQueue.add(0, newIntervals.get(1));
-                    requestQueue.add(0, newIntervals.get(0));
+                    requestQueue.push(newIntervals.get(1));
+                    requestQueue.push(newIntervals.get(0));
                 }
             }
         } catch (Exception e) {
