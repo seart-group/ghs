@@ -52,8 +52,6 @@ public class CrawlProjectsJob {
 
     Deque<Range<Date>> requestQueue = new ArrayDeque<>();
 
-    List<String> languages = new ArrayList<>();
-
     GitRepoService gitRepoService;
     CrawlJobService crawlJobService;
     SupportedLanguageService supportedLanguageService;
@@ -75,10 +73,9 @@ public class CrawlProjectsJob {
     @Scheduled(fixedDelayString = "${app.crawl.scheduling}")
     public void run() {
         log.info("Initializing language queue...");
-        languages.clear();
-        supportedLanguageService.getQueue().stream()
+        List<String> languages = supportedLanguageService.getQueue().stream()
                 .map(SupportedLanguage::getName)
-                .forEach(languages::add);
+                .collect(Collectors.toList());
         log.info("Language crawling order: " + languages);
         Date endDate = Date.from(Instant.now().minus(Duration.ofHours(2)));
 
