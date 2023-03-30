@@ -48,7 +48,7 @@ import java.util.stream.Collectors;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class CrawlProjectsJob {
 
-    private static final BinaryOperator<Date> dateMedian = (a, b) -> new Date((a.getTime() + b.getTime())/2);
+    private static final BinaryOperator<Date> DATE_MEDIAN = (a, b) -> new Date((a.getTime() + b.getTime())/2);
 
     Deque<Range<Date>> requestQueue = new ArrayDeque<>();
 
@@ -152,7 +152,7 @@ public class CrawlProjectsJob {
                 retrieveRemainingRepos(dateRange, language, crawlUpdatedRepos, totalPages);
                 crawlJobService.updateCrawlDateForLanguage(language, dateRange.upperEndpoint());
             } else {
-                List<Range<Date>> newIntervals = Ranges.split(dateRange, dateMedian);
+                List<Range<Date>> newIntervals = Ranges.split(dateRange, DATE_MEDIAN);
                 if (newIntervals.size() > 1) {
                     requestQueue.push(newIntervals.get(1));
                     requestQueue.push(newIntervals.get(0));
