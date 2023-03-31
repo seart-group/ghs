@@ -39,6 +39,6 @@ public class SupportedLanguageInitializationBean implements InitializingBean {
                 log.debug("\tSkipping already initialized language: \"{}\"...", language);
             }
         });
-        log.info("Language initialization complete!");
+        log.info("Initialized {} languages!", languages.size());
     }
 }
