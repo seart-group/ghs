@@ -19,6 +19,7 @@ import java.util.Arrays;
 import java.util.Objects;
 import java.util.concurrent.Executor;
 import java.util.concurrent.ThreadPoolExecutor;
+import java.util.stream.Stream;
 
 @Configuration
 @EnableScheduling
@@ -32,7 +33,7 @@ public class SchedulerConfig {
 
     /**
      * By default, Spring Boot will use just a single thread for all scheduled tasks to run.
-     * Since we have three scheduler jobs:
+     * Since we have four scheduler jobs:
      *
      * <ul>
      *     <li>Crawler</li>
@@ -85,6 +86,11 @@ public class SchedulerConfig {
 
     static class GitCloningThreadPoolExecutor extends ThreadPoolTaskExecutor {
 
+
+        /**
+         * Overrides the default cloning thread name generation.
+         * Allows for the reuse of thread names of dead cloning threads.
+         */
         @NotNull
         @Override
         protected String nextThreadName() {
@@ -93,14 +99,11 @@ public class SchedulerConfig {
             Thread[] threads = new Thread[numThreads];
             currentGroup.enumerate(threads);
 
-            for (int i = 1; i <= getMaxPoolSize(); i++) {
-                int finalI = i;
-                if (Arrays.stream(threads).noneMatch((Thread t)-> Objects.equals(t.getName(), getThreadNamePrefix() + finalI))) {
-                    return getThreadNamePrefix()+i;
-                }
-            }
-
-            return super.nextThreadName();
+            return Stream.iterate(1, i -> i + 1)
+                    .map(i -> getThreadNamePrefix() + i)
+                    .filter(name -> Arrays.stream(threads).noneMatch(t -> Objects.equals(t.getName(), name)))
+                    .findFirst()
+                    .orElseGet(super::nextThreadName);
         }
     }
 }
