@@ -7,7 +7,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.stereotype.Component;
 import usi.si.seart.model.SupportedLanguage;
 import usi.si.seart.repository.SupportedLanguageRepository;
@@ -16,7 +16,7 @@ import java.util.List;
 
 @Slf4j
 @Component("SupportedLanguageInitializationBean")
-@ConditionalOnProperty(value = "app.crawl.enabled", havingValue = "true")
+@ConditionalOnExpression(value = "${app.crawl.enabled:false} and not '${app.crawl.languages}'.isBlank()")
 @AllArgsConstructor(onConstructor_ = @Autowired)
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class SupportedLanguageInitializationBean implements InitializingBean {
