@@ -26,6 +26,7 @@ import org.springframework.stereotype.Component;
 import usi.si.seart.util.Ranges;
 
 import java.io.IOException;
+import java.net.ConnectException;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
@@ -310,7 +311,14 @@ public class GitHubApiConnector {
                 builder.addHeader(HttpHeaders.AUTHORIZATION, "Bearer " + currentToken);
             Request request = builder.build();
 
-            Response response = client.newCall(request).execute();
+            Response response;
+            try {
+                response = client.newCall(request).execute();
+            } catch (ConnectException ex) {
+                log.error("Try #"+tryNum+": Connection to the GitHub API has failed!", ex);
+                continue;
+            }
+
             HttpStatus status = HttpStatus.valueOf(response.code());
             Headers headers = response.headers();
             String body = response.body().string();
