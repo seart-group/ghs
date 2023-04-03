@@ -11,7 +11,8 @@ import lombok.experimental.NonFinal;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
+import org.springframework.context.annotation.DependsOn;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
@@ -30,8 +31,10 @@ import usi.si.seart.util.Ranges;
 import java.text.DateFormat;
 import java.time.Duration;
 import java.time.Instant;
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Deque;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -41,16 +44,15 @@ import java.util.stream.Collectors;
 
 @Slf4j
 @Service
-@ConditionalOnProperty(value = "app.crawl.enabled", havingValue = "true")
+@DependsOn("SupportedLanguageInitializationBean")
+@ConditionalOnExpression(value = "${app.crawl.enabled:false} and not '${app.crawl.languages}'.isBlank()")
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class CrawlProjectsJob {
 
-    List<Range<Date>> requestQueue = new ArrayList<>();
+    private static final BinaryOperator<Date> DATE_MEDIAN = (a, b) -> new Date((a.getTime() + b.getTime())/2);
 
-    List<String> languages = new ArrayList<>();
-
-    private static final BinaryOperator<Date> dateMedian = (a, b) -> new Date((a.getTime() + b.getTime())/2);
+    Deque<Range<Date>> requestQueue = new ArrayDeque<>();
 
     GitRepoService gitRepoService;
     CrawlJobService crawlJobService;
@@ -73,10 +75,9 @@ public class CrawlProjectsJob {
     @Scheduled(fixedDelayString = "${app.crawl.scheduling}")
     public void run() {
         log.info("Initializing language queue...");
-        languages.clear();
-        supportedLanguageService.getQueue().stream()
+        List<String> languages = supportedLanguageService.getQueue().stream()
                 .map(SupportedLanguage::getName)
-                .forEach(languages::add);
+                .collect(Collectors.toList());
         log.info("Language crawling order: " + languages);
         Date endDate = Date.from(Instant.now().minus(Duration.ofHours(2)));
 
@@ -122,7 +123,7 @@ public class CrawlProjectsJob {
             return;
         }
 
-        requestQueue.add(dateRange);
+        requestQueue.push(dateRange);
         do {
             long maxSize = 5;
             String nextIntervals = requestQueue.stream()
@@ -132,7 +133,7 @@ public class CrawlProjectsJob {
             if (requestQueue.size() > maxSize) nextIntervals += ", ...";
             log.info("Next Crawl Intervals: [{}]", nextIntervals);
 
-            Range<Date> first = requestQueue.remove(0);
+            Range<Date> first = requestQueue.pop();
             retrieveRepos(first, language, crawlUpdatedRepos);
         } while (!requestQueue.isEmpty());
     }
@@ -150,10 +151,10 @@ public class CrawlProjectsJob {
                 retrieveRemainingRepos(dateRange, language, crawlUpdatedRepos, totalPages);
                 crawlJobService.updateCrawlDateForLanguage(language, dateRange.upperEndpoint());
             } else if (totalResults > 1000) {
-                List<Range<Date>> newIntervals = Ranges.split(dateRange, dateMedian);
+                List<Range<Date>> newIntervals = Ranges.split(dateRange, DATE_MEDIAN);
                 if (newIntervals.size() > 1) {
-                    requestQueue.add(0, newIntervals.get(1));
-                    requestQueue.add(0, newIntervals.get(0));
+                    requestQueue.push(newIntervals.get(1));
+                    requestQueue.push(newIntervals.get(0));
                 }
             }
         } catch (Exception e) {
