@@ -26,6 +26,7 @@ import org.springframework.stereotype.Component;
 import usi.si.seart.util.Ranges;
 
 import java.io.IOException;
+import java.net.ConnectException;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
@@ -42,7 +43,7 @@ import java.util.regex.Pattern;
 @Component
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
-public class GitHubApiService {
+public class GitHubApiConnector {
 
     private static final int MIN_STARS = 10;
 
@@ -310,7 +311,14 @@ public class GitHubApiService {
                 builder.addHeader(HttpHeaders.AUTHORIZATION, "Bearer " + currentToken);
             Request request = builder.build();
 
-            Response response = client.newCall(request).execute();
+            Response response;
+            try {
+                response = client.newCall(request).execute();
+            } catch (ConnectException ex) {
+                log.error("Try #"+tryNum+": Connection to the GitHub API has failed!", ex);
+                continue;
+            }
+
             HttpStatus status = HttpStatus.valueOf(response.code());
             Headers headers = response.headers();
             String body = response.body().string();
@@ -364,7 +372,7 @@ public class GitHubApiService {
                 gitHubTokenManager.replaceTokenIfExpired();
             }
         }
-        log.error("Failed after {} try. SKIPPING.", RETRY_MAX_ATTEMPTS);
+        log.error("Failed after {} retries. SKIPPING.", RETRY_MAX_ATTEMPTS);
         return null;
     }
 }

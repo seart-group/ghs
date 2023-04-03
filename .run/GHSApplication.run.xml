@@ -12,8 +12,10 @@
         <option name="value" value="false" />
       </param>
     </additionalParameters>
+    <option name="ALTERNATIVE_JRE_PATH" value="11" />
+    <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="true" />
     <option name="HIDE_BANNER" value="true" />
-    <module name="ghs" />
+    <module name="ghs-application" />
     <option name="SPRING_BOOT_MAIN_CLASS" value="usi.si.seart.GHSApplication" />
     <extension name="coverage">
       <pattern>
