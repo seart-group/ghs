@@ -16,7 +16,7 @@ public interface SupportedLanguageRepository extends JpaRepository<SupportedLang
     @Query(
             "select sl " +
             "from SupportedLanguage as sl " +
-            "inner join CrawlJob as cj " +
+            "left join CrawlJob as cj " +
             "on cj.language.id = sl.id " +
             "where sl.name in (:names) " +
             "order by cj.crawled"
