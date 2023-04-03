@@ -372,7 +372,7 @@ public class GitHubApiConnector {
                 gitHubTokenManager.replaceTokenIfExpired();
             }
         }
-        log.error("Failed after {} try. SKIPPING.", RETRY_MAX_ATTEMPTS);
+        log.error("Failed after {} retries. SKIPPING.", RETRY_MAX_ATTEMPTS);
         return null;
     }
 }
