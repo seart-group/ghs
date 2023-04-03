@@ -144,12 +144,12 @@ public class CrawlProjectsJob {
             int totalResults = json.get("total_count").getAsInt();
             int totalPages = (int) Math.ceil(totalResults / 100.0);
             log.info("Retrieved results: " + totalResults);
-            if (totalResults <= 1000) {
+            if (0 < totalResults && totalResults <= 1000) {
                 JsonArray results = json.get("items").getAsJsonArray();
                 saveRetrievedRepos(results, language, 1, totalResults);
                 retrieveRemainingRepos(dateRange, language, crawlUpdatedRepos, totalPages);
                 crawlJobService.updateCrawlDateForLanguage(language, dateRange.upperEndpoint());
-            } else {
+            } else if (totalResults > 1000) {
                 List<Range<Date>> newIntervals = Ranges.split(dateRange, dateMedian);
                 if (newIntervals.size() > 1) {
                     requestQueue.add(0, newIntervals.get(1));
