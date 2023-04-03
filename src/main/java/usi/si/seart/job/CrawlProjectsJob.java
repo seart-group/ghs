@@ -16,7 +16,7 @@ import org.springframework.core.convert.ConversionService;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import usi.si.seart.github.GitCommit;
-import usi.si.seart.github.GitHubApiService;
+import usi.si.seart.github.GitHubApiConnector;
 import usi.si.seart.model.GitRepo;
 import usi.si.seart.model.GitRepoLabel;
 import usi.si.seart.model.GitRepoLanguage;
@@ -58,7 +58,7 @@ public class CrawlProjectsJob {
 
     ConversionService conversionService;
 
-    GitHubApiService gitHubApiService;
+    GitHubApiConnector gitHubApiConnector;
 
     @NonFinal
     @Value(value = "${app.crawl.scheduling}")
@@ -140,7 +140,7 @@ public class CrawlProjectsJob {
     private void retrieveRepos(Range<Date> dateRange, String language, Boolean crawlUpdatedRepos) {
         int page = 1;
         try {
-            JsonObject json = gitHubApiService.searchRepositories(language, dateRange, page, crawlUpdatedRepos);
+            JsonObject json = gitHubApiConnector.searchRepositories(language, dateRange, page, crawlUpdatedRepos);
             int totalResults = json.get("total_count").getAsInt();
             int totalPages = (int) Math.ceil(totalResults / 100.0);
             log.info("Retrieved results: " + totalResults);
@@ -168,7 +168,7 @@ public class CrawlProjectsJob {
             int page = 2;
             while (page <= pages) {
                 try {
-                    JsonObject json = gitHubApiService.searchRepositories(language, dateRange, page, crawlUpdatedRepos);
+                    JsonObject json = gitHubApiConnector.searchRepositories(language, dateRange, page, crawlUpdatedRepos);
                     int totalResults = json.get("total_count").getAsInt();
                     JsonArray results = json.get("items").getAsJsonArray();
                     saveRetrievedRepos(results, language, (page - 1) * 100 + 1, totalResults);
@@ -222,7 +222,7 @@ public class CrawlProjectsJob {
             }
 
             try {
-                JsonObject json = gitHubApiService.fetchRepoInfo(repoFullName);
+                JsonObject json = gitHubApiConnector.fetchRepoInfo(repoFullName);
                 JsonElement jsonLanguage = json.get("language");
                 if (jsonLanguage.isJsonNull()) {
                     // This can happen (e.g. https://api.github.com/repos/aquynh/iVM).
@@ -268,15 +268,15 @@ public class CrawlProjectsJob {
         String name = json.get("full_name").getAsString();
         boolean hasIssues = json.get("has_issues").getAsBoolean();
 
-        Long commits = gitHubApiService.fetchNumberOfCommits(name);
-        Long branches = gitHubApiService.fetchNumberOfBranches(name);
-        Long releases = gitHubApiService.fetchNumberOfReleases(name);
-        Long contributors = gitHubApiService.fetchNumberOfContributors(name);
-        Long totalPullRequests = gitHubApiService.fetchNumberOfAllPulls(name);
-        Long openPullRequests = gitHubApiService.fetchNumberOfOpenPulls(name);
-        Long totalIssues = (!hasIssues) ? 0L : gitHubApiService.fetchNumberOfAllIssuesAndPulls(name) - totalPullRequests;
-        Long openIssues = (!hasIssues) ? 0L : gitHubApiService.fetchNumberOfOpenIssuesAndPulls(name) - openPullRequests;
-        GitCommit gitCommit = gitHubApiService.fetchLastCommitInfo(name);
+        Long commits = gitHubApiConnector.fetchNumberOfCommits(name);
+        Long branches = gitHubApiConnector.fetchNumberOfBranches(name);
+        Long releases = gitHubApiConnector.fetchNumberOfReleases(name);
+        Long contributors = gitHubApiConnector.fetchNumberOfContributors(name);
+        Long totalPullRequests = gitHubApiConnector.fetchNumberOfAllPulls(name);
+        Long openPullRequests = gitHubApiConnector.fetchNumberOfOpenPulls(name);
+        Long totalIssues = (!hasIssues) ? 0L : gitHubApiConnector.fetchNumberOfAllIssuesAndPulls(name) - totalPullRequests;
+        Long openIssues = (!hasIssues) ? 0L : gitHubApiConnector.fetchNumberOfOpenIssuesAndPulls(name) - openPullRequests;
+        GitCommit gitCommit = gitHubApiConnector.fetchLastCommitInfo(name);
         Date lastCommit = gitCommit.getDate();
         String lastCommitSHA = gitCommit.getSha();
 
@@ -298,10 +298,10 @@ public class CrawlProjectsJob {
         List<GitRepoLabel> labels = new ArrayList<>();
         boolean store = false;
         try {
-            Long count = gitHubApiService.fetchNumberOfLabels(repo.getName());
+            Long count = gitHubApiConnector.fetchNumberOfLabels(repo.getName());
             int pages = (int) Math.ceil(count / 100.0);
             for (int page = 1; page <= pages; page++) {
-                JsonArray objects = gitHubApiService.fetchRepoLabels(repo.getName(), page);
+                JsonArray objects = gitHubApiConnector.fetchRepoLabels(repo.getName(), page);
                 log.debug("\tAdding: {} labels.", objects.size());
 
                 for (JsonElement element : objects) {
@@ -326,10 +326,10 @@ public class CrawlProjectsJob {
         List<GitRepoLanguage> languages = new ArrayList<>();
         boolean store = false;
         try {
-            Long count = gitHubApiService.fetchNumberOfLanguages(repo.getName());
+            Long count = gitHubApiConnector.fetchNumberOfLanguages(repo.getName());
             int pages = (int) Math.ceil(count / 100.0);
             for (int page = 1; page <= pages; page++) {
-                JsonObject result = gitHubApiService.fetchRepoLanguages(repo.getName(), page);
+                JsonObject result = gitHubApiConnector.fetchRepoLanguages(repo.getName(), page);
                 Set<Map.Entry<String, JsonElement>> entries = result.entrySet();
                 log.debug("\tAdding: {} languages.", entries.size());
 
