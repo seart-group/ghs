@@ -7,6 +7,11 @@
         <option name="value" value="false" />
       </param>
       <param>
+        <option name="enabled" value="true" />
+        <option name="name" value="app.cleanup.enabled" />
+        <option name="value" value="false" />
+      </param>
+      <param>
         <option name="name" value="spring.jpa.show-sql" />
         <option name="value" value="true" />
       </param>
@@ -15,6 +20,7 @@
         <option name="value" value="true" />
       </param>
       <param>
+        <option name="enabled" value="true" />
         <option name="name" value="logging.level.usi.si.seart" />
         <option name="value" value="DEBUG" />
       </param>
@@ -27,8 +33,10 @@
         <option name="value" value="TRACE" />
       </param>
     </additionalParameters>
+    <option name="ALTERNATIVE_JRE_PATH" value="11" />
+    <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="true" />
     <option name="HIDE_BANNER" value="true" />
-    <module name="ghs" />
+    <module name="ghs-application" />
     <option name="SPRING_BOOT_MAIN_CLASS" value="usi.si.seart.GHSApplication" />
     <extension name="coverage">
       <pattern>
