@@ -13,7 +13,7 @@
       </param>
     </additionalParameters>
     <option name="HIDE_BANNER" value="true" />
-    <module name="ghs" />
+    <module name="ghs-application" />
     <option name="SPRING_BOOT_MAIN_CLASS" value="usi.si.seart.GHSApplication" />
     <extension name="coverage">
       <pattern>
