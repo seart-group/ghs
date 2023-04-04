@@ -20,7 +20,7 @@ CREATE TABLE repo
     stargazers BIGINT NULL,
     forks BIGINT NULL,
     size BIGINT NULL,
-    CREATEd_at TIMESTAMP NULL,
+    created_at TIMESTAMP NULL,
     pushed_at TIMESTAMP NULL,
     updated_at TIMESTAMP NULL,
     homepage VARCHAR(2048) NULL,
@@ -63,20 +63,9 @@ CREATE TABLE repo_language
 CREATE INDEX repo_language_index_repo_id
     ON repo_language (repo_id);
 
-CREATE TABLE access_token
-(
-    id BIGINT auto_increment
-        PRIMARY KEY,
-    value VARCHAR(40) NULL,
-    added TIMESTAMP NULL,
-    CONSTRAINT unique_token
-        UNIQUE (value)
-);
-
 CREATE TABLE supported_language
 (
-    id BIGINT auto_increment
-        PRIMARY KEY,
+    id BIGINT PRIMARY KEY,
     name VARCHAR(64) NULL,
     added TIMESTAMP NULL,
     CONSTRAINT unique_language
