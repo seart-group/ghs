@@ -14,15 +14,30 @@ import usi.si.seart.converter.JsonObjectToGitRepoConverter;
 import usi.si.seart.converter.JsonObjectToRateLimitConverter;
 import usi.si.seart.converter.SupportedLanguageToDtoConverter;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
+import java.time.Instant;
+import java.time.ZoneOffset;
+import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
+import java.util.Date;
+import java.util.function.Function;
 
 @Configuration
 public class MainConfig {
 
     @Bean
-    public DateFormat utcTimestampFormat() {
-        return new SimpleDateFormat("yyyy-MM-dd'T'hh:mm:ss");
+    public DateTimeFormatter dateTimeFormatter() {
+        return DateTimeFormatter
+                .ofPattern("yyyy-MM-dd'T'hh:mm:ss")
+                .withZone(ZoneOffset.UTC);
+    }
+
+    @Bean
+    public Function<Date, String> dateStringMapper() {
+        return date -> {
+            Instant instant = date.toInstant();
+            Instant truncated = instant.truncatedTo(ChronoUnit.SECONDS);
+            return dateTimeFormatter().format(truncated);
+        };
     }
 
     @Bean

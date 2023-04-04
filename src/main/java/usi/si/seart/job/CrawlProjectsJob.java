@@ -30,7 +30,6 @@ import usi.si.seart.service.SupportedLanguageService;
 import usi.si.seart.util.Dates;
 import usi.si.seart.util.Ranges;
 
-import java.text.DateFormat;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayDeque;
@@ -42,6 +41,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.BinaryOperator;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -72,7 +72,7 @@ public class CrawlProjectsJob {
     @Value("#{new java.text.SimpleDateFormat(\"yyyy-MM-dd'T'HH:mm:ss\").parse(\"${app.crawl.startdate}\")}")
     Date defaultStartDate;
 
-    DateFormat utcTimestampFormat;
+    Function<Date, String> dateStringMapper;
 
     @Scheduled(fixedDelayString = "${app.crawl.scheduling}")
     public void run() {
@@ -130,7 +130,7 @@ public class CrawlProjectsJob {
             long size = 5;
             String nextIntervals = requestQueue.stream()
                     .limit(size)
-                    .map(r -> Ranges.toString(r, utcTimestampFormat))
+                    .map(r -> Ranges.toString(r, dateStringMapper))
                     .collect(Collectors.joining(", "));
             if (requestQueue.size() > size) nextIntervals += ", ...";
             log.info("Next Crawl Intervals: [{}]", nextIntervals);
@@ -157,7 +157,7 @@ public class CrawlProjectsJob {
                 } catch (UnsplittableRangeException ure) {
                     log.warn(
                             "Encountered range that could not be further split [{}]!",
-                            Ranges.toString(range, utcTimestampFormat)
+                            Ranges.toString(range, dateStringMapper)
                     );
                     log.info("Proceeding with mining anyway to mitigate data loss...");
                 }

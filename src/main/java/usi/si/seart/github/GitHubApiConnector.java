@@ -32,11 +32,11 @@ import java.net.SocketTimeoutException;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
-import java.text.DateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -60,7 +60,8 @@ public class GitHubApiConnector {
     private static final Pattern HEADER_LINK_PATTERN = Pattern.compile("(?:,\\s)?<([^>]+)>;\\srel=\"(\\w+)\"");
 
     OkHttpClient client;
-    DateFormat utcTimestampFormat;
+
+    Function<Date, String> dateStringMapper;
 
     GitHubTokenManager gitHubTokenManager;
 
@@ -75,7 +76,7 @@ public class GitHubApiConnector {
     public JsonObject searchRepositories(String language, Range<Date> dateRange, Integer page, boolean crawlUpdatedRepos) {
         Map<String, String> query = ImmutableMap.<String, String>builder()
                 .put("language", URLEncoder.encode(language, StandardCharsets.UTF_8))
-                .put(crawlUpdatedRepos ? "pushed" : "created", Ranges.toString(dateRange, utcTimestampFormat))
+                .put(crawlUpdatedRepos ? "pushed" : "created", Ranges.toString(dateRange, dateStringMapper))
                 .put("stars", String.format(">=%d", MIN_STARS))
                 .put("fork", "true")
                 .put("is", "public")
