@@ -1,23 +1,35 @@
 package usi.si.seart.job;
 
 import lombok.AccessLevel;
+import lombok.Cleanup;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import lombok.experimental.NonFinal;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
+import org.hibernate.ScrollMode;
+import org.hibernate.ScrollableResults;
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+import org.hibernate.StatelessSession;
+import org.hibernate.Transaction;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
-import usi.si.seart.projection.GitRepoView;
 import usi.si.seart.repository.GitRepoRepository;
 
+import javax.persistence.EntityManagerFactory;
+import javax.persistence.PersistenceException;
+import javax.persistence.Tuple;
 import java.io.IOException;
-import java.util.Optional;
+import java.math.BigInteger;
+import java.net.ConnectException;
+import java.net.NoRouteToHostException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
-import java.util.function.LongFunction;
 
 @Slf4j
 @Service
@@ -31,31 +43,54 @@ public class CleanUpProjectsJob {
     private static final int NO_HOST_CONNECTION = 7;
     private static final int OPERATION_TIMEOUT = 28;
 
+    EntityManagerFactory entityManagerFactory;
+
     GitRepoRepository gitRepoRepository;
+
+    @NonFinal
+    @Value("${spring.jpa.properties.hibernate.jdbc.fetch_size}")
+    Integer fetchSize;
 
     @Scheduled(fixedDelayString = "${app.cleanup.scheduling}")
     public void run(){
         long totalRepositories = gitRepoRepository.count();
         log.info("Started cleanup on {} repositories...", totalRepositories);
 
-        long currentId = -1;
+        String sql = "SELECT id, name FROM repo ORDER BY RAND()";
+        @Cleanup SessionFactory factory = entityManagerFactory.unwrap(SessionFactory.class);
+        @Cleanup StatelessSession session = factory.openStatelessSession();
+        @Cleanup ScrollableResults results = session.createNativeQuery(sql, Tuple.class)
+                .setCacheable(false)
+                .setFetchSize(fetchSize)
+                .scroll(ScrollMode.FORWARD_ONLY);
+
         long totalDeleted = 0;
-        LongFunction<Optional<GitRepoView>> query = gitRepoRepository::findFirstByIdGreaterThanOrderByIdAsc;
-        Optional<GitRepoView> optional = query.apply(currentId);
-        while (optional.isPresent()) {
-            GitRepoView view = optional.get();
-            Long id = view.getId();
-            String name = view.getName();
+        while (results.next()) {
+            Tuple tuple = (Tuple) results.get(0);
+            Long id = tuple.get(0, BigInteger.class).longValue();
+            String name = tuple.get(1, String.class);
             log.debug("Checking if {} [id: {}] exists...", name, id);
             boolean exists = checkIfRepoExists(name);
             if (!exists) {
                 log.info("Deleting repository: {} [{}]", name, id);
-                gitRepoRepository.deleteById(id);
-                gitRepoRepository.flush();
+                Transaction transaction = null;
+                try (Session nested = factory.openSession()) {
+                    transaction = nested.beginTransaction();
+                    nested.createQuery("DELETE FROM GitRepo r WHERE r.id = :id")
+                            .setParameter("id", id)
+                            .executeUpdate();
+                    nested.flush();
+                    transaction.commit();
+                } catch (PersistenceException ex) {
+                    log.error("Exception occurred while deleting GitRepo [id=" + id + ", name=" + name + "]!", ex);
+                    if (transaction != null) {
+                        log.info("Rolling back transaction...");
+                        transaction.rollback();
+                    }
+                }
+
                 totalDeleted++;
             }
-            currentId = id;
-            optional = query.apply(currentId);
         }
 
         log.info("Finished! {}/{} repositories deleted.", totalDeleted, totalRepositories);
