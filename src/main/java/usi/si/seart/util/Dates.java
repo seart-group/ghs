@@ -11,9 +11,20 @@ import java.time.temporal.ChronoUnit;
 import java.util.Date;
 import java.util.TimeZone;
 
+/**
+ * Class providing utility methods for working with dates.
+ *
+ * @author Ozren Dabić
+ */
 @UtilityClass
 public class Dates {
 
+    /**
+     * Returns the median of two dates.
+     * @param lower the start date.
+     * @param upper the end date.
+     * @return the date between the start and end dates.
+     */
     public Date median(Date lower, Date upper) {
         ZoneId zoneId = ZoneId.of("UTC");
         Instant lowerInstant = lower.toInstant();
@@ -26,6 +37,17 @@ public class Dates {
         return Date.from(medianInstant);
     }
 
+    /**
+     * Parses a date string in the Git date
+     * format and returns a Date object.
+     *
+     * @param date
+     * Date string expressed in the
+     * "yyyy-MM-dd'T'HH:mm:ss'Z'" format.
+     * @return
+     * The corresponding Date object,
+     * or null if the string cannot be parsed.
+     */
     public Date fromGitDateString(String date){
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
         dateFormat.setTimeZone(TimeZone.getTimeZone("Universal"));
