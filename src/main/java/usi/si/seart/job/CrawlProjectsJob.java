@@ -105,36 +105,36 @@ public class CrawlProjectsJob {
         log.info("Next crawl scheduled for: {}", Date.from(Instant.now().plusMillis(schedulingRate)));
     }
 
-    private void crawlCreatedRepos(Range<Date> interval, String language) {
-        log.info("Starting crawling {} repositories created through: {}", language, interval);
-        crawlRepos(interval, language, false);
-        log.info("Finished crawling {} repositories created through: {}", language, interval);
+    private void crawlCreatedRepos(Range<Date> range, String language) {
+        log.info("Starting crawling {} repositories created through: {}", language, range);
+        crawlRepos(range, language, false);
+        log.info("Finished crawling {} repositories created through: {}", language, range);
     }
 
-    private void crawlUpdatedRepos(Range<Date> dateRange, String language) {
-        log.info("Starting crawling {} repositories updated through: {}", language, dateRange);
-        crawlRepos(dateRange, language, true);
-        log.info("Finished crawling {} repositories updated through: {}", language, dateRange);
+    private void crawlUpdatedRepos(Range<Date> range, String language) {
+        log.info("Starting crawling {} repositories updated through: {}", language, range);
+        crawlRepos(range, language, true);
+        log.info("Finished crawling {} repositories updated through: {}", language, range);
     }
 
-    private void crawlRepos(Range<Date> dateRange, String language, Boolean crawlUpdatedRepos) {
-        if (dateRange.lowerEndpoint().compareTo(dateRange.upperEndpoint()) >= 0) {
-            log.warn("Invalid interval Skipped: " + dateRange);
+    private void crawlRepos(Range<Date> range, String language, Boolean crawlUpdatedRepos) {
+        if (range.lowerEndpoint().compareTo(range.upperEndpoint()) >= 0) {
+            log.warn("Invalid interval Skipped: " + range);
             return;
         }
 
-        requestQueue.push(dateRange);
+        requestQueue.push(range);
         do {
-            long maxSize = 5;
+            long size = 5;
             String nextIntervals = requestQueue.stream()
-                    .limit(maxSize)
-                    .map(range -> Ranges.toString(range, utcTimestampFormat))
+                    .limit(size)
+                    .map(r -> Ranges.toString(r, utcTimestampFormat))
                     .collect(Collectors.joining(", "));
-            if (requestQueue.size() > maxSize) nextIntervals += ", ...";
+            if (requestQueue.size() > size) nextIntervals += ", ...";
             log.info("Next Crawl Intervals: [{}]", nextIntervals);
 
-            Range<Date> range = requestQueue.pop();
-            retrieveRepos(range, language, crawlUpdatedRepos);
+            Range<Date> first = requestQueue.pop();
+            retrieveRepos(first, language, crawlUpdatedRepos);
         } while (!requestQueue.isEmpty());
     }
 
