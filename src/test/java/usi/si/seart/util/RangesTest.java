@@ -4,6 +4,7 @@ import com.google.common.collect.Range;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
+import java.text.Format;
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -63,9 +64,11 @@ class RangesTest {
 
     @Test
     void testToStringException() {
+        Range<Date> invalid = Range.closed(new Date(), new Date());
+        Format format = NumberFormat.getInstance();
         Assertions.assertThrows(
                 IllegalArgumentException.class,
-                () -> Ranges.toString(Range.closed(new Date(), new Date()), NumberFormat.getInstance())
+                () -> Ranges.toString(invalid, format)
         );
     }
 }
