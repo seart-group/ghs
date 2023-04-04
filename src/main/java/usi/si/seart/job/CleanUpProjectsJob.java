@@ -27,7 +27,7 @@ import java.util.function.LongFunction;
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
 public class CleanUpProjectsJob {
 
-    private static final int TIMEOUT_RETURN_CODE = -3;
+    private static final int TIMEOUT_RETURN_CODE = 28;
 
     GitRepoRepository gitRepoRepository;
 
@@ -82,7 +82,7 @@ public class CleanUpProjectsJob {
     }
 
     private boolean checkWithCURL(String url) throws IOException, InterruptedException, TimeoutException {
-        return executeCommand("curl", "-Is", "--fail-with-body", "--show-error", url);
+        return executeCommand("curl", "-Is", "--fail-with-body", "--show-error", "--connect-timeout", "45", url);
     }
 
     private boolean executeCommand(String... command) throws IOException, InterruptedException, TimeoutException {
