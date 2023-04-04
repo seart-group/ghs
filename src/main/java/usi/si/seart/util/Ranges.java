@@ -10,16 +10,55 @@ import java.util.Objects;
 import java.util.function.BinaryOperator;
 import java.util.function.Function;
 
+/**
+ * A utility class for working with Guava's ranges.
+ * Provides methods for building, splitting, and
+ * formatting ranges as strings.
+ *
+ * @author Ozren Dabić
+ * @see Range
+ */
 @SuppressWarnings("rawtypes")
 @UtilityClass
 public class Ranges {
 
+    /**
+     * Returns a Range object with lower and upper
+     * bounds set based on the provided parameters.
+     * If an endpoint parameter is null, then the
+     * returned range will be unbounded on that endpoint.
+     *
+     * @param lower
+     * The lower bound of the range.
+     * Can be null to specify no lower bound.
+     * @param upper
+     * The upper bound of the range.
+     * Can be null to specify no upper bound.
+     * @param <T> The range endpoint type.
+     * @return A Range object.
+     */
     public <T extends Comparable> Range<T> build(T lower, T upper){
         Range<T> lowerBound = (lower != null) ? Range.atLeast(lower) : Range.all();
         Range<T> upperBound = (upper != null) ? Range.atMost(upper) : Range.all();
         return lowerBound.intersection(upperBound);
     }
 
+    /**
+     * Splits a given range into two halves
+     * using the provided median function.
+     *
+     * @param range
+     * The range to be split.
+     * @param medianFunction
+     * A function that returns the median
+     * value for a given pair of endpoints.
+     * @param <T> The range endpoint type.
+     * @return
+     * A {@link Pair} containing the
+     * two halves of the split range.
+     * @throws IllegalArgumentException if the range has no upper and/or lower bound.
+     * @throws UnsplittableRangeException if range is empty or a singleton.
+     */
     public <T extends Comparable> Pair<Range<T>, Range<T>> split(
             Range<T> range, BinaryOperator<T> medianFunction
     ) {
@@ -33,7 +72,7 @@ public class Ranges {
         T upper = range.upperEndpoint();
 
         if (lower.equals(upper)) {
-            throw new UnsplittableRangeException("Can split single-value range!");
+            throw new UnsplittableRangeException("Can split singleton/empty range!");
         }
 
         T median = medianFunction.apply(lower, upper);
@@ -42,10 +81,30 @@ public class Ranges {
         return Pair.of(first, second);
     }
 
+    /**
+     * Returns a string representation of
+     * a range using an endpoint formatter.
+     *
+     * @param range The range to be formatted.
+     * @param formatter The formatter to be used.
+     * @param <T> The range endpoint type.
+     * @return A string representation of the range.
+     * @throws NullPointerException if either parameter is null.
+     */
     public <T extends Comparable> String toString(Range<T> range, Format formatter) {
         return toString(range, formatter::format);
     }
 
+    /**
+     * Returns a string representation of
+     * a range using an endpoint mapping function.
+     *
+     * @param range The range to be formatted.
+     * @param function The transformation function.
+     * @param <T> The range endpoint type.
+     * @return A string representation of the range.
+     * @throws NullPointerException if either parameter is null.
+     */
     public <T extends Comparable> String toString(Range<T> range, Function<? super T, String> function) {
         Objects.requireNonNull(range, "Range must not be null!");
         Objects.requireNonNull(function, "Bound mapping function must not be null!");
