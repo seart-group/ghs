@@ -133,28 +133,28 @@ public class CrawlProjectsJob {
             if (requestQueue.size() > maxSize) nextIntervals += ", ...";
             log.info("Next Crawl Intervals: [{}]", nextIntervals);
 
-            Range<Date> first = requestQueue.pop();
-            retrieveRepos(first, language, crawlUpdatedRepos);
+            Range<Date> range = requestQueue.pop();
+            retrieveRepos(range, language, crawlUpdatedRepos);
         } while (!requestQueue.isEmpty());
     }
 
-    private void retrieveRepos(Range<Date> dateRange, String language, Boolean crawlUpdatedRepos) {
+    private void retrieveRepos(Range<Date> range, String language, Boolean crawlUpdatedRepos) {
         int page = 1;
         try {
-            JsonObject json = gitHubApiConnector.searchRepositories(language, dateRange, page, crawlUpdatedRepos);
+            JsonObject json = gitHubApiConnector.searchRepositories(language, range, page, crawlUpdatedRepos);
             int totalResults = json.get("total_count").getAsInt();
             int totalPages = (int) Math.ceil(totalResults / 100.0);
             log.info("Retrieved results: " + totalResults);
             if (0 < totalResults && totalResults <= 1000) {
                 JsonArray results = json.get("items").getAsJsonArray();
                 saveRetrievedRepos(results, language, 1, totalResults);
-                retrieveRemainingRepos(dateRange, language, crawlUpdatedRepos, totalPages);
-                crawlJobService.updateCrawlDateForLanguage(language, dateRange.upperEndpoint());
+                retrieveRemainingRepos(range, language, crawlUpdatedRepos, totalPages);
+                crawlJobService.updateCrawlDateForLanguage(language, range.upperEndpoint());
             } else if (totalResults > 1000) {
-                List<Range<Date>> newIntervals = Ranges.split(dateRange, DATE_MEDIAN);
-                if (newIntervals.size() > 1) {
-                    requestQueue.push(newIntervals.get(1));
-                    requestQueue.push(newIntervals.get(0));
+                List<Range<Date>> ranges = Ranges.split(range, DATE_MEDIAN);
+                if (ranges.size() > 1) {
+                    requestQueue.push(ranges.get(1));
+                    requestQueue.push(ranges.get(0));
                 }
             }
         } catch (Exception e) {
@@ -163,13 +163,13 @@ public class CrawlProjectsJob {
     }
 
     private void retrieveRemainingRepos(
-            Range<Date> dateRange, String language, Boolean crawlUpdatedRepos, int pages
+            Range<Date> range, String language, Boolean crawlUpdatedRepos, int pages
     ) {
         if (pages > 1) {
             int page = 2;
             while (page <= pages) {
                 try {
-                    JsonObject json = gitHubApiConnector.searchRepositories(language, dateRange, page, crawlUpdatedRepos);
+                    JsonObject json = gitHubApiConnector.searchRepositories(language, range, page, crawlUpdatedRepos);
                     int totalResults = json.get("total_count").getAsInt();
                     JsonArray results = json.get("items").getAsJsonArray();
                     saveRetrievedRepos(results, language, (page - 1) * 100 + 1, totalResults);
