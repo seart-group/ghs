@@ -45,7 +45,9 @@ public class StaticCodeAnalysisServiceImpl implements StaticCodeAnalysisService 
     MetricLanguageService metricLanguageService;
 
 
-    public Future<Set<GitRepoMetric>> getCodeMetrics(@NotNull GitRepo repo, boolean persist) throws StaticCodeAnalysisException {
+    public Future<Set<GitRepoMetric>> getCodeMetrics(@NotNull Long repoId, boolean persist) throws StaticCodeAnalysisException {
+        GitRepo repo = gitRepoService.getRepoById(repoId).orElseThrow(() -> new StaticCodeAnalysisException("Could not find repo with id " + repoId));
+
         Set<GitRepoMetric> metrics;
         // Deletes the temporary folder of the repo once outside of this clause.
         try (ClonedRepo clonedRepo = gitRepoClonerService.cloneRepo(new URL("https://github.com/" + repo.getName())).get()) {

@@ -37,8 +37,8 @@ public interface GitRepoRepository extends
     List<String> findAllLicenses();
 
     // Code metrics are outdated if the repository has new commits since the last cloned date or if there are no metrics at all
-    @Query("SELECT r FROM GitRepo r WHERE r.cloned is null OR r.cloned < r.lastCommit ORDER BY r.cloned ASC")
-    Stream<GitRepo> findAllRepoWithOutdatedCodeMetrics();
+    @Query("SELECT r.id FROM GitRepo r WHERE r.cloned is null OR r.cloned < r.lastCommit ORDER BY r.cloned ASC")
+    Stream<Long> findAllRepoWithOutdatedCodeMetrics();
 
     @Query("SELECT COUNT(r) FROM GitRepo r WHERE r.cloned is null OR r.cloned < r.lastCommit")
     Long countAllRepoWithOutdatedCodeMetrics();

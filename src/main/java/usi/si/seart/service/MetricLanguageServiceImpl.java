@@ -9,12 +9,15 @@ import org.springframework.util.ConcurrentReferenceHashMap;
 import usi.si.seart.model.MetricLanguage;
 import usi.si.seart.repository.MetricLanguageRepository;
 
+import javax.persistence.EntityManager;
 import javax.validation.constraints.NotNull;
 
 @Service
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 @AllArgsConstructor(onConstructor_ = @Autowired)
 public class MetricLanguageServiceImpl implements MetricLanguageService{
+
+    EntityManager entityManager;
 
     ConcurrentReferenceHashMap<String, Object> metricLanguageLocks = new ConcurrentReferenceHashMap<>();
 
@@ -29,12 +32,16 @@ public class MetricLanguageServiceImpl implements MetricLanguageService{
             // Acquires the lock for the metric language name
             synchronized (getMetricLanguageLock(languageName)) {
                 // Checks whether the metric language entity has been created while awaiting the lock
-                return metricLanguageRepository.findByLanguage(languageName).orElseGet(() ->
+                MetricLanguage metricLang = metricLanguageRepository.findByLanguage(languageName).orElseGet(() ->
                         // If not, creates it.
                         metricLanguageRepository.save(
                             MetricLanguage.builder()
                                     .language(languageName)
                                     .build()));
+                entityManager.clear();
+                entityManager.getEntityManagerFactory().getCache().evict(MetricLanguage.class, metricLang.getId());
+                return metricLang;
+
             }
         });
     }
