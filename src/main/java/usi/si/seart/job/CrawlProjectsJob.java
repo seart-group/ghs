@@ -40,7 +40,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
-import java.util.function.BinaryOperator;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -51,8 +50,6 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class CrawlProjectsJob {
-
-    private static final BinaryOperator<Date> DATE_MEDIAN = (a, b) -> new Date((a.getTime() + b.getTime())/2);
 
     Deque<Range<Date>> requestQueue = new ArrayDeque<>();
 
@@ -150,7 +147,7 @@ public class CrawlProjectsJob {
             log.info("Retrieved results: " + totalResults);
             if (totalResults > 1000) {
                 try {
-                    Pair<Range<Date>, Range<Date>> ranges = Ranges.split(range, DATE_MEDIAN);
+                    Pair<Range<Date>, Range<Date>> ranges = Ranges.split(range, Dates::median);
                     requestQueue.push(ranges.getRight());
                     requestQueue.push(ranges.getLeft());
                     return;
