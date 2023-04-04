@@ -2,9 +2,11 @@ package usi.si.seart.util;
 
 import com.google.common.collect.Range;
 import lombok.experimental.UtilityClass;
+import org.apache.commons.lang3.tuple.Pair;
+import usi.si.seart.exception.UnsplittableRangeException;
 
 import java.text.Format;
-import java.util.List;
+import java.util.Objects;
 import java.util.function.BinaryOperator;
 
 @SuppressWarnings("rawtypes")
@@ -17,22 +19,25 @@ public class Ranges {
         return lowerBound.intersection(upperBound);
     }
 
-    public <T extends Comparable> List<Range<T>> split(Range<T> range, BinaryOperator<T> medianFunction){
+    public <T extends Comparable> Pair<Range<T>, Range<T>> split(
+            Range<T> range, BinaryOperator<T> medianFunction
+    ) {
+        Objects.requireNonNull(medianFunction, "Median function must not be null!");
         if (!range.hasLowerBound() || !range.hasUpperBound()) {
-            throw new IllegalArgumentException("Can not perform split of unbounded range!");
+            throw new IllegalArgumentException("Can split unbounded range!");
         }
 
         T lower = range.lowerEndpoint();
         T upper = range.upperEndpoint();
 
         if (lower.equals(upper)) {
-            return List.of(Range.closed(lower, upper));
+            throw new UnsplittableRangeException("Can split single-value range!");
         }
 
         T median = medianFunction.apply(lower, upper);
         Range<T> first = Range.closed(lower, median);
         Range<T> second = Range.closed(median, upper);
-        return List.of(first, second);
+        return Pair.of(first, second);
     }
 
     public <T extends Comparable> String toString(Range<T> range, Format formatter) {

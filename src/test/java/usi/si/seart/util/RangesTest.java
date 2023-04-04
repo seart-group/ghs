@@ -1,15 +1,16 @@
 package usi.si.seart.util;
 
 import com.google.common.collect.Range;
+import org.apache.commons.lang3.tuple.Pair;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import usi.si.seart.exception.UnsplittableRangeException;
 
 import java.text.Format;
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.List;
 import java.util.function.BinaryOperator;
 
 class RangesTest {
@@ -30,15 +31,19 @@ class RangesTest {
     @Test
     void testSplit() {
         BinaryOperator<Long> average = (a, b) -> (a + b)/2;
+        Pair<Range<Long>, Range<Long>> ranges = Ranges.split(Range.closed(2L, 10L), average);
+        Assertions.assertEquals(Range.closed(2L, 6L), ranges.getLeft());
+        Assertions.assertEquals(Range.closed(6L, 10L), ranges.getRight());
+    }
 
-        List<Range<Long>> ranges = Ranges.split(Range.closed(2L, 10L), average);
-        Assertions.assertEquals(2, ranges.size());
-        Assertions.assertEquals(Range.closed(2L, 6L), ranges.get(0));
-        Assertions.assertEquals(Range.closed(6L, 10L), ranges.get(1));
-
-        ranges = Ranges.split(Range.closed(2L, 2L), average);
-        Assertions.assertEquals(1, ranges.size());
-        Assertions.assertEquals(Range.closed(2L, 2L), ranges.get(0));
+    @Test
+    void testSplitException() {
+        Range<Long> invalid = Range.closed(2L, 2L);
+        BinaryOperator<Long> average = (a, b) -> (a + b)/2;
+        Assertions.assertThrows(
+                UnsplittableRangeException.class,
+                () -> Ranges.split(invalid, average)
+        );
     }
 
     @Test

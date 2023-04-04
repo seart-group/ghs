@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.experimental.NonFinal;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
@@ -16,6 +17,7 @@ import org.springframework.context.annotation.DependsOn;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
+import usi.si.seart.exception.UnsplittableRangeException;
 import usi.si.seart.github.GitCommit;
 import usi.si.seart.github.GitHubApiConnector;
 import usi.si.seart.model.GitRepo;
@@ -144,19 +146,26 @@ public class CrawlProjectsJob {
             JsonObject json = gitHubApiConnector.searchRepositories(language, range, page, crawlUpdatedRepos);
             int totalResults = json.get("total_count").getAsInt();
             int totalPages = (int) Math.ceil(totalResults / 100.0);
+            if (totalResults == 0) return;
             log.info("Retrieved results: " + totalResults);
-            if (0 < totalResults && totalResults <= 1000) {
-                JsonArray results = json.get("items").getAsJsonArray();
-                saveRetrievedRepos(results, language, 1, totalResults);
-                retrieveRemainingRepos(range, language, crawlUpdatedRepos, totalPages);
-                crawlJobService.updateCrawlDateForLanguage(language, range.upperEndpoint());
-            } else if (totalResults > 1000) {
-                List<Range<Date>> ranges = Ranges.split(range, DATE_MEDIAN);
-                if (ranges.size() > 1) {
-                    requestQueue.push(ranges.get(1));
-                    requestQueue.push(ranges.get(0));
+            if (totalResults > 1000) {
+                try {
+                    Pair<Range<Date>, Range<Date>> ranges = Ranges.split(range, DATE_MEDIAN);
+                    requestQueue.push(ranges.getRight());
+                    requestQueue.push(ranges.getLeft());
+                    return;
+                } catch (UnsplittableRangeException ure) {
+                    log.warn(
+                            "Encountered range that could not be further split [{}]!",
+                            Ranges.toString(range, utcTimestampFormat)
+                    );
+                    log.info("Proceeding with mining anyway to mitigate data loss...");
                 }
             }
+            JsonArray results = json.get("items").getAsJsonArray();
+            saveRetrievedRepos(results, language, 1, totalResults);
+            retrieveRemainingRepos(range, language, crawlUpdatedRepos, totalPages);
+            crawlJobService.updateCrawlDateForLanguage(language, range.upperEndpoint());
         } catch (Exception e) {
             log.error("Failed to retrieve repositories", e);
         }
