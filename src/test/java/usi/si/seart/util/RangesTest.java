@@ -3,7 +3,6 @@ package usi.si.seart.util;
 import com.google.common.collect.Range;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import usi.si.seart.util.Ranges;
 
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
@@ -12,10 +11,10 @@ import java.util.Date;
 import java.util.List;
 import java.util.function.BinaryOperator;
 
-public class RangesTest {
+class RangesTest {
 
     @Test
-    public void testBuild() {
+    void testBuild() {
         Assertions.assertEquals(Range.all(), Ranges.build(null, null));
         Assertions.assertEquals(Range.atLeast(5), Ranges.build(5, null));
         Assertions.assertEquals(Range.atMost(10), Ranges.build(null, 10));
@@ -23,12 +22,12 @@ public class RangesTest {
     }
 
     @Test
-    public void testBuildException() {
+    void testBuildException() {
         Assertions.assertThrows(IllegalArgumentException.class, () -> Ranges.build(5, 1));
     }
 
     @Test
-    public void testSplit() {
+    void testSplit() {
         BinaryOperator<Long> average = (a, b) -> (a + b)/2;
 
         List<Range<Long>> ranges = Ranges.split(Range.closed(2L, 10L), average);
@@ -42,7 +41,7 @@ public class RangesTest {
     }
 
     @Test
-    public void testToString() {
+    void testToString() {
         Assertions.assertEquals("5..10", Ranges.toString(Range.closed(5, 10), NumberFormat.getInstance()));
         Assertions.assertEquals("5..10", Ranges.toString(Range.closed(5L, 10L), NumberFormat.getInstance()));
         Assertions.assertEquals("5..", Ranges.toString(Range.atLeast(5), NumberFormat.getInstance()));
@@ -63,7 +62,7 @@ public class RangesTest {
     }
 
     @Test
-    public void testToStringException() {
+    void testToStringException() {
         Assertions.assertThrows(
                 IllegalArgumentException.class,
                 () -> Ranges.toString(Range.closed(new Date(), new Date()), NumberFormat.getInstance())
