@@ -8,6 +8,7 @@ import usi.si.seart.exception.UnsplittableRangeException;
 import java.text.Format;
 import java.util.Objects;
 import java.util.function.BinaryOperator;
+import java.util.function.Function;
 
 @SuppressWarnings("rawtypes")
 @UtilityClass
@@ -42,12 +43,18 @@ public class Ranges {
     }
 
     public <T extends Comparable> String toString(Range<T> range, Format formatter) {
+        return toString(range, formatter::format);
+    }
+
+    public <T extends Comparable> String toString(Range<T> range, Function<? super T, String> function) {
+        Objects.requireNonNull(range, "Range must not be null!");
+        Objects.requireNonNull(function, "Bound mapping function must not be null!");
         StringBuilder builder = new StringBuilder();
         boolean lowerBound = range.hasLowerBound();
         boolean upperBound = range.hasUpperBound();
-        if (lowerBound) builder.append(formatter.format(range.lowerEndpoint()));
+        if (lowerBound) builder.append(function.apply(range.lowerEndpoint()));
         if (lowerBound || upperBound) builder.append("..");
-        if (upperBound) builder.append(formatter.format(range.upperEndpoint()));
+        if (upperBound) builder.append(function.apply(range.upperEndpoint()));
         return builder.toString();
     }
 }
