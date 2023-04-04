@@ -27,7 +27,7 @@ public class MainConfig {
     @Bean
     public DateTimeFormatter dateTimeFormatter() {
         return DateTimeFormatter
-                .ofPattern("yyyy-MM-dd'T'hh:mm:ss")
+                .ofPattern("yyyy-MM-dd'T'HH:mm:ss")
                 .withZone(ZoneOffset.UTC);
     }
 
