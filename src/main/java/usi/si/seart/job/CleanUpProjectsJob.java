@@ -27,7 +27,9 @@ import java.util.function.LongFunction;
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
 public class CleanUpProjectsJob {
 
-    private static final int TIMEOUT_RETURN_CODE = 28;
+    private static final int NO_HOST_RESOLVE = 6;
+    private static final int NO_HOST_CONNECTION = 7;
+    private static final int OPERATION_TIMEOUT = 28;
 
     GitRepoRepository gitRepoRepository;
 
@@ -102,13 +104,17 @@ public class CleanUpProjectsJob {
             log.debug("\tProcess [{}]: Timed out! Attempting to terminate...", pid);
             while (process.isAlive()) process.destroyForcibly();
             log.debug("\tProcess [{}]: Terminated!", pid);
-            returnCode = TIMEOUT_RETURN_CODE;
+            returnCode = OPERATION_TIMEOUT;
         }
 
         switch (returnCode) {
             case 0:
                 return true;
-            case TIMEOUT_RETURN_CODE:
+            case NO_HOST_RESOLVE:
+                throw new NoRouteToHostException("Could not resolve host address!");
+            case NO_HOST_CONNECTION:
+                throw new ConnectException("Connection to host failed!");
+            case OPERATION_TIMEOUT:
                 throw new TimeoutException("Timed out while executing command: " + joined);
             case 130:
                 throw new InterruptedException("Process terminated via SIGTERM, exit code 130.");
