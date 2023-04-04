@@ -11,14 +11,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import usi.si.seart.exception.StaticCodeAnalysisException;
-import usi.si.seart.model.GitRepo;
 import usi.si.seart.repository.GitRepoRepository;
 import usi.si.seart.service.StaticCodeAnalysisService;
-
-import java.util.HashSet;
-import java.util.Set;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.Future;
 
 @Slf4j
 @Service
@@ -42,12 +36,11 @@ public class CodeAnalysisJob {
     }
 
     @Transactional(propagation = Propagation.NESTED)
-    public Future<Set<GitRepoMetric>> analyze(GitRepo repo) {
+    public void analyze(Long repo) {
         try {
-            return staticCodeAnalysisService.getCodeMetrics(repo, true);
+            staticCodeAnalysisService.getCodeMetrics(repo, true);
         } catch (StaticCodeAnalysisException e) {
             log.error("Error during code analysis job", e);
-            return CompletableFuture.completedFuture(new HashSet<>());
         }
     }
 }

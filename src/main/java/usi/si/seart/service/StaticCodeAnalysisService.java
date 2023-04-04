@@ -2,7 +2,6 @@ package usi.si.seart.service;
 
 import org.springframework.scheduling.annotation.Async;
 import usi.si.seart.exception.StaticCodeAnalysisException;
-import usi.si.seart.model.GitRepo;
 import usi.si.seart.model.GitRepoMetric;
 
 import javax.validation.constraints.NotNull;
@@ -17,7 +16,7 @@ public interface StaticCodeAnalysisService {
     /**
      * Computes the set of code metrics of a given repository.
      *
-     * @param repo    the git repo
+     * @param repoId the git repo id
      * @param persist whether to persist metrics for the given repository.
      *                If true, a repo with that repo_name needs to exist in the DB.
      *                If false, the GitRepo object won't be fetched.
@@ -25,6 +24,6 @@ public interface StaticCodeAnalysisService {
      * @throws StaticCodeAnalysisException if an error occurred while performing static code analysis.
      */
     @Async("GitCloning")
-    Future<Set<GitRepoMetric>> getCodeMetrics(@NotNull GitRepo repo, boolean persist) throws StaticCodeAnalysisException;
+    Future<Set<GitRepoMetric>> getCodeMetrics(@NotNull Long repoId, boolean persist) throws StaticCodeAnalysisException;
 
 }
