@@ -9,6 +9,7 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.Date;
+import java.util.Objects;
 import java.util.TimeZone;
 
 /**
@@ -26,6 +27,8 @@ public class Dates {
      * @return the date between the start and end dates.
      */
     public Date median(Date lower, Date upper) {
+        Objects.requireNonNull(lower, "Lower bound can not be null!");
+        Objects.requireNonNull(upper, "Upper bound can not be null!");
         ZoneId zoneId = ZoneId.of("UTC");
         Instant lowerInstant = lower.toInstant();
         Instant upperInstant = upper.toInstant();
@@ -49,6 +52,7 @@ public class Dates {
      * or null if the string cannot be parsed.
      */
     public Date fromGitDateString(String date){
+        Objects.requireNonNull(date, "Date string can not be null!");
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
         dateFormat.setTimeZone(TimeZone.getTimeZone("Universal"));
         try {
