@@ -104,19 +104,13 @@ public class CrawlProjectsJob {
         log.info("Next crawl scheduled for: {}", Date.from(Instant.now().plusMillis(schedulingRate)));
     }
 
-    private void crawlCreatedRepos(Range<Date> range, String language) {
-        log.info("Starting crawling {} repositories created through: {}", language, range);
-        crawlRepos(range, language, false);
-        log.info("Finished crawling {} repositories created through: {}", language, range);
-    }
-
     private void crawlUpdatedRepos(Range<Date> range, String language) {
         log.info("Starting crawling {} repositories updated through: {}", language, range);
-        crawlRepos(range, language, true);
+        crawlRepos(range, language);
         log.info("Finished crawling {} repositories updated through: {}", language, range);
     }
 
-    private void crawlRepos(Range<Date> range, String language, Boolean crawlUpdatedRepos) {
+    private void crawlRepos(Range<Date> range, String language) {
         if (range.lowerEndpoint().compareTo(range.upperEndpoint()) >= 0) {
             log.warn("Invalid interval Skipped: " + range);
             return;
@@ -133,14 +127,14 @@ public class CrawlProjectsJob {
             log.info("Next Crawl Intervals: [{}]", nextIntervals);
 
             Range<Date> first = requestQueue.pop();
-            retrieveRepos(first, language, crawlUpdatedRepos);
+            retrieveRepos(first, language);
         } while (!requestQueue.isEmpty());
     }
 
-    private void retrieveRepos(Range<Date> range, String language, Boolean crawlUpdatedRepos) {
+    private void retrieveRepos(Range<Date> range, String language) {
         int page = 1;
         try {
-            JsonObject json = gitHubApiConnector.searchRepositories(language, range, page, crawlUpdatedRepos);
+            JsonObject json = gitHubApiConnector.searchRepositories(language, range, page);
             int totalResults = json.get("total_count").getAsInt();
             int totalPages = (int) Math.ceil(totalResults / 100.0);
             if (totalResults == 0) return;
@@ -161,21 +155,19 @@ public class CrawlProjectsJob {
             }
             JsonArray results = json.get("items").getAsJsonArray();
             saveRetrievedRepos(results, language, 1, totalResults);
-            retrieveRemainingRepos(range, language, crawlUpdatedRepos, totalPages);
+            retrieveRemainingRepos(range, language, totalPages);
             crawlJobService.updateCrawlDateForLanguage(language, range.upperEndpoint());
         } catch (Exception e) {
             log.error("Failed to retrieve repositories", e);
         }
     }
 
-    private void retrieveRemainingRepos(
-            Range<Date> range, String language, Boolean crawlUpdatedRepos, int pages
-    ) {
+    private void retrieveRemainingRepos(Range<Date> range, String language, int pages) {
         if (pages > 1) {
             int page = 2;
             while (page <= pages) {
                 try {
-                    JsonObject json = gitHubApiConnector.searchRepositories(language, range, page, crawlUpdatedRepos);
+                    JsonObject json = gitHubApiConnector.searchRepositories(language, range, page);
                     int totalResults = json.get("total_count").getAsInt();
                     JsonArray results = json.get("items").getAsJsonArray();
                     saveRetrievedRepos(results, language, (page - 1) * 100 + 1, totalResults);

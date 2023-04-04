@@ -73,10 +73,10 @@ public class GitHubApiConnector {
     }
 
     @SneakyThrows(InterruptedException.class)
-    public JsonObject searchRepositories(String language, Range<Date> dateRange, Integer page, boolean crawlUpdatedRepos) {
+    public JsonObject searchRepositories(String language, Range<Date> dateRange, Integer page) {
         Map<String, String> query = ImmutableMap.<String, String>builder()
                 .put("language", URLEncoder.encode(language, StandardCharsets.UTF_8))
-                .put(crawlUpdatedRepos ? "pushed" : "created", Ranges.toString(dateRange, dateStringMapper))
+                .put("pushed", Ranges.toString(dateRange, dateStringMapper))
                 .put("stars", String.format(">=%d", MIN_STARS))
                 .put("fork", "true")
                 .put("is", "public")
