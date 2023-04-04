@@ -27,7 +27,7 @@ import java.util.stream.Stream;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class SchedulerConfig {
 
-    @Value("${app.crawl.cloning.maxpoolthreads}")
+    @Value("${app.crawl.analysis.maxpoolthreads}")
     int maxPoolThreads;
 
 
@@ -76,8 +76,8 @@ public class SchedulerConfig {
         ThreadPoolTaskExecutor executor = new GitCloningThreadPoolExecutor();
         executor.setCorePoolSize(0);
         executor.setMaxPoolSize(maxPoolThreads);
-        executor.setQueueCapacity(10); // maximum number of tasks in the queue, after which more threads would be created
-        executor.setKeepAliveSeconds(60); // keep-alive time for idle threads
+        executor.setQueueCapacity(10);
+        executor.setKeepAliveSeconds(60);
         executor.setThreadNamePrefix("CloningThread");
         executor.setRejectedExecutionHandler(new ThreadPoolExecutor.CallerRunsPolicy()); // policy to abort
         executor.initialize();

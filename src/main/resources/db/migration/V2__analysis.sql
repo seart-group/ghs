@@ -22,11 +22,3 @@ CREATE TABLE repo_metrics
     FOREIGN KEY (metric_language_id) REFERENCES metric_language(id),
     PRIMARY KEY (repo_id, metric_language_id)
 );
-
-#
-# DROP TABLE repo_metrics, metric_language;
-# ALTER TABLE repo DROP COLUMN cloned;
-
-# UPDATE repo SET cloned=null WHERE TRUE;
-# DELETE FROM repo_metrics WHERE TRUE;
-# DELETE FROM metric_language WHERE TRUE;

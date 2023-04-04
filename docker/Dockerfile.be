@@ -9,7 +9,7 @@ FROM adoptopenjdk/openjdk11:jre-11.0.11_9-alpine
 
 COPY --from=build /target/ghs-application-*.jar /server.jar
 
-RUN apk update && apk add git curl && apk add cloc bash
+RUN apk update && apk add git curl cloc bash
 
 EXPOSE 8080
 
