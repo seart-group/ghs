@@ -55,7 +55,6 @@ public class GitRepoMetric {
     @Column(name = "lines_comment")
     Long commentLines;
 
-
     @Override
     public boolean equals(Object obj) {
         if (this == obj)
@@ -78,7 +77,4 @@ public class GitRepoMetric {
     public int hashCode() {
         return Objects.hash(id, repo, language, blankLines, codeLines, commentLines);
     }
-
 }
-
-

@@ -1,7 +1,5 @@
 package usi.si.seart.exception;
 
-// TODO: Use @StandardException in this package
-
 /**
  * An exception to be thrown when an error occurred while performing static code analysis on a codebase.
  */

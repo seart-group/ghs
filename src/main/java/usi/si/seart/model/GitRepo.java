@@ -157,6 +157,8 @@ public class GitRepo {
     /**
      * To be called when the repository's code metrics have been mined.
      */
-    public void setCloned() { cloned = new Date(); }
+    public void setCloned() {
+        cloned = new Date();
+    }
 
 }

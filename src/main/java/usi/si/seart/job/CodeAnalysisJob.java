@@ -12,7 +12,6 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import usi.si.seart.exception.StaticCodeAnalysisException;
 import usi.si.seart.model.GitRepo;
-import usi.si.seart.model.GitRepoMetric;
 import usi.si.seart.repository.GitRepoRepository;
 import usi.si.seart.service.StaticCodeAnalysisService;
 
@@ -23,7 +22,7 @@ import java.util.concurrent.Future;
 
 @Slf4j
 @Service
-@ConditionalOnProperty(value = "app.crawl.cloning.enabled", havingValue = "true")
+@ConditionalOnProperty(value = "app.crawl.analysis.enabled", havingValue = "true")
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class CodeAnalysisJob {
@@ -33,7 +32,7 @@ public class CodeAnalysisJob {
     GitRepoRepository gitRepoRepository;
 
     @Transactional
-    @Scheduled(fixedDelayString = "${app.crawl.cloning.scheduling}")
+    @Scheduled(fixedDelayString = "${app.crawl.analysis.scheduling}")
     public void run() {
         final long outdatedRepos = gitRepoRepository.countAllRepoWithOutdatedCodeMetrics();
         final long allRepos = gitRepoRepository.count();

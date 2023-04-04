@@ -50,7 +50,6 @@ public class StaticCodeAnalysisServiceImpl implements StaticCodeAnalysisService 
         // Deletes the temporary folder of the repo once outside of this clause.
         try (ClonedRepo clonedRepo = gitRepoClonerService.cloneRepo(new URL("https://github.com/" + repo.getName())).get()) {
             // Runs cloc for gathering code metrics
-            log.trace("Extracting code metrics for repository '{}'", repo.getName());
             String output = new TerminalExecution(clonedRepo.getPath(), "cloc --json --quiet .").start().getStdOut().lines().collect(Collectors.joining("\n"));
             if (!persist) {
                 return new AsyncResult<>(parseCodeMetrics(null, output));
@@ -61,8 +60,7 @@ public class StaticCodeAnalysisServiceImpl implements StaticCodeAnalysisService 
             repo.setMetrics(metrics);
             repo.setCloned();
             gitRepoService.createOrUpdateRepo(repo);
-            log.trace("Stored code metrics for repository '{}'", repo.getName());
-
+            log.debug("Stored code metrics for repository '{}'", repo.getName());
 
         } catch (InterruptedException | ExecutionException | TerminalExecutionException | MalformedURLException e) {
             log.error("Could not compute code metrics for repository '{}'", repo.getName(), e);

@@ -34,7 +34,7 @@ import java.util.stream.Stream;
 public class GitRepoClonerService {
 
     // Prefix of the temporary folders where the repositories get cloned in
-    @Value("${app.crawl.cloning.folderprefix}")
+    @Value("${app.crawl.analysis.folderprefix}")
     String repofolderprefix;
 
 
@@ -46,7 +46,6 @@ public class GitRepoClonerService {
      * @throws CloneException if the cloning operation was unsuccessful.
      */
     public Future<ClonedRepo> cloneRepo(URL gitRepoURL) throws CloneException {
-        // TODO: What if I just wrap everything in a try-catch and buonanotte ?
         Path tempRepoDir;
         try {
             tempRepoDir = Files.createTempDirectory(repofolderprefix);
@@ -56,7 +55,7 @@ public class GitRepoClonerService {
 
         TerminalExecution cloneProcess = new TerminalExecution(tempRepoDir, "git clone --depth 1", gitRepoURL.toString(), tempRepoDir.toString());
         try {
-            log.debug("Cloning repository '{}' ...",gitRepoURL);
+            log.trace("Cloning repository '{}' ...",gitRepoURL);
             cloneProcess.start().waitSuccessfulExit();
             // clone process did either not start or failed
         } catch (TerminalExecutionException e) {
