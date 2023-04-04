@@ -47,7 +47,7 @@ public class CleanUpProjectsJob {
             log.debug("Checking if {} [id: {}] exists...", name, id);
             boolean exists = checkIfRepoExists(name);
             if (!exists) {
-                log.info("Found repository without remote [{}], deleting...", name);
+                log.info("Deleting repository: {} [{}]", name, id);
                 gitRepoRepository.deleteById(id);
                 gitRepoRepository.flush();
                 totalDeleted++;
