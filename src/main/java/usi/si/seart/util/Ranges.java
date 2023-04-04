@@ -22,6 +22,7 @@ public class Ranges {
     public <T extends Comparable> Pair<Range<T>, Range<T>> split(
             Range<T> range, BinaryOperator<T> medianFunction
     ) {
+        Objects.requireNonNull(range, "Range must not be null!");
         Objects.requireNonNull(medianFunction, "Median function must not be null!");
         if (!range.hasLowerBound() || !range.hasUpperBound()) {
             throw new IllegalArgumentException("Can split unbounded range!");
