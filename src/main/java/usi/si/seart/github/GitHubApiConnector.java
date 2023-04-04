@@ -23,10 +23,12 @@ import org.springframework.core.convert.ConversionService;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
+import usi.si.seart.exception.GitHubAPIException;
 import usi.si.seart.util.Ranges;
 
 import java.io.IOException;
 import java.net.ConnectException;
+import java.net.SocketTimeoutException;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
@@ -314,9 +316,12 @@ public class GitHubApiConnector {
             Response response;
             try {
                 response = client.newCall(request).execute();
-            } catch (ConnectException ex) {
-                log.error("Try #"+tryNum+": Connection to the GitHub API has failed!", ex);
-                continue;
+            } catch (ConnectException cex) {
+                throw new GitHubAPIException("Failed to connect to the GitHub API", cex);
+            } catch (SocketTimeoutException sex) {
+                throw new GitHubAPIException("Timed out while trying to connect to GitHub API", sex);
+            } catch (IOException ioe) {
+                throw new GitHubAPIException("Exception occurred during request execution", ioe);
             }
 
             HttpStatus status = HttpStatus.valueOf(response.code());
@@ -372,7 +377,8 @@ public class GitHubApiConnector {
                 gitHubTokenManager.replaceTokenIfExpired();
             }
         }
-        log.error("Failed after {} retries. SKIPPING.", RETRY_MAX_ATTEMPTS);
-        return null;
+
+        String message = String.format("Request to %s failed after %d retries.", url, RETRY_MAX_ATTEMPTS);
+        throw new GitHubAPIException(message);
     }
 }
