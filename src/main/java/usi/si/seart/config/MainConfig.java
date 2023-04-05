@@ -1,9 +1,12 @@
 package usi.si.seart.config;
 
+import lombok.SneakyThrows;
 import org.jetbrains.annotations.NotNull;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.io.Resource;
 import org.springframework.format.FormatterRegistry;
 import org.springframework.web.filter.ForwardedHeaderFilter;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
@@ -14,6 +17,9 @@ import usi.si.seart.converter.JsonObjectToGitRepoConverter;
 import usi.si.seart.converter.JsonObjectToRateLimitConverter;
 import usi.si.seart.converter.SupportedLanguageToDtoConverter;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
@@ -23,6 +29,14 @@ import java.util.function.Function;
 
 @Configuration
 public class MainConfig {
+
+    @Bean(name = "banner")
+    @SuppressWarnings("java:S4719")
+    @SneakyThrows(IOException.class)
+    public String banner(@Value("${spring.banner.location}") Resource resource) {
+        InputStream inputStream = resource.getInputStream();
+        return new String(inputStream.readAllBytes(), StandardCharsets.UTF_8);
+    }
 
     @Bean
     public DateTimeFormatter dateTimeFormatter() {
