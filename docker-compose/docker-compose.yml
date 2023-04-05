@@ -85,6 +85,8 @@ services:
       dockerfile: docker/Dockerfile.be
     image: 'gse/backend:latest'
     container_name: gse-app
+    volumes:
+      - ./logs:/logs
     environment:
       WAIT_HOSTS: gse-db:3306
       LOGGING_CONFIG: classpath:logback.prod.xml
