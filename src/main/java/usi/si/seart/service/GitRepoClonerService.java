@@ -35,7 +35,7 @@ public class GitRepoClonerService {
 
     // Prefix of the temporary folders where the repositories get cloned in
     @Value("${app.crawl.analysis.folderprefix}")
-    String repofolderprefix;
+    String repoFolderPrefix;
 
 
     /**
@@ -48,7 +48,7 @@ public class GitRepoClonerService {
     public Future<ClonedRepo> cloneRepo(URL gitRepoURL) throws CloneException {
         Path tempRepoDir;
         try {
-            tempRepoDir = Files.createTempDirectory(repofolderprefix);
+            tempRepoDir = Files.createTempDirectory(repoFolderPrefix);
         } catch (IOException e) {
             throw new CloneException(e);
         }
@@ -79,7 +79,7 @@ public class GitRepoClonerService {
     @EventListener({ApplicationReadyEvent.class})
     public void cleanupAllTempFolders() {
         try {
-            new TerminalExecution(Files.createTempDirectory(repofolderprefix).getParent(), "rm -rf ", repofolderprefix + "*").start().waitSuccessfulExit();
+            new TerminalExecution(Files.createTempDirectory(repoFolderPrefix).getParent(), "rm -rf ", repoFolderPrefix + "*").start().waitSuccessfulExit();
         } catch (Exception e) {
             log.error("Failed to cleanup cloned repository folders", e);
             return;

@@ -10,14 +10,19 @@ import usi.si.seart.model.MetricLanguage;
 import usi.si.seart.repository.MetricLanguageRepository;
 
 import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
+import javax.persistence.PersistenceContext;
 import javax.validation.constraints.NotNull;
 
 @Service
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 @AllArgsConstructor(onConstructor_ = @Autowired)
+@PersistenceContext
 public class MetricLanguageServiceImpl implements MetricLanguageService{
 
     EntityManager entityManager;
+
+    EntityManagerFactory entityManagerFactory;
 
     ConcurrentReferenceHashMap<String, Object> metricLanguageLocks = new ConcurrentReferenceHashMap<>();
 
@@ -39,7 +44,7 @@ public class MetricLanguageServiceImpl implements MetricLanguageService{
                                     .language(languageName)
                                     .build()));
                 entityManager.clear();
-                entityManager.getEntityManagerFactory().getCache().evict(MetricLanguage.class, metricLang.getId());
+                entityManagerFactory.getCache().evict(MetricLanguage.class, metricLang.getId());
                 return metricLang;
 
             }

@@ -78,8 +78,8 @@ public class SchedulerConfig {
         executor.setMaxPoolSize(maxPoolThreads);
         executor.setQueueCapacity(10);
         executor.setKeepAliveSeconds(60);
-        executor.setThreadNamePrefix("CloningThread");
-        executor.setRejectedExecutionHandler(new ThreadPoolExecutor.CallerRunsPolicy()); // policy to abort
+        executor.setThreadNamePrefix("AnalysisThread");
+        executor.setRejectedExecutionHandler(new ThreadPoolExecutor.CallerRunsPolicy());
         executor.initialize();
         return executor;
     }
