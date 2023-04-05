@@ -2,7 +2,6 @@
   <configuration default="false" name="GHSApplication [debug]" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot">
     <additionalParameters>
       <param>
-        <option name="enabled" value="true" />
         <option name="name" value="app.crawl.enabled" />
         <option name="value" value="false" />
       </param>
@@ -26,6 +25,10 @@
       </param>
       <param>
         <option name="name" value="logging.level.org.flywaydb" />
+        <option name="value" value="DEBUG" />
+      </param>
+      <param>
+        <option name="name" value="logging.level.okhttp3.OkHttpClient" />
         <option name="value" value="DEBUG" />
       </param>
       <param>
