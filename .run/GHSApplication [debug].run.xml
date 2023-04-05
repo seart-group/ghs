@@ -2,6 +2,7 @@
   <configuration default="false" name="GHSApplication [debug]" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot">
     <additionalParameters>
       <param>
+        <option name="enabled" value="true" />
         <option name="name" value="app.crawl.enabled" />
         <option name="value" value="false" />
       </param>
