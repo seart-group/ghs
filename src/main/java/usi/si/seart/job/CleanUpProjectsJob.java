@@ -28,7 +28,7 @@ import javax.persistence.Tuple;
 import java.io.IOException;
 import java.math.BigInteger;
 import java.net.ConnectException;
-import java.net.NoRouteToHostException;
+import java.net.UnknownHostException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
@@ -149,7 +149,7 @@ public class CleanUpProjectsJob {
             case 0:
                 return true;
             case NO_HOST_RESOLVE:
-                throw new NoRouteToHostException("Could not resolve host address!");
+                throw new UnknownHostException("Could not resolve host address!");
             case NO_HOST_CONNECTION:
                 throw new ConnectException("Connection to host failed!");
             case OPERATION_TIMEOUT:
