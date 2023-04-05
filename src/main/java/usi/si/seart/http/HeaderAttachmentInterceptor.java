@@ -21,7 +21,12 @@ public final class HeaderAttachmentInterceptor implements Interceptor {
     @Override
     public Response intercept(@NotNull Chain chain) throws IOException {
         Request.Builder builder = chain.request().newBuilder();
-        Request request = builder.headers(headers).build();
+        headers.forEach(header -> {
+            String name = header.getFirst();
+            String value = header.getSecond();
+            builder.addHeader(name, value);
+        });
+        Request request = builder.build();
         return chain.proceed(request);
     }
 }
