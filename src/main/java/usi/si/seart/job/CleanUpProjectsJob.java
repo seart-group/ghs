@@ -3,6 +3,7 @@ package usi.si.seart.job;
 import lombok.AccessLevel;
 import lombok.Cleanup;
 import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 import lombok.experimental.FieldDefaults;
 import lombok.experimental.NonFinal;
 import lombok.extern.slf4j.Slf4j;
@@ -51,6 +52,7 @@ public class CleanUpProjectsJob {
     @Value("${spring.jpa.properties.hibernate.jdbc.fetch_size}")
     Integer fetchSize;
 
+    @SneakyThrows(InterruptedException.class)
     @Scheduled(fixedDelayString = "${app.cleanup.scheduling}")
     public void run(){
         long totalRepositories = gitRepoRepository.count();
@@ -71,6 +73,7 @@ public class CleanUpProjectsJob {
             String name = tuple.get(1, String.class);
             log.debug("Checking if {} [id: {}] exists...", name, id);
             boolean exists = checkIfRepoExists(name);
+            TimeUnit.MILLISECONDS.sleep(500);
             if (!exists) {
                 log.info("Deleting repository: {} [{}]", name, id);
                 Transaction transaction = null;
