@@ -2,9 +2,6 @@
 # Compiled class file
 *.class
 
-# Log file
-*.log
-
 # BlueJ files
 *.ctxt
 
@@ -176,3 +173,8 @@ Temporary Items
 .env.test.local
 .env.production.local
 .env.local
+
+### Logging
+# General
+*.log
+*.log.gz
