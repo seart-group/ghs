@@ -1,5 +1,6 @@
 package usi.si.seart.config;
 
+import okhttp3.Headers;
 import okhttp3.OkHttpClient;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Bean;
@@ -14,13 +15,21 @@ import java.util.concurrent.TimeUnit;
 public class HttpClientConfig {
 
     @Bean
+    public Headers headers() {
+        return Headers.of(
+                HttpHeaders.ACCEPT, "application/vnd.github+json",
+                "X-GitHub-Api-Version", "2022-11-28"
+        );
+    }
+
+    @Bean
     public LoggingInterceptor httpLoggingInterceptor() {
         return new LoggingInterceptor(LoggerFactory.getLogger(OkHttpClient.class));
     }
 
     @Bean
     public HeaderAttachmentInterceptor headerAttachmentInterceptor() {
-        return new HeaderAttachmentInterceptor(HttpHeaders.ACCEPT, "application/vnd.github+json");
+        return new HeaderAttachmentInterceptor(headers());
     }
 
     @Bean
