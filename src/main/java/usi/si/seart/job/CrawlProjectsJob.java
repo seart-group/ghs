@@ -118,14 +118,15 @@ public class CrawlProjectsJob {
 
         requestQueue.push(range);
         do {
-            long size = 5;
-            String nextIntervals = requestQueue.stream()
-                    .limit(size)
-                    .map(r -> Ranges.toString(r, dateStringMapper))
-                    .collect(Collectors.joining(", "));
-            if (requestQueue.size() > size) nextIntervals += ", ...";
-            log.info("Next Crawl Intervals: [{}]", nextIntervals);
-
+            int limit = 5;
+            int size = requestQueue.size();
+            log.info("Next crawl intervals:");
+            requestQueue.stream()
+                    .limit(limit)
+                    .map(item -> Ranges.toString(item, dateStringMapper))
+                    .forEach(string -> log.info("\t[{}]", string));
+            if (size > limit)
+                log.info("\t{} omitted ...", size - limit);
             Range<Date> first = requestQueue.pop();
             retrieveRepos(first, language);
         } while (!requestQueue.isEmpty());
