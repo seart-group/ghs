@@ -367,11 +367,14 @@ public class GitHubApiConnector {
                 gitHubTokenManager.replaceTokenIfExpired();
             } else if (status == HttpStatus.TOO_MANY_REQUESTS) {
                 gitHubTokenManager.replaceTokenIfExpired();
-            } else if (status.is4xxClientError()) {
-                log.error("Try #{}: GitHub Client Error Encountered [{}]", tryNum, status);
-                waitBeforeRetry();
-            } else if (status.is5xxServerError()) {
-                log.error("Try #{}: GitHub Server Error Encountered [{}]", tryNum, status);
+            } else if (status.isError()) {
+                JsonElement jsonElement = JsonParser.parseString(body);
+                JsonObject jsonObject = jsonElement.getAsJsonObject();
+                ErrorResponse errorResponse = conversionService.convert(jsonObject, ErrorResponse.class);
+                GitHubAPIException gae = new GitHubAPIException(errorResponse);
+                String format = "Try #%d: Response Code = %d %s";
+                String message = String.format(format, tryNum, status.value(), status.getReasonPhrase());
+                log.error(message, gae);
                 waitBeforeRetry();
             } else {
                 log.error(
