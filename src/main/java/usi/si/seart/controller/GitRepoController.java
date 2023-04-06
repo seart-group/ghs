@@ -28,6 +28,7 @@ import org.springframework.data.web.SortDefault;
 import org.springframework.hateoas.IanaLinkRelations;
 import org.springframework.hateoas.Link;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.LinkedMultiValueMap;
@@ -101,7 +102,7 @@ public class GitRepoController {
 
     EntityManager entityManager;
 
-    @GetMapping("/search")
+    @GetMapping(value = "/search", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> searchRepos(
             SearchParameterDto searchParameterDto,
             @SortDefault(sort = GitRepo_.NAME) Pageable pageable,
@@ -205,9 +206,9 @@ public class GitRepoController {
         return new ResponseEntity<>(resultPage, headers, HttpStatus.OK);
     }
 
-    @Transactional(readOnly = true)
-    @GetMapping("/download/{format}")
     @SneakyThrows({ IOException.class })
+    @Transactional(readOnly = true)
+    @GetMapping(value = "/download/{format}", produces = "text/*")
     public void downloadRepos(
             @PathVariable("format") String format,
             SearchParameterDto searchParameterDto,
@@ -321,7 +322,7 @@ public class GitRepoController {
         }
     }
 
-    @GetMapping("/{id}")
+    @GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> getRepoById(@PathVariable(value = "id") Long id){
         Optional<GitRepo> optional = gitRepoService.getRepoById(id);
         return optional.map(gitRepo -> {
@@ -330,17 +331,17 @@ public class GitRepoController {
         }).orElse(ResponseEntity.notFound().build());
     }
 
-    @GetMapping("/labels")
+    @GetMapping(value = "/labels", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> getAllLabels(){
         return ResponseEntity.ok(gitRepoService.getAllLabels(500));
     }
 
-    @GetMapping("/languages")
+    @GetMapping(value = "/languages", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> getAllLanguages(){
         return ResponseEntity.ok(gitRepoService.getAllLanguages());
     }
 
-    @GetMapping("/licenses")
+    @GetMapping(value = "/licenses", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> getAllLicenses() {
         return ResponseEntity.ok(gitRepoService.getAllLicenses());
     }
