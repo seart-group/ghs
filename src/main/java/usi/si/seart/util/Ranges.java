@@ -3,6 +3,7 @@ package usi.si.seart.util;
 import com.google.common.collect.Range;
 import lombok.experimental.UtilityClass;
 import org.apache.commons.lang3.tuple.Pair;
+import usi.si.seart.exception.IllegalBoundaryException;
 import usi.si.seart.exception.UnsplittableRangeException;
 
 import java.text.Format;
@@ -36,11 +37,21 @@ public class Ranges {
      * Can be null to specify no upper bound.
      * @param <T> The range endpoint type.
      * @return A Range object.
+     * @throws IllegalBoundaryException
+     * if the lower bound is greater
+     * than the upper bound.
      */
     public <T extends Comparable> Range<T> build(T lower, T upper){
         Range<T> lowerBound = (lower != null) ? Range.atLeast(lower) : Range.all();
         Range<T> upperBound = (upper != null) ? Range.atMost(upper) : Range.all();
-        return lowerBound.intersection(upperBound);
+        try {
+            return lowerBound.intersection(upperBound);
+        } catch (IllegalArgumentException ignored) {
+            String format = "Can not construct range where the lower endpoint (%s) " +
+                    "is greater than the upper endpoint (%s)";
+            String message = String.format(format, lower, upper);
+            throw new IllegalBoundaryException(message);
+        }
     }
 
     /**
