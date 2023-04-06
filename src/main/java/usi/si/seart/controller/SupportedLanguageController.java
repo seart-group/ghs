@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -25,7 +26,7 @@ public class SupportedLanguageController {
     SupportedLanguageService supportedLanguageService;
     GitRepoService gitRepoService;
 
-    @GetMapping
+    @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> getLanguages(){
         return ResponseEntity.ok(
                 supportedLanguageService.getAll()
@@ -36,7 +37,7 @@ public class SupportedLanguageController {
         );
     }
 
-    @GetMapping("/stats")
+    @GetMapping(value = "/stats", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> getLanguageStatistics(){
         return ResponseEntity.ok(gitRepoService.getAllLanguageStatistics());
     }
