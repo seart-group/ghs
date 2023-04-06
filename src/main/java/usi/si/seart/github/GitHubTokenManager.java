@@ -27,7 +27,6 @@ import usi.si.seart.collection.Cycle;
 
 import javax.annotation.PostConstruct;
 import java.io.IOException;
-import java.net.URL;
 import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
@@ -110,9 +109,8 @@ public class GitHubTokenManager {
             ExecutionException.class
     })
     public void replaceTokenIfExpired() {
-        URL target = Endpoint.RATE_LIMIT.toURL();
         Request.Builder builder = new Request.Builder();
-        builder.url(target);
+        builder.url(Endpoint.RATE_LIMIT);
         if (currentToken != null)
             builder.header(HttpHeaders.AUTHORIZATION, "Bearer " + currentToken);
         Request request = builder.build();

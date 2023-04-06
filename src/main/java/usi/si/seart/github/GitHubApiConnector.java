@@ -84,7 +84,7 @@ public class GitHubApiConnector {
 
         String joined = Joiner.on("+").withKeyValueSeparator(":").join(query);
 
-        URL url = HttpUrl.get(Endpoint.SEARCH.toURL())
+        URL url = HttpUrl.get(Endpoint.SEARCH_REPOSITORIES)
                 .newBuilder()
                 .setEncodedQueryParameter("q", joined)
                 .addQueryParameter("page", page.toString())
