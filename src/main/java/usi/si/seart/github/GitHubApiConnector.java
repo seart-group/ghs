@@ -5,6 +5,7 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Range;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
+import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import lombok.AccessLevel;
@@ -331,6 +332,8 @@ public class GitHubApiConnector {
 
             if (response.isSuccessful()) {
                 return Triple.of(status, headers, JsonParser.parseString(body));
+            } else if (response.isRedirect()) {
+                return Triple.of(status, headers, JsonNull.INSTANCE);
             } else if (status == HttpStatus.UNAUTHORIZED) {
                 /*
                  * Here we should not call `replaceTokenIfExpired()`
