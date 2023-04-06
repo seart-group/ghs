@@ -374,7 +374,10 @@ public class GitHubApiConnector {
                 log.error("Try #{}: GitHub Server Error Encountered [{}]", tryNum, status);
                 waitBeforeRetry();
             } else {
-                log.error("Try #{}: Response Code = {}, Request URL = {}", tryNum, status, url);
+                log.error(
+                        "Try #{}: Response Code = {} {}, Request URL = {}",
+                        tryNum, status.value(), status.getReasonPhrase(), url
+                );
                 gitHubTokenManager.replaceTokenIfExpired();
             }
         }
