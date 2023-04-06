@@ -31,11 +31,14 @@ public enum Endpoint {
 
     UriTemplate template;
 
+    private static final String scheme = "https";
+    private static final String host = "api.github.com";
+
     public URL toURL() {
         URI uri = template.expand();
         return new HttpUrl.Builder()
-                .scheme("https")
-                .host("api.github.com")
+                .scheme(scheme)
+                .host(host)
                 .addPathSegments(uri.toString())
                 .build()
                 .url();
@@ -44,8 +47,8 @@ public enum Endpoint {
     public URL toURL(String... args) {
         URI uri = template.expand((Object[]) args);
         return new HttpUrl.Builder()
-                .scheme("https")
-                .host("api.github.com")
+                .scheme(scheme)
+                .host(host)
                 .addEncodedPathSegments(uri.toString())
                 .build()
                 .url();
