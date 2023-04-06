@@ -366,7 +366,10 @@ public class GitHubApiConnector {
                         return Triple.of(status, headers, JsonParser.parseString(body));
                     }
                 }
-                log.info("Try #{}: Response Code = {}, X-RateLimit-Remaining = {}", tryNum, status, xRateLimitRemaining);
+                log.info(
+                        "Try #{}: Response Code = {} ({}), X-RateLimit-Remaining = {}",
+                        tryNum, status.value(), status.getReasonPhrase(), xRateLimitRemaining
+                );
                 gitHubTokenManager.replaceTokenIfExpired();
             } else if (status == HttpStatus.TOO_MANY_REQUESTS) {
                 gitHubTokenManager.replaceTokenIfExpired();
@@ -375,13 +378,13 @@ public class GitHubApiConnector {
                 JsonObject jsonObject = jsonElement.getAsJsonObject();
                 ErrorResponse errorResponse = conversionService.convert(jsonObject, ErrorResponse.class);
                 GitHubAPIException gae = new GitHubAPIException(errorResponse);
-                String format = "Try #%d: Response Code = %d %s";
+                String format = "Try #%d: Response Code = %d (%s)";
                 String message = String.format(format, tryNum, status.value(), status.getReasonPhrase());
                 log.error(message, gae);
                 waitBeforeRetry();
             } else {
                 log.error(
-                        "Try #{}: Response Code = {} {}, Request URL = {}",
+                        "Try #{}: Response Code = {} ({}), Request URL = {}",
                         tryNum, status.value(), status.getReasonPhrase(), url
                 );
                 gitHubTokenManager.replaceTokenIfExpired();
