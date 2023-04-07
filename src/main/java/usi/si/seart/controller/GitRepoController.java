@@ -57,7 +57,6 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -324,11 +323,9 @@ public class GitRepoController {
 
     @GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> getRepoById(@PathVariable(value = "id") Long id){
-        Optional<GitRepo> optional = gitRepoService.getRepoById(id);
-        return optional.map(gitRepo -> {
-            GitRepoDto dto = conversionService.convert(optional.get(), GitRepoDto.class);
-            return ResponseEntity.ok(dto);
-        }).orElse(ResponseEntity.notFound().build());
+        GitRepo gitRepo = gitRepoService.getRepoById(id);
+        GitRepoDto dto = conversionService.convert(gitRepo, GitRepoDto.class);
+        return ResponseEntity.ok(dto);
     }
 
     @GetMapping(value = "/labels", produces = MediaType.APPLICATION_JSON_VALUE)
