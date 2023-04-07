@@ -29,6 +29,7 @@ import usi.si.seart.service.CrawlJobService;
 import usi.si.seart.service.GitRepoService;
 import usi.si.seart.service.SupportedLanguageService;
 import usi.si.seart.util.Dates;
+import usi.si.seart.util.Optionals;
 import usi.si.seart.util.Ranges;
 
 import java.time.Duration;
@@ -185,35 +186,23 @@ public class CrawlProjectsJob {
     /**
      * Given JSON info of 100 repos, store them in DB
      */
-    private void saveRetrievedRepos(JsonArray results, String language, int repoNumStart, int repoNumTotal) {
-        int repoNumEnd = repoNumStart + results.size() - 1;
-        log.info(
-                "Adding {} repositories ({} - {} | total: {})",
-                results.size(),
-                repoNumStart,
-                repoNumEnd,
-                repoNumTotal
-        );
+    private void saveRetrievedRepos(JsonArray results, String language, int lowerIndex, int total) {
+        int upperIndex = lowerIndex + results.size() - 1;
+        log.info("Adding {} repositories ({} - {} | total: {})", results.size(), lowerIndex, upperIndex, total);
+
         for (JsonElement element : results) {
-            JsonObject repoJson = element.getAsJsonObject();
+            JsonObject result = element.getAsJsonObject();
+            String name = result.get("full_name").getAsString();
+            Optional<GitRepo> optional = Optionals.ofThrowable(() -> gitRepoService.getByName(name));
+            String action = optional.map(ignored -> "Updating").orElse("  Saving");
+            log.info("{} repository: {} [{}/{}]", action, name, lowerIndex, total);
 
-            String repoFullName = repoJson.get("full_name").getAsString();
-            Optional<GitRepo> opt = gitRepoService.getByName(repoFullName);
-
-            log.info(
-                    "{} repository: {} [{}/{}]",
-                    (opt.isEmpty()) ? "  Saving" : "Updating",
-                    repoFullName,
-                    repoNumStart,
-                    repoNumTotal
-            );
-
-            repoNumStart++;
+            lowerIndex++;
 
             // Optimization thing
-            if (opt.isPresent()) {
-                GitRepo existing = opt.get();
-                if (hasNotBeenUpdated(existing, repoJson)) {
+            if (optional.isPresent()) {
+                GitRepo existing = optional.get();
+                if (hasNotBeenUpdated(existing, result)) {
                     Date updatedAt = existing.getUpdatedAt();
                     Date pushedAt = existing.getPushedAt();
                     log.debug("\tSKIPPED: We already have the latest info!");
@@ -224,7 +213,7 @@ public class CrawlProjectsJob {
             }
 
             try {
-                JsonObject json = gitHubApiConnector.fetchRepoInfo(repoFullName);
+                JsonObject json = gitHubApiConnector.fetchRepoInfo(name);
                 JsonElement jsonLanguage = json.get("language");
                 if (jsonLanguage.isJsonNull()) {
                     // This can happen (e.g. https://api.github.com/repos/aquynh/iVM).

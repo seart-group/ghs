@@ -17,6 +17,7 @@ import usi.si.seart.repository.GitRepoLabelRepository;
 import usi.si.seart.repository.GitRepoLanguageRepository;
 import usi.si.seart.repository.GitRepoRepository;
 
+import javax.persistence.EntityNotFoundException;
 import javax.persistence.Tuple;
 import java.util.Comparator;
 import java.util.LinkedHashMap;
@@ -38,13 +39,15 @@ public class GitRepoServiceImpl implements GitRepoService {
     GitRepoLanguageRepository gitRepoLanguageRepository;
 
     @Override
-    public Optional<GitRepo> getRepoById(Long repoId){
-        return gitRepoRepository.findGitRepoById(repoId);
+    public GitRepo getRepoById(Long id){
+        return gitRepoRepository.findGitRepoById(id)
+                .orElseThrow(EntityNotFoundException::new);
     }
 
     @Override
-    public Optional<GitRepo> getByName(String name) {
-        return gitRepoRepository.findGitRepoByNameIgnoreCase(name);
+    public GitRepo getByName(String name) {
+        return gitRepoRepository.findGitRepoByNameIgnoreCase(name)
+                .orElseThrow(EntityNotFoundException::new);
     }
 
     @Override
