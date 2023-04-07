@@ -23,7 +23,7 @@ public interface GitRepoRepository extends
 {
     Optional<GitRepo> findGitRepoById(Long id);
 
-    Optional<GitRepo> findGitRepoByName(String name);
+    Optional<GitRepo> findGitRepoByNameIgnoreCase(String name);
 
     @Query("select distinct r.mainLanguage, count(r) from GitRepo r group by r.mainLanguage order by count(r) desc")
     @Cacheable(value = "languageStatistics")
