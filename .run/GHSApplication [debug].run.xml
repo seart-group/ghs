@@ -36,6 +36,10 @@
         <option name="name" value="logging.level.org.hibernate.type.descriptor.sql" />
         <option name="value" value="TRACE" />
       </param>
+      <param>
+        <option name="name" value="logging.level.org.springframework.web.servlet.DispatcherServlet" />
+        <option name="value" value="DEBUG" />
+      </param>
     </additionalParameters>
     <option name="ALTERNATIVE_JRE_PATH" value="11" />
     <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="true" />
