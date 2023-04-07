@@ -44,7 +44,7 @@ public class GitRepoServiceImpl implements GitRepoService {
 
     @Override
     public Optional<GitRepo> getByName(String name) {
-        return gitRepoRepository.findGitRepoByName(name);
+        return gitRepoRepository.findGitRepoByNameIgnoreCase(name);
     }
 
     @Override
@@ -59,7 +59,7 @@ public class GitRepoServiceImpl implements GitRepoService {
 
     @Override
     public GitRepo createOrUpdateRepo(GitRepo repo){
-        Optional<GitRepo> opt = gitRepoRepository.findGitRepoByName(repo.getName().toLowerCase());
+        Optional<GitRepo> opt = gitRepoRepository.findGitRepoByNameIgnoreCase(repo.getName());
         if (opt.isPresent()){
             GitRepo existing = opt.get();
             existing.setIsFork(repo.getIsFork());
