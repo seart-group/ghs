@@ -8,6 +8,7 @@ import org.jetbrains.annotations.NotNull;
 import org.springframework.data.jpa.domain.Specification;
 import usi.si.seart.model.GitRepo;
 import usi.si.seart.model.GitRepoLabel_;
+import usi.si.seart.model.GitRepoMetric_;
 import usi.si.seart.model.GitRepo_;
 import usi.si.seart.repository.criteria.Criteria;
 import usi.si.seart.repository.criteria.KeyCriteria;
@@ -41,103 +42,28 @@ public class GitRepoSpecification implements Specification<GitRepo> {
         List<Predicate> predicates = new ArrayList<>();
 
         for (Criteria criteria : criteriaList) {
-            if (criteria instanceof KeyCriteria) {
-                handle(predicates, root, criteriaBuilder, (KeyCriteria) criteria);
-            } else if (criteria instanceof KeyValueCriteria) {
-                handle(predicates, root, criteriaBuilder, (KeyValueCriteria) criteria);
-            } else if (criteria instanceof NestedKeyValueCriteria) {
-                handle(predicates, root, criteriaBuilder, (NestedKeyValueCriteria) criteria);
-            } else {
-                throw new UnsupportedOperationException(
-                        "Criteria type: ["+criteria.getClass().getCanonicalName()+"] not supported!"
-                );
-            }
+            handle(predicates, root, criteriaBuilder, criteria);
         }
+
+        query.distinct(true);
 
         return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
     }
 
     private void handle(
-            List<Predicate> predicates, Root<GitRepo> root, CriteriaBuilder criteriaBuilder, KeyCriteria criteria
-    ){
-        String key = criteria.getKey();
-        UnaryOperation operation = criteria.getOperation();
-
-        switch (operation) {
-            case IS_NOT_NULL:
-                predicates.add(criteriaBuilder.isNotNull(root.get(key)));
-                break;
-            default:
-                throw new UnsupportedOperationException("Operation: ["+operation+"] not supported!");
-        }
-    }
-
-    private void handle(
-            List<Predicate> predicates, Root<GitRepo> root, CriteriaBuilder criteriaBuilder, KeyValueCriteria criteria
-    ){
-        String key = criteria.getKey();
-        Object value = criteria.getValue();
-        BinaryOperation operation = criteria.getOperation();
-
-        switch (operation) {
-            case GREATER_THAN:
-                predicates.add(criteriaBuilder.greaterThan(root.get(key), value.toString()));
-                break;
-            case GREATER_THAN_EQUAL:
-                if (value instanceof Date) {
-                    predicates.add(criteriaBuilder.greaterThanOrEqualTo(root.get(key), (Date) value));
-                } else {
-                    predicates.add(criteriaBuilder.greaterThanOrEqualTo(root.get(key), value.toString()));
-                }
-                break;
-            case LESS_THAN_EQUAL:
-                if (value instanceof Date) {
-                    predicates.add(criteriaBuilder.lessThanOrEqualTo(root.get(key), (Date) value));
-                } else {
-                    predicates.add(criteriaBuilder.lessThanOrEqualTo(root.get(key), value.toString()));
-                }
-                break;
-            case EQUAL:
-                predicates.add(criteriaBuilder.equal(root.get(key), value));
-                break;
-            case LIKE:
-                predicates.add(
-                        criteriaBuilder.like(
-                                criteriaBuilder.lower(root.get(key)),
-                                "%" + value.toString().toLowerCase() + "%"
-                        )
-                );
-                break;
-            default:
-                throw new UnsupportedOperationException("Operation: ["+operation+"] not supported!");
-        }
-    }
-
-    private void handle(
-            List<Predicate> predicates, Root<GitRepo> root, CriteriaBuilder criteriaBuilder, NestedKeyValueCriteria criteria
-    ){
-        String outerKey = criteria.getOuterKey();
-        String innerKey = criteria.getInnerKey();
-        Object value = criteria.getValue();
-        BinaryOperation operation = criteria.getOperation();
-
-        switch (operation) {
-            case IN:
-                predicates.add(criteriaBuilder.equal(root.join(outerKey).get(innerKey), value.toString()));
-                break;
-            default:
-                throw new UnsupportedOperationException("Operation: ["+operation+"] not supported!");
-        }
+            List<Predicate> predicates, Root<GitRepo> root, CriteriaBuilder criteriaBuilder, Criteria criteria
+    ) {
+        predicates.addAll(criteria.expand(root, criteriaBuilder));
     }
 
     @SuppressWarnings("rawtypes")
-    public static GitRepoSpecification from(Map<String, ?> parameters){
+    public static GitRepoSpecification from(Map<String, ?> parameters) {
         GitRepoSpecification specification = new GitRepoSpecification();
 
         String name = (String) parameters.get("name");
         boolean nameEquals = (Boolean) parameters.get("nameEquals");
         if (StringUtils.isNotBlank(name)) {
-            if (nameEquals){
+            if (nameEquals) {
                 specification.add(new KeyValueCriteria(GitRepo_.NAME, name, BinaryOperation.EQUAL));
             } else {
                 specification.add(new KeyValueCriteria(GitRepo_.NAME, name, BinaryOperation.LIKE));
@@ -154,7 +80,7 @@ public class GitRepoSpecification implements Specification<GitRepo> {
 
         String label = (String) parameters.get("label");
         if (StringUtils.isNotBlank(label))
-            specification.add(new NestedKeyValueCriteria(GitRepo_.LABELS, GitRepoLabel_.LABEL, label, BinaryOperation.IN));
+            specification.add(new NestedKeyValueCriteria(GitRepo_.LABELS, new KeyValueCriteria(GitRepoLabel_.LABEL, label, BinaryOperation.IN)));
 
         Range commits = (Range) parameters.get("commits");
         if (commits.hasLowerBound())
