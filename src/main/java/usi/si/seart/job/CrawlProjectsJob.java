@@ -188,7 +188,10 @@ public class CrawlProjectsJob {
      */
     private void saveRetrievedRepos(JsonArray results, String language, int lowerIndex, int total) {
         int upperIndex = lowerIndex + results.size() - 1;
-        log.info("Adding {} repositories ({} - {} | total: {})", results.size(), lowerIndex, upperIndex, total);
+        log.info(
+                "Crawling {} {} repositories ({} - {} | total: {})",
+                results.size(), language, lowerIndex, upperIndex, total
+        );
 
         for (JsonElement element : results) {
             JsonObject result = element.getAsJsonObject();
