@@ -207,7 +207,7 @@ public class GitRepoController {
 
     @SneakyThrows({ IOException.class })
     @Transactional(readOnly = true)
-    @GetMapping(value = "/download/{format}", produces = "text/*")
+    @GetMapping(value = "/download/{format}")
     public void downloadRepos(
             @PathVariable("format") String format,
             SearchParameterDto searchParameterDto,
