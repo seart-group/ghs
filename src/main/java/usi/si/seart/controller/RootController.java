@@ -1,25 +1,40 @@
 package usi.si.seart.controller;
 
 import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
+import lombok.SneakyThrows;
 import lombok.experimental.FieldDefaults;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.info.BuildProperties;
+import org.springframework.core.io.Resource;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 
 @RestController
-@AllArgsConstructor(onConstructor_ = @Autowired)
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class RootController {
 
     String banner;
 
     BuildProperties buildProperties;
+
+    @Autowired
+    @SneakyThrows(IOException.class)
+    public RootController(
+            @Value("${spring.banner.location}") Resource resource,
+            BuildProperties buildProperties
+    ) {
+        InputStream inputStream = resource.getInputStream();
+        this.banner = new String(inputStream.readAllBytes(), StandardCharsets.UTF_8);
+        this.buildProperties = buildProperties;
+    }
 
     @RequestMapping("/")
     public ResponseEntity<?> root() {
