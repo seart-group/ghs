@@ -9,7 +9,9 @@ import java.util.List;
 
 public interface Criteria {
 
-    default List<Predicate> expand(Path<GitRepo> path, CriteriaBuilder criteriaBuilder) throws UnsupportedOperationException {
-        throw new UnsupportedOperationException("Expand operation on Paths is not supported!");
-    }
+    /**
+     * Expands the criteria into a list of predicates
+     * @throws UnsupportedOperationException if the expanded operation is not supported.
+     */
+     List<Predicate> expand(Path<GitRepo> path, CriteriaBuilder criteriaBuilder);
 }
