@@ -15,7 +15,7 @@ import java.util.List;
 
 @Getter
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
-public class NestedKeyValueCriteria<E, T> implements Criteria {
+public class NestedKeyValueCriteria<E, T> implements Criteria<E> {
     Attribute<E, T> outerKey;
     List<Criteria> criteriaList = new ArrayList<>();
 
@@ -30,7 +30,7 @@ public class NestedKeyValueCriteria<E, T> implements Criteria {
     }
 
     @Override
-    public List<Predicate> expand(Path<GitRepo> path, CriteriaBuilder criteriaBuilder) {
+    public List<Predicate> expand(Path<E> path, CriteriaBuilder criteriaBuilder) {
         // TODO: Add support for NestedKeyValueCriteria inside NestedKeyValueCriteria
         if(!(path instanceof Root)) {
             throw new UnsupportedOperationException("Expand operation for NestedKeyValueCriteria is only supported for Root paths!");
