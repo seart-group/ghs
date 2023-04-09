@@ -13,6 +13,8 @@ import usi.si.seart.converter.JsonObjectToErrorResponseConverter;
 import usi.si.seart.converter.JsonObjectToGitCommitConverter;
 import usi.si.seart.converter.JsonObjectToGitRepoConverter;
 import usi.si.seart.converter.JsonObjectToRateLimitConverter;
+import usi.si.seart.converter.StringToContactsConverter;
+import usi.si.seart.converter.StringToLicensesConverter;
 import usi.si.seart.converter.SupportedLanguageToDtoConverter;
 
 import java.time.Instant;
@@ -64,6 +66,8 @@ public class MainConfig {
                  registry.addConverter(new JsonObjectToGitCommitConverter());
                  registry.addConverter(new JsonObjectToRateLimitConverter());
                  registry.addConverter(new JsonObjectToErrorResponseConverter());
+                 registry.addConverter(new StringToContactsConverter());
+                 registry.addConverter(new StringToLicensesConverter());
             }
         };
     }
