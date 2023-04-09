@@ -391,14 +391,14 @@
           </div>
         </div>
         <div class="row">
-          <div class="col-12 col-md-8">
+          <div class="col-12 col-md-4">
             <div class="row">
               <div class="col">
                 <h5 class="my-3">Popularity Filters</h5>
               </div>
             </div>
             <div class="row">
-              <div class="col-12 col-md-6">
+              <div class="col-12 col-md-12">
                 <div class="row">
                   <div class="col">
                     <h6>Number of Stars</h6>
@@ -425,7 +425,7 @@
                   </div>
                 </div>
               </div>
-              <div class="col-12 col-md-6">
+              <div class="col-12 col-md-12">
                 <div class="row">
                   <div class="col">
                     <h6>Number of Watchers</h6>
@@ -454,7 +454,7 @@
               </div>
             </div>
             <div class="row align-items-end">
-              <div class="col-12 col-md-6">
+              <div class="col-12 col-md-12">
                 <div class="row">
                   <div class="col">
                     <h6>Number of Forks</h6>
@@ -481,7 +481,106 @@
                   </div>
                 </div>
               </div>
-              <div class="col-12 col-md-6">
+<!--              <div class="col-12 col-md-6">-->
+<!--                <div class="row">-->
+<!--                  <div class="col d-none d-md-flex justify-content-md-center">-->
+<!--                    <button class="btn btn-secondary border-dark border-5 w-50 mb-3">Search</button>-->
+<!--                  </div>-->
+<!--                </div>-->
+<!--              </div>-->
+            </div>
+          </div>
+          <div class="col-12 col-md-4">
+            <div class="row">
+              <div class="col">
+                <h5 class="my-3">Size of codebase</h5>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-12 col-md-12">
+                <div class="row">
+                  <div class="col">
+                    <h6>Number of lines of code</h6>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col-12 col-md-6">
+                    <input type="number"
+                           name="codelinesMin"
+                           id="search-codelines-min"
+                           aria-label="Minimum lines of code"
+                           class="form-control mb-3"
+                           placeholder="min"
+                    />
+                  </div>
+                  <div class="col-12 col-md-6">
+                    <input type="number"
+                           name="codelinesMax"
+                           id="search-codelines-max"
+                           aria-label="Maximum lines of code"
+                           class="form-control mb-3"
+                           placeholder="max"
+                    />
+                  </div>
+                </div>
+              </div>
+              <div class="col-12 col-md-12">
+                <div class="row">
+                  <div class="col">
+                    <h6>Number of lines of code comments</h6>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col-12 col-md-6">
+                    <input type="number"
+                           name="commentlinesMin"
+                           id="search-commentlines-min"
+                           aria-label="Minimum lines of code comments"
+                           class="form-control mb-3"
+                           placeholder="min"
+                    />
+                  </div>
+                  <div class="col-12 col-md-6">
+                    <input type="number"
+                           name="commentlinesMax"
+                           id="search-commentlines-max"
+                           aria-label="Maximum lines of code comments"
+                           class="form-control mb-3"
+                           placeholder="max"
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="row align-items-end">
+              <div class="col-12 col-md-12">
+                <div class="row">
+                  <div class="col">
+                    <h6>Number of blank lines</h6>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col-12 col-md-6">
+                    <input type="number"
+                           name="blanklinesMin"
+                           id="search-blanklines-min"
+                           aria-label="Minimum blank lines"
+                           class="form-control mb-3"
+                           placeholder="min"
+                    />
+                  </div>
+                  <div class="col-12 col-md-6">
+                    <input type="number"
+                           name="blanklinesMax"
+                           id="search-blanklines-max"
+                           aria-label="Maximum blank lines"
+                           class="form-control mb-3"
+                           placeholder="max"
+                    />
+                  </div>
+                </div>
+              </div>
+              <div class="col-12 col-md-12">
                 <div class="row">
                   <div class="col d-none d-md-flex justify-content-md-center">
                     <button class="btn btn-secondary border-dark border-5 w-50 mb-3">Search</button>
