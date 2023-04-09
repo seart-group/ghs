@@ -5,6 +5,8 @@ import lombok.AllArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.info.BuildProperties;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -19,8 +21,13 @@ public class RootController {
 
     BuildProperties buildProperties;
 
-    @RequestMapping
-    public String root() {
+    @RequestMapping("/")
+    public ResponseEntity<?> root() {
+        return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/version")
+    public String version() {
         String name = buildProperties.getName();
         String version = buildProperties.getVersion();
         Instant instant = buildProperties.getTime();
