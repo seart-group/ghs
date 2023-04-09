@@ -16,9 +16,10 @@ import org.springframework.util.ErrorHandler;
 
 import java.time.Clock;
 import java.util.Arrays;
-import java.util.Objects;
+import java.util.Set;
 import java.util.concurrent.Executor;
 import java.util.concurrent.ThreadPoolExecutor;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @Configuration
@@ -95,13 +96,15 @@ public class SchedulerConfig {
         @Override
         protected String nextThreadName() {
             ThreadGroup currentGroup = Thread.currentThread().getThreadGroup();
-            int numThreads = currentGroup.activeCount();
-            Thread[] threads = new Thread[numThreads];
-            currentGroup.enumerate(threads);
+            Thread[] th = new Thread[currentGroup.activeCount()];
+            currentGroup.enumerate(th);
+            Set<String> threadNames = Arrays.stream(th)
+                    .map(Thread::getName)
+                    .collect(Collectors.toSet());
 
             return Stream.iterate(1, i -> i + 1)
                     .map(i -> getThreadNamePrefix() + i)
-                    .filter(name -> Arrays.stream(threads).noneMatch(t -> Objects.equals(t.getName(), name)))
+                    .filter(name -> !threadNames.contains(name))
                     .findFirst()
                     .orElseGet(super::nextThreadName);
         }

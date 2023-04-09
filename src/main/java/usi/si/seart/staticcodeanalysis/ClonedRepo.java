@@ -12,6 +12,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Comparator;
+import java.util.stream.Stream;
 
 /**
  * A git repository which is cloned on the filesystem.
@@ -29,8 +30,8 @@ class ClonedRepo implements AutoCloseable {
      */
     @Override
     public void close() {
-        try {
-            Files.walk(path)
+        try (Stream<Path> files = Files.walk(path)) {
+            files
                     .sorted(Comparator.reverseOrder())
                     .map(Path::toFile)
                     .forEach(File::delete);
