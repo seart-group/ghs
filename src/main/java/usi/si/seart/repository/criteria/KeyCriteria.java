@@ -4,7 +4,6 @@ import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.experimental.FieldDefaults;
-import usi.si.seart.model.GitRepo;
 import usi.si.seart.repository.operation.UnaryOperation;
 
 import javax.persistence.criteria.CriteriaBuilder;
@@ -17,13 +16,13 @@ import java.util.List;
 @Getter
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
-public class KeyCriteria<E, T> implements Criteria {
+public class KeyCriteria<E, T> implements Criteria<E> {
     Attribute<E, T> key;
     UnaryOperation operation;
 
 
     @Override
-    public List<Predicate> expand(Path<GitRepo> path, CriteriaBuilder criteriaBuilder) {
+    public List<Predicate> expand(Path<E> path, CriteriaBuilder criteriaBuilder) {
         List<Predicate> predicates = new ArrayList<>();
         switch (operation) {
             case IS_NOT_NULL:
