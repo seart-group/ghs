@@ -9,6 +9,8 @@ import org.springframework.data.jpa.domain.Specification;
 import usi.si.seart.model.GitRepo;
 import usi.si.seart.model.GitRepoLabel;
 import usi.si.seart.model.GitRepoLabel_;
+import usi.si.seart.model.GitRepoMetric;
+import usi.si.seart.model.GitRepoMetric_;
 import usi.si.seart.model.GitRepo_;
 import usi.si.seart.repository.criteria.Criteria;
 import usi.si.seart.repository.criteria.KeyCriteria;
@@ -137,6 +139,31 @@ public class GitRepoSpecification implements Specification<GitRepo> {
             specification.add(new KeyValueCriteria<>(GitRepo_.forks, (Long) forks.lowerEndpoint(), BinaryOperation.GREATER_THAN_EQUAL));
         if (forks.hasUpperBound())
             specification.add(new KeyValueCriteria<>(GitRepo_.forks, (Long) forks.upperEndpoint(), BinaryOperation.LESS_THAN_EQUAL));
+
+        Range<Long> codelines = (Range) parameters.get("codelines");
+        if (codelines.hasLowerBound())
+            specification.add(new NestedKeyValueCriteria<GitRepo, GitRepoMetric>((Attribute)GitRepo_.metrics,
+                    new KeyValueCriteria<>(GitRepoMetric_.codeLines, codelines.lowerEndpoint(), BinaryOperation.GREATER_THAN_EQUAL)));
+        if (codelines.hasUpperBound())
+            specification.add(new NestedKeyValueCriteria<GitRepo, GitRepoMetric>((Attribute)GitRepo_.metrics,
+                    new KeyValueCriteria<>(GitRepoMetric_.codeLines, codelines.upperEndpoint(), BinaryOperation.LESS_THAN_EQUAL)));
+
+        Range<Long> commentlines = (Range) parameters.get("commentlines");
+        if (commentlines.hasLowerBound())
+            specification.add(new NestedKeyValueCriteria<GitRepo, GitRepoMetric>((Attribute)GitRepo_.metrics,
+                    new KeyValueCriteria<>(GitRepoMetric_.commentLines, commentlines.lowerEndpoint(), BinaryOperation.GREATER_THAN_EQUAL)));
+        if (commentlines.hasUpperBound())
+            specification.add(new NestedKeyValueCriteria<GitRepo, GitRepoMetric>((Attribute)GitRepo_.metrics,
+                    new KeyValueCriteria<>(GitRepoMetric_.commentLines, commentlines.upperEndpoint(), BinaryOperation.LESS_THAN_EQUAL)));
+
+        Range<Long> blanklines = (Range) parameters.get("blanklines");
+        if (blanklines.hasLowerBound())
+            specification.add(new NestedKeyValueCriteria<GitRepo, GitRepoMetric>((Attribute)GitRepo_.metrics,
+                    new KeyValueCriteria<>(GitRepoMetric_.blankLines, blanklines.lowerEndpoint(), BinaryOperation.GREATER_THAN_EQUAL)));
+        if (blanklines.hasUpperBound())
+            specification.add(new NestedKeyValueCriteria<GitRepo, GitRepoMetric>((Attribute)GitRepo_.metrics,
+                    new KeyValueCriteria<>(GitRepoMetric_.blankLines, blanklines.upperEndpoint(), BinaryOperation.LESS_THAN_EQUAL)));
+
 
         Range<Date> created = (Range) parameters.get("created");
         if (created.hasLowerBound())
