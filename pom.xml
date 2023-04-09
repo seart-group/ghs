@@ -16,7 +16,7 @@
 
 	<name>GitHub Search</name>
 	<description>
-		The SEART GitHub Search Engine (seart-ghs) allows sampling repositories to use for empirical studies by using several combinations of selection criteria.
+		Platform used to crawl, store and present projects from GitHub, as well as any statistics related to them.
 	</description>
 	<inceptionYear>2020</inceptionYear>
 	<url>https://seart-ghs.si.usi.ch/</url>
