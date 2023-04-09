@@ -9,7 +9,6 @@ import org.springframework.boot.info.BuildProperties;
 import org.springframework.core.io.Resource;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.io.IOException;
@@ -36,7 +35,7 @@ public class RootController {
         this.buildProperties = buildProperties;
     }
 
-    @RequestMapping("/")
+    @GetMapping
     public ResponseEntity<?> root() {
         return ResponseEntity.ok().build();
     }
