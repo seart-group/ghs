@@ -248,6 +248,13 @@
 						<goals>
 							<goal>build-info</goal>
 						</goals>
+						<configuration>
+							<additionalProperties>
+								<description>${project.description}</description>
+								<licenses>${project.licenses}</licenses>
+								<developers>${project.developers}</developers>
+							</additionalProperties>
+						</configuration>
 					</execution>
 				</executions>
 			</plugin>
