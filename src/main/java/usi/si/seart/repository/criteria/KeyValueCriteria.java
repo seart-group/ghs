@@ -10,6 +10,7 @@ import usi.si.seart.repository.operation.BinaryOperation;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Predicate;
+import javax.persistence.metamodel.Attribute;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -17,45 +18,46 @@ import java.util.List;
 @Getter
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
-public class KeyValueCriteria implements Criteria {
-    String key;
-    Object value;
+public class KeyValueCriteria<E, T> implements Criteria {
+    Attribute<E, T> key;
+    T value;
     BinaryOperation operation;
 
     @Override
     public List<Predicate> expand(Path<GitRepo> path, CriteriaBuilder criteriaBuilder) {
         List<Predicate> predicates = new ArrayList<>();
+        String attributeName = key.getName();
         switch (operation) {
             case GREATER_THAN:
-                predicates.add(criteriaBuilder.greaterThan(path.get(key), value.toString()));
+                predicates.add(criteriaBuilder.greaterThan(path.get(attributeName), value.toString()));
                 break;
             case GREATER_THAN_EQUAL:
                 if (value instanceof Date) {
-                    predicates.add(criteriaBuilder.greaterThanOrEqualTo(path.get(key), (Date) value));
+                    predicates.add(criteriaBuilder.greaterThanOrEqualTo(path.get(attributeName), (Date) value));
                 } else {
-                    predicates.add(criteriaBuilder.greaterThanOrEqualTo(path.get(key), value.toString()));
+                    predicates.add(criteriaBuilder.greaterThanOrEqualTo(path.get(attributeName), value.toString()));
                 }
                 break;
             case LESS_THAN_EQUAL:
                 if (value instanceof Date) {
-                    predicates.add(criteriaBuilder.lessThanOrEqualTo(path.get(key), (Date) value));
+                    predicates.add(criteriaBuilder.lessThanOrEqualTo(path.get(attributeName), (Date) value));
                 } else {
-                    predicates.add(criteriaBuilder.lessThanOrEqualTo(path.get(key), value.toString()));
+                    predicates.add(criteriaBuilder.lessThanOrEqualTo(path.get(attributeName), value.toString()));
                 }
                 break;
             case EQUAL:
-                predicates.add(criteriaBuilder.equal(path.get(key), value));
+                predicates.add(criteriaBuilder.equal(path.get(attributeName), value));
                 break;
             case LIKE:
                 predicates.add(
                         criteriaBuilder.like(
-                                criteriaBuilder.lower(path.get(key)),
+                                criteriaBuilder.lower(path.get(attributeName)),
                                 "%" + value.toString().toLowerCase() + "%"
                         )
                 );
                 break;
             case IN:
-                predicates.add(criteriaBuilder.equal(path.get(key), value.toString()));
+                predicates.add(criteriaBuilder.equal(path.get(attributeName), value.toString()));
                 break;
             default:
                 throw new UnsupportedOperationException("Operation: ["+operation+"] not supported!");
