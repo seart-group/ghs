@@ -11,6 +11,7 @@ import com.fasterxml.jackson.dataformat.csv.CsvSchema;
 import com.fasterxml.jackson.dataformat.xml.XmlFactory;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import com.fasterxml.jackson.dataformat.xml.ser.ToXmlGenerator;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AccessLevel;
 import lombok.Cleanup;
 import lombok.RequiredArgsConstructor;
@@ -67,6 +68,7 @@ import java.util.stream.Stream;
 @RequestMapping("/r")
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
+@Tag(name = "git-repo", description = "Endpoints used for retrieving information regarding mined repositories.")
 public class GitRepoController {
 
     private static final Set<String> supportedFields = Set.of(
