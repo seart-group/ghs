@@ -1,5 +1,6 @@
 package usi.si.seart.controller;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AccessLevel;
 import lombok.SneakyThrows;
 import lombok.experimental.FieldDefaults;
@@ -18,6 +19,7 @@ import java.time.Instant;
 
 @RestController
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
+@Tag(name = "root", description = "Endpoints used primarily API status for checks.")
 public class RootController {
 
     String banner;

@@ -1,5 +1,6 @@
 package usi.si.seart.controller;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -21,6 +22,7 @@ import java.util.stream.Collectors;
 @RequestMapping("/l")
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
+@Tag(name = "supported-language", description = "Endpoints used for retrieving information regarding platform-supported languages.")
 public class SupportedLanguageController {
 
     SupportedLanguageService supportedLanguageService;
