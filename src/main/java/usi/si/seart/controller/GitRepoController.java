@@ -11,6 +11,10 @@ import com.fasterxml.jackson.dataformat.csv.CsvSchema;
 import com.fasterxml.jackson.dataformat.xml.XmlFactory;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import com.fasterxml.jackson.dataformat.xml.ser.ToXmlGenerator;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.enums.ParameterIn;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AccessLevel;
 import lombok.Cleanup;
@@ -104,9 +108,15 @@ public class GitRepoController {
     EntityManager entityManager;
 
     @GetMapping(value = "/search", produces = MediaType.APPLICATION_JSON_VALUE)
+    @Operation(summary = "Perform a search for GitHub repositories matching a set of specified criteria.")
+    @ApiResponse(responseCode = "200", description = "OK")
+    @ApiResponse(responseCode = "400", description = "Bad request body format or unsupported sorting property")
     public ResponseEntity<?> searchRepos(
+            @Parameter(description = "The repository match criteria", in = ParameterIn.QUERY)
             SearchParameterDto searchParameterDto,
-            @SortDefault(sort = GitRepo_.NAME) Pageable pageable,
+            @Parameter(description = "The search pagination settings", in = ParameterIn.QUERY)
+            @SortDefault(sort = GitRepo_.NAME)
+            Pageable pageable,
             HttpServletRequest request
     ) {
         Set<String> sortFields = pageable.getSort().stream()
@@ -210,8 +220,14 @@ public class GitRepoController {
     @SneakyThrows({ IOException.class })
     @Transactional(readOnly = true)
     @GetMapping(value = "/download/{format}")
+    @Operation(summary = "Export GitHub repositories matching a set of specified criteria to a file format.")
+    @ApiResponse(responseCode = "200", description = "OK")
+    @ApiResponse(responseCode = "400", description = "Bad request body format or unsupported export format")
     public void downloadRepos(
-            @PathVariable("format") String format,
+            @Parameter(description = "Export file format", in = ParameterIn.PATH, example = "csv")
+            @PathVariable("format")
+            String format,
+            @Parameter(description = "The repository match criteria", in = ParameterIn.QUERY)
             SearchParameterDto searchParameterDto,
             HttpServletResponse response
     ) {
@@ -324,29 +340,41 @@ public class GitRepoController {
     }
 
     @GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<?> getRepoById(@PathVariable(value = "id") Long id){
+    @Operation(summary = "Retrieve repository information based on its internal identifier (ID).")
+    @ApiResponse(responseCode = "200", description = "OK")
+    @ApiResponse(responseCode = "400", description = "Bad repository ID format")
+    @ApiResponse(responseCode = "404", description = "Repository with requested ID does not exist")
+    public ResponseEntity<?> getRepoById(
+            @Parameter(description = "The repository identifier", in = ParameterIn.PATH, example = "0")
+            @PathVariable(value = "id")
+            Long id
+    ) {
         GitRepo gitRepo = gitRepoService.getRepoById(id);
         GitRepoDto dto = conversionService.convert(gitRepo, GitRepoDto.class);
         return ResponseEntity.ok(dto);
     }
 
     @GetMapping(value = "/labels", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<?> getAllLabels(){
+    @Operation(summary = "Retrieve a list of the 500 most popular issue labels mined across projects.")
+    public ResponseEntity<?> getAllLabels() {
         return ResponseEntity.ok(gitRepoService.getAllLabels(500));
     }
 
     @GetMapping(value = "/languages", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<?> getAllLanguages(){
+    @Operation(summary = "Retrieve a list of all repository languages mined across projects.")
+    public ResponseEntity<?> getAllLanguages() {
         return ResponseEntity.ok(gitRepoService.getAllLanguages());
     }
 
     @GetMapping(value = "/licenses", produces = MediaType.APPLICATION_JSON_VALUE)
+    @Operation(summary = "Retrieve a list of all repository licenses mined across projects.")
     public ResponseEntity<?> getAllLicenses() {
         return ResponseEntity.ok(gitRepoService.getAllLicenses());
     }
 
     @GetMapping("/stats")
-    public ResponseEntity<?> getRepoStatistics(){
+    @Operation(summary = "Retrieve the number of repositories mined for each supported language.")
+    public ResponseEntity<?> getRepoStatistics() {
         return ResponseEntity.ok(gitRepoService.getMainLanguageStatistics());
     }
 }
