@@ -2,7 +2,6 @@ package usi.si.seart.controller;
 
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.core.TokenStreamFactory;
 import com.fasterxml.jackson.databind.json.JsonMapper;
 import com.fasterxml.jackson.dataformat.csv.CsvFactory;
 import com.fasterxml.jackson.dataformat.csv.CsvGenerator;
@@ -218,22 +217,33 @@ public class GitRepoController {
             return;
         }
 
-        response.setContentType("text/" + format);
+        String contentType;
+        switch (format) {
+            case "json":
+                contentType = "application/" + format;
+                break;
+            case "csv":
+            case "xml":
+                contentType = "text/" + format;
+                break;
+            default:
+                throw new IllegalStateException("Default portion of this switch should not be reachable!");
+        }
+
+        response.setContentType(contentType);
         response.setHeader("Content-Disposition", "attachment;filename=results." + format);
 
-        @Cleanup PrintWriter printWriter = response.getWriter();
-        TokenStreamFactory factory;
+        PrintWriter writer = response.getWriter();
         JsonGenerator generator;
-
         switch (format) {
             case "csv":
-                factory = new CsvFactory();
+                generator = new CsvFactory().createGenerator(writer);
                 break;
             case "json":
-                factory = new JsonFactory();
+                generator = new JsonFactory().createGenerator(writer);
                 break;
             case "xml":
-                factory = new XmlFactory();
+                generator = new XmlFactory().createGenerator(writer);
                 break;
             default:
                 throw new IllegalStateException("Default portion of this switch should not be reachable!");
@@ -248,21 +258,19 @@ public class GitRepoController {
                 });
         Iterable<GitRepoDto> dtos = results::iterator;
 
-        generator = factory.createGenerator(printWriter);
-
         switch (format) {
             case "csv":
                 generator.setCodec(csvMapper);
                 generator.setSchema(csvSchema);
-                writeCsv(generator, dtos, searchParameterDto);
+                writeResults((CsvGenerator) generator, dtos, searchParameterDto);
                 break;
             case "json":
                 generator.setCodec(jsonMapper);
-                writeJson(generator, dtos, searchParameterDto);
+                writeResults(generator, dtos, searchParameterDto);
                 break;
             case "xml":
                 generator.setCodec(xmlMapper);
-                writeXml(generator, dtos, searchParameterDto);
+                writeResults((ToXmlGenerator) generator, dtos, searchParameterDto);
                 break;
             default:
                 throw new IllegalStateException("Default portion of this switch should not be reachable!");
@@ -271,7 +279,7 @@ public class GitRepoController {
         generator.close();
     }
 
-    private void writeJson(
+    private void writeResults(
             JsonGenerator generator, Iterable<GitRepoDto> dtos, SearchParameterDto searchParameterDto
     ) throws IOException {
         generator.writeStartObject();
@@ -284,38 +292,36 @@ public class GitRepoController {
         generator.writeEndObject();
     }
 
-    private void writeXml(
-            JsonGenerator generator, Iterable<GitRepoDto> dtos, SearchParameterDto searchParameterDto
+    private void writeResults(
+            ToXmlGenerator generator, Iterable<GitRepoDto> dtos, SearchParameterDto searchParameterDto
     ) throws IOException {
-        ToXmlGenerator xmlGenerator = (ToXmlGenerator) generator;
-        xmlGenerator.configure(ToXmlGenerator.Feature.WRITE_XML_DECLARATION, true);
-        xmlGenerator.configure(ToXmlGenerator.Feature.WRITE_XML_1_1, true);
-        xmlGenerator.initGenerator();
-        xmlGenerator.setNextName(new QName("results"));
-        xmlGenerator.writeStartObject();
+        generator.configure(ToXmlGenerator.Feature.WRITE_XML_DECLARATION, true);
+        generator.configure(ToXmlGenerator.Feature.WRITE_XML_1_1, true);
+        generator.initGenerator();
+        generator.setNextName(new QName("results"));
+        generator.writeStartObject();
 
         String attributes = searchParameterDto.toMap().entrySet().stream()
                 .map(entry -> String.format("%s=\"%s\"", entry.getKey(), entry.getValue()))
                 .collect(Collectors.joining(" "));
         String parameters = String.format("<parameters %s/>", attributes);
-        xmlGenerator.writeRaw(parameters);
+        generator.writeRaw(parameters);
 
-        xmlGenerator.writeFieldName("items");
-        xmlGenerator.writeStartObject();
+        generator.writeFieldName("items");
+        generator.writeStartObject();
         for (GitRepoDto dto : dtos) {
-            xmlGenerator.writePOJOField("item", dto);
+            generator.writePOJOField("item", dto);
         }
-        xmlGenerator.writeEndObject();
+        generator.writeEndObject();
 
-        xmlGenerator.writeEndObject();
+        generator.writeEndObject();
     }
 
-    private void writeCsv(
-            JsonGenerator generator, Iterable<GitRepoDto> dtos, SearchParameterDto searchParameterDto
+    private void writeResults(
+            CsvGenerator generator, Iterable<GitRepoDto> dtos, SearchParameterDto searchParameterDto
     ) throws IOException {
-        CsvGenerator csvGenerator = (CsvGenerator) generator;
-        csvGenerator.configure(JsonGenerator.Feature.IGNORE_UNKNOWN, true);
-        csvGenerator.configure(CsvGenerator.Feature.ALWAYS_QUOTE_STRINGS, true);
+        generator.configure(JsonGenerator.Feature.IGNORE_UNKNOWN, true);
+        generator.configure(CsvGenerator.Feature.ALWAYS_QUOTE_STRINGS, true);
         for (GitRepoDto dto : dtos) {
             generator.writePOJO(dto);
         }
