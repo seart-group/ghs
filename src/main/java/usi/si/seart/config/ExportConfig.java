@@ -45,27 +45,27 @@ public class ExportConfig {
 
     @Bean
     public JsonMapper jsonMapper() {
-        JsonMapper jsonMapper = new JsonMapper();
-        jsonMapper.setDateFormat(exportTimeFormat());
-        return jsonMapper;
+        return JsonMapper.builder()
+                .defaultDateFormat(exportTimeFormat())
+                .build();
     }
 
     @Bean
     public CsvMapper csvMapper() {
-        CsvMapper csvMapper = new CsvMapper();
-        csvMapper.setDateFormat(exportTimeFormat());
-        csvMapper.configure(JsonGenerator.Feature.IGNORE_UNKNOWN, true);
-        csvMapper.configure(CsvGenerator.Feature.ALWAYS_QUOTE_STRINGS, true);
-        return csvMapper;
+        return CsvMapper.builder()
+                .defaultDateFormat(exportTimeFormat())
+                .enable(JsonGenerator.Feature.IGNORE_UNKNOWN)
+                .enable(CsvGenerator.Feature.ALWAYS_QUOTE_STRINGS)
+                .build();
     }
 
     @Bean
     public XmlMapper xmlMapper() {
-        XmlMapper xmlMapper = new XmlMapper();
-        xmlMapper.configure(ToXmlGenerator.Feature.WRITE_XML_DECLARATION, true);
-        xmlMapper.configure(ToXmlGenerator.Feature.WRITE_XML_1_1, true);
-        xmlMapper.setDateFormat(exportTimeFormat());
-        return xmlMapper;
+        return XmlMapper.builder()
+                .defaultDateFormat(exportTimeFormat())
+                .enable(ToXmlGenerator.Feature.WRITE_XML_DECLARATION)
+                .enable(ToXmlGenerator.Feature.WRITE_XML_1_1)
+                .build();
     }
 
     @Bean
