@@ -1,5 +1,8 @@
 package usi.si.seart.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -21,13 +24,16 @@ import java.util.stream.Collectors;
 @RequestMapping("/l")
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
+@Tag(name = "supported-language", description = "Endpoints used for retrieving information regarding platform-supported languages.")
 public class SupportedLanguageController {
 
     SupportedLanguageService supportedLanguageService;
     GitRepoService gitRepoService;
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<?> getLanguages(){
+    @Operation(summary = "Get the names of all currently supported languages")
+    @ApiResponse(responseCode = "200", description = "OK")
+    public ResponseEntity<?> getLanguages() {
         return ResponseEntity.ok(
                 supportedLanguageService.getAll()
                         .stream()
@@ -38,7 +44,9 @@ public class SupportedLanguageController {
     }
 
     @GetMapping(value = "/stats", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<?> getLanguageStatistics(){
+    @Operation(summary = "Get the number of mined repositories for each supported language")
+    @ApiResponse(responseCode = "200", description = "OK")
+    public ResponseEntity<?> getLanguageStatistics() {
         return ResponseEntity.ok(gitRepoService.getAllLanguageStatistics());
     }
 }

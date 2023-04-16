@@ -16,7 +16,7 @@
 
 	<name>GitHub Search</name>
 	<description>
-		The SEART GitHub Search Engine (seart-ghs) allows sampling repositories to use for empirical studies by using several combinations of selection criteria.
+		Platform used to crawl, store and present projects from GitHub, as well as any statistics related to them.
 	</description>
 	<inceptionYear>2020</inceptionYear>
 	<url>https://seart-ghs.si.usi.ch/</url>
@@ -136,6 +136,11 @@
 			<scope>test</scope>
 		</dependency>
 		<dependency>
+			<groupId>org.springdoc</groupId>
+			<artifactId>springdoc-openapi-ui</artifactId>
+			<version>1.7.0</version>
+		</dependency>
+		<dependency>
 			<groupId>org.projectlombok</groupId>
 			<artifactId>lombok</artifactId>
 		</dependency>
@@ -243,6 +248,13 @@
 						<goals>
 							<goal>build-info</goal>
 						</goals>
+						<configuration>
+							<additionalProperties>
+								<description>${project.description}</description>
+								<licenses>${project.licenses}</licenses>
+								<developers>${project.developers}</developers>
+							</additionalProperties>
+						</configuration>
 					</execution>
 				</executions>
 			</plugin>
