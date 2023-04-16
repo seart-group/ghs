@@ -31,8 +31,8 @@ public class OpenAPIConfig {
         this.version = buildProperties.get("version");
         License[] licenses = conversionService.convert(buildProperties.get("licenses"), License[].class);
         Contact[] contacts = conversionService.convert(buildProperties.get("developers"), Contact[].class);
-        this.license = licenses[0];
-        this.contact = contacts[0];
+        this.license = (licenses.length > 0) ? licenses[0] : null;
+        this.contact = (contacts.length > 0) ? contacts[0] : null;
     }
 
     @Bean
