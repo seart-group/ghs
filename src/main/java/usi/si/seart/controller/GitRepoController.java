@@ -134,8 +134,8 @@ public class GitRepoController {
         resultPage.put("items", dtos);
 
         MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
-        headers.add("Links", searchLinkBuilder.getLinks(request, results));
-        headers.add("Download", downloadLinkBuilder.getLinks(request));
+        headers.add("X-Link-Search", searchLinkBuilder.getLinks(request, results));
+        headers.add("X-Link-Download", downloadLinkBuilder.getLinks(request));
 
         return new ResponseEntity<>(resultPage, headers, HttpStatus.OK);
     }
