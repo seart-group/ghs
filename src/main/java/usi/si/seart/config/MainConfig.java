@@ -53,7 +53,10 @@ public class MainConfig {
                                 "http://localhost:7030",
                                 "https://seart-ghs.si.usi.ch"
                         )
-                        .exposedHeaders("Links", "Download", "Content-Type", "Transfer-Encoding", "Date");
+                        .exposedHeaders(
+                                "X-Link-Search",
+                                "X-Link-Download"
+                        );
             }
 
             @Override
