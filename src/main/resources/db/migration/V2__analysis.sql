@@ -22,3 +22,6 @@ CREATE TABLE repo_metrics
     FOREIGN KEY (metric_language_id) REFERENCES metric_language(id),
     PRIMARY KEY (repo_id, metric_language_id)
 );
+
+create index repo_metrics_repo_id_metric_language_id_index
+    on repo_metrics (repo_id, metric_language_id);
