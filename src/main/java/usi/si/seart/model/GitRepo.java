@@ -10,6 +10,7 @@ import lombok.experimental.FieldDefaults;
 import org.hibernate.Hibernate;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
+import org.hibernate.annotations.Formula;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -133,6 +134,15 @@ public class GitRepo {
     @OneToMany(mappedBy="repo", cascade=CascadeType.ALL, orphanRemoval = true)
     @Fetch(value = FetchMode.JOIN)
     Set<GitRepoMetric> metrics = new HashSet<>();
+
+    @Formula("(select sum(m.lines_blank) from repo_metrics m where m.repo_id = id)")
+    Long overallBlanklines;
+
+    @Formula("(select sum(m.lines_code) from repo_metrics m where m.repo_id = id)")
+    Long overallCodelines;
+
+    @Formula("(select sum(m.lines_comment) from repo_metrics m where m.repo_id = id)")
+    Long overallCommentlines;
 
     @Override
     public boolean equals(Object o) {
