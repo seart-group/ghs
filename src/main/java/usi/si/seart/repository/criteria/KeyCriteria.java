@@ -4,33 +4,34 @@ import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.experimental.FieldDefaults;
+import org.jetbrains.annotations.NotNull;
 import usi.si.seart.repository.operation.UnaryOperation;
 
 import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Predicate;
-import javax.persistence.metamodel.Attribute;
-import java.util.ArrayList;
-import java.util.List;
+import javax.persistence.criteria.Root;
 
 @Getter
 @AllArgsConstructor
-@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
+@FieldDefaults(level = AccessLevel.PROTECTED, makeFinal = true)
 public class KeyCriteria<E, T> implements Criteria<E> {
-    Attribute<E, T> key;
+
+    Path<T> key;
     UnaryOperation operation;
 
-
     @Override
-    public List<Predicate> expand(Path<E> path, CriteriaBuilder criteriaBuilder) {
-        List<Predicate> predicates = new ArrayList<>();
+    public Predicate toPredicate(
+            @NotNull Root<E> root, @NotNull CriteriaQuery<?> query, @NotNull CriteriaBuilder criteriaBuilder
+    ) {
         switch (operation) {
+            case IS_NULL:
+                return criteriaBuilder.isNull(key);
             case IS_NOT_NULL:
-                predicates.add(criteriaBuilder.isNotNull(path.<T>get(key.getName())));
-                break;
+                return criteriaBuilder.isNotNull(key);
             default:
-                throw new UnsupportedOperationException("Operation: ["+operation+"] not supported!");
+                throw operation.toRuntimeException();
         }
-        return predicates;
     }
 }

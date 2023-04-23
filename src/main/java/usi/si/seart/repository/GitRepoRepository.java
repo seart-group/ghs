@@ -44,12 +44,12 @@ public interface GitRepoRepository extends
     Long countAllRepoWithOutdatedCodeMetrics();
 
     default Page<GitRepo> findAllDynamically(Map<String, ?> parameters, Pageable pageable) {
-        GitRepoSpecification specification = GitRepoSpecification.from(parameters);
+        GitRepoSpecification specification = new GitRepoSpecification(parameters);
         return findAll(specification, pageable);
     }
 
     default Stream<GitRepo> streamAllDynamically(Map<String, ?> parameters) {
-        GitRepoSpecification specification = GitRepoSpecification.from(parameters);
+        GitRepoSpecification specification = new GitRepoSpecification(parameters);
         return stream(specification, GitRepo.class);
     }
 }
