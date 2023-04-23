@@ -4,55 +4,48 @@ import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.experimental.FieldDefaults;
+import org.jetbrains.annotations.NotNull;
+import org.springframework.util.Assert;
 import usi.si.seart.repository.operation.BinaryOperation;
 
 import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Predicate;
-import javax.persistence.metamodel.Attribute;
-import java.util.ArrayList;
-import java.util.List;
+import javax.persistence.criteria.Root;
 
 @Getter
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
-public class KeyValueCriteria<E, T> implements Criteria<E> {
-    Attribute<E, T> key;
+public class KeyValueCriteria<E, T extends Comparable<T>> implements Criteria<E> {
+
+    Path<T> key;
     T value;
     BinaryOperation operation;
 
     @Override
-    public List<Predicate> expand(Path<E> path, CriteriaBuilder criteriaBuilder) {
-        List<Predicate> predicates = new ArrayList<>();
-        String attributeName = key.getName();
+    public Predicate toPredicate(
+            @NotNull Root<E> root, @NotNull CriteriaQuery<?> query, @NotNull CriteriaBuilder criteriaBuilder
+    ) {
         switch (operation) {
             case GREATER_THAN:
-                predicates.add(criteriaBuilder.greaterThan(path.get(attributeName), (Comparable) value));
-                break;
+                return criteriaBuilder.greaterThan(key, value);
             case GREATER_THAN_EQUAL:
-                predicates.add(criteriaBuilder.greaterThanOrEqualTo(path.get(attributeName), (Comparable) value));
-                break;
+                return criteriaBuilder.greaterThanOrEqualTo(key, value);
             case LESS_THAN_EQUAL:
-                predicates.add(criteriaBuilder.lessThanOrEqualTo(path.get(attributeName), (Comparable) value));
-                break;
+                return criteriaBuilder.lessThanOrEqualTo(key, value);
             case EQUAL:
-                predicates.add(criteriaBuilder.equal(path.get(attributeName), value));
-                break;
+                return criteriaBuilder.equal(key, value);
             case LIKE:
-                predicates.add(
-                        criteriaBuilder.like(
-                                criteriaBuilder.lower(path.get(attributeName)),
-                                "%" + value.toString().toLowerCase() + "%"
-                        )
+                Assert.isInstanceOf(String.class, value, "Value must be a string for it to be used with LIKE");
+                Path<String> castKey = (Path<String>) key;
+                String castValue = (String) value;
+                return criteriaBuilder.like(
+                        criteriaBuilder.lower(castKey),
+                        "%" + castValue.toLowerCase() + "%"
                 );
-                break;
-            case IN:
-                predicates.add(criteriaBuilder.equal(path.get(attributeName), value.toString()));
-                break;
             default:
-                throw new UnsupportedOperationException("Operation: ["+operation+"] not supported!");
+                throw operation.toRuntimeException();
         }
-
-        return predicates;
     }
 }
