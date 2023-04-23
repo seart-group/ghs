@@ -132,7 +132,7 @@ public class GitRepoSpecification implements Specification<GitRepo> {
         Path<Long> codelinesPath;
         Path<Long> blanklinesPath;
         if (StringUtils.isNotBlank(language)) {
-            criteria.add(new KeyValueCriteria<>(root.join(GitRepo_.metrics).join(GitRepoMetric_.language).join(MetricLanguage_.language), language, BinaryOperation.EQUAL));
+            criteria.add(new KeyValueCriteria<>(root.join(GitRepo_.metrics).join(GitRepoMetric_.language).get(MetricLanguage_.language), language, BinaryOperation.EQUAL));
             commentlinesPath = root.join(GitRepo_.metrics).get(GitRepoMetric_.commentLines);
             codelinesPath = root.join(GitRepo_.metrics).get(GitRepoMetric_.codeLines);
             blanklinesPath = root.join(GitRepo_.metrics).get(GitRepoMetric_.blankLines);
