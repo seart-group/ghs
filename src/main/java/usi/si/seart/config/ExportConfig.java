@@ -70,7 +70,7 @@ public class ExportConfig {
 
     @Bean
     public CsvSchema csvSchema() {
-        Set<String> exclusions = Set.of("id", "labels", "languages");
+        Set<String> exclusions = Set.of("id", "labels", "languages", "metrics");
 
         List<String> fields = Arrays.stream(GitRepoDto.class.getDeclaredFields())
                 .map(Field::getName)
