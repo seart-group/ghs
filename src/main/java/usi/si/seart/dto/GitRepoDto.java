@@ -34,11 +34,11 @@ public class GitRepoDto {
     Long openIssues;
     Long totalPullRequests;
     Long openPullRequests;
-    Long overallBlanklines;
-    Long overallCodelines;
-    Long overallCommentlines;
-    @JacksonXmlProperty(localName = "metric", isAttribute = true)
+    Long totalLines;
+    Long totalCodelines;
+    Long totalCommentlines;
     @JacksonXmlElementWrapper(localName = "metrics")
+    @JacksonXmlProperty(localName = "metric", isAttribute = true)
     @Builder.Default
     List<Map<String, String>> metrics = new ArrayList<>();
     Date lastCommit;

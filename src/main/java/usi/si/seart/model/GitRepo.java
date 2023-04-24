@@ -1,24 +1,13 @@
 package usi.si.seart.model;
 
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import lombok.experimental.FieldDefaults;
 import org.hibernate.Hibernate;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 import org.hibernate.annotations.Formula;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.OneToMany;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Objects;
@@ -135,14 +124,14 @@ public class GitRepo {
     @Fetch(value = FetchMode.JOIN)
     Set<GitRepoMetric> metrics = new HashSet<>();
 
-    @Formula("(select sum(m.lines_blank) from repo_metrics m where m.repo_id = id)")
-    Long overallBlanklines;
-
     @Formula("(select sum(m.lines_code) from repo_metrics m where m.repo_id = id)")
-    Long overallCodelines;
+    Long totalCodelines;
 
     @Formula("(select sum(m.lines_comment) from repo_metrics m where m.repo_id = id)")
-    Long overallCommentlines;
+    Long totalCommentlines;
+
+    @Formula("(select sum(m.lines_code+m.lines_comment) from repo_metrics m where m.repo_id = id)")
+    Long totalLines;
 
     @Override
     public boolean equals(Object o) {

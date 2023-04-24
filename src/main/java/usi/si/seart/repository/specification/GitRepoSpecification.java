@@ -7,22 +7,14 @@ import lombok.experimental.FieldDefaults;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.data.jpa.domain.Specification;
-import usi.si.seart.model.GitRepo;
-import usi.si.seart.model.GitRepoLabel_;
-import usi.si.seart.model.GitRepoMetric_;
-import usi.si.seart.model.GitRepo_;
-import usi.si.seart.model.MetricLanguage_;
+import usi.si.seart.model.*;
 import usi.si.seart.repository.criteria.Criteria;
 import usi.si.seart.repository.criteria.KeyCriteria;
 import usi.si.seart.repository.criteria.KeyValueCriteria;
 import usi.si.seart.repository.operation.BinaryOperation;
 import usi.si.seart.repository.operation.UnaryOperation;
 
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Path;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
+import javax.persistence.criteria.*;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -130,16 +122,16 @@ public class GitRepoSpecification implements Specification<GitRepo> {
 
         Path<Long> commentlinesPath;
         Path<Long> codelinesPath;
-        Path<Long> blanklinesPath;
+        Path<Long> totallinesPath;
         if (StringUtils.isNotBlank(language)) {
             criteria.add(new KeyValueCriteria<>(root.join(GitRepo_.metrics).join(GitRepoMetric_.language).get(MetricLanguage_.language), language, BinaryOperation.EQUAL));
             commentlinesPath = root.join(GitRepo_.metrics).get(GitRepoMetric_.commentLines);
             codelinesPath = root.join(GitRepo_.metrics).get(GitRepoMetric_.codeLines);
-            blanklinesPath = root.join(GitRepo_.metrics).get(GitRepoMetric_.blankLines);
+            totallinesPath = root.join(GitRepo_.metrics).get(GitRepoMetric_.totalLines);
         } else {
-            commentlinesPath = root.get(GitRepo_.overallCommentlines);
-            codelinesPath = root.get(GitRepo_.overallCodelines);
-            blanklinesPath = root.get(GitRepo_.overallBlanklines);
+            commentlinesPath = root.get(GitRepo_.totalCommentlines);
+            codelinesPath = root.get(GitRepo_.totalCodelines);
+            totallinesPath = root.get(GitRepo_.totalLines);
         }
 
         Range<Long> codelines = (Range<Long>) parameters.get("codelines");
@@ -154,11 +146,11 @@ public class GitRepoSpecification implements Specification<GitRepo> {
         if (commentlines.hasUpperBound())
             criteria.add(new KeyValueCriteria<>(commentlinesPath, commentlines.upperEndpoint(), BinaryOperation.LESS_THAN_EQUAL));
 
-        Range<Long> blanklines = (Range<Long>) parameters.get("blanklines");
-        if (blanklines.hasLowerBound())
-            criteria.add(new KeyValueCriteria<>(blanklinesPath, commentlines.lowerEndpoint(), BinaryOperation.GREATER_THAN_EQUAL));
-        if (blanklines.hasUpperBound())
-            criteria.add(new KeyValueCriteria<>(blanklinesPath, commentlines.lowerEndpoint(), BinaryOperation.LESS_THAN_EQUAL));
+        Range<Long> totallines = (Range<Long>) parameters.get("totallines");
+        if (totallines.hasLowerBound())
+            criteria.add(new KeyValueCriteria<>(totallinesPath, totallines.lowerEndpoint(), BinaryOperation.GREATER_THAN_EQUAL));
+        if (totallines.hasUpperBound())
+            criteria.add(new KeyValueCriteria<>(totallinesPath, totallines.lowerEndpoint(), BinaryOperation.LESS_THAN_EQUAL));
 
 
         Range<Date> created = (Range<Date>) parameters.get("created");
