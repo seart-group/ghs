@@ -52,8 +52,8 @@ public class SearchParameterDto {
     Long codelinesMax;
     Long commentlinesMin;
     Long commentlinesMax;
-    Long blanklinesMin;
-    Long blanklinesMax;
+    Long totallinesMin;
+    Long totallinesMax;
 
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
     Date createdMin;
@@ -102,7 +102,7 @@ public class SearchParameterDto {
         parameters.put("hasLicense", hasLicense);
         parameters.put("codelines", Ranges.build(codelinesMin, codelinesMax));
         parameters.put("commentlines", Ranges.build(commentlinesMin, commentlinesMax));
-        parameters.put("blanklines", Ranges.build(blanklinesMin, blanklinesMax));
+        parameters.put("totallines", Ranges.build(totallinesMin, totallinesMax));
 
         return parameters;
     }
