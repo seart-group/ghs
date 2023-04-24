@@ -42,6 +42,19 @@ public class GitRepoToDtoConverter implements Converter<GitRepo, GitRepoDto> {
                 .openPullRequests(source.getOpenPullRequests())
                 .lastCommit(source.getLastCommit())
                 .lastCommitSHA(source.getLastCommitSHA())
+                .overallBlanklines(source.getOverallBlanklines())
+                .overallCommentlines(source.getOverallCommentlines())
+                .overallCodelines(source.getOverallCodelines())
+                .metrics(
+                        source.getMetrics().stream()
+                                .map(l -> Map.of(
+                                        "language", l.getLanguage().getLanguage(),
+                                        "blanklines", l.getBlankLines().toString(),
+                                        "codelines", l.getCodeLines().toString(),
+                                        "commentlines", l.getCommentLines().toString()
+                                ))
+                                .collect(Collectors.toList())
+                )
                 .hasWiki(source.getHasWiki())
                 .isArchived(source.getIsArchived())
                 .languages(

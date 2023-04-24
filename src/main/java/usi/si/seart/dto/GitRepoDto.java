@@ -6,11 +6,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.util.Date;
-import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeSet;
+import java.util.*;
 
 @Getter
 @Setter
@@ -38,6 +34,13 @@ public class GitRepoDto {
     Long openIssues;
     Long totalPullRequests;
     Long openPullRequests;
+    Long overallBlanklines;
+    Long overallCodelines;
+    Long overallCommentlines;
+    @JacksonXmlProperty(localName = "metric", isAttribute = true)
+    @JacksonXmlElementWrapper(localName = "metrics")
+    @Builder.Default
+    List<Map<String, String>> metrics = new ArrayList<>();
     Date lastCommit;
     String lastCommitSHA;
     Boolean hasWiki;
