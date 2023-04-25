@@ -154,6 +154,10 @@
             forks,
             branches,
             contributors,
+            metrics,
+            totalLines,
+            totalCodeLines,
+            totalCommentLines,
             totalIssues,
             totalPullRequests,
             openIssues,
@@ -199,6 +203,12 @@
                 updated: updatedAt,
                 lastPush: pushedAt,
                 lastCommit: lastCommit,
+            },
+            metrics: {
+                totalLines: totalLines,
+                totalCodeLines: totalCodeLines,
+                totalCommentLines: totalCommentLines,
+                metrics: metrics
             },
             labels: labels,
             languages: normalized

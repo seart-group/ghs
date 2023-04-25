@@ -496,7 +496,7 @@
                 <h5 class="my-3">
                   Size of codebase
                   <i class="bi bi-info-circle" data-bs-toggle="tooltip"
-                     data-bs-title="These are filters related to the codebase. If the target programming language is specified, the filters will only apply to that language. Ff no language is specified the filters will apply to the combined metrics of all languages in the repositories."
+                     data-bs-title="These are filters related to the codebase. If the target programming language is specified, the filters will only apply to that language. If no language is specified the filters will apply to the combined metrics of all languages in the repositories."
                      data-bs-placement="right"></i>
                 </h5>
 
@@ -512,8 +512,8 @@
                 <div class="row">
                   <div class="col-12 col-md-6">
                     <input type="number"
-                           name="codelinesMin"
-                           id="search-codelines-min"
+                           name="codeLinesMin"
+                           id="search-codeLines-min"
                            aria-label="Minimum lines of code"
                            class="form-control mb-3"
                            placeholder="min"
@@ -521,8 +521,8 @@
                   </div>
                   <div class="col-12 col-md-6">
                     <input type="number"
-                           name="codelinesMax"
-                           id="search-codelines-max"
+                           name="codeLinesMax"
+                           id="search-codeLines-max"
                            aria-label="Maximum lines of code"
                            class="form-control mb-3"
                            placeholder="max"
@@ -539,8 +539,8 @@
                 <div class="row">
                   <div class="col-12 col-md-6">
                     <input type="number"
-                           name="commentlinesMin"
-                           id="search-commentlines-min"
+                           name="commentLinesMin"
+                           id="search-commentLines-min"
                            aria-label="Minimum lines of code comments"
                            class="form-control mb-3"
                            placeholder="min"
@@ -548,8 +548,8 @@
                   </div>
                   <div class="col-12 col-md-6">
                     <input type="number"
-                           name="commentlinesMax"
-                           id="search-commentlines-max"
+                           name="commentLinesMax"
+                           id="search-commentLines-max"
                            aria-label="Maximum lines of code comments"
                            class="form-control mb-3"
                            placeholder="max"
@@ -568,8 +568,8 @@
                 <div class="row">
                   <div class="col-12 col-md-6">
                     <input type="number"
-                           name="totallinesMin"
-                           id="search-totallines-min"
+                           name="totalLinesMin"
+                           id="search-totalLines-min"
                            aria-label="Minimum total lines"
                            class="form-control mb-3"
                            placeholder="min"
@@ -577,8 +577,8 @@
                   </div>
                   <div class="col-12 col-md-6">
                     <input type="number"
-                           name="totallinesMax"
-                           id="search-totallines-max"
+                           name="totalLinesMax"
+                           id="search-totalLines-max"
                            aria-label="Maximum total lines"
                            class="form-control mb-3"
                            placeholder="max"
@@ -993,6 +993,23 @@
           </div>
         </div>
         {{/each}}
+
+        {{#each metrics}}
+        {{#unless (eq @key "metrics")}}
+        <div class="col-12 col-sm-6 col-md-4 col-lg-3">
+          <div class="centered-children mb-2">
+            <i class="octicon octicon-{{octicon @key}}-24 {{other-styles @key}}"></i>
+              <span>
+                {{startcase @key}}:
+              </span>
+              <span>
+                {{this}}
+              </span>
+          </div>
+        </div>
+        {{/unless}}
+        {{/each}
+
         {{#if sha}}
         <div class="col-12 col-sm-12 col-md-8 col-lg-12">
           <div class="centered-children mb-2">
