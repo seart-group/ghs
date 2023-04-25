@@ -203,13 +203,11 @@
                 updated: updatedAt,
                 lastPush: pushedAt,
                 lastCommit: lastCommit,
-            },
-            metrics: {
                 totalLines: totalLines,
                 totalCodeLines: totalCodeLines,
                 totalCommentLines: totalCommentLines,
-                metrics: metrics
             },
+            metrics: metrics,
             labels: labels,
             languages: normalized
         };
