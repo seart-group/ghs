@@ -983,6 +983,14 @@
                     {{date this}}
                   </span>
             {{/case}}
+            {{#case "totalLines" "codeLines" "commentLines" break=true}}
+            <span {{#if @root.languageMetrics.language}}
+                    data-bs-toggle="tooltip"
+                   data-bs-title="{{@root.languageMetrics.language}} {{startcase @key}}: {{lookup @root.languageMetrics @key}}"
+                   data-bs-placement="top" {{/if}}>
+              {{this}}
+            </span>
+            {{/case}}
             {{#default}}
             <span>{{this}}</span>
             {{/default}}

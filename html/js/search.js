@@ -173,6 +173,16 @@
         }) {
         const total = _.sum(Object.values(languages));
         const normalized = _.mapValues(languages, (value) => value / total * 100);
+
+        const languageFilter = $search.serializeArray().find((entry) => entry.name === "language");
+        let languageMetrics = metrics.find((metric) => metric.language === languageFilter?.value);
+        languageMetrics = {
+            language: languageMetrics?.language,
+            totalLines: languageMetrics?.totalLines,
+            codeLines: languageMetrics?.codeLines,
+            commentLines: languageMetrics?.commentLines,
+        }
+
         const context = {
             id: id,
             name: name,
@@ -204,10 +214,10 @@
                 lastPush: pushedAt,
                 lastCommit: lastCommit,
                 totalLines: totalLines,
-                totalCodeLines: totalCodeLines,
-                totalCommentLines: totalCommentLines,
+                codeLines: totalCodeLines,
+                commentLines: totalCommentLines,
             },
-            metrics: metrics,
+            languageMetrics: languageMetrics,
             labels: labels,
             languages: normalized
         };

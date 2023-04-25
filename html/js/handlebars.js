@@ -222,9 +222,9 @@ Handlebars.registerHelper("octicon", function (key) {
             return "arrow-up";
         case "lastCommit":
             return "file-diff";
-        case "totalCodeLines":
+        case "codeLines":
             return "code-square";
-        case "totalCommentLines":
+        case "commentLines":
             return "comment";
         case "totalLines":
             return "project-roadmap";
