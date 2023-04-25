@@ -994,26 +994,6 @@
         </div>
         {{/each}}
 
-        {{#each metrics}}
-        {{#unless (eq @key "metrics")}}
-        <div class="col-12 col-sm-6 col-md-4 col-lg-3">
-          <div class="centered-children mb-2">
-            <i class="octicon octicon-{{octicon @key}}-24 {{other-styles @key}}"></i>
-              <span>
-                {{startcase @key}}:
-              </span>
-              <span>
-                {{#if this includeZero=true}}
-                  {{this}}
-                {{else}}
-                  N/A
-                {{/if}}
-              </span>
-          </div>
-        </div>
-        {{/unless}}
-        {{/each}}
-
         {{#if sha}}
         <div class="col-12 col-sm-12 col-md-8 col-lg-12">
           <div class="centered-children mb-2">
