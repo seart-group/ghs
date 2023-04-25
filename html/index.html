@@ -1003,12 +1003,16 @@
                 {{startcase @key}}:
               </span>
               <span>
-                {{this}}
+                {{#if this includeZero=true}}
+                  {{this}}
+                {{else}}
+                  N/A
+                {{/if}}
               </span>
           </div>
         </div>
         {{/unless}}
-        {{/each}
+        {{/each}}
 
         {{#if sha}}
         <div class="col-12 col-sm-12 col-md-8 col-lg-12">
