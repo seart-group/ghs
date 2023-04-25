@@ -222,6 +222,12 @@ Handlebars.registerHelper("octicon", function (key) {
             return "arrow-up";
         case "lastCommit":
             return "file-diff";
+        case "totalCodeLines":
+            return "code-square";
+        case "totalCommentLines":
+            return "comment";
+        case "totalLines":
+            return "project-roadmap";
         default:
             return "question";
     }

@@ -48,12 +48,12 @@ public class SearchParameterDto {
     Long watchersMax;
     Long forksMin;
     Long forksMax;
-    Long codelinesMin;
-    Long codelinesMax;
-    Long commentlinesMin;
-    Long commentlinesMax;
-    Long totallinesMin;
-    Long totallinesMax;
+    Long codeLinesMin;
+    Long codeLinesMax;
+    Long commentLinesMin;
+    Long commentLinesMax;
+    Long totalLinesMin;
+    Long totalLinesMax;
 
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
     Date createdMin;
@@ -100,9 +100,9 @@ public class SearchParameterDto {
         parameters.put("hasPulls", hasPulls);
         parameters.put("hasWiki", hasWiki);
         parameters.put("hasLicense", hasLicense);
-        parameters.put("codelines", Ranges.build(codelinesMin, codelinesMax));
-        parameters.put("commentlines", Ranges.build(commentlinesMin, commentlinesMax));
-        parameters.put("totallines", Ranges.build(totallinesMin, totallinesMax));
+        parameters.put("codeLines", Ranges.build(codeLinesMin, codeLinesMax));
+        parameters.put("commentLines", Ranges.build(commentLinesMin, commentLinesMax));
+        parameters.put("totalLines", Ranges.build(totalLinesMin, totalLinesMax));
 
         return parameters;
     }

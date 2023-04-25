@@ -125,10 +125,10 @@ public class GitRepo {
     Set<GitRepoMetric> metrics = new HashSet<>();
 
     @Formula("(select sum(m.lines_code) from repo_metrics m where m.repo_id = id)")
-    Long totalCodelines;
+    Long totalCodeLines;
 
     @Formula("(select sum(m.lines_comment) from repo_metrics m where m.repo_id = id)")
-    Long totalCommentlines;
+    Long totalCommentLines;
 
     @Formula("(select sum(m.lines_code+m.lines_comment) from repo_metrics m where m.repo_id = id)")
     Long totalLines;
