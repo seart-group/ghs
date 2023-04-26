@@ -1,5 +1,6 @@
 package usi.si.seart.config;
 
+import com.fasterxml.jackson.dataformat.csv.CsvMapper;
 import com.google.gson.Gson;
 import lombok.AllArgsConstructor;
 import okhttp3.OkHttpClient;
@@ -25,7 +26,7 @@ import java.util.concurrent.TimeUnit;
 @Configuration
 public class MainConfig {
 
-    GitRepoDtoToCsvConverter gitRepoDtoToCsvConverter;
+    CsvMapper csvMapper;
 
     @Bean
     public DateFormat utcTimestampFormat() {
@@ -66,7 +67,7 @@ public class MainConfig {
                  registry.addConverter(new SupportedLanguageToDtoConverter());
                  registry.addConverter(new GitRepoToDtoConverter());
                  registry.addConverter(new JsonObjectToGitRepoConverter());
-                 registry.addConverter(gitRepoDtoToCsvConverter);
+                 registry.addConverter(new GitRepoDtoToCsvConverter(csvMapper));
             }
         };
     }
