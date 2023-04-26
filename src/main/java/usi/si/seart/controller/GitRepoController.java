@@ -38,6 +38,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import org.springframework.web.util.UriComponentsBuilder;
+import usi.si.seart.dto.GitRepoCsvDto;
 import usi.si.seart.dto.GitRepoDto;
 import usi.si.seart.dto.SearchParameterDto;
 import usi.si.seart.model.GitRepo;
@@ -317,7 +318,8 @@ public class GitRepoController {
         csvGenerator.configure(JsonGenerator.Feature.IGNORE_UNKNOWN, true);
         csvGenerator.configure(CsvGenerator.Feature.ALWAYS_QUOTE_STRINGS, true);
         for (GitRepoDto dto : dtos) {
-            generator.writePOJO(dto);
+            GitRepoCsvDto csvDto = conversionService.convert(dto, GitRepoCsvDto.class);
+            generator.writePOJO(csvDto);
         }
     }
 
