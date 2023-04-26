@@ -11,10 +11,8 @@ import usi.si.seart.dto.GitRepoCsvDto;
 import usi.si.seart.dto.GitRepoDto;
 
 @AllArgsConstructor(onConstructor = @__(@Autowired))
-@Component
 public class GitRepoDtoToCsvConverter implements Converter<GitRepoDto, GitRepoCsvDto> {
 
-    @Qualifier("csvMapper")
     CsvMapper csvMapper;
 
     @Override
