@@ -1,8 +1,10 @@
 package usi.si.seart.config;
 
 import com.google.gson.Gson;
+import lombok.AllArgsConstructor;
 import okhttp3.OkHttpClient;
 import org.jetbrains.annotations.NotNull;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -10,6 +12,7 @@ import org.springframework.format.FormatterRegistry;
 import org.springframework.web.filter.ForwardedHeaderFilter;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+import usi.si.seart.converter.GitRepoDtoToCsvConverter;
 import usi.si.seart.converter.GitRepoToDtoConverter;
 import usi.si.seart.converter.JsonObjectToGitRepoConverter;
 import usi.si.seart.converter.SupportedLanguageToDtoConverter;
@@ -18,8 +21,11 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.concurrent.TimeUnit;
 
+@AllArgsConstructor(onConstructor_ = @Autowired)
 @Configuration
 public class MainConfig {
+
+    GitRepoDtoToCsvConverter gitRepoDtoToCsvConverter;
 
     @Bean
     public DateFormat utcTimestampFormat() {
@@ -60,6 +66,7 @@ public class MainConfig {
                  registry.addConverter(new SupportedLanguageToDtoConverter());
                  registry.addConverter(new GitRepoToDtoConverter());
                  registry.addConverter(new JsonObjectToGitRepoConverter());
+                 registry.addConverter(gitRepoDtoToCsvConverter);
             }
         };
     }

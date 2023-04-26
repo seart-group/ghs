@@ -5,12 +5,17 @@ import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.NoArgsConstructor;
+import lombok.AllArgsConstructor;
+import lombok.experimental.SuperBuilder;
 
 import java.util.*;
 
 @Getter
 @Setter
-@Builder
+@SuperBuilder
+@NoArgsConstructor
+@AllArgsConstructor
 public class GitRepoDto {
     Long id;
     String name;
