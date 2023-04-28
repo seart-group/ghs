@@ -43,9 +43,9 @@ public class GitRepoDto {
     Long totalCodeLines;
     Long totalCommentLines;
     @JacksonXmlElementWrapper(localName = "metrics")
-    @JacksonXmlProperty(localName = "metric", isAttribute = true)
+    @JacksonXmlProperty(localName = "metric")
     @Builder.Default
-    List<Map<String, String>> metrics = new ArrayList<>();
+    List<GitRepoMetricDTO> metrics = new ArrayList<>();
     Date lastCommit;
     String lastCommitSHA;
     Boolean hasWiki;
