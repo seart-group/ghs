@@ -3,8 +3,10 @@ package usi.si.seart.converter;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.lang.NonNull;
 import usi.si.seart.dto.GitRepoDto;
+import usi.si.seart.dto.GitRepoMetricDTO;
 import usi.si.seart.model.GitRepo;
 import usi.si.seart.model.GitRepoLabel;
+import usi.si.seart.model.GitRepoMetric;
 
 import java.util.Comparator;
 import java.util.LinkedHashMap;
@@ -13,6 +15,8 @@ import java.util.TreeSet;
 import java.util.stream.Collectors;
 
 public class GitRepoToDtoConverter implements Converter<GitRepo, GitRepoDto> {
+
+    Converter<GitRepoMetric, GitRepoMetricDTO> metricConverter = new GitRepoMetricToDtoConverter();
 
     @Override
     @NonNull
@@ -45,16 +49,9 @@ public class GitRepoToDtoConverter implements Converter<GitRepo, GitRepoDto> {
                 .totalLines(source.getTotalLines())
                 .totalCommentLines(source.getTotalCommentLines())
                 .totalCodeLines(source.getTotalCodeLines())
-                .metrics(
-                        source.getMetrics().stream()
-                                .map(l -> Map.of(
-                                        "language", l.getLanguage().getLanguage(),
-                                        "totalLines", l.getTotalLines().toString(),
-                                        "codeLines", l.getCodeLines().toString(),
-                                        "commentLines", l.getCommentLines().toString()
-                                ))
-                                .collect(Collectors.toList())
-                )
+                .metrics(source.getMetrics().stream()
+                    .map(metricConverter::convert)
+                    .collect(Collectors.toList()))
                 .hasWiki(source.getHasWiki())
                 .isArchived(source.getIsArchived())
                 .languages(
