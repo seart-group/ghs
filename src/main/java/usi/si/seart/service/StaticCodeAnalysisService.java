@@ -65,7 +65,9 @@ public interface StaticCodeAnalysisService {
         MetricLanguageService metricLanguageService;
 
 
-        public Future<Set<GitRepoMetric>> getCodeMetrics(@NotNull Long repoId, boolean persist) throws StaticCodeAnalysisException {
+        public Future<Set<GitRepoMetric>> getCodeMetrics(
+                @NotNull Long repoId, boolean persist
+        ) throws StaticCodeAnalysisException {
             GitRepo repo;
             try {
                 repo = gitRepoService.getRepoById(repoId);
