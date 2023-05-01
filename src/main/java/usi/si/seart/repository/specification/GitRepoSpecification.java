@@ -35,7 +35,6 @@ public class GitRepoSpecification implements Specification<GitRepo> {
                 .toArray(Predicate[]::new);
 
         query.distinct(true);
-
         return criteriaBuilder.and(predicates);
     }
 

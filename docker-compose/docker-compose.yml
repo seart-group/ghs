@@ -4,7 +4,7 @@ name: 'gse'
 services:
 
   gse-db:
-    image: mysql:8.0.22
+    image: mysql:8.0.32
     container_name: gse-db
     restart: always
     volumes:
@@ -44,7 +44,7 @@ services:
       DB_PASS: Lugano2020
       DB_DUMP_FREQ: "1440"
       DB_DUMP_BEGIN: "0000"
-      DB_CLEANUP_TIME: "+10080"
+      DB_CLEANUP_TIME: "10080"
       SPLIT_DB: FALSE
       CHECKSUM: SHA1
       COMPRESSION: GZ
@@ -85,11 +85,16 @@ services:
       dockerfile: docker/Dockerfile.be
     image: 'gse/backend:latest'
     container_name: gse-app
+    volumes:
+      - ./logs:/logs
     environment:
       WAIT_HOSTS: gse-db:3306
+      LOGGING_CONFIG: classpath:logback.prod.xml
       SPRING_DATASOURCE_URL: jdbc:mysql://gse-db:3306/gse?serverTimezone=UTC&useLegacyDatetimeCode=false&useUnicode=yes&characterEncoding=UTF-8
       SPRING_FLYWAY_URL: jdbc:mysql://gse-db:3306/gse?serverTimezone=UTC&useLegacyDatetimeCode=false&useUnicode=yes&characterEncoding=UTF-8
       APP_CRAWL_ENABLED: 'false'
+      APP_CLEANUP_ENABLED: 'false'
+      APP_CRAWL_TOKENS:
     ports: [ "48001:8080" ]
     deploy:
       restart_policy:

@@ -7,7 +7,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
 import usi.si.seart.model.GitRepo;
-import usi.si.seart.projection.GitRepoView;
 import usi.si.seart.repository.specification.GitRepoSpecification;
 import usi.si.seart.repository.specification.JpaStreamableSpecificationRepository;
 
@@ -24,9 +23,7 @@ public interface GitRepoRepository extends
 {
     Optional<GitRepo> findGitRepoById(Long id);
 
-    Optional<GitRepo> findGitRepoByName(String name);
-
-    Optional<GitRepoView> findFirstByIdGreaterThanOrderByIdAsc(Long id);
+    Optional<GitRepo> findGitRepoByNameIgnoreCase(String name);
 
     @Query("select distinct r.mainLanguage, count(r) from GitRepo r group by r.mainLanguage order by count(r) desc")
     @Cacheable(value = "languageStatistics")

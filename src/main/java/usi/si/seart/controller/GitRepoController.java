@@ -2,7 +2,6 @@ package usi.si.seart.controller;
 
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.core.TokenStreamFactory;
 import com.fasterxml.jackson.databind.json.JsonMapper;
 import com.fasterxml.jackson.dataformat.csv.CsvFactory;
 import com.fasterxml.jackson.dataformat.csv.CsvGenerator;
@@ -11,6 +10,11 @@ import com.fasterxml.jackson.dataformat.csv.CsvSchema;
 import com.fasterxml.jackson.dataformat.xml.XmlFactory;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import com.fasterxml.jackson.dataformat.xml.ser.ToXmlGenerator;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.enums.ParameterIn;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AccessLevel;
 import lombok.Cleanup;
 import lombok.RequiredArgsConstructor;
@@ -25,9 +29,8 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.SortDefault;
-import org.springframework.hateoas.IanaLinkRelations;
-import org.springframework.hateoas.Link;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.LinkedMultiValueMap;
@@ -36,11 +39,11 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
-import org.springframework.web.util.UriComponentsBuilder;
 import usi.si.seart.dto.GitRepoCsvDto;
 import usi.si.seart.dto.GitRepoDto;
 import usi.si.seart.dto.SearchParameterDto;
+import usi.si.seart.hateoas.DownloadLinkBuilder;
+import usi.si.seart.hateoas.SearchLinkBuilder;
 import usi.si.seart.model.GitRepo;
 import usi.si.seart.model.GitRepo_;
 import usi.si.seart.service.GitRepoService;
@@ -51,13 +54,9 @@ import javax.servlet.http.HttpServletResponse;
 import javax.xml.namespace.QName;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -68,6 +67,7 @@ import java.util.stream.Stream;
 @RequestMapping("/r")
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
+@Tag(name = "git-repo", description = "Endpoints used for retrieving information regarding mined repositories.")
 public class GitRepoController {
 
     private static final Set<String> supportedFields = Set.of(
@@ -102,10 +102,19 @@ public class GitRepoController {
 
     EntityManager entityManager;
 
-    @GetMapping("/search")
+    SearchLinkBuilder searchLinkBuilder;
+    DownloadLinkBuilder downloadLinkBuilder;
+
+    @GetMapping(value = "/search", produces = MediaType.APPLICATION_JSON_VALUE)
+    @Operation(summary = "Perform a search for GitHub repositories matching a set of specified criteria.")
+    @ApiResponse(responseCode = "200", description = "OK")
+    @ApiResponse(responseCode = "400", description = "Bad request body format or unsupported sorting property")
     public ResponseEntity<?> searchRepos(
+            @Parameter(description = "The repository match criteria", in = ParameterIn.QUERY)
             SearchParameterDto searchParameterDto,
-            @SortDefault(sort = GitRepo_.NAME) Pageable pageable,
+            @Parameter(description = "The search pagination settings", in = ParameterIn.QUERY)
+            @SortDefault(sort = GitRepo_.NAME)
+            Pageable pageable,
             HttpServletRequest request
     ) {
         Set<String> sortFields = pageable.getSort().stream()
@@ -131,68 +140,6 @@ public class GitRepoController {
         long totalItems = results.getTotalElements();
         int totalPages = results.getTotalPages();
 
-        List<String> links = new ArrayList<>();
-
-        UriComponentsBuilder searchBuilder = ServletUriComponentsBuilder.fromServletMapping(request).path("/r/search");
-        UriComponentsBuilder downloadBuilder = ServletUriComponentsBuilder.fromServletMapping(request).path("/r/download");
-
-        MultiValueMap<String, String> params = new LinkedMultiValueMap<>(
-                request.getParameterMap()
-                        .entrySet()
-                        .stream()
-                        .map(entry -> {
-                            List<String> encoded = Stream.of(entry.getValue())
-                                    .map(value -> URLEncoder.encode(value, StandardCharsets.UTF_8))
-                                    .collect(Collectors.toList());
-                            return Map.entry(entry.getKey(), encoded);
-                        })
-                        .collect(Collectors.toMap(
-                                Map.Entry::getKey,
-                                Map.Entry::getValue
-                        ))
-        );
-
-        searchBuilder.queryParams(params);
-        links.add(Link.of(searchBuilder.build().toString(), IanaLinkRelations.SELF).toString());
-
-        if (!results.isFirst()){
-            searchBuilder.replaceQueryParam("page", 0);
-            links.add(Link.of(searchBuilder.build().toString(), IanaLinkRelations.FIRST).toString());
-        }
-
-        if (results.hasPrevious()){
-            searchBuilder.replaceQueryParam("page", page - 1);
-            links.add(Link.of(searchBuilder.build().toString(), IanaLinkRelations.PREV).toString());
-        }
-
-        if (results.hasNext()){
-            searchBuilder.replaceQueryParam("page", page + 1);
-            links.add(Link.of(searchBuilder.build().toString(), IanaLinkRelations.NEXT).toString());
-        }
-
-        if (!results.isLast()){
-            searchBuilder.replaceQueryParam("page", totalPages - 1);
-            links.add(Link.of(searchBuilder.build().toString(), IanaLinkRelations.LAST).toString());
-        }
-
-        params.remove("page");
-        params.remove("sort");
-        searchBuilder.replaceQueryParams(params);
-        links.add(Link.of(searchBuilder.build().toString(), "base").toString());
-
-        List<String> download = new ArrayList<>();
-
-        if (totalItems > 0) {
-            downloadBuilder.queryParams(params);
-            download.addAll(
-                    List.of(
-                            Link.of(downloadBuilder.cloneBuilder().pathSegment("csv").build().toString(), "csv").toString(),
-                            Link.of(downloadBuilder.cloneBuilder().pathSegment("xml").build().toString(), "xml").toString(),
-                            Link.of(downloadBuilder.cloneBuilder().pathSegment("json").build().toString(), "json").toString()
-                    )
-            );
-        }
-
         Map<String, Object> resultPage = new LinkedHashMap<>();
         resultPage.put("totalPages", totalPages);
         resultPage.put("totalItems", totalItems);
@@ -200,17 +147,23 @@ public class GitRepoController {
         resultPage.put("items", dtos);
 
         MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
-        headers.add("Links", String.join(", ", links));
-        headers.add("Download", String.join(", ", download));
+        headers.add("X-Link-Search", searchLinkBuilder.getLinks(request, results));
+        headers.add("X-Link-Download", downloadLinkBuilder.getLinks(request));
 
         return new ResponseEntity<>(resultPage, headers, HttpStatus.OK);
     }
 
-    @Transactional(readOnly = true)
-    @GetMapping("/download/{format}")
     @SneakyThrows({ IOException.class })
+    @Transactional(readOnly = true)
+    @GetMapping(value = "/download/{format}")
+    @Operation(summary = "Export GitHub repositories matching a set of specified criteria to a file format.")
+    @ApiResponse(responseCode = "200", description = "OK")
+    @ApiResponse(responseCode = "400", description = "Bad request body format or unsupported export format")
     public void downloadRepos(
-            @PathVariable("format") String format,
+            @Parameter(description = "Export file format", in = ParameterIn.PATH, example = "csv")
+            @PathVariable("format")
+            String format,
+            @Parameter(description = "The repository match criteria", in = ParameterIn.QUERY)
             SearchParameterDto searchParameterDto,
             HttpServletResponse response
     ) {
@@ -219,22 +172,33 @@ public class GitRepoController {
             return;
         }
 
-        response.setContentType("text/" + format);
+        String contentType;
+        switch (format) {
+            case "json":
+                contentType = "application/" + format;
+                break;
+            case "csv":
+            case "xml":
+                contentType = "text/" + format;
+                break;
+            default:
+                throw new IllegalStateException("Default portion of this switch should not be reachable!");
+        }
+
+        response.setContentType(contentType);
         response.setHeader("Content-Disposition", "attachment;filename=results." + format);
 
-        @Cleanup PrintWriter printWriter = response.getWriter();
-        TokenStreamFactory factory;
+        PrintWriter writer = response.getWriter();
         JsonGenerator generator;
-
         switch (format) {
             case "csv":
-                factory = new CsvFactory();
+                generator = new CsvFactory().createGenerator(writer);
                 break;
             case "json":
-                factory = new JsonFactory();
+                generator = new JsonFactory().createGenerator(writer);
                 break;
             case "xml":
-                factory = new XmlFactory();
+                generator = new XmlFactory().createGenerator(writer);
                 break;
             default:
                 throw new IllegalStateException("Default portion of this switch should not be reachable!");
@@ -249,21 +213,19 @@ public class GitRepoController {
                 });
         Iterable<GitRepoDto> dtos = results::iterator;
 
-        generator = factory.createGenerator(printWriter);
-
         switch (format) {
             case "csv":
                 generator.setCodec(csvMapper);
                 generator.setSchema(csvSchema);
-                writeCsv(generator, dtos, searchParameterDto);
+                writeResults((CsvGenerator) generator, dtos, searchParameterDto);
                 break;
             case "json":
                 generator.setCodec(jsonMapper);
-                writeJson(generator, dtos, searchParameterDto);
+                writeResults(generator, dtos, searchParameterDto);
                 break;
             case "xml":
                 generator.setCodec(xmlMapper);
-                writeXml(generator, dtos, searchParameterDto);
+                writeResults((ToXmlGenerator) generator, dtos, searchParameterDto);
                 break;
             default:
                 throw new IllegalStateException("Default portion of this switch should not be reachable!");
@@ -272,7 +234,7 @@ public class GitRepoController {
         generator.close();
     }
 
-    private void writeJson(
+    private void writeResults(
             JsonGenerator generator, Iterable<GitRepoDto> dtos, SearchParameterDto searchParameterDto
     ) throws IOException {
         generator.writeStartObject();
@@ -285,70 +247,78 @@ public class GitRepoController {
         generator.writeEndObject();
     }
 
-    private void writeXml(
-            JsonGenerator generator, Iterable<GitRepoDto> dtos, SearchParameterDto searchParameterDto
+    private void writeResults(
+            ToXmlGenerator generator, Iterable<GitRepoDto> dtos, SearchParameterDto searchParameterDto
     ) throws IOException {
-        ToXmlGenerator xmlGenerator = (ToXmlGenerator) generator;
-        xmlGenerator.configure(ToXmlGenerator.Feature.WRITE_XML_DECLARATION, true);
-        xmlGenerator.configure(ToXmlGenerator.Feature.WRITE_XML_1_1, true);
-        xmlGenerator.initGenerator();
-        xmlGenerator.setNextName(new QName("results"));
-        xmlGenerator.writeStartObject();
+        generator.configure(ToXmlGenerator.Feature.WRITE_XML_DECLARATION, true);
+        generator.configure(ToXmlGenerator.Feature.WRITE_XML_1_1, true);
+        generator.initGenerator();
+        generator.setNextName(new QName("results"));
+        generator.writeStartObject();
 
         String attributes = searchParameterDto.toMap().entrySet().stream()
                 .map(entry -> String.format("%s=\"%s\"", entry.getKey(), entry.getValue()))
                 .collect(Collectors.joining(" "));
         String parameters = String.format("<parameters %s/>", attributes);
-        xmlGenerator.writeRaw(parameters);
+        generator.writeRaw(parameters);
 
-        xmlGenerator.writeFieldName("items");
-        xmlGenerator.writeStartObject();
+        generator.writeFieldName("items");
+        generator.writeStartObject();
         for (GitRepoDto dto : dtos) {
-            xmlGenerator.writePOJOField("item", dto);
+            generator.writePOJOField("item", dto);
         }
-        xmlGenerator.writeEndObject();
+        generator.writeEndObject();
 
-        xmlGenerator.writeEndObject();
+        generator.writeEndObject();
     }
 
-    private void writeCsv(
-            JsonGenerator generator, Iterable<GitRepoDto> dtos, SearchParameterDto searchParameterDto
+    private void writeResults(
+            CsvGenerator generator, Iterable<GitRepoDto> dtos, SearchParameterDto searchParameterDto
     ) throws IOException {
-        CsvGenerator csvGenerator = (CsvGenerator) generator;
-        csvGenerator.configure(JsonGenerator.Feature.IGNORE_UNKNOWN, true);
-        csvGenerator.configure(CsvGenerator.Feature.ALWAYS_QUOTE_STRINGS, true);
+        generator.configure(JsonGenerator.Feature.IGNORE_UNKNOWN, true);
+        generator.configure(CsvGenerator.Feature.ALWAYS_QUOTE_STRINGS, true);
         for (GitRepoDto dto : dtos) {
             GitRepoCsvDto csvDto = conversionService.convert(dto, GitRepoCsvDto.class);
             generator.writePOJO(csvDto);
         }
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<?> getRepoById(@PathVariable(value = "id") Long id){
-        Optional<GitRepo> optional = gitRepoService.getRepoById(id);
-        return optional.map(gitRepo -> {
-            GitRepoDto dto = conversionService.convert(optional.get(), GitRepoDto.class);
-            return ResponseEntity.ok(dto);
-        }).orElse(ResponseEntity.notFound().build());
+    @GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @Operation(summary = "Retrieve repository information based on its internal identifier (ID).")
+    @ApiResponse(responseCode = "200", description = "OK")
+    @ApiResponse(responseCode = "400", description = "Bad repository ID format")
+    @ApiResponse(responseCode = "404", description = "Repository with requested ID does not exist")
+    public ResponseEntity<?> getRepoById(
+            @Parameter(description = "The repository identifier", in = ParameterIn.PATH, example = "0")
+            @PathVariable(value = "id")
+            Long id
+    ) {
+        GitRepo gitRepo = gitRepoService.getRepoById(id);
+        GitRepoDto dto = conversionService.convert(gitRepo, GitRepoDto.class);
+        return ResponseEntity.ok(dto);
     }
 
-    @GetMapping("/labels")
-    public ResponseEntity<?> getAllLabels(){
+    @GetMapping(value = "/labels", produces = MediaType.APPLICATION_JSON_VALUE)
+    @Operation(summary = "Retrieve a list of the 500 most popular issue labels mined across projects.")
+    public ResponseEntity<?> getAllLabels() {
         return ResponseEntity.ok(gitRepoService.getAllLabels(500));
     }
 
-    @GetMapping("/languages")
-    public ResponseEntity<?> getAllLanguages(){
+    @GetMapping(value = "/languages", produces = MediaType.APPLICATION_JSON_VALUE)
+    @Operation(summary = "Retrieve a list of all repository languages mined across projects.")
+    public ResponseEntity<?> getAllLanguages() {
         return ResponseEntity.ok(gitRepoService.getAllLanguages());
     }
 
-    @GetMapping("/licenses")
+    @GetMapping(value = "/licenses", produces = MediaType.APPLICATION_JSON_VALUE)
+    @Operation(summary = "Retrieve a list of all repository licenses mined across projects.")
     public ResponseEntity<?> getAllLicenses() {
         return ResponseEntity.ok(gitRepoService.getAllLicenses());
     }
 
     @GetMapping("/stats")
-    public ResponseEntity<?> getRepoStatistics(){
+    @Operation(summary = "Retrieve the number of repositories mined for each supported language.")
+    public ResponseEntity<?> getRepoStatistics() {
         return ResponseEntity.ok(gitRepoService.getMainLanguageStatistics());
     }
 }
