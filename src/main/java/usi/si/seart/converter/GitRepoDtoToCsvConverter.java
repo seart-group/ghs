@@ -2,15 +2,12 @@ package usi.si.seart.converter;
 
 import com.fasterxml.jackson.dataformat.csv.CsvMapper;
 import lombok.AllArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.lang.NonNull;
-import org.springframework.stereotype.Component;
 import usi.si.seart.dto.GitRepoCsvDto;
 import usi.si.seart.dto.GitRepoDto;
 
-@AllArgsConstructor(onConstructor = @__(@Autowired))
+@AllArgsConstructor
 public class GitRepoDtoToCsvConverter implements Converter<GitRepoDto, GitRepoCsvDto> {
 
     CsvMapper csvMapper;
