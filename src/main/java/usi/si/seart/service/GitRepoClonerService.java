@@ -10,10 +10,10 @@ import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.AsyncResult;
 import org.springframework.stereotype.Service;
+import usi.si.seart.analysis.ClonedRepo;
+import usi.si.seart.analysis.TerminalExecution;
 import usi.si.seart.exception.CloneException;
 import usi.si.seart.exception.TerminalExecutionException;
-import usi.si.seart.staticcodeanalysis.ClonedRepo;
-import usi.si.seart.staticcodeanalysis.TerminalExecution;
 
 import java.io.File;
 import java.io.IOException;
