@@ -53,7 +53,9 @@ public class GitRepoClonerService {
             throw new CloneException(e);
         }
 
-        TerminalExecution cloneProcess = new TerminalExecution(tempRepoDir, "git clone --depth 1", gitRepoURL.toString(), tempRepoDir.toString());
+        TerminalExecution cloneProcess = new TerminalExecution(
+                tempRepoDir, "git clone --depth 1", gitRepoURL.toString(), tempRepoDir.toString()
+        );
         try {
             log.trace("Cloning repository '{}' ...",gitRepoURL);
             cloneProcess.start().waitSuccessfulExit();
@@ -79,7 +81,9 @@ public class GitRepoClonerService {
     @EventListener({ApplicationReadyEvent.class})
     public void cleanupAllTempFolders() {
         try {
-            new TerminalExecution(Files.createTempDirectory(repoFolderPrefix).getParent(), "rm -rf ", repoFolderPrefix + "*").start().waitSuccessfulExit();
+            new TerminalExecution(
+                    Files.createTempDirectory(repoFolderPrefix).getParent(), "rm -rf ", repoFolderPrefix + "*"
+            ).start().waitSuccessfulExit();
         } catch (Exception e) {
             log.error("Failed to cleanup cloned repository folders", e);
             return;
