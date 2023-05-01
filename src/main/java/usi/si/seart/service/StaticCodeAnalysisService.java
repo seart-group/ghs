@@ -11,14 +11,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.AsyncResult;
 import org.springframework.stereotype.Service;
+import usi.si.seart.analysis.ClonedRepo;
+import usi.si.seart.analysis.TerminalExecution;
 import usi.si.seart.exception.StaticCodeAnalysisException;
 import usi.si.seart.exception.TerminalExecutionException;
 import usi.si.seart.model.GitRepo;
 import usi.si.seart.model.GitRepoMetric;
 import usi.si.seart.model.GitRepoMetricKey;
 import usi.si.seart.model.MetricLanguage;
-import usi.si.seart.staticcodeanalysis.ClonedRepo;
-import usi.si.seart.staticcodeanalysis.TerminalExecution;
 
 import javax.annotation.Nullable;
 import javax.persistence.EntityNotFoundException;

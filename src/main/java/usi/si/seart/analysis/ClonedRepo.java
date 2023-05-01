@@ -1,4 +1,4 @@
-package usi.si.seart.staticcodeanalysis;
+package usi.si.seart.analysis;
 
 
 import lombok.AccessLevel;
@@ -22,6 +22,7 @@ import java.util.stream.Stream;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public
 class ClonedRepo implements AutoCloseable {
+
     @Getter
     Path path;
 

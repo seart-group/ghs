@@ -1,4 +1,4 @@
-package usi.si.seart.staticcodeanalysis;
+package usi.si.seart.analysis;
 
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
