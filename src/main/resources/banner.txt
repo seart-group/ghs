@@ -12,5 +12,3 @@ MMMMMMMMMMNsmMMMMMMMMm.  hMMMM+  yMMMMMMMMMMMo  `d.          .m.     y+        s
 MMMMMMMMMN/  ./osyso:  .hMMMMM+  :oooooooooMMo  y+            +h     y+         +d.        -m
 MMMMMMMMMMMNyo:-...-/ohMMMMMMMs////////////MMo .o              o-    +:          :o`       .o
 MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMo
-
-Powered by Spring Boot ${spring-boot.version}

@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+
+  <include resource="org/springframework/boot/logging/logback/defaults.xml" />
+
+  <property name="LOG_ROOT" value="logs" />
+
+  <property name="FILE_LOG_PATTERN" value="%d{yyyy-MM-dd HH:mm:ss.SSS} | %m%n%wEx" />
+  <property name="FILE_LOG_PATTERN_THREAD" value="%d{yyyy-MM-dd HH:mm:ss.SSS} | [%t] | %m%n%wEx" />
+
+  <property name="LOGBACK_ROLLINGPOLICY_FILE_NAME_PATTERN" value="${LOG_FILE}.%d{yyyy-MM-dd}.%i.gz" />
+  <property name="LOGBACK_ROLLINGPOLICY_TOTAL_SIZE_CAP" value="5GB" />
+  <property name="LOGBACK_ROLLINGPOLICY_MAX_FILE_SIZE" value="100MB" />
+  <property name="LOGBACK_ROLLINGPOLICY_MAX_HISTORY" value="180" />
+
+  <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+    <encoder>
+      <pattern>${CONSOLE_LOG_PATTERN}</pattern>
+      <charset>${CONSOLE_LOG_CHARSET}</charset>
+    </encoder>
+    <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+      <level>INFO</level>
+    </filter>
+  </appender>
+
+  <appender name="FILE-GITHUB" class="ch.qos.logback.core.rolling.RollingFileAppender">
+    <encoder>
+      <pattern>${FILE_LOG_PATTERN}</pattern>
+      <charset>${FILE_LOG_CHARSET}</charset>
+    </encoder>
+    <file>${LOG_ROOT}/github/github.log</file>
+    <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+      <fileNamePattern>${LOG_ROOT}/github/github_%d{yyyy-MM-dd}_%i.log.gz</fileNamePattern>
+      <totalSizeCap>${LOGBACK_ROLLINGPOLICY_TOTAL_SIZE_CAP}</totalSizeCap>
+      <maxFileSize>${LOGBACK_ROLLINGPOLICY_MAX_FILE_SIZE}</maxFileSize>
+      <maxHistory>${LOGBACK_ROLLINGPOLICY_MAX_HISTORY}</maxHistory>
+      <cleanHistoryOnStart>false</cleanHistoryOnStart>
+    </rollingPolicy>
+  </appender>
+
+  <appender name="FILE-CRAWLER" class="ch.qos.logback.core.rolling.RollingFileAppender">
+    <encoder>
+      <pattern>${FILE_LOG_PATTERN}</pattern>
+      <charset>${FILE_LOG_CHARSET}</charset>
+    </encoder>
+    <file>${LOG_ROOT}/crawler/crawler.log</file>
+    <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+      <fileNamePattern>${LOG_ROOT}/crawler/crawler_%d{yyyy-MM-dd}_%i.log.gz</fileNamePattern>
+      <totalSizeCap>${LOGBACK_ROLLINGPOLICY_TOTAL_SIZE_CAP}</totalSizeCap>
+      <maxFileSize>${LOGBACK_ROLLINGPOLICY_MAX_FILE_SIZE}</maxFileSize>
+      <maxHistory>${LOGBACK_ROLLINGPOLICY_MAX_HISTORY}</maxHistory>
+      <cleanHistoryOnStart>false</cleanHistoryOnStart>
+    </rollingPolicy>
+  </appender>
+
+  <appender name="FILE-CLEANER" class="ch.qos.logback.core.rolling.RollingFileAppender">
+    <encoder>
+      <pattern>${FILE_LOG_PATTERN}</pattern>
+      <charset>${FILE_LOG_CHARSET}</charset>
+    </encoder>
+    <file>${LOG_ROOT}/cleaner/cleaner.log</file>
+    <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+      <fileNamePattern>${LOG_ROOT}/cleaner/cleaner_%d{yyyy-MM-dd}_%i.log.gz</fileNamePattern>
+      <totalSizeCap>${LOGBACK_ROLLINGPOLICY_TOTAL_SIZE_CAP}</totalSizeCap>
+      <maxFileSize>${LOGBACK_ROLLINGPOLICY_MAX_FILE_SIZE}</maxFileSize>
+      <maxHistory>${LOGBACK_ROLLINGPOLICY_MAX_HISTORY}</maxHistory>
+      <cleanHistoryOnStart>false</cleanHistoryOnStart>
+    </rollingPolicy>
+  </appender>
+
+  <appender name="FILE-API" class="ch.qos.logback.core.rolling.RollingFileAppender">
+    <encoder>
+      <pattern>${FILE_LOG_PATTERN_THREAD}</pattern>
+      <charset>${FILE_LOG_CHARSET}</charset>
+    </encoder>
+    <file>${LOG_ROOT}/api/api.log</file>
+    <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+      <fileNamePattern>${LOG_ROOT}/api/api_%d{yyyy-MM-dd}_%i.log.gz</fileNamePattern>
+      <totalSizeCap>${LOGBACK_ROLLINGPOLICY_TOTAL_SIZE_CAP}</totalSizeCap>
+      <maxFileSize>${LOGBACK_ROLLINGPOLICY_MAX_FILE_SIZE}</maxFileSize>
+      <maxHistory>${LOGBACK_ROLLINGPOLICY_MAX_HISTORY}</maxHistory>
+      <cleanHistoryOnStart>false</cleanHistoryOnStart>
+    </rollingPolicy>
+  </appender>
+
+  <root level="INFO">
+    <appender-ref ref="CONSOLE" />
+  </root>
+  <logger name="usi.si.seart.github" level="TRACE">
+    <appender-ref ref="FILE-GITHUB" />
+  </logger>
+  <logger name="usi.si.seart.job.CrawlProjectsJob" level="TRACE">
+    <appender-ref ref="FILE-CRAWLER" />
+  </logger>
+  <logger name="usi.si.seart.job.CleanUpProjectsJob" level="TRACE">
+    <appender-ref ref="FILE-CLEANER" />
+  </logger>
+  <logger name="org.springframework.web.servlet.DispatcherServlet" level="DEBUG">
+    <appender-ref ref="FILE-API" />
+  </logger>
+</configuration>
