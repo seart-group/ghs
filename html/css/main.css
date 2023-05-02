@@ -1,0 +1,228 @@
+@font-face {
+    font-family: 'Trebuchet MS';
+    font-style: normal;
+    font-weight: normal;
+    src: local('Trebuchet MS'), url('../fonts/trebuc.woff') format('woff');
+}
+
+::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+}
+
+::-webkit-scrollbar-track {
+    background: #e6e6e6;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #6d757d;
+}
+
+* {
+    font-family: "Trebuchet MS", Helvetica, Arial, sans-serif;
+    font-style: normal;
+    font-variant: normal;
+}
+
+a[target="_blank"] {
+    cursor: alias!important;
+}
+
+input[type="text"],
+input[type="number"],
+input[type="date"]
+{
+    height: 40px!important;
+}
+
+input {
+    background-color: var(--bs-gray-200)!important;
+}
+
+input:disabled {
+    opacity: 60%!important;
+}
+
+input:not([type="checkbox"]) {
+    border-top: none!important;
+    border-left: none!important;
+    border-right: none!important;
+    border-bottom:
+            var(--bs-border-width)
+            var(--bs-border-style)
+            var(--bs-gray)
+    !important;
+    border-radius: 0!important;
+}
+
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button
+{
+    cursor: pointer!important;
+}
+
+input::-webkit-calendar-picker-indicator {
+    cursor: pointer!important;
+}
+
+.input-group > input,
+.input-group > button {
+    border-radius: 0!important;
+}
+
+:disabled,
+.disabled
+{
+    cursor: not-allowed!important;
+}
+
+.btn-collapse[aria-expanded="false"]:before {
+    content: "Show More";
+}
+
+.btn-collapse[aria-expanded="true"]:before {
+    content: "Show Less";
+}
+
+.btn-override {
+    color: var(--bs-secondary)!important;
+    background-color: var(--bs-gray-200)!important;
+    border-top: none!important;
+    border-left: none!important;
+    border-right: none!important;
+    border-bottom:
+            var(--bs-border-width)
+            var(--bs-border-style)
+            var(--bs-gray)
+    !important;
+    border-radius: 0!important;
+}
+
+.btn-override:active,
+.btn-override:focus,
+.btn-override:hover,
+.btn-override.active,
+.btn-override.show
+{
+    color: var(--bs-white)!important;
+    background-color: var(--bs-secondary)!important;
+}
+
+.form-check > * {
+    cursor: pointer!important;
+}
+
+.form-check-input:focus,
+.form-control:focus
+{
+    background-color: var(--bs-white)!important;
+    border-color: var(--bs-gray-dark)!important;
+    box-shadow:
+            0 0 0 0.2rem
+            rgba(var(--bs-secondary-rgb), 0.25)
+    !important;
+}
+
+.form-check-input:checked {
+    background-color: var(--bs-gray)!important;
+    border-color: var(--bs-gray)!important;
+}
+
+.form-control::-webkit-datetime-edit-day-field:focus,
+.form-control::-webkit-datetime-edit-month-field:focus,
+.form-control::-webkit-datetime-edit-year-field:focus
+{
+    background-color: var(--bs-gray)!important;
+    color: var(--bs-white)!important;
+    outline: none!important;
+}
+
+.dropdown-menu {
+    border-radius: 0!important;
+}
+
+.dropdown-toggle::after {
+    display: none!important;
+}
+
+.dropdown-item.active,
+.dropdown-item:active {
+    background-color: var(--bs-gray)!important;
+}
+
+.active .dropdown-item {
+    color: var(--bs-dropdown-link-active-color)!important;
+    background-color: var(--bs-gray)!important;
+}
+
+
+.page-item .page-link {
+    height: 40px!important;
+    border-radius: 0!important;
+    border-top: none!important;
+    border-left: none!important;
+    border-right: none!important;
+    border-bottom:
+            var(--bs-border-width)
+            var(--bs-border-style)
+            var(--bs-gray)
+    !important;
+}
+
+.page-link {
+    color: var(--bs-gray)!important;
+    background-color: var(--bs-gray-200)!important;
+}
+
+.page-link.disabled {
+    opacity: 60%!important;
+}
+
+.page-link:focus {
+    box-shadow:
+            0 0 0 0.2rem
+            rgba(var(--bs-secondary-rgb), 0.25)
+    !important;
+    background-color: var(--bs-gray-400)!important;
+}
+
+.page-link:hover {
+    background-color: var(--bs-gray-400)!important;
+}
+
+.pagination-jump > input {
+    min-width: 165px!important;
+}
+
+.disabled > .page-link {
+    color: var(--bs-gray-400)!important;
+}
+
+.active > .page-link
+{
+    background-color: var(--bs-gray)!important;
+    border-color: var(--bs-gray)!important;
+    color: var(--bs-white)!important;
+}
+
+.spinner-lg {
+    width: 3rem!important;
+    height: 3rem!important;
+}
+
+.tooltip-inner {
+    border-radius: 0!important;
+    max-width: 400px!important;
+}
+
+.modal-content {
+    border-radius: 0!important;
+}
+
+div[data-ghs-id] {
+    background-color: var(--bs-gray-200)!important;
+}
+
+.centered-children > * {
+    vertical-align: middle!important;
+}

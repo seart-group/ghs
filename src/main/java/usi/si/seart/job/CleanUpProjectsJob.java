@@ -1,117 +1,170 @@
 package usi.si.seart.job;
 
 import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
+import lombok.Cleanup;
 import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 import lombok.experimental.FieldDefaults;
+import lombok.experimental.NonFinal;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.io.IOUtils;
+import org.hibernate.ScrollMode;
+import org.hibernate.ScrollableResults;
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+import org.hibernate.StatelessSession;
+import org.hibernate.Transaction;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
-import usi.si.seart.model.GitRepo;
 import usi.si.seart.repository.GitRepoRepository;
 
-import java.io.BufferedReader;
+import javax.persistence.EntityManagerFactory;
+import javax.persistence.PersistenceException;
+import javax.persistence.Tuple;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.util.List;
-import java.util.Optional;
+import java.math.BigInteger;
+import java.net.ConnectException;
+import java.net.UnknownHostException;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 @Slf4j
 @Service
 @EnableScheduling
+@ConditionalOnProperty(value = "app.cleanup.enabled", havingValue = "true")
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
 public class CleanUpProjectsJob {
 
-    private static final int RUN_COMMAND_TIMEOUT = -3;
+    private static final int NO_HOST_RESOLVE = 6;
+    private static final int NO_HOST_CONNECTION = 7;
+    private static final int OPERATION_TIMEOUT = 28;
+
+    EntityManagerFactory entityManagerFactory;
 
     GitRepoRepository gitRepoRepository;
 
+    @NonFinal
+    @Value("${spring.jpa.properties.hibernate.jdbc.fetch_size}")
+    Integer fetchSize;
+
+    @SneakyThrows(InterruptedException.class)
     @Scheduled(fixedDelayString = "${app.cleanup.scheduling}")
     public void run(){
-        log.info("CleanUpProjectsJob started ...");
-        List<String> allRepos = gitRepoRepository.findAllRepoNames();
+        long totalRepositories = gitRepoRepository.count();
+        log.info("Started cleanup on {} repositories...", totalRepositories);
 
-        final int totalRepos = allRepos.size();
-        log.info("CleanUpProjectsJob started on {} repositories ...", totalRepos);
+        String sql = "SELECT id, name FROM repo ORDER BY RAND()";
+        @Cleanup SessionFactory factory = entityManagerFactory.unwrap(SessionFactory.class);
+        @Cleanup StatelessSession session = factory.openStatelessSession();
+        @Cleanup ScrollableResults results = session.createNativeQuery(sql, Tuple.class)
+                .setCacheable(false)
+                .setFetchSize(fetchSize)
+                .scroll(ScrollMode.FORWARD_ONLY);
 
-        int totalDeleted = 0;
-        for (int i = 0; i < allRepos.size(); i++) {
-            String repo = allRepos.get(i);
-            String repoURL = String.format("https://github.com/%s", repo);
-            boolean exists = checkIfRepoExists(repoURL);
+        long totalDeleted = 0;
+        while (results.next()) {
+            Tuple tuple = (Tuple) results.get(0);
+            Long id = tuple.get(0, BigInteger.class).longValue();
+            String name = tuple.get(1, String.class);
+            log.debug("Checking if {} [id: {}] exists...", name, id);
+            boolean exists = checkIfRepoExists(name);
+            TimeUnit.MILLISECONDS.sleep(500);
             if (!exists) {
-                log.info("{}/{}\tChecking if repo exists: {} ==> TO BE DELETED", i, totalRepos, repoURL);
-                Optional<GitRepo> optional = gitRepoRepository.findGitRepoByName(repo.toLowerCase());
-                if (optional.isPresent()) {
-                    GitRepo existing = optional.get();
-                    gitRepoRepository.delete(existing);
-                    totalDeleted++;
+                log.info("Deleting repository: {} [{}]", name, id);
+                Transaction transaction = null;
+                try (Session nested = factory.openSession()) {
+                    transaction = nested.beginTransaction();
+                    nested.createQuery("DELETE FROM GitRepo r WHERE r.id = :id")
+                            .setParameter("id", id)
+                            .executeUpdate();
+                    nested.createQuery("DELETE FROM GitRepoLabel l WHERE l.repo.id = :id")
+                            .setParameter("id", id)
+                            .executeUpdate();
+                    nested.createQuery("DELETE FROM GitRepoLanguage l WHERE l.repo.id = :id")
+                            .setParameter("id", id)
+                            .executeUpdate();
+                    nested.flush();
+                    transaction.commit();
+                } catch (PersistenceException ex) {
+                    log.error("Exception occurred while deleting GitRepo [id=" + id + ", name=" + name + "]!", ex);
+                    if (transaction != null) {
+                        log.info("Rolling back transaction...");
+                        transaction.rollback();
+                    }
                 }
+
+                totalDeleted++;
             }
         }
 
-        log.info("CleanUpProjectsJob finished on {} repositories. {} DELETED.", totalRepos, totalDeleted);
+        log.info("Finished! {}/{} repositories deleted.", totalDeleted, totalRepositories);
     }
 
-
-    /**
+    /*
      * Check if a repo at given url is publicly available.
-     * @param repoUrl The http url of the repo. Technically the same code should also work for ssh url, but in my tests,
-     *                ssh prompts (for adding fingerprint, whatsoever) which kills the command as we disabled prompts.
-     *                (Prompts should remain disabled, otherwise GitHub asks user/pass for private repos)
+     * Technically the same code should also work for an SSH URL,
+     * but in my tests SSH would trigger prompts which kill the command.
+     * Prompts should remain disabled otherwise GitHub asks credentials for private repos.
      */
-    private boolean checkIfRepoExists(String repoUrl) {
-        boolean res;
+    private boolean checkIfRepoExists(String name) {
+        String url = String.format("https://github.com/%s", name);
         try {
-            ProcessBuilder pb = new ProcessBuilder("git", "ls-remote", repoUrl);
-            pb.environment().put("GIT_TERMINAL_PROMPT", "0");
-            Process process = pb.start();
-
-            InputStreamConsumerThread inputConsumer = new InputStreamConsumerThread(process.getInputStream());
-            InputStreamConsumerThread errorConsumer = new InputStreamConsumerThread(process.getErrorStream());
-            inputConsumer.start();
-            errorConsumer.start();
-
-            boolean noTimeout = process.waitFor(60, TimeUnit.SECONDS);
-            int returnCode;
-            if (noTimeout) {
-                returnCode = process.exitValue();
-            } else {
-                long pid = process.pid();
-                log.error("Attempting to terminate timed-out process: [{}] ...", pid);
-                while (process.isAlive()) process.destroyForcibly();
-                log.info("Process [{}] terminated!", pid);
-                returnCode = RUN_COMMAND_TIMEOUT;
-            }
-
-            // Why also RUN_COMMAND_TIMEOUT? Because it's safer to keep projects which we fail to check, than removing them
-            // from db. Let's say there is a bug with our implementation, do we prefer to lose repos one by one? nope.
-            // Once the code is reviewed, we can drop the "res == RUN_COMMAND_TIMEOUT" part.
-            res = (returnCode == 0 || returnCode == RUN_COMMAND_TIMEOUT);
+            return checkWithGit(url) || checkWithCURL(url);
         } catch (Exception ex) {
+            // It's safer to keep projects which we fail to check, rather than removing them from DB.
+            // Let's say there is a bug with our implementation, do we prefer to lose repos one by one?
             log.error("An exception has occurred during cleanup!", ex);
-            res = true; // We return "true" to prevent deleting repos from GHS database in case of errors
+            return true;
         }
-
-        return res;
     }
 
-    @AllArgsConstructor(access = AccessLevel.PRIVATE)
-    private static class InputStreamConsumerThread extends Thread {
-        private final InputStream is;
+    private boolean checkWithGit(String url) throws IOException, InterruptedException, TimeoutException {
+        return executeCommand("git", "ls-remote", url, "--exit-code");
+    }
 
-        @Override
-        public void run() {
-            try (BufferedReader br = new BufferedReader(new InputStreamReader(is))) {
-                for (String line = br.readLine(); line != null; line = br.readLine());
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+    private boolean checkWithCURL(String url) throws IOException, InterruptedException, TimeoutException {
+        return executeCommand("curl", "-Is", "--fail-with-body", "--show-error", "--connect-timeout", "45", url);
+    }
+
+    private boolean executeCommand(String... command) throws IOException, InterruptedException, TimeoutException {
+        String joined = String.join(" ", command);
+        log.trace("\tExecuting command: {}", joined);
+        ProcessBuilder builder = new ProcessBuilder(command);
+        builder.environment().put("GIT_TERMINAL_PROMPT", "0");
+        Process process = builder.start();
+
+        String stderr = IOUtils.toString(process.getErrorStream());
+        boolean exited = process.waitFor(60, TimeUnit.SECONDS);
+        int returnCode;
+        if (exited) {
+            returnCode = process.exitValue();
+        } else {
+            long pid = process.pid();
+            log.debug("\tProcess [{}]: Timed out! Attempting to terminate...", pid);
+            while (process.isAlive()) process.destroyForcibly();
+            log.debug("\tProcess [{}]: Terminated!", pid);
+            returnCode = OPERATION_TIMEOUT;
+        }
+
+        switch (returnCode) {
+            case 0:
+                return true;
+            case NO_HOST_RESOLVE:
+                throw new UnknownHostException("Could not resolve host address!");
+            case NO_HOST_CONNECTION:
+                throw new ConnectException("Connection to host failed!");
+            case OPERATION_TIMEOUT:
+                throw new TimeoutException("Timed out while executing command: " + joined);
+            case 130:
+                throw new InterruptedException("Process terminated via SIGTERM, exit code 130.");
+            default:
+                log.debug("Command returned with non-zero exit code {}, stderr:\n{}", returnCode, stderr);
+                return false;
         }
     }
 }
