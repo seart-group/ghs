@@ -5,7 +5,7 @@ COPY ./src ./src
 
 RUN mvn -e --no-transfer-progress clean package -am -DskipTests
 
-FROM adoptopenjdk/openjdk11:jre-11.0.11_9-alpine
+FROM adoptopenjdk/openjdk11:jre-11.0.19_7-alpine
 
 COPY --from=build /target/ghs-application-*.jar /server.jar
 
