@@ -28,9 +28,8 @@ import java.util.stream.Stream;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class SchedulerConfig {
 
-    @Value("${app.crawl.analysis.maxpoolthreads}")
+    @Value("${app.crawl.analysis.max-pool-threads}")
     int maxPoolThreads;
-
 
     /**
      * By default, Spring Boot will use just a single thread for all scheduled tasks to run.
