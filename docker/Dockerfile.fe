@@ -1,11 +1,17 @@
-FROM nginx
+FROM node:18.15-alpine AS build
 
-COPY src/main/fe-src /usr/share/nginx/html
+RUN apk update && apk add moreutils
 
-EXPOSE 3030
+RUN npm install minify -g
 
-COPY docker/fe-entrypoint.sh /
-RUN chmod 777 /fe-entrypoint.sh
+COPY html html/
 
-ENTRYPOINT ["/fe-entrypoint.sh"]
-CMD ["nginx", "-g", "daemon off;"]
+RUN for file in html/js/*.js; \
+    do minify $file | sponge $file; \
+    done
+
+FROM nginx:1.23.3-alpine-slim
+
+COPY --from=build html /usr/share/nginx/html
+
+ENTRYPOINT ["nginx", "-g", "daemon off;"]

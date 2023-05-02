@@ -1,21 +1,22 @@
 package usi.si.seart.util;
 
 import com.google.common.collect.Range;
+import org.apache.commons.lang3.tuple.Pair;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import usi.si.seart.util.Ranges;
+import usi.si.seart.exception.UnsplittableRangeException;
 
+import java.text.Format;
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.List;
 import java.util.function.BinaryOperator;
 
-public class RangesTest {
+class RangesTest {
 
     @Test
-    public void testBuild() {
+    void testBuild() {
         Assertions.assertEquals(Range.all(), Ranges.build(null, null));
         Assertions.assertEquals(Range.atLeast(5), Ranges.build(5, null));
         Assertions.assertEquals(Range.atMost(10), Ranges.build(null, 10));
@@ -23,26 +24,30 @@ public class RangesTest {
     }
 
     @Test
-    public void testBuildException() {
+    void testBuildException() {
         Assertions.assertThrows(IllegalArgumentException.class, () -> Ranges.build(5, 1));
     }
 
     @Test
-    public void testSplit() {
+    void testSplit() {
         BinaryOperator<Long> average = (a, b) -> (a + b)/2;
-
-        List<Range<Long>> ranges = Ranges.split(Range.closed(2L, 10L), average);
-        Assertions.assertEquals(2, ranges.size());
-        Assertions.assertEquals(Range.closed(2L, 6L), ranges.get(0));
-        Assertions.assertEquals(Range.closed(6L, 10L), ranges.get(1));
-
-        ranges = Ranges.split(Range.closed(2L, 2L), average);
-        Assertions.assertEquals(1, ranges.size());
-        Assertions.assertEquals(Range.closed(2L, 2L), ranges.get(0));
+        Pair<Range<Long>, Range<Long>> ranges = Ranges.split(Range.closed(2L, 10L), average);
+        Assertions.assertEquals(Range.closed(2L, 6L), ranges.getLeft());
+        Assertions.assertEquals(Range.closed(6L, 10L), ranges.getRight());
     }
 
     @Test
-    public void testToString() {
+    void testSplitException() {
+        Range<Long> invalid = Range.closed(2L, 2L);
+        BinaryOperator<Long> average = (a, b) -> (a + b)/2;
+        Assertions.assertThrows(
+                UnsplittableRangeException.class,
+                () -> Ranges.split(invalid, average)
+        );
+    }
+
+    @Test
+    void testToString() {
         Assertions.assertEquals("5..10", Ranges.toString(Range.closed(5, 10), NumberFormat.getInstance()));
         Assertions.assertEquals("5..10", Ranges.toString(Range.closed(5L, 10L), NumberFormat.getInstance()));
         Assertions.assertEquals("5..", Ranges.toString(Range.atLeast(5), NumberFormat.getInstance()));
@@ -63,10 +68,12 @@ public class RangesTest {
     }
 
     @Test
-    public void testToStringException() {
+    void testToStringException() {
+        Range<Date> invalid = Range.closed(new Date(), new Date());
+        Format format = NumberFormat.getInstance();
         Assertions.assertThrows(
                 IllegalArgumentException.class,
-                () -> Ranges.toString(Range.closed(new Date(), new Date()), NumberFormat.getInstance())
+                () -> Ranges.toString(invalid, format)
         );
     }
 }

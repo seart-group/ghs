@@ -2,9 +2,6 @@
 # Compiled class file
 *.class
 
-# Log file
-*.log
-
 # BlueJ files
 *.ctxt
 
@@ -165,5 +162,19 @@ Temporary Items
 .apdisk
 
 ### Docker Compose
+# General
 *.prod.yml
-dbdata/
+*.prod.conf
+.*.sh
+
+# dotenv environment variable files
+.env
+.env.development.local
+.env.test.local
+.env.production.local
+.env.local
+
+### Logging
+# General
+*.log
+*.log.gz

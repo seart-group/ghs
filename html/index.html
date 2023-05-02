@@ -1,0 +1,992 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <title>GitHub Search</title>
+    <meta charset="utf-8">
+    <meta name="author" content="Ozren Dabić">
+    <meta name="description" content="GitHub Search, SEART, Software Institute (SI), USI">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65" crossorigin="anonymous">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.3/font/bootstrap-icons.css" rel="stylesheet" integrity="sha384-b6lVK+yci+bfDmaY1u0zE8YYJt0TZxLEAFyYSLHId4xoVvsrQu3INevFKo+Xir8e" crossorigin="anonymous">
+    <link href="https://cdn.jsdelivr.net/gh/devicons/devicon@v2.15.1/devicon.min.css" rel="stylesheet" integrity="sha384-mTX5j/NIzlehkuOql3BYfNpkDrnvRHS5S7V3ctncUhJjtlL1+85q8lCKi8A5sUb+" crossorigin="anonymous">
+    <link href="https://cdn.jsdelivr.net/npm/octicons-css@1.0.2/dist/octicons-24/octicons.css" rel="stylesheet" integrity="sha384-Q5ik/TRXSifIPEc7zZBJt/vYNt2mdk2U2K9JMKnO0X+7CYOyK18d1GFDxb16ECVf" crossorigin="anonymous">
+    <link href="css/main.css" rel="stylesheet">
+    <link href="public/favicon.ico" rel="icon">
+  </head>
+  <body class="min-vh-100 mw-100 d-flex flex-column justify-content-between">
+    <header class="mb-3">
+      <nav class="navbar navbar-expand-sm bg-light">
+        <div class="container-fluid">
+          <span class="navbar-brand">GitHub Search</span>
+          <button type="button"
+                  data-bs-toggle="collapse"
+                  data-bs-target="#navbar"
+                  aria-controls="navbar"
+                  aria-expanded="false"
+                  aria-label="Toggle navigation"
+                  class="navbar-toggler"
+          >
+            <span class="navbar-toggler-icon"></span>
+          </button>
+          <div id="navbar" class="collapse navbar-collapse">
+            <ul class="ms-none ms-sm-auto navbar-nav">
+              <li class="nav-item">
+                <a href="#"
+                   class="nav-link"
+                   data-bs-toggle="modal"
+                   data-bs-target="#statistics-modal"
+                   tabindex="-1"
+                >
+                  <span>Mined Projects</span>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a href="#"
+                   class="nav-link"
+                   data-bs-toggle="modal"
+                   data-bs-target="#citation-modal"
+                   tabindex="-1"
+                >
+                  <span>Citation</span>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a href="#"
+                   class="nav-link"
+                   data-bs-toggle="modal"
+                   data-bs-target="#about-modal"
+                   tabindex="-1"
+                >
+                  <span>About</span>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a href="https://github.com/seart-group/ghs"
+                   target="_blank"
+                   class="nav-link"
+                   tabindex="-1"
+                >
+                  <i class="devicon-github-original d-none d-md-inline"></i>
+                  <span class="d-md-none">GitHub</span>
+                </a>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </nav>
+    </header>
+    <main class="my-3">
+      <form id="search" class="container border bg-light" autocomplete="off">
+        <div class="row">
+          <div class="col">
+            <div class="row">
+              <div class="col">
+                <h5 class="my-3">General</h5>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-12 col-md-8">
+                <div class="input-group mb-3">
+                  <input type="text"
+                         name="name"
+                         id="search-name"
+                         class="form-control"
+                         placeholder="Search by keyword in name"
+                         aria-label="Repository Name"
+                  />
+                  <button type="button"
+                          id="search-name-dropdown-toggle"
+                          class="btn btn-secondary btn-override dropdown-toggle"
+                          data-bs-toggle="dropdown"
+                          aria-expanded="false"
+                  >
+                    Contains
+                    <i class="bi bi-chevron-down"></i>
+                  </button>
+                  <ul id="search-name-dropdown-items"
+                      class="dropdown-menu dropdown-menu-end"
+                  >
+                    <li><h6 class="dropdown-header">Matching mode</h6></li>
+                    <li><button type="button" class="dropdown-item" value="false">Contains</button></li>
+                    <li><button type="button" class="dropdown-item" value="true">Equals</button></li>
+                  </ul>
+                </div>
+                <input type="checkbox"
+                       name="nameEquals"
+                       id="search-name-equals"
+                       aria-label="Repository Name Equal To"
+                       class="d-none"
+                       value="false"
+                       checked
+                />
+              </div>
+              <div class="col-12 col-md-4">
+                <input type="text"
+                       name="language"
+                       id="search-language"
+                       class="form-control mb-3"
+                       placeholder="Language"
+                       aria-label="Repository Language"
+                />
+              </div>
+              <div class="col-12 col-md-8">
+                <input type="text"
+                       name="license"
+                       id="search-license"
+                       class="form-control mb-3"
+                       placeholder="License"
+                       aria-label="Repository License"
+                />
+              </div>
+              <div class="col-12 col-md-4">
+                <input type="text"
+                       name="label"
+                       id="search-label"
+                       class="form-control mb-3"
+                       placeholder="Uses Label"
+                       aria-label="Repository Label"
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-12 col-md-8">
+            <div class="row">
+              <div class="col">
+                <h5 class="my-3">History and Activity</h5>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-12 col-md-6">
+                <div class="row">
+                  <div class="col">
+                    <h6>Number of Commits</h6>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col-12 col-md-6">
+                    <input type="number"
+                           name="commitsMin"
+                           id="search-commits-min"
+                           aria-label="Minimum Commits"
+                           class="form-control mb-3"
+                           placeholder="min"
+                    />
+                  </div>
+                  <div class="col-12 col-md-6">
+                    <input type="number"
+                           name="commitsMax"
+                           id="search-commits-max"
+                           aria-label="Maximum Commits"
+                           class="form-control mb-3"
+                           placeholder="max"
+                    />
+                  </div>
+                </div>
+              </div>
+              <div class="col-12 col-md-6">
+                <div class="row">
+                  <div class="col">
+                    <h6>Number of Contributors</h6>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col-12 col-md-6">
+                    <input type="number"
+                           name="contributorsMin"
+                           id="search-contributors-min"
+                           aria-label="Minimum Contributors"
+                           class="form-control mb-3"
+                           placeholder="min"
+                    />
+                  </div>
+                  <div class="col-12 col-md-6">
+                    <input type="number"
+                           name="contributorsMax"
+                           id="search-contributors-max"
+                           aria-label="Maximum Contributors"
+                           class="form-control mb-3"
+                           placeholder="max"
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-12 col-md-6">
+                <div class="row">
+                  <div class="col">
+                    <h6>Number of Issues</h6>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col-12 col-md-6">
+                    <input type="number"
+                           name="issuesMin"
+                           id="search-issues-min"
+                           aria-label="Minimum Issues"
+                           class="form-control mb-3"
+                           placeholder="min"
+                    />
+                  </div>
+                  <div class="col-12 col-md-6">
+                    <input type="number"
+                           name="issuesMax"
+                           id="search-issues-max"
+                           aria-label="Maximum Issues"
+                           class="form-control mb-3"
+                           placeholder="max"
+                    />
+                  </div>
+                </div>
+              </div>
+              <div class="col-12 col-md-6">
+                <div class="row">
+                  <div class="col">
+                    <h6>Number of Pull Requests</h6>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col-12 col-md-6">
+                    <input type="number"
+                           name="pullsMin"
+                           id="search-pulls-min"
+                           aria-label="Minimum Pull Requests"
+                           class="form-control mb-3"
+                           placeholder="min"
+                    />
+                  </div>
+                  <div class="col-12 col-md-6">
+                    <input type="number"
+                           name="pullsMax"
+                           id="search-pulls-max"
+                           aria-label="Maximum Pull Requests"
+                           class="form-control mb-3"
+                           placeholder="max"
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-12 col-md-6">
+                <div class="row">
+                  <div class="col">
+                    <h6>Number of Branches</h6>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col-12 col-md-6">
+                    <input type="number"
+                           name="branchesMin"
+                           id="search-branches-min"
+                           aria-label="Minimum Branches"
+                           class="form-control mb-3"
+                           placeholder="min"
+                    />
+                  </div>
+                  <div class="col-12 col-md-6">
+                    <input type="number"
+                           name="branchesMax"
+                           id="search-branches-max"
+                           aria-label="Maximum Branches"
+                           class="form-control mb-3"
+                           placeholder="max"
+                    />
+                  </div>
+                </div>
+              </div>
+              <div class="col-12 col-md-6">
+                <div class="row">
+                  <div class="col">
+                    <h6>Number of Releases</h6>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col-12 col-md-6">
+                    <input type="number"
+                           name="releasesMin"
+                           id="search-releases-min"
+                           aria-label="Minimum Releases"
+                           class="form-control mb-3"
+                           placeholder="min"
+                    />
+                  </div>
+                  <div class="col-12 col-md-6">
+                    <input type="number"
+                           name="releasesMax"
+                           id="search-releases-max"
+                           aria-label="Maximum Releases"
+                           class="form-control mb-3"
+                           placeholder="max"
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="col-12 col-md-4">
+            <div class="row">
+              <div class="col">
+                <h5 class="my-3">Date-based Filters</h5>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-12">
+                <div class="row">
+                  <div class="col">
+                    <h6>Created Between</h6>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col-12 col-md-6">
+                    <input type="date"
+                           name="createdMin"
+                           id="search-created-min"
+                           aria-label="Created At Lower Bound"
+                           class="form-control mb-3"
+                           placeholder="min"
+                    />
+                  </div>
+                  <div class="col-12 col-md-6">
+                    <input type="date"
+                           name="createdMax"
+                           id="search-created-max"
+                           aria-label="Created At Upper Bound"
+                           class="form-control mb-3"
+                           placeholder="max"
+                    />
+                  </div>
+                </div>
+              </div>
+              <div class="col-12">
+                <div class="row">
+                  <div class="col">
+                    <h6>Last Commit Between</h6>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col-12 col-md-6">
+                    <input type="date"
+                           name="committedMin"
+                           id="search-committed-min"
+                           aria-label="Committed Lower Bound"
+                           class="form-control mb-3"
+                           placeholder="min"
+                    />
+                  </div>
+                  <div class="col-12 col-md-6">
+                    <input type="date"
+                           name="committedMax"
+                           id="search-committed-max"
+                           aria-label="Committed Upper Bound"
+                           class="form-control mb-3"
+                           placeholder="max"
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-12 col-md-8">
+            <div class="row">
+              <div class="col">
+                <h5 class="my-3">Popularity Filters</h5>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-12 col-md-6">
+                <div class="row">
+                  <div class="col">
+                    <h6>Number of Stars</h6>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col-12 col-md-6">
+                    <input type="number"
+                           name="starsMin"
+                           id="search-stars-min"
+                           aria-label="Minimum Stars"
+                           class="form-control mb-3"
+                           placeholder="min"
+                    />
+                  </div>
+                  <div class="col-12 col-md-6">
+                    <input type="number"
+                           name="starsMax"
+                           id="search-stars-max"
+                           aria-label="Maximum Stars"
+                           class="form-control mb-3"
+                           placeholder="max"
+                    />
+                  </div>
+                </div>
+              </div>
+              <div class="col-12 col-md-6">
+                <div class="row">
+                  <div class="col">
+                    <h6>Number of Watchers</h6>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col-12 col-md-6">
+                    <input type="number"
+                           name="watchersMin"
+                           id="search-watchers-min"
+                           aria-label="Minimum watchers"
+                           class="form-control mb-3"
+                           placeholder="min"
+                    />
+                  </div>
+                  <div class="col-12 col-md-6">
+                    <input type="number"
+                           name="watchersMax"
+                           id="search-watchers-max"
+                           aria-label="Maximum watchers"
+                           class="form-control mb-3"
+                           placeholder="max"
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="row align-items-end">
+              <div class="col-12 col-md-6">
+                <div class="row">
+                  <div class="col">
+                    <h6>Number of Forks</h6>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col-12 col-md-6">
+                    <input type="number"
+                           name="forksMin"
+                           id="search-forks-min"
+                           aria-label="Minimum Forks"
+                           class="form-control mb-3"
+                           placeholder="min"
+                    />
+                  </div>
+                  <div class="col-12 col-md-6">
+                    <input type="number"
+                           name="forksMax"
+                           id="search-forks-max"
+                           aria-label="Maximum Forks"
+                           class="form-control mb-3"
+                           placeholder="max"
+                    />
+                  </div>
+                </div>
+              </div>
+              <div class="col-12 col-md-6">
+                <div class="row">
+                  <div class="col d-none d-md-flex justify-content-md-center">
+                    <button class="btn btn-secondary border-dark border-5 w-50 mb-3">Search</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="col-12 col-md-4">
+            <div class="row">
+              <div class="col">
+                <h5 class="my-3">Additional Filters</h5>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col">
+                <div class="mb-3">
+                  <div class="form-check">
+                    <input type="checkbox"
+                           name="excludeForks"
+                           id="search-exclude-forks"
+                           class="form-check-input"
+                           value="true"
+                    />
+                    <label for="search-exclude-forks" class="form-check-label">
+                      Exclude Forks
+                    </label>
+                  </div>
+                  <div class="form-check">
+                    <input type="checkbox"
+                           name="onlyForks"
+                           id="search-only-forks"
+                           class="form-check-input"
+                           value="true"
+                    />
+                    <label for="search-only-forks" class="form-check-label">
+                      Only Forks
+                    </label>
+                  </div>
+                  <div class="form-check">
+                    <input type="checkbox"
+                           name="hasIssues"
+                           id="search-has-issues"
+                           class="form-check-input"
+                           value="true"
+                    />
+                    <label for="search-has-issues" class="form-check-label">
+                      Has Open Issues
+                    </label>
+                  </div>
+                  <div class="form-check">
+                    <input type="checkbox"
+                           name="hasPulls"
+                           id="search-has-pulls"
+                           class="form-check-input"
+                           value="true"
+                    />
+                    <label for="search-has-pulls" class="form-check-label">
+                      Has Pull Requests
+                    </label>
+                  </div>
+                  <div class="form-check">
+                    <input type="checkbox"
+                           name="hasWiki"
+                           id="search-has-wiki"
+                           class="form-check-input"
+                           value="true"
+                    />
+                    <label for="search-has-wiki" class="form-check-label">
+                      Has Wiki
+                    </label>
+                  </div>
+                  <div class="form-check">
+                    <input type="checkbox"
+                           name="hasLicense"
+                           id="search-has-license"
+                           class="form-check-input"
+                           value="true"
+                    />
+                    <label for="search-has-license" class="form-check-label">
+                      Has License
+                    </label>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col d-grid d-md-none">
+            <button class="btn btn-secondary border-dark border-5 mb-3">Search</button>
+          </div>
+        </div>
+      </form>
+      <div id="spinner" class="justify-content-center d-flex d-none">
+        <div class="spinner-border spinner-lg text-secondary my-3" role="status">
+          <span class="visually-hidden">Loading...</span>
+        </div>
+      </div>
+      <div id="results" class="container border bg-light d-none">
+        <div class="row">
+          <div id="results-count" class="col text-center">
+            <!-- SEARCH RESULT COUNT WILL BE INJECTED HERE -->
+          </div>
+        </div>
+        <div class="row">
+          <div class="col">
+            <nav aria-label="Page navigation" class="d-flex flex-wrap justify-content-center">
+              <button type="button" class="btn btn-back btn-secondary btn-override mb-3 me-2">
+                <i class="bi bi-chevron-left"></i>
+                Back
+              </button>
+              <div class="btn-group btn-download-group mb-3 me-md-2" role="group" aria-label="Download Buttons">
+                <button type="button"
+                   data-bs-toggle="tooltip"
+                   data-bs-title="Download CSV"
+                   data-bs-placement="top"
+                   class="btn btn-secondary btn-override btn-download btn-download-csv"
+                >
+                  <i class="bi bi-filetype-csv"></i>
+                </button>
+                <button type="button"
+                   data-bs-toggle="tooltip"
+                   data-bs-title="Download XML"
+                   data-bs-placement="top"
+                   class="btn btn-secondary btn-override btn-download btn-download-xml"
+                >
+                  <i class="bi bi-filetype-xml"></i>
+                </button>
+                <button type="button"
+                   data-bs-toggle="tooltip"
+                   data-bs-title="Download JSON"
+                   data-bs-placement="top"
+                   class="btn btn-secondary btn-override btn-download btn-download-json"
+                >
+                  <i class="bi bi-filetype-json"></i>
+                </button>
+              </div>
+              <ul class="pagination justify-content-center mb-3 me-md-2"></ul>
+              <form class="pagination-jump input-group mb-3 w-auto">
+                <input type="number"
+                       name="page"
+                       aria-label="Page number"
+                       placeholder="Jump to page..."
+                       class="form-control pagination-jump-number"
+                       required
+                />
+                <button class="btn btn-secondary btn-override">Go!</button>
+              </form>
+            </nav>
+          </div>
+        </div>
+        <div class="row">
+          <div id="results-list" class="col">
+            <!-- SEARCH RESULTS WILL BE INJECTED HERE -->
+          </div>
+        </div>
+        <div class="row">
+          <div class="col">
+            <nav aria-label="Page navigation" class="d-flex flex-wrap justify-content-center">
+              <button type="button" class="btn btn-back btn-secondary btn-override mb-3 me-2">
+                <i class="bi bi-chevron-left"></i>
+                Back
+              </button>
+              <div class="btn-group btn-download-group mb-3 me-md-2" role="group" aria-label="Download Buttons">
+                <button type="button"
+                   data-bs-toggle="tooltip"
+                   data-bs-title="Download CSV"
+                   data-bs-placement="bottom"
+                   class="btn btn-secondary btn-override btn-download btn-download-csv"
+                >
+                  <i class="bi bi-filetype-csv"></i>
+                </button>
+                <button type="button"
+                   data-bs-toggle="tooltip"
+                   data-bs-title="Download XML"
+                   data-bs-placement="bottom"
+                   class="btn btn-secondary btn-override btn-download btn-download-xml"
+                >
+                  <i class="bi bi-filetype-xml"></i>
+                </button>
+                <button type="button"
+                   data-bs-toggle="tooltip"
+                   data-bs-title="Download JSON"
+                   data-bs-placement="bottom"
+                   class="btn btn-secondary btn-override btn-download btn-download-json"
+                >
+                  <i class="bi bi-filetype-json"></i>
+                </button>
+              </div>
+              <ul class="pagination justify-content-center mb-3 me-md-2"></ul>
+              <form class="pagination-jump input-group mb-3 w-auto">
+                <input type="number"
+                       name="page"
+                       aria-label="Page number"
+                       placeholder="Jump to page..."
+                       class="form-control pagination-jump-number"
+                       required
+                />
+                <button class="btn btn-secondary btn-override">Go!</button>
+              </form>
+            </nav>
+          </div>
+        </div>
+      </div>
+    </main>
+    <footer class="py-3 mt-3 bg-light">
+      <div class="container text-center">
+        <span class="text-muted">
+            &copy; <a href="https://seart.si.usi.ch/" target="_blank" class="link-secondary">SEART</a> 2020 - 2023
+        </span>
+      </div>
+    </footer>
+    <div class="modal fade" id="statistics-modal" tabindex="-1" aria-labelledby="statistics-modal-label" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered modal-lg modal-fullscreen-sm-down">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h1 class="modal-title fs-5" id="statistics-modal-label">Mined Projects</h1>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <h2 class="fs-6 placeholder-glow">Total Number of Mined Projects: <span id="statistics-count" class="placeholder align-baseline bg-white">Loading...</span></h2>
+            <div class="chart-container">
+              <canvas id="statistics-chart" class="chart"></canvas>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="modal fade" id="citation-modal" tabindex="-1" aria-labelledby="citation-modal-label" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered modal-lg modal-fullscreen-sm-down">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h1 class="modal-title fs-5" id="citation-modal-label">How To Cite This Work</h1>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <h2 class="fs-6">BibTeX Citation:</h2>
+            <pre><code class="text-muted">@inproceedings{Dabic:msr2021data,
+  author    = {Ozren Dabic and Emad Aghajani and Gabriele Bavota},
+  title     = {Sampling Projects in GitHub for {MSR} Studies},
+  booktitle = {18th {IEEE/ACM} International Conference on Mining Software Repositories,
+               {MSR} 2021},
+  pages     = {560--564},
+  publisher = {{IEEE}},
+  year      = {2021}
+}</code></pre>
+            <a href="https://arxiv.org/pdf/2103.04682.pdf" class="link-secondary" target="_blank">
+              Link to the paper PDF
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="modal fade" id="about-modal" tabindex="-1" aria-labelledby="about-modal-label" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered modal-lg modal-fullscreen-sm-down">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h1 class="modal-title fs-5" id="about-modal-label">Information</h1>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <h2 class="fs-6">SEART GitHub Search Engine</h2>
+            <p>
+              The SEART GitHub Search Engine (<em>seart-ghs</em>) allows researchers to sample repositories to use for
+              empirical studies by using several combinations of selection criteria. <strong>All parameters in the
+              search form are optional</strong>. Searching without any specified parameters would result in retrieving
+              all currently available repositories in our database (this search may take up to a few minutes).
+            </p>
+            <h2 class="fs-6">Mined Projects</h2>
+            <p>
+              As a design choice, we only mine information about <strong>repositories having at least 10 stars</strong>.
+              This drastically reduces the number of repositories we store and makes the tool more scalable (e.g.,
+              from preliminary analyses we performed on Java, &lt; 5% of repositories have at least 10 stars).
+              While we acknowledge that the number of stars is not a good proxy of repositories quality or relevance,
+              we found the 10 stars threshold to be a reasonable mechanism to remove most personal/toy projects unlikely
+              to be relevant for empirical studies.
+            </p>
+            <p>
+              Note that, since <em>seart-ghs</em> continuously updates the information about the mined projects,
+              a project excluded in the first place as having &lt; 10 stars can be mined a few days after once its
+              number of stars reaches the set threshold.
+            </p>
+            <p>
+              To report a bug & see known bugs, head on over to the project
+              <a href="https://github.com/seart-group/ghs/issues" class="link-secondary" target="_blank">issue tracker</a>.
+            </p>
+            <p>
+              Powered By:
+            </p>
+            <div class="d-flex justify-content-around">
+              <div class="d-inline-block text-center">
+                <i class="devicon-mysql-plain colored fs-1"></i>
+                <span class="d-block">MySQL</span>
+              </div>
+              <div class="d-inline-block text-center">
+                <i class="devicon-java-plain colored fs-1"></i>
+                <span class="d-block">Java</span>
+              </div>
+              <div class="d-inline-block text-center">
+                <i class="devicon-spring-plain colored fs-1"></i>
+                <span class="d-block">Spring</span>
+              </div>
+              <div class="d-inline-block text-center">
+                <i class="devicon-bootstrap-plain colored fs-1"></i>
+                <span class="d-block">Bootstrap</span>
+              </div>
+              <div class="d-inline-block text-center">
+                <i class="devicon-jquery-plain colored fs-1"></i>
+                <span class="d-block">jQuery</span>
+              </div>
+              <div class="d-inline-block text-center">
+                <i class="devicon-handlebars-plain colored fs-1"></i>
+                <span class="d-block">Handlebars</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="modal fade" id="download-modal" tabindex="-1" aria-labelledby="download-modal-label" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered modal-md modal-fullscreen-sm-down">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h1 class="modal-title fs-5" id="download-modal-label">Preparing Your Download...</h1>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <p>
+              Your download is being prepared. Please be patient, as it may take some time for our backend to generate
+              your result file. In the meantime, why not
+              <a href="https://github.com/seart-group/ghs/stargazers" class="link-secondary" target="_blank">
+                give our project a star on GitHub
+              </a>?
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <script id="template-results-none" type="text/html">
+      <div class="row">
+        <div class="col text-center">
+          <h2 class="mb-3">No Results! <i class="bi bi-emoji-frown-fill"></i></h2>
+        </div>
+      </div>
+    </script>
+    <script id="template-results-repo" type="text/x-handlebars-template">
+      <div data-ghs-id="{{id}}" class="row border border-secondary border-top-0 border-start-0 border-end-0 mx-2 mb-3">
+        <div class="col-12">
+          <div class="d-flex align-items-center my-2">
+            <div class="centered-children flex-shrink-0 me-2">
+              <i class="{{devicon language}} fs-2" title="{{language}} Repository"></i>
+            </div>
+            <a href="https://github.com/{{name}}"
+               class="d-inline-block text-truncate text-reset font-monospace fs-5 me-2"
+               target="_blank"
+            >
+              {{name}}
+            </a>
+            <div class="centered-children flex-shrink-0 ms-auto text-secondary">
+              {{#with properties}}
+              {{#if fork}}
+              <i class="octicon octicon-repo-forked-24" title="Fork Project"></i>
+              {{/if}}
+              {{#if archived}}
+              <i class="octicon octicon-archive-24" title="Archived"></i>
+              {{/if}}
+              {{#if wiki}}
+              <i class="octicon octicon-book-24" title="Has Wiki"></i>
+              {{/if}}
+              {{/with}}
+              {{#if homepage}}
+              <a href="{{homepage}}" target="_blank" class="link-secondary font-monospace">
+                <i class="octicon octicon-link-24" title="External Homepage"></i>
+              </a>
+              {{/if}}
+            </div>
+          </div>
+        </div>
+        {{#each statistics}}
+        <div class="col-12 col-sm-6 col-md-4 col-lg-3">
+          <div class="centered-children mb-2">
+            <i class="octicon octicon-{{octicon @key}}-24 {{other-styles @key}}"></i>
+            <span>
+              {{startcase @key}}:
+            </span>
+            {{#if this includeZero=true}}
+            {{#switch @key}}
+            {{#case "size" break=true}}
+            <span>{{bytes this}}</span>
+            {{/case}}
+            {{#case "created" "updated" "lastPush" "lastCommit" break=true}}
+            <span data-bs-toggle="tooltip"
+                  data-bs-title="{{this}}"
+                  data-bs-placement="top"
+            >
+                    {{date this}}
+                  </span>
+            {{/case}}
+            {{#default}}
+            <span>{{this}}</span>
+            {{/default}}
+            {{/switch}}
+            {{else}}
+            <span>N/A</span>
+            {{/if}}
+          </div>
+        </div>
+        {{/each}}
+        {{#if sha}}
+        <div class="col-12 col-sm-12 col-md-8 col-lg-12">
+          <div class="centered-children mb-2">
+            <i class="octicon octicon-hash-24"></i>
+            <span>
+                Last Commit SHA:
+              </span>
+            <a href="https://github.com/{{name}}/commit/{{sha}}"
+               class="link-secondary font-monospace d-lg-none"
+               target="_blank"
+            >
+              {{truncate sha length=8}}
+            </a>
+            <a href="https://github.com/{{name}}/commit/{{sha}}"
+               class="link-secondary font-monospace d-none d-lg-inline"
+               target="_blank"
+            >
+              {{sha}}
+            </a>
+          </div>
+        </div>
+        {{/if}}
+        <div id="repo-{{id}}-details" class="col collapse">
+          <div class="row">
+            {{#if branch}}
+            <div class="col-12">
+              <div class="centered-children mb-2">
+                <i class="octicon octicon-git-branch-24"></i>
+                <span>Default Branch:</span>
+                <span>{{branch}}</span>
+              </div>
+            </div>
+            {{/if}}
+            {{#if license}}
+            <div class="col-12">
+              <div class="centered-children mb-2">
+                <i class="octicon octicon-law-24"></i>
+                <span>License:</span>
+                <span>{{license}}</span>
+              </div>
+            </div>
+            {{/if}}
+            {{#if labels}}
+            <div class="col-12">
+              <div>Issue Labels:</div>
+              <div class="mb-2">
+                {{#each labels}}
+                <span class="badge text-bg-dark">{{this}}</span>
+                {{/each}}
+              </div>
+            </div>
+            {{/if}}
+            {{#if (between languages min=2)}}
+            <div class="col-12">
+              <div>Languages:</div>
+              <div class="mb-2">
+                {{#each languages}}
+                <span class="badge text-bg-dark">
+                  <i class="{{devicon @key}}"></i>
+                  {{@key}}:
+                  {{percentage this}}
+                </span>
+                {{/each}}
+              </div>
+            </div>
+            {{/if}}
+          </div>
+        </div>
+        <div class="col-12 px-0">
+          <div class="d-grid">
+            <button type="button"
+                    class="btn btn-override btn-collapse"
+                    style="border-bottom: 0!important;"
+                    data-bs-toggle="collapse"
+                    data-bs-target="#repo-{{id}}-details"
+                    aria-controls="repo-{{id}}-details"
+                    aria-expanded="false"
+            ></button>
+          </div>
+        </div>
+      </div>
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/lodash@4.17.21/lodash.min.js" integrity="sha384-H6KKS1H1WwuERMSm+54dYLzjg0fKqRK5ZRyASdbrI/lwrCc6bXEmtGYr5SwvP1pZ" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js" integrity="sha384-oBqDVmMz9ATKxIep9tiCxS/Z9fNfEXiDAYTujMAeBAsjFuCZSmKbSSUnQlmh/jp3" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.3/dist/jquery.min.js" integrity="sha384-Ft/vb48LwsAEtgltj7o+6vtS2esTU9PCpDqcXs4OCVQFZu5BqprHtUCZ4kjK+bpE" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.min.js" integrity="sha384-cuYeSxntonz0PPNlHhBs68uyIAVpIIOZZ5JqeqvYYIcEL727kskC66kF92t6Xl2V" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap-3-typeahead@4.0.2/bootstrap3-typeahead.min.js" integrity="sha384-EEbPKCLAcxVCiXCi8k9bdeuayzAxVSmBzP/wLpmpd0LVW+Lvh2mjS1W02kdYm5z1" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/twbs-pagination@1.4.2/jquery.twbsPagination.min.js" integrity="sha384-AzpIEA+V2ntWh1KXh0Nz69l/mYOfBMOiw6lbuvWaVKYfuEooT5t5k/qyU0W0B7uk" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.2.1/dist/chart.umd.min.js" integrity="sha384-gdQErvCNWvHQZj6XZM0dNsAoY4v+j5P1XDpNkcM3HJG1Yx04ecqIHk7+4VBOCHOG" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/handlebars@4.7.7/dist/handlebars.js" integrity="sha384-hlAB2iOjy5Dl7guHcQsJ/scYffh0k+rReCOxkZnYvr7gB22xtZbth64QiI3VUkZD" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/just-handlebars-helpers@1.0.19/dist/h.min.js" integrity="sha384-RqSUk94F6/91JrGD35T27ahIFGQ+tdqaM6fwX+dYRqsRr9aL4vuhAXGfHALP7Xcn" crossorigin="anonymous"></script>
+    <script>const base = "http://localhost:8080/api";</script>
+    <script src="js/handlebars.js"></script>
+    <script src="js/general.js"></script>
+    <script src="js/typeahead.js"></script>
+    <script src="js/chart.js"></script>
+    <script src="js/search.js"></script>
+  </body>
+</html>
