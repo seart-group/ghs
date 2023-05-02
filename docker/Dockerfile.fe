@@ -10,7 +10,7 @@ RUN for file in html/js/*.js; \
     do minify $file | sponge $file; \
     done
 
-FROM nginx:1.23.3-alpine-slim
+FROM nginx:1.23.4-alpine-slim
 
 COPY --from=build html /usr/share/nginx/html
 
