@@ -38,8 +38,8 @@ public interface GitRepoClonerService {
     class GitRepoClonerImpl implements GitRepoClonerService {
 
         // Prefix of the temporary folders where the repositories get cloned in
-        @Value("${app.crawl.analysis.folderprefix}")
-        String repoFolderPrefix;
+        @Value("${app.crawl.analysis.folder-prefix}")
+        String folderPrefix;
 
         /**
          * Clones a git repository into a temporary folder and returns a handle for the cloned repository.
@@ -49,23 +49,23 @@ public interface GitRepoClonerService {
          * @throws CloneException if the cloning operation was unsuccessful.
          */
         public Future<ClonedRepo> cloneRepo(URL gitRepoURL) throws CloneException {
-            Path tempRepoDir;
+            Path tempDir;
             try {
-                tempRepoDir = Files.createTempDirectory(repoFolderPrefix);
-            } catch (IOException e) {
-                throw new CloneException(e);
+                tempDir = Files.createTempDirectory(folderPrefix);
+            } catch (IOException ex) {
+                throw new CloneException(ex);
             }
 
             TerminalExecution cloneProcess = new TerminalExecution(
-                    tempRepoDir, "git clone --depth 1", gitRepoURL.toString(), tempRepoDir.toString()
+                    tempDir, "git clone --depth 1", gitRepoURL.toString(), tempDir.toString()
             );
             try {
-                log.trace("Cloning repository '{}' ...",gitRepoURL);
+                log.trace("Cloning repository '{}' ...", gitRepoURL);
                 cloneProcess.start().waitSuccessfulExit();
                 // clone process did either not start or failed
             } catch (TerminalExecutionException e) {
                 cloneProcess.stop();
-                try (Stream<Path> walk = Files.walk(tempRepoDir)) {
+                try (Stream<Path> walk = Files.walk(tempDir)) {
                     // Deletes the temporary folder
                     walk.sorted(Comparator.reverseOrder())
                             .map(Path::toFile)
@@ -75,7 +75,7 @@ public interface GitRepoClonerService {
                 }
                 throw new CloneException("'git clone' process did not start/exit successfully", e);
             }
-            return new AsyncResult<>(new ClonedRepo(tempRepoDir));
+            return new AsyncResult<>(new ClonedRepo(tempDir));
         }
 
         /**
@@ -84,9 +84,8 @@ public interface GitRepoClonerService {
         @EventListener({ApplicationReadyEvent.class})
         public void cleanupAllTempFolders() {
             try {
-                new TerminalExecution(
-                        Files.createTempDirectory(repoFolderPrefix).getParent(), "rm -rf ", repoFolderPrefix + "*"
-                ).start().waitSuccessfulExit();
+                Path parent = Files.createTempDirectory(folderPrefix).getParent();
+                new TerminalExecution(parent, "rm -rf ", folderPrefix + "*").start().waitSuccessfulExit();
             } catch (Exception e) {
                 log.error("Failed to cleanup cloned repository folders", e);
                 return;
