@@ -93,6 +93,7 @@ services:
       SPRING_DATASOURCE_URL: jdbc:mysql://gse-db:3306/gse?serverTimezone=UTC&useLegacyDatetimeCode=false&useUnicode=yes&characterEncoding=UTF-8
       SPRING_FLYWAY_URL: jdbc:mysql://gse-db:3306/gse?serverTimezone=UTC&useLegacyDatetimeCode=false&useUnicode=yes&characterEncoding=UTF-8
       APP_CRAWL_ENABLED: 'false'
+      APP_CRAWL_ANALYSIS_ENABLED: 'false'
       APP_CLEANUP_ENABLED: 'false'
       APP_CRAWL_TOKENS:
     ports: [ "48001:8080" ]
