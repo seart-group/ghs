@@ -14,6 +14,10 @@ import usi.si.seart.exception.StaticCodeAnalysisException;
 import usi.si.seart.repository.GitRepoRepository;
 import usi.si.seart.service.StaticCodeAnalysisService;
 
+/**
+ * Mines code metrics for every needed repository.
+ * */
+
 @Slf4j
 @Service
 @ConditionalOnProperty(value = "app.crawl.analysis.enabled", havingValue = "true")

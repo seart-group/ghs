@@ -32,7 +32,7 @@ import java.util.concurrent.Future;
 import java.util.stream.Collectors;
 
 /**
- * Service responsible for performing static code analysis on git repositories
+ * Service responsible for mining code metrics on git repositories
  */
 public interface StaticCodeAnalysisService {
 
