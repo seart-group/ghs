@@ -75,7 +75,7 @@
     </encoder>
     <file>${LOG_ROOT}/analysis/analysis.log</file>
     <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
-      <fileNamePattern>${LOG_ROOT}/cleaner/cleaner_%d{yyyy-MM-dd}_%i.log.gz</fileNamePattern>
+      <fileNamePattern>${LOG_ROOT}/analysis/analysis_%d{yyyy-MM-dd}_%i.log.gz</fileNamePattern>
       <totalSizeCap>${LOGBACK_ROLLINGPOLICY_TOTAL_SIZE_CAP}</totalSizeCap>
       <maxFileSize>${LOGBACK_ROLLINGPOLICY_MAX_FILE_SIZE}</maxFileSize>
       <maxHistory>${LOGBACK_ROLLINGPOLICY_MAX_HISTORY}</maxHistory>
