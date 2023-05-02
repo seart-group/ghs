@@ -8,6 +8,11 @@
       </param>
       <param>
         <option name="enabled" value="true" />
+        <option name="name" value="app.crawl.analysis.enabled" />
+        <option name="value" value="false" />
+      </param>
+      <param>
+        <option name="enabled" value="true" />
         <option name="name" value="app.cleanup.enabled" />
         <option name="value" value="false" />
       </param>
