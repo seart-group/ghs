@@ -1,25 +1,13 @@
 package usi.si.seart.model;
 
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import lombok.experimental.FieldDefaults;
 import org.hibernate.Hibernate;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
+import org.hibernate.annotations.Formula;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.OneToMany;
-import javax.persistence.PrePersist;
-import javax.persistence.PreUpdate;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Objects;
@@ -118,6 +106,9 @@ public class GitRepo {
     @Column(name = "crawled")
     Date crawled;
 
+    @Column(name = "cloned")
+    Date cloned;
+
     @Builder.Default
     @OneToMany(mappedBy="repo", cascade=CascadeType.ALL, orphanRemoval = true)
     @Fetch(value = FetchMode.JOIN)
@@ -127,6 +118,20 @@ public class GitRepo {
     @OneToMany(mappedBy="repo", cascade= CascadeType.ALL, orphanRemoval = true)
     @Fetch(value = FetchMode.JOIN)
     Set<GitRepoLanguage> languages = new HashSet<>();
+
+    @Builder.Default
+    @OneToMany(mappedBy="repo", cascade=CascadeType.ALL, orphanRemoval = true)
+    @Fetch(value = FetchMode.JOIN)
+    Set<GitRepoMetric> metrics = new HashSet<>();
+
+    @Formula("(select sum(m.lines_code) from repo_metrics m where m.repo_id = id)")
+    Long totalCodeLines;
+
+    @Formula("(select sum(m.lines_comment) from repo_metrics m where m.repo_id = id)")
+    Long totalCommentLines;
+
+    @Formula("(select sum(m.lines_code+m.lines_comment) from repo_metrics m where m.repo_id = id)")
+    Long totalLines;
 
     @Override
     public boolean equals(Object o) {
@@ -141,9 +146,18 @@ public class GitRepo {
         return Objects.hash(id, name);
     }
 
-    @PreUpdate
-    @PrePersist
-    private void onPersistAndUpdate() {
+    /**
+     * To be called when the repository has been crawled through GitHub's API.
+     */
+    public void setCrawled() {
         crawled = new Date();
     }
+
+    /**
+     * To be called when the repository's code metrics have been mined.
+     */
+    public void setCloned() {
+        cloned = new Date();
+    }
+
 }

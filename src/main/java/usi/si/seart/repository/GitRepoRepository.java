@@ -33,13 +33,20 @@ public interface GitRepoRepository extends
     @Cacheable(value = "licenses")
     List<String> findAllLicenses();
 
+    // Code metrics are outdated if the repository has new commits since the last cloned date or if there are no metrics at all
+    @Query("SELECT r.id FROM GitRepo r WHERE r.cloned is null OR r.cloned < r.lastCommit ORDER BY r.cloned ASC")
+    Stream<Long> findAllRepoWithOutdatedCodeMetrics();
+
+    @Query("SELECT COUNT(r) FROM GitRepo r WHERE r.cloned is null OR r.cloned < r.lastCommit")
+    Long countAllRepoWithOutdatedCodeMetrics();
+
     default Page<GitRepo> findAllDynamically(Map<String, ?> parameters, Pageable pageable) {
-        GitRepoSpecification specification = GitRepoSpecification.from(parameters);
+        GitRepoSpecification specification = new GitRepoSpecification(parameters);
         return findAll(specification, pageable);
     }
 
     default Stream<GitRepo> streamAllDynamically(Map<String, ?> parameters) {
-        GitRepoSpecification specification = GitRepoSpecification.from(parameters);
+        GitRepoSpecification specification = new GitRepoSpecification(parameters);
         return stream(specification, GitRepo.class);
     }
 }
