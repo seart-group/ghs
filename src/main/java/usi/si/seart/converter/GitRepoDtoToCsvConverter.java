@@ -7,6 +7,10 @@ import org.springframework.lang.NonNull;
 import usi.si.seart.dto.GitRepoCsvDto;
 import usi.si.seart.dto.GitRepoDto;
 
+/**
+ * Convert a GitRepoDTO to it's CSV representation.
+ */
+
 @AllArgsConstructor
 public class GitRepoDtoToCsvConverter implements Converter<GitRepoDto, GitRepoCsvDto> {
 

@@ -15,7 +15,7 @@ import java.util.Comparator;
 import java.util.stream.Stream;
 
 /**
- * A git repository which is cloned on the filesystem.
+ * A git repository cloned on the filesystem.
  */
 @Slf4j
 @AllArgsConstructor
