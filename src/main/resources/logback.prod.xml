@@ -68,6 +68,21 @@
     </rollingPolicy>
   </appender>
 
+  <appender name="FILE-ANALYSIS" class="ch.qos.logback.core.rolling.RollingFileAppender">
+    <encoder>
+      <pattern>${FILE_LOG_PATTERN_THREAD}</pattern>
+      <charset>${FILE_LOG_CHARSET}</charset>
+    </encoder>
+    <file>${LOG_ROOT}/analysis/analysis.log</file>
+    <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+      <fileNamePattern>${LOG_ROOT}/cleaner/cleaner_%d{yyyy-MM-dd}_%i.log.gz</fileNamePattern>
+      <totalSizeCap>${LOGBACK_ROLLINGPOLICY_TOTAL_SIZE_CAP}</totalSizeCap>
+      <maxFileSize>${LOGBACK_ROLLINGPOLICY_MAX_FILE_SIZE}</maxFileSize>
+      <maxHistory>${LOGBACK_ROLLINGPOLICY_MAX_HISTORY}</maxHistory>
+      <cleanHistoryOnStart>false</cleanHistoryOnStart>
+    </rollingPolicy>
+  </appender>
+
   <appender name="FILE-API" class="ch.qos.logback.core.rolling.RollingFileAppender">
     <encoder>
       <pattern>${FILE_LOG_PATTERN_THREAD}</pattern>
@@ -94,6 +109,9 @@
   </logger>
   <logger name="usi.si.seart.job.CleanUpProjectsJob" level="TRACE">
     <appender-ref ref="FILE-CLEANER" />
+  </logger>
+  <logger name="usi.si.seart.service.StaticCodeAnalysisService" level="TRACE">
+    <appender-ref ref="FILE-ANALYSIS" />
   </logger>
   <logger name="org.springframework.web.servlet.DispatcherServlet" level="DEBUG">
     <appender-ref ref="FILE-API" />
