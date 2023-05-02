@@ -154,6 +154,10 @@
             forks,
             branches,
             contributors,
+            metrics,
+            totalLines,
+            totalCodeLines,
+            totalCommentLines,
             totalIssues,
             totalPullRequests,
             openIssues,
@@ -169,6 +173,16 @@
         }) {
         const total = _.sum(Object.values(languages));
         const normalized = _.mapValues(languages, (value) => value / total * 100);
+
+        const languageFilter = $search.serializeArray().find((entry) => entry.name === "language");
+        let languageMetrics = metrics.find((metric) => metric.language === languageFilter?.value);
+        languageMetrics = {
+            language: languageMetrics?.language,
+            totalLines: languageMetrics?.totalLines,
+            codeLines: languageMetrics?.codeLines,
+            commentLines: languageMetrics?.commentLines,
+        }
+
         const context = {
             id: id,
             name: name,
@@ -199,7 +213,11 @@
                 updated: updatedAt,
                 lastPush: pushedAt,
                 lastCommit: lastCommit,
+                totalLines: totalLines,
+                codeLines: totalCodeLines,
+                commentLines: totalCommentLines,
             },
+            languageMetrics: languageMetrics,
             labels: labels,
             languages: normalized
         };

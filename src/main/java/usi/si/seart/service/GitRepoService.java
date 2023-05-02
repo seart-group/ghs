@@ -114,6 +114,9 @@ public interface GitRepoService {
                 existing.setLastCommitSHA(repo.getLastCommitSHA());
                 existing.setHasWiki(repo.getHasWiki());
                 existing.setIsArchived(repo.getIsArchived());
+                existing.setCrawled(repo.getCrawled());
+                existing.setMetrics(repo.getMetrics() == null ? existing.getMetrics() : repo.getMetrics());
+                existing.setCloned(repo.getCloned() == null ? existing.getCloned() : repo.getCloned());
                 return gitRepoRepository.save(existing);
             } else {
                 return gitRepoRepository.save(repo);

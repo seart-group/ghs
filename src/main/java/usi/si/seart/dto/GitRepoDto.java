@@ -5,16 +5,17 @@ import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.NoArgsConstructor;
+import lombok.AllArgsConstructor;
+import lombok.experimental.SuperBuilder;
 
-import java.util.Date;
-import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeSet;
+import java.util.*;
 
 @Getter
 @Setter
-@Builder
+@SuperBuilder
+@NoArgsConstructor
+@AllArgsConstructor
 public class GitRepoDto {
     Long id;
     String name;
@@ -38,6 +39,13 @@ public class GitRepoDto {
     Long openIssues;
     Long totalPullRequests;
     Long openPullRequests;
+    Long totalLines;
+    Long totalCodeLines;
+    Long totalCommentLines;
+    @JacksonXmlElementWrapper(localName = "metrics")
+    @JacksonXmlProperty(localName = "metric")
+    @Builder.Default
+    List<GitRepoMetricDTO> metrics = new ArrayList<>();
     Date lastCommit;
     String lastCommitSHA;
     Boolean hasWiki;

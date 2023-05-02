@@ -391,14 +391,14 @@
           </div>
         </div>
         <div class="row">
-          <div class="col-12 col-md-8">
+          <div class="col-12 col-md-4">
             <div class="row">
               <div class="col">
                 <h5 class="my-3">Popularity Filters</h5>
               </div>
             </div>
             <div class="row">
-              <div class="col-12 col-md-6">
+              <div class="col-12 col-md-12">
                 <div class="row">
                   <div class="col">
                     <h6>Number of Stars</h6>
@@ -425,7 +425,7 @@
                   </div>
                 </div>
               </div>
-              <div class="col-12 col-md-6">
+              <div class="col-12 col-md-12">
                 <div class="row">
                   <div class="col">
                     <h6>Number of Watchers</h6>
@@ -454,7 +454,7 @@
               </div>
             </div>
             <div class="row align-items-end">
-              <div class="col-12 col-md-6">
+              <div class="col-12 col-md-12">
                 <div class="row">
                   <div class="col">
                     <h6>Number of Forks</h6>
@@ -481,7 +481,105 @@
                   </div>
                 </div>
               </div>
-              <div class="col-12 col-md-6">
+            </div>
+          </div>
+          <div class="col-12 col-md-4">
+            <div class="row">
+              <div class="col">
+                <h5 class="my-3">
+                  Size of codebase
+                  <i class="bi bi-info-circle" data-bs-toggle="tooltip"
+                     data-bs-title="These are filters related to the codebase. If the target programming language is specified, the filters will only apply to that language. If no language is specified the filters will apply to the combined metrics of all languages in the repositories."
+                     data-bs-placement="right"></i>
+                </h5>
+
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-12 col-md-12">
+                <div class="row">
+                  <div class="col">
+                    <h6>Total lines</h6>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col-12 col-md-6">
+                    <input type="number"
+                           name="totalLinesMin"
+                           id="search-totalLines-min"
+                           aria-label="Minimum total lines"
+                           class="form-control mb-3"
+                           placeholder="min"
+                    />
+                  </div>
+                  <div class="col-12 col-md-6">
+                    <input type="number"
+                           name="totalLinesMax"
+                           id="search-totalLines-max"
+                           aria-label="Maximum total lines"
+                           class="form-control mb-3"
+                           placeholder="max"
+                    />
+                  </div>
+                </div>
+              </div>
+              <div class="col-12 col-md-12">
+                <div class="row">
+                  <div class="col">
+                    <h6>Code lines</h6>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col-12 col-md-6">
+                    <input type="number"
+                           name="codeLinesMin"
+                           id="search-codeLines-min"
+                           aria-label="Minimum lines of code"
+                           class="form-control mb-3"
+                           placeholder="min"
+                    />
+                  </div>
+                  <div class="col-12 col-md-6">
+                    <input type="number"
+                           name="codeLinesMax"
+                           id="search-codeLines-max"
+                           aria-label="Maximum lines of code"
+                           class="form-control mb-3"
+                           placeholder="max"
+                    />
+                  </div>
+                </div>
+              </div>
+              <div class="col-12 col-md-12">
+                <div class="row">
+                  <div class="col">
+                    <h6>Comment lines</h6>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col-12 col-md-6">
+                    <input type="number"
+                           name="commentLinesMin"
+                           id="search-commentLines-min"
+                           aria-label="Minimum lines of code comments"
+                           class="form-control mb-3"
+                           placeholder="min"
+                    />
+                  </div>
+                  <div class="col-12 col-md-6">
+                    <input type="number"
+                           name="commentLinesMax"
+                           id="search-commentLines-max"
+                           aria-label="Maximum lines of code comments"
+                           class="form-control mb-3"
+                           placeholder="max"
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="row align-items-end">
+              <div class="col-12 col-md-12">
                 <div class="row">
                   <div class="col d-none d-md-flex justify-content-md-center">
                     <button class="btn btn-secondary border-dark border-5 w-50 mb-3">Search</button>
@@ -881,6 +979,14 @@
                     {{date this}}
                   </span>
             {{/case}}
+            {{#case "totalLines" "codeLines" "commentLines" break=true}}
+            <span {{#if @root.languageMetrics.language}}
+                    data-bs-toggle="tooltip"
+                   data-bs-title="{{@root.languageMetrics.language}} {{startcase @key}}: {{lookup @root.languageMetrics @key}}"
+                   data-bs-placement="top" {{/if}}>
+              {{this}}
+            </span>
+            {{/case}}
             {{#default}}
             <span>{{this}}</span>
             {{/default}}
@@ -891,6 +997,7 @@
           </div>
         </div>
         {{/each}}
+
         {{#if sha}}
         <div class="col-12 col-sm-12 col-md-8 col-lg-12">
           <div class="centered-children mb-2">
