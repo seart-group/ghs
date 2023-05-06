@@ -6,6 +6,7 @@ import lombok.experimental.FieldDefaults;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ConcurrentReferenceHashMap;
+import usi.si.seart.model.GitRepo;
 import usi.si.seart.model.GitRepoTopic;
 import usi.si.seart.model.Topic;
 import usi.si.seart.repository.GitRepoTopicRepository;
@@ -15,12 +16,13 @@ import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.PersistenceContext;
 import javax.validation.constraints.NotNull;
+import java.util.List;
 
 public interface GitRepoTopicsService {
 
     Topic getOrCreateTopic(@NotNull String languageName);
 
-    GitRepoTopic createOrUpdateGitRepoTopic(@NotNull GitRepoTopic gitRepoTopic);
+    void createOrUpdateGitRepoTopics(@NotNull GitRepo repo, @NotNull List<GitRepoTopic> topics);
 
     @Service
     @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
@@ -43,9 +45,9 @@ public interface GitRepoTopicsService {
 
         public Topic getOrCreateTopic(@NotNull String label) {
             return topicRepository.findByLabel(label).orElseGet(() -> {
-                // Acquires the lock for the repo tag label
+                // Acquires the lock for the repo topic label
                 synchronized (getRepoTagLock(label)) {
-                    // Checks whether the repo tag entity has been created while awaiting the lock
+                    // Checks whether the repo topic entity has been created while awaiting the lock
                     Topic repoTopic = topicRepository.findByLabel(label).orElseGet(() ->
                             // If not, creates it.
                             topicRepository.save(
@@ -60,8 +62,9 @@ public interface GitRepoTopicsService {
         }
 
         @Override
-        public GitRepoTopic createOrUpdateGitRepoTopic(GitRepoTopic gitRepoTopic) {
-            return gitRepoTopicRepository.save(gitRepoTopic);
+        public void createOrUpdateGitRepoTopics(GitRepo repo, List<GitRepoTopic> topics) {
+            gitRepoTopicRepository.deleteAllByRepo(repo);
+            gitRepoTopicRepository.saveAll(topics);
         }
     }
 }

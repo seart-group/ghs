@@ -25,9 +25,13 @@ import usi.si.seart.model.GitRepo;
 import usi.si.seart.model.GitRepoLabel;
 import usi.si.seart.model.GitRepoLanguage;
 import usi.si.seart.model.SupportedLanguage;
+import usi.si.seart.model.GitRepoTopic;
+import usi.si.seart.model.GitRepoTopicKey;
+import usi.si.seart.model.Topic;
 import usi.si.seart.service.CrawlJobService;
 import usi.si.seart.service.GitRepoService;
 import usi.si.seart.service.SupportedLanguageService;
+import usi.si.seart.service.GitRepoTopicsService;
 import usi.si.seart.util.Dates;
 import usi.si.seart.util.Optionals;
 import usi.si.seart.util.Ranges;
@@ -44,6 +48,8 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
 @Slf4j
 @Service
@@ -56,6 +62,7 @@ public class CrawlProjectsJob {
     Deque<Range<Date>> requestQueue = new ArrayDeque<>();
 
     GitRepoService gitRepoService;
+    GitRepoTopicsService gitRepoTopicsService;
     CrawlJobService crawlJobService;
     SupportedLanguageService supportedLanguageService;
 
@@ -241,6 +248,7 @@ public class CrawlProjectsJob {
                 log.debug("\tAdding: Basic repository information.");
                 retrieveRepoLabels(repo);
                 retrieveRepoLanguages(repo);
+                retrieveRepoTopics(repo);
             } catch (Exception e) {
                 log.error("Failed to save retrieved repositories", e);
             }
@@ -341,6 +349,38 @@ public class CrawlProjectsJob {
             }
             if (store) {
                 gitRepoService.createUpdateLanguages(repo, languages);
+            }
+        } catch (Exception e) {
+            log.error("Failed to add repository languages", e);
+        }
+    }
+
+    private void retrieveRepoTopics(GitRepo repo) {
+        List<GitRepoTopic> topics = new ArrayList<>();
+        boolean store = false;
+        try {
+            Long count = gitHubApiConnector.fetchNumberOfTopics(repo.getName());
+            int pages = (int) Math.ceil(count / 100.0);
+            for (int page = 1; page <= pages; page++) {
+                JsonObject result = gitHubApiConnector.fetchRepoTopics(repo.getName(), page);
+                JsonArray names = result.getAsJsonArray("names");
+                log.debug("\tAdding: {} topics.", names.size());
+
+                topics = StreamSupport.stream(names.spliterator(),true)
+                        .map(entry -> {
+                            Topic topic = gitRepoTopicsService.getOrCreateTopic(entry.getAsString());
+                            return GitRepoTopic.builder()
+                                    .id(new GitRepoTopicKey(repo.getId(), topic.getId()))
+                                    .repo(repo)
+                                    .topic(topic)
+                                    .build();
+                        })
+                        .collect(Collectors.toList());
+
+                store = true;
+            }
+            if (store) {
+                gitRepoTopicsService.createOrUpdateGitRepoTopics(repo, topics);
             }
         } catch (Exception e) {
             log.error("Failed to add repository languages", e);
