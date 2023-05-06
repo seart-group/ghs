@@ -127,7 +127,7 @@ public class GitRepo {
     @Builder.Default
     @OneToMany(mappedBy="repo", cascade=CascadeType.ALL, orphanRemoval = true)
     @Fetch(value = FetchMode.JOIN)
-    Set<GitRepoTag> tags = new HashSet<>();
+    Set<GitRepoTopic> topics = new HashSet<>();
 
     @Formula("(select sum(m.lines_code) from repo_metrics m where m.repo_id = id)")
     Long totalCodeLines;

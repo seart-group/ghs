@@ -17,9 +17,9 @@ import java.util.Set;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "metric_language")
+@Table(name = "topics")
 @Entity
-public class Tag {
+public class Topic {
 
     @Id
     @GeneratedValue
@@ -40,8 +40,8 @@ public class Tag {
         if (obj == null || getClass() != obj.getClass())
             return false;
 
-        return id.equals(((Tag) obj).id)
-                && label.equals(((Tag) obj).label);
+        return id.equals(((Topic) obj).id)
+                && label.equals(((Topic) obj).label);
     }
 
     @Override
