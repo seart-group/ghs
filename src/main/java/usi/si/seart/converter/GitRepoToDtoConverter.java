@@ -7,6 +7,8 @@ import usi.si.seart.dto.GitRepoMetricDTO;
 import usi.si.seart.model.GitRepo;
 import usi.si.seart.model.GitRepoLabel;
 import usi.si.seart.model.GitRepoMetric;
+import usi.si.seart.model.GitRepoTopic;
+import usi.si.seart.model.Topic;
 
 import java.util.Comparator;
 import java.util.LinkedHashMap;
@@ -69,6 +71,11 @@ public class GitRepoToDtoConverter implements Converter<GitRepo, GitRepoDto> {
                         source.getLabels().stream()
                                 .map(GitRepoLabel::getLabel)
                                 .collect(Collectors.toCollection(TreeSet::new))
+                )
+                .topics(source.getTopics().stream()
+                        .map(GitRepoTopic::getTopic)
+                        .map(Topic::getLabel)
+                        .collect(Collectors.toCollection(TreeSet::new))
                 )
                 .build();
     }

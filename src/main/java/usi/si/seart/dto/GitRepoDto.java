@@ -57,4 +57,8 @@ public class GitRepoDto {
     @JacksonXmlProperty(localName = "label")
     @Builder.Default
     Set<String> labels = new TreeSet<>();
+    @JacksonXmlElementWrapper(localName = "topics")
+    @JacksonXmlProperty(localName = "topic")
+    @Builder.Default
+    Set<String> topics = new TreeSet<>();
 }
