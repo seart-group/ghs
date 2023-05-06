@@ -170,6 +170,7 @@
             lastCommit,
             labels,
             languages,
+            topics,
         }) {
         const total = _.sum(Object.values(languages));
         const normalized = _.mapValues(languages, (value) => value / total * 100);
@@ -219,7 +220,8 @@
             },
             languageMetrics: languageMetrics,
             labels: labels,
-            languages: normalized
+            languages: normalized,
+            topics: topics
         };
         const html = $results_content(context);
         $results_list.append(html);
