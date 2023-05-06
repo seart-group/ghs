@@ -1050,6 +1050,16 @@
               </div>
             </div>
             {{/if}}
+            {{#if topics}}
+              <div class="col-12">
+                <div>Repository topics:</div>
+                <div class="mb-2">
+                  {{#each topics}}
+                    <span class="badge text-bg-dark">{{this}}</span>
+                  {{/each}}
+                </div>
+              </div>
+            {{/if}}
             {{#if (between languages min=2)}}
             <div class="col-12">
               <div>Languages:</div>
