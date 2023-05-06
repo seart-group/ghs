@@ -6,23 +6,27 @@ import lombok.experimental.FieldDefaults;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ConcurrentReferenceHashMap;
-import usi.si.seart.model.Tag;
-import usi.si.seart.repository.TagRepository;
+import usi.si.seart.model.GitRepoTopic;
+import usi.si.seart.model.Topic;
+import usi.si.seart.repository.GitRepoTopicRepository;
+import usi.si.seart.repository.TopicRepository;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.PersistenceContext;
 import javax.validation.constraints.NotNull;
 
-public interface TagService {
+public interface GitRepoTopicsService {
 
-    Tag getOrCreateTag(@NotNull String languageName);
+    Topic getOrCreateTopic(@NotNull String languageName);
+
+    GitRepoTopic createOrUpdateGitRepoTopic(@NotNull GitRepoTopic gitRepoTopic);
 
     @Service
     @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
     @AllArgsConstructor(onConstructor_ = @Autowired)
     @PersistenceContext
-    class TagServiceImpl implements TagService {
+    class GitRepoTopicsServiceImpl implements GitRepoTopicsService {
 
         EntityManager entityManager;
 
@@ -30,28 +34,34 @@ public interface TagService {
 
         ConcurrentReferenceHashMap<String, Object> tagLocks = new ConcurrentReferenceHashMap<>();
 
-        TagRepository tagRepository;
+        TopicRepository topicRepository;
+        GitRepoTopicRepository gitRepoTopicRepository;
 
         private Object getRepoTagLock(String languageName) {
             return this.tagLocks.compute(languageName, (k, v) -> v == null ? new Object() : v);
         }
 
-        public Tag getOrCreateTag(@NotNull String label) {
-            return tagRepository.findByLabel(label).orElseGet(() -> {
+        public Topic getOrCreateTopic(@NotNull String label) {
+            return topicRepository.findByLabel(label).orElseGet(() -> {
                 // Acquires the lock for the repo tag label
                 synchronized (getRepoTagLock(label)) {
                     // Checks whether the repo tag entity has been created while awaiting the lock
-                    Tag repoTag = tagRepository.findByLabel(label).orElseGet(() ->
+                    Topic repoTopic = topicRepository.findByLabel(label).orElseGet(() ->
                             // If not, creates it.
-                            tagRepository.save(
-                                    Tag.builder()
+                            topicRepository.save(
+                                    Topic.builder()
                                             .label(label)
                                             .build()));
                     entityManager.clear();
-                    entityManagerFactory.getCache().evict(Tag.class, repoTag.getId());
-                    return repoTag;
+                    entityManagerFactory.getCache().evict(Topic.class, repoTopic.getId());
+                    return repoTopic;
                 }
             });
+        }
+
+        @Override
+        public GitRepoTopic createOrUpdateGitRepoTopic(GitRepoTopic gitRepoTopic) {
+            return gitRepoTopicRepository.save(gitRepoTopic);
         }
     }
 }

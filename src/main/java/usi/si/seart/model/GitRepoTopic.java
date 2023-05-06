@@ -14,12 +14,12 @@ import java.util.Objects;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "repo_tags")
+@Table(name = "repo_topics")
 @Entity
-public class GitRepoTag {
+public class GitRepoTopic {
 
     @EmbeddedId
-    GitRepoTagKey id;
+    GitRepoTopicKey id;
 
     @ManyToOne
     @MapsId("repoId")
@@ -27,9 +27,9 @@ public class GitRepoTag {
     GitRepo repo;
 
     @ManyToOne(cascade = CascadeType.ALL)
-    @MapsId("tagId")
-    @JoinColumn(name = "tag_id")
-    Tag tag;
+    @MapsId("topicId")
+    @JoinColumn(name = "topic_id")
+    Topic topic;
 
     @Override
     public boolean equals(Object obj) {
@@ -39,15 +39,15 @@ public class GitRepoTag {
             return false;
         }
 
-        GitRepoTag metric = (GitRepoTag) obj;
+        GitRepoTopic metric = (GitRepoTopic) obj;
 
         return id.equals(metric.id)
                 && repo.equals(metric.repo)
-                && tag.equals(metric.tag);
+                && topic.equals(metric.topic);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, repo, tag);
+        return Objects.hash(id, repo, topic);
     }
 }

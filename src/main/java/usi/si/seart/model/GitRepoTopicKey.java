@@ -18,12 +18,12 @@ import java.util.Objects;
 @NoArgsConstructor
 @Setter
 @Getter
-public class GitRepoTagKey implements Serializable {
+public class GitRepoTopicKey implements Serializable {
     @Column(name = "repo_id")
     Long repoId;
 
-    @Column(name = "tag_id")
-    Long tagId;
+    @Column(name = "topic_id")
+    Long topicId;
 
 
     @Override
@@ -35,13 +35,13 @@ public class GitRepoTagKey implements Serializable {
             return false;
         }
 
-        GitRepoTagKey key = (GitRepoTagKey) obj;
+        GitRepoTopicKey key = (GitRepoTopicKey) obj;
 
-        return repoId.equals(key.repoId) && tagId.equals(key.tagId);
+        return repoId.equals(key.repoId) && topicId.equals(key.topicId);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(repoId, tagId);
+        return Objects.hash(repoId, topicId);
     }
 }
