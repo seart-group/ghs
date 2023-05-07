@@ -64,6 +64,10 @@ public class GitRepoSpecification implements Specification<GitRepo> {
         if (StringUtils.isNotBlank(label))
             criteria.add(new KeyValueCriteria<>(root.join(GitRepo_.labels).get(GitRepoLabel_.label), label, BinaryOperation.EQUAL));
 
+        String topic = (String) parameters.get("topics");
+        if (StringUtils.isNotBlank(topic))
+            criteria.add(new KeyValueCriteria<>(root.join(GitRepo_.topics).get(GitRepoTopic_.topic).get(Topic_.label), topic, BinaryOperation.EQUAL));
+
         Range<Long> commits = (Range<Long>) parameters.get("commits");
         if (commits.hasLowerBound())
             criteria.add(new KeyValueCriteria<>(root.get(GitRepo_.commits), commits.lowerEndpoint(), BinaryOperation.GREATER_THAN_EQUAL));
