@@ -12,8 +12,8 @@ CREATE TABLE repo_topics
 
     CONSTRAINT unique_composite_key
         UNIQUE (repo_id, topic_id),
-    FOREIGN KEY (repo_id) REFERENCES repo(id),
-    FOREIGN KEY (topic_id) REFERENCES topics(id),
+    FOREIGN KEY (repo_id) REFERENCES repo(id) ON DELETE CASCADE,
+    FOREIGN KEY (topic_id) REFERENCES topics(id) ON DELETE CASCADE,
     PRIMARY KEY (repo_id, topic_id)
 );
 
