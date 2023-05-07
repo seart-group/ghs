@@ -17,10 +17,13 @@ import javax.persistence.EntityManagerFactory;
 import javax.persistence.PersistenceContext;
 import javax.validation.constraints.NotNull;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public interface GitRepoTopicsService {
 
+    List<String> getAllTopicsSortByPopularity();
     Topic getOrCreateTopic(@NotNull String languageName);
+
 
     void createOrUpdateGitRepoTopics(@NotNull GitRepo repo, @NotNull List<GitRepoTopic> topics);
 
@@ -39,10 +42,15 @@ public interface GitRepoTopicsService {
         TopicRepository topicRepository;
         GitRepoTopicRepository gitRepoTopicRepository;
 
-        private Object getRepoTagLock(String languageName) {
-            return this.tagLocks.compute(languageName, (k, v) -> v == null ? new Object() : v);
-        }
 
+        @Override
+        public List<String> getAllTopicsSortByPopularity() {
+            return topicRepository.findAllSortByPopularity().stream()
+                    .map(Topic::getLabel)
+                    .limit(3000)
+                    .collect(Collectors.toList());
+        }
+        @Override
         public Topic getOrCreateTopic(@NotNull String label) {
             return topicRepository.findByLabel(label).orElseGet(() -> {
                 // Acquires the lock for the repo topic label
@@ -65,6 +73,10 @@ public interface GitRepoTopicsService {
         public void createOrUpdateGitRepoTopics(GitRepo repo, List<GitRepoTopic> topics) {
             gitRepoTopicRepository.deleteAllByRepo(repo);
             gitRepoTopicRepository.saveAll(topics);
+        }
+
+        private Object getRepoTagLock(String languageName) {
+            return this.tagLocks.compute(languageName, (k, v) -> v == null ? new Object() : v);
         }
     }
 }
