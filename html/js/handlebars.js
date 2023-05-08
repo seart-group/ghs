@@ -20,11 +20,11 @@ Handlebars.registerHelper("bytes", function (value) {
     return `${f} ${units[i]}`;
 });
 
-Handlebars.registerHelper("formatInteger", function (value) {
+Handlebars.registerHelper("localized", function (value) {
     return value.toLocaleString('en-US', {
         useGrouping: true,
         minimumFractionDigits: 0
-    }).replace(/,/g, "'");
+    });
 });
 
 Handlebars.registerHelper("percentage", function (value) {

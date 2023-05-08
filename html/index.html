@@ -129,13 +129,22 @@
                        aria-label="Repository Language"
                 />
               </div>
-              <div class="col-12 col-md-8">
+              <div class="col-12 col-md-4">
                 <input type="text"
                        name="license"
                        id="search-license"
                        class="form-control mb-3"
                        placeholder="License"
                        aria-label="Repository License"
+                />
+              </div>
+              <div class="col-12 col-md-4">
+                <input type="text"
+                       name="topics"
+                       id="search-topics"
+                       class="form-control mb-3"
+                       placeholder="Has topic"
+                       aria-label="Repository Topic"
                 />
               </div>
               <div class="col-12 col-md-4">
@@ -591,26 +600,6 @@
           <div class="col-12 col-md-2">
             <div class="row">
               <div class="col">
-                <h5 class="my-3">Repository topics</h5>
-              </div>
-            </div>
-            <div class="row">
-              <div class="col">
-                <div class="mb-3">
-                  <input type="text"
-                         name="topics"
-                         id="search-topics"
-                         class="form-control mb-3"
-                         placeholder="Has topic"
-                         aria-label="Repository Topic"
-                  />
-                </div>
-              </div>
-            </div>
-          </div>
-          <div class="col-12 col-md-2">
-            <div class="row">
-              <div class="col">
                 <h5 class="my-3">Additional Filters</h5>
               </div>
             </div>
@@ -1002,9 +991,9 @@
             {{#case "totalLines" "codeLines" "commentLines" break=true}}
             <span {{#if @root.languageMetrics.language}}
                     data-bs-toggle="tooltip"
-                   data-bs-title="{{@root.languageMetrics.language}} {{startcase @key}}: {{formatInteger (lookup @root.languageMetrics @key)}}"
+                   data-bs-title="{{@root.languageMetrics.language}} {{startcase @key}}: {{localized (lookup @root.languageMetrics @key)}}"
                    data-bs-placement="top" {{/if}}>
-              {{formatInteger this}}
+              {{localized this}}
             </span>
             {{/case}}
             {{#default}}
