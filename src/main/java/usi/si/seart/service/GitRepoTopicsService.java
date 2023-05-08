@@ -4,6 +4,7 @@ import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ConcurrentReferenceHashMap;
 import usi.si.seart.model.GitRepo;
@@ -45,9 +46,8 @@ public interface GitRepoTopicsService {
 
         @Override
         public List<String> getAllTopicsSortByPopularity() {
-            return topicRepository.findAllSortByPopularity().stream()
+            return topicRepository.findAllSortByPopularity(PageRequest.of(0,3000)).stream()
                     .map(Topic::getLabel)
-                    .limit(3000)
                     .collect(Collectors.toList());
         }
         @Override
