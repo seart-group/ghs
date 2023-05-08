@@ -18,8 +18,8 @@ CREATE TABLE repo_metrics
 
     CONSTRAINT unique_composite_key
         UNIQUE (repo_id, metric_language_id),
-    FOREIGN KEY (repo_id) REFERENCES repo(id) ON DELETE CASCADE,
-    FOREIGN KEY (metric_language_id) REFERENCES metric_language(id) ON DELETE CASCADE,
+    FOREIGN KEY (repo_id) REFERENCES repo(id),
+    FOREIGN KEY (metric_language_id) REFERENCES metric_language(id),
     PRIMARY KEY (repo_id, metric_language_id)
 );
 
