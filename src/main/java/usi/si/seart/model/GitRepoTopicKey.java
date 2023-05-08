@@ -19,6 +19,7 @@ import java.util.Objects;
 @Setter
 @Getter
 public class GitRepoTopicKey implements Serializable {
+
     @Column(name = "repo_id")
     Long repoId;
 

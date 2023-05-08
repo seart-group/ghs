@@ -23,8 +23,8 @@ import java.util.stream.Collectors;
 public interface GitRepoTopicsService {
 
     List<String> getAllTopicsSortByPopularity();
-    Topic getOrCreateTopic(@NotNull String languageName);
 
+    Topic getOrCreateTopic(@NotNull String languageName);
 
     void createOrUpdateGitRepoTopics(@NotNull GitRepo repo, @NotNull List<GitRepoTopic> topics);
 
@@ -38,11 +38,9 @@ public interface GitRepoTopicsService {
 
         EntityManagerFactory entityManagerFactory;
 
-        ConcurrentReferenceHashMap<String, Object> tagLocks = new ConcurrentReferenceHashMap<>();
-
         TopicRepository topicRepository;
-        GitRepoTopicRepository gitRepoTopicRepository;
 
+        GitRepoTopicRepository gitRepoTopicRepository;
 
         @Override
         public List<String> getAllTopicsSortByPopularity() {
@@ -50,22 +48,18 @@ public interface GitRepoTopicsService {
                     .map(Topic::getLabel)
                     .collect(Collectors.toList());
         }
+
         @Override
         public Topic getOrCreateTopic(@NotNull String label) {
             return topicRepository.findByLabel(label).orElseGet(() -> {
-                // Acquires the lock for the repo topic label
-                synchronized (getRepoTagLock(label)) {
-                    // Checks whether the repo topic entity has been created while awaiting the lock
-                    Topic repoTopic = topicRepository.findByLabel(label).orElseGet(() ->
-                            // If not, creates it.
-                            topicRepository.save(
-                                    Topic.builder()
-                                            .label(label)
-                                            .build()));
-                    entityManager.clear();
-                    entityManagerFactory.getCache().evict(Topic.class, repoTopic.getId());
-                    return repoTopic;
-                }
+                // If not, creates it.
+                Topic repoTopic = topicRepository.save(
+                                Topic.builder()
+                                        .label(label)
+                                        .build());
+                entityManager.clear();
+                entityManagerFactory.getCache().evict(Topic.class, repoTopic.getId());
+                return repoTopic;
             });
         }
 
@@ -73,10 +67,6 @@ public interface GitRepoTopicsService {
         public void createOrUpdateGitRepoTopics(GitRepo repo, List<GitRepoTopic> topics) {
             gitRepoTopicRepository.deleteAllByRepo(repo);
             gitRepoTopicRepository.saveAll(topics);
-        }
-
-        private Object getRepoTagLock(String languageName) {
-            return this.tagLocks.compute(languageName, (k, v) -> v == null ? new Object() : v);
         }
     }
 }

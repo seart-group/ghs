@@ -35,11 +35,12 @@ public class Topic {
 
     @Override
     public boolean equals(Object obj) {
-        if (this == obj)
+        if (this == obj) {
             return true;
-        if (obj == null || getClass() != obj.getClass())
+        }
+        if (obj == null || getClass() != obj.getClass()) {
             return false;
-
+        }
         return id.equals(((Topic) obj).id)
                 && label.equals(((Topic) obj).label);
     }
