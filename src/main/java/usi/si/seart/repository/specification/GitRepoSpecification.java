@@ -7,14 +7,25 @@ import lombok.experimental.FieldDefaults;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.data.jpa.domain.Specification;
-import usi.si.seart.model.*;
+import usi.si.seart.model.GitRepo;
+
+import usi.si.seart.model.GitRepo_;
+import usi.si.seart.model.GitRepoLabel_;
+import usi.si.seart.model.GitRepoMetric_;
+
+import usi.si.seart.model.MetricLanguage_;
 import usi.si.seart.repository.criteria.Criteria;
 import usi.si.seart.repository.criteria.KeyCriteria;
 import usi.si.seart.repository.criteria.KeyValueCriteria;
 import usi.si.seart.repository.operation.BinaryOperation;
 import usi.si.seart.repository.operation.UnaryOperation;
 
-import javax.persistence.criteria.*;
+
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.Path;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
