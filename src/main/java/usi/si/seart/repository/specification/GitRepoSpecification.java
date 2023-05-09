@@ -122,38 +122,40 @@ public class GitRepoSpecification implements Specification<GitRepo> {
         if (forks.hasUpperBound())
             criteria.add(new KeyValueCriteria<>(root.get(GitRepo_.forks), forks.upperEndpoint(), BinaryOperation.LESS_THAN_EQUAL));
 
-
-        Path<Long> commentlinesPath;
-        Path<Long> codelinesPath;
-        Path<Long> totallinesPath;
-        if (StringUtils.isNotBlank(language)) {
+        Range<Long> codeLines = (Range<Long>) parameters.get("codeLines");
+        Range<Long> commentLines = (Range<Long>) parameters.get("commentLines");
+        Range<Long> totalLines = (Range<Long>) parameters.get("totalLines");
+        Path<Long> commentLinesPath;
+        Path<Long> codeLinesPath;
+        Path<Long> totalLinesPath;
+        boolean hasCodeMetricsFilters = codeLines.hasLowerBound() || codeLines.hasUpperBound() ||
+                commentLines.hasLowerBound() || commentLines.hasUpperBound() ||
+                totalLines.hasLowerBound() || totalLines.hasUpperBound();
+        if (StringUtils.isNotBlank(language) && hasCodeMetricsFilters) {
             criteria.add(new KeyValueCriteria<>(root.join(GitRepo_.metrics).join(GitRepoMetric_.language).get(MetricLanguage_.language), language, BinaryOperation.EQUAL));
-            commentlinesPath = root.join(GitRepo_.metrics).get(GitRepoMetric_.commentLines);
-            codelinesPath = root.join(GitRepo_.metrics).get(GitRepoMetric_.codeLines);
-            totallinesPath = root.join(GitRepo_.metrics).get(GitRepoMetric_.totalLines);
+            commentLinesPath = root.join(GitRepo_.metrics).get(GitRepoMetric_.commentLines);
+            codeLinesPath = root.join(GitRepo_.metrics).get(GitRepoMetric_.codeLines);
+            totalLinesPath = root.join(GitRepo_.metrics).get(GitRepoMetric_.totalLines);
         } else {
-            commentlinesPath = root.get(GitRepo_.totalCommentLines);
-            codelinesPath = root.get(GitRepo_.totalCodeLines);
-            totallinesPath = root.get(GitRepo_.totalLines);
+            commentLinesPath = root.get(GitRepo_.totalCommentLines);
+            codeLinesPath = root.get(GitRepo_.totalCodeLines);
+            totalLinesPath = root.get(GitRepo_.totalLines);
         }
 
-        Range<Long> codeLines = (Range<Long>) parameters.get("codeLines");
         if (codeLines.hasLowerBound())
-            criteria.add(new KeyValueCriteria<>(codelinesPath, codeLines.lowerEndpoint(), BinaryOperation.GREATER_THAN_EQUAL));
+            criteria.add(new KeyValueCriteria<>(codeLinesPath, codeLines.lowerEndpoint(), BinaryOperation.GREATER_THAN_EQUAL));
         if (codeLines.hasUpperBound())
-            criteria.add(new KeyValueCriteria<>(codelinesPath, codeLines.upperEndpoint(), BinaryOperation.LESS_THAN_EQUAL));
+            criteria.add(new KeyValueCriteria<>(codeLinesPath, codeLines.upperEndpoint(), BinaryOperation.LESS_THAN_EQUAL));
 
-        Range<Long> commentLines = (Range<Long>) parameters.get("commentLines");
         if (commentLines.hasLowerBound())
-            criteria.add(new KeyValueCriteria<>(commentlinesPath, commentLines.lowerEndpoint(), BinaryOperation.GREATER_THAN_EQUAL));
+            criteria.add(new KeyValueCriteria<>(commentLinesPath, commentLines.lowerEndpoint(), BinaryOperation.GREATER_THAN_EQUAL));
         if (commentLines.hasUpperBound())
-            criteria.add(new KeyValueCriteria<>(commentlinesPath, commentLines.upperEndpoint(), BinaryOperation.LESS_THAN_EQUAL));
+            criteria.add(new KeyValueCriteria<>(commentLinesPath, commentLines.upperEndpoint(), BinaryOperation.LESS_THAN_EQUAL));
 
-        Range<Long> totalLines = (Range<Long>) parameters.get("totalLines");
         if (totalLines.hasLowerBound())
-            criteria.add(new KeyValueCriteria<>(totallinesPath, totalLines.lowerEndpoint(), BinaryOperation.GREATER_THAN_EQUAL));
+            criteria.add(new KeyValueCriteria<>(totalLinesPath, totalLines.lowerEndpoint(), BinaryOperation.GREATER_THAN_EQUAL));
         if (totalLines.hasUpperBound())
-            criteria.add(new KeyValueCriteria<>(totallinesPath, totalLines.lowerEndpoint(), BinaryOperation.LESS_THAN_EQUAL));
+            criteria.add(new KeyValueCriteria<>(totalLinesPath, totalLines.lowerEndpoint(), BinaryOperation.LESS_THAN_EQUAL));
 
 
         Range<Date> created = (Range<Date>) parameters.get("created");
