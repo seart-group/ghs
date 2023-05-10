@@ -42,7 +42,6 @@ public class GitRepoSearch {
     Range<Long> codeLines;
     Range<Long> commentLines;
     Range<Long> totalLines;
-    boolean hasCodeMetricsFilters;
     boolean excludeForks;
     boolean onlyForks;
     boolean hasIssues;
@@ -50,7 +49,12 @@ public class GitRepoSearch {
     boolean hasWiki;
     boolean hasLicense;
 
-    @SuppressWarnings("unchecked")
+    boolean hasCodeMetricsFilters() {
+        return codeLines.hasLowerBound() || codeLines.hasUpperBound() ||
+                commentLines.hasLowerBound() || commentLines.hasUpperBound() ||
+                totalLines.hasLowerBound() || totalLines.hasUpperBound();
+    }
+
     public List<Criteria<GitRepo>> toCriteriaList(Root<GitRepo> root) {
         List<Criteria<GitRepo>> criteria = new ArrayList<>();
 
@@ -120,7 +124,7 @@ public class GitRepoSearch {
         Path<Long> commentLinesPath;
         Path<Long> codeLinesPath;
         Path<Long> totalLinesPath;
-        if (StringUtils.isNotBlank(language) && hasCodeMetricsFilters) {
+        if (StringUtils.isNotBlank(language) && hasCodeMetricsFilters()) {
             criteria.add(new KeyValueCriteria<>(root.join(GitRepo_.metrics).join(GitRepoMetric_.language).get(MetricLanguage_.language), language, BinaryOperation.EQUAL));
             commentLinesPath = root.join(GitRepo_.metrics).get(GitRepoMetric_.commentLines);
             codeLinesPath = root.join(GitRepo_.metrics).get(GitRepoMetric_.codeLines);
