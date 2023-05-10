@@ -1,6 +1,5 @@
 package usi.si.seart.converter;
 
-import com.google.common.collect.Range;
 import lombok.AllArgsConstructor;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.lang.NonNull;
@@ -14,13 +13,6 @@ public class SearchParameterDtoToGitRepoSearchConverter implements Converter<Sea
     @Override
     @NonNull
     public GitRepoSearch convert(@NonNull SearchParameterDto source) {
-        Range<Long> codeLines = Ranges.build(source.getCodeLinesMin(), source.getCodeLinesMax());
-        Range<Long> commentLines = Ranges.build(source.getCommentLinesMin(), source.getCommentLinesMax());
-        Range<Long> totalLines = Ranges.build(source.getTotalLinesMin(), source.getTotalLinesMax());
-        boolean hasCodeMetricsFilters = codeLines.hasLowerBound() || codeLines.hasUpperBound() ||
-                commentLines.hasLowerBound() || commentLines.hasUpperBound() ||
-                totalLines.hasLowerBound() || totalLines.hasUpperBound();
-
         return GitRepoSearch.builder()
                 .nameEquals(source.getNameEquals())
                 .name(source.getName())
@@ -44,9 +36,8 @@ public class SearchParameterDtoToGitRepoSearchConverter implements Converter<Sea
                 .hasPulls(source.getHasPulls())
                 .hasWiki(source.getHasWiki())
                 .hasLicense(source.getHasLicense())
-                .codeLines(codeLines)
-                .commentLines(commentLines)
-                .totalLines(totalLines)
-                .hasCodeMetricsFilters(hasCodeMetricsFilters).build();
+                .codeLines(Ranges.build(source.getCodeLinesMin(), source.getCodeLinesMax()))
+                .commentLines(Ranges.build(source.getCommentLinesMin(), source.getCommentLinesMax()))
+                .totalLines(Ranges.build(source.getTotalLinesMin(), source.getTotalLinesMax())).build();
     }
 }
