@@ -51,16 +51,11 @@ public interface GitRepoTopicsService {
 
         @Override
         public Topic getOrCreateTopic(@NotNull String label) {
-            return topicRepository.findByLabel(label).orElseGet(() -> {
-                // If not, creates it.
-                Topic repoTopic = topicRepository.save(
+            return topicRepository.findByLabel(label).orElseGet(() ->
+                    topicRepository.save(
                                 Topic.builder()
                                         .label(label)
-                                        .build());
-                entityManager.clear();
-                entityManagerFactory.getCache().evict(Topic.class, repoTopic.getId());
-                return repoTopic;
-            });
+                                        .build()));
         }
 
         @Override
