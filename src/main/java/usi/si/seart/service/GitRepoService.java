@@ -10,6 +10,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import usi.si.seart.repository.specification.GitRepoSearch;
 import usi.si.seart.model.GitRepo;
 import usi.si.seart.model.GitRepoLabel;
 import usi.si.seart.model.GitRepoLanguage;
@@ -33,8 +34,8 @@ public interface GitRepoService {
     GitRepo getRepoById(Long id);
     GitRepo getByName(String name);
     GitRepo createOrUpdateRepo(GitRepo repo);
-    Page<GitRepo> findDynamically(Map<String, Object> parameters, Pageable pageable);
-    Stream<GitRepo> streamDynamically(Map<String, Object> parameters);
+    Page<GitRepo> findDynamically(GitRepoSearch parameters, Pageable pageable);
+    Stream<GitRepo> streamDynamically(GitRepoSearch parameters);
     List<String> getAllLabels(Integer limit);
     List<String> getAllLanguages();
     List<String> getAllLicenses();
@@ -125,12 +126,12 @@ public interface GitRepoService {
         }
 
         @Override
-        public Page<GitRepo> findDynamically(Map<String, Object> parameters, Pageable pageable) {
+        public Page<GitRepo> findDynamically(GitRepoSearch parameters, Pageable pageable) {
             return gitRepoRepository.findAllDynamically(parameters, pageable);
         }
 
         @Override
-        public Stream<GitRepo> streamDynamically(Map<String, Object> parameters) {
+        public Stream<GitRepo> streamDynamically(GitRepoSearch parameters) {
             return gitRepoRepository.streamAllDynamically(parameters);
         }
 

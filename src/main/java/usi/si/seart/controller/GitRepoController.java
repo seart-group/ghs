@@ -41,6 +41,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import usi.si.seart.dto.GitRepoCsvDto;
 import usi.si.seart.dto.GitRepoDto;
+import usi.si.seart.repository.specification.GitRepoSearch;
 import usi.si.seart.dto.SearchParameterDto;
 import usi.si.seart.hateoas.DownloadLinkBuilder;
 import usi.si.seart.hateoas.SearchLinkBuilder;
@@ -130,8 +131,8 @@ public class GitRepoController {
         Sort sort = pageable.getSort();
         PageRequest pageRequest = PageRequest.of(page, size, sort);
 
-        Map<String, Object> paramMap = searchParameterDto.toParameterMap();
-        Page<GitRepo> results = gitRepoService.findDynamically(paramMap, pageRequest);
+        GitRepoSearch search = conversionService.convert(searchParameterDto, GitRepoSearch.class);
+        Page<GitRepo> results = gitRepoService.findDynamically(search, pageRequest);
 
         List<GitRepoDto> dtos = List.of(
                 conversionService.convert(
@@ -206,8 +207,8 @@ public class GitRepoController {
                 throw new IllegalStateException("Default portion of this switch should not be reachable!");
         }
 
-        Map<String, Object> paramMap = searchParameterDto.toParameterMap();
-        @Cleanup Stream<GitRepoDto> results = gitRepoService.streamDynamically(paramMap)
+        GitRepoSearch search = conversionService.convert(searchParameterDto, GitRepoSearch.class);
+        @Cleanup Stream<GitRepoDto> results = gitRepoService.streamDynamically(search)
                 .map(gitRepo -> {
                     GitRepoDto dto = conversionService.convert(gitRepo, GitRepoDto.class);
                     entityManager.detach(gitRepo);
