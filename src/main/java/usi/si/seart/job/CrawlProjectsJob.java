@@ -48,7 +48,6 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
 @Slf4j
@@ -383,7 +382,7 @@ public class CrawlProjectsJob {
                 gitRepoTopicsService.createOrUpdateGitRepoTopics(repo, topics);
             }
         } catch (Exception e) {
-            log.error("Failed to add repository languages", e);
+            log.error("Failed to add repository topics", e);
         }
     }
 }
