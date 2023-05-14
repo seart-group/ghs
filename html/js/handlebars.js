@@ -20,6 +20,7 @@ Handlebars.registerHelper("bytes", function (value) {
     return `${f} ${units[i]}`;
 });
 
+// Localizes an integer (eg 100000 => '100,000')
 Handlebars.registerHelper("localized", function (value) {
     return value.toLocaleString('en-US', {
         useGrouping: true,

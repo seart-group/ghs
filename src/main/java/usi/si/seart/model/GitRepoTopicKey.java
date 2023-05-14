@@ -11,8 +11,9 @@ import java.io.Serializable;
 import java.util.Objects;
 
 /**
- * Composite key for the repo tag.
+ * Composite key for a repo topic.
  */
+
 @Embeddable
 @AllArgsConstructor
 @NoArgsConstructor

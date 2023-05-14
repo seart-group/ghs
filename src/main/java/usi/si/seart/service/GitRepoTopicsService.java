@@ -6,7 +6,6 @@ import lombok.experimental.FieldDefaults;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
-import org.springframework.util.ConcurrentReferenceHashMap;
 import usi.si.seart.model.GitRepo;
 import usi.si.seart.model.GitRepoTopic;
 import usi.si.seart.model.Topic;
@@ -33,10 +32,6 @@ public interface GitRepoTopicsService {
     @AllArgsConstructor(onConstructor_ = @Autowired)
     @PersistenceContext
     class GitRepoTopicsServiceImpl implements GitRepoTopicsService {
-
-        EntityManager entityManager;
-
-        EntityManagerFactory entityManagerFactory;
 
         TopicRepository topicRepository;
 
