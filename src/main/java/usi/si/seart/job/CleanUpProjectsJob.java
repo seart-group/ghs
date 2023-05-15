@@ -88,6 +88,9 @@ public class CleanUpProjectsJob {
                     nested.createQuery("DELETE FROM GitRepoLanguage l WHERE l.repo.id = :id")
                             .setParameter("id", id)
                             .executeUpdate();
+                    nested.createQuery("DELETE FROM GitRepoTopic l WHERE l.repo.id = :id")
+                            .setParameter("id", id)
+                            .executeUpdate();
                     nested.flush();
                     transaction.commit();
                 } catch (PersistenceException ex) {
