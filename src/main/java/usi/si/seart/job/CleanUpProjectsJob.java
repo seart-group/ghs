@@ -79,13 +79,17 @@ public class CleanUpProjectsJob {
                 Transaction transaction = null;
                 try (Session nested = factory.openSession()) {
                     transaction = nested.beginTransaction();
-                    nested.createQuery("DELETE FROM GitRepo r WHERE r.id = :id")
-                            .setParameter("id", id)
-                            .executeUpdate();
+
                     nested.createQuery("DELETE FROM GitRepoLabel l WHERE l.repo.id = :id")
                             .setParameter("id", id)
                             .executeUpdate();
                     nested.createQuery("DELETE FROM GitRepoLanguage l WHERE l.repo.id = :id")
+                            .setParameter("id", id)
+                            .executeUpdate();
+                    nested.createQuery("DELETE FROM GitRepoMetric l WHERE l.repo.id = :id")
+                            .setParameter("id", id)
+                            .executeUpdate();
+                    nested.createQuery("DELETE FROM GitRepo r WHERE r.id = :id")
                             .setParameter("id", id)
                             .executeUpdate();
                     nested.flush();
