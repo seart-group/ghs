@@ -22,7 +22,7 @@ import java.time.Instant;
 
 @RestController
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
-@Tag(name = "root", description = "Endpoints used primarily API status for checks.")
+@Tag(name = "root", description = "Endpoints used for displaying server information.")
 public class RootController {
 
     String banner;
