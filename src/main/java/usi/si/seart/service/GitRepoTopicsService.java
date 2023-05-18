@@ -39,7 +39,7 @@ public interface GitRepoTopicsService {
 
         @Override
         public List<String> getAllTopicsSortByPopularity() {
-            return topicRepository.findAllSortByPopularity(PageRequest.of(0,3000)).stream()
+            return topicRepository.findAllSortByPopularity(PageRequest.of(0,500)).stream()
                     .map(Topic::getLabel)
                     .collect(Collectors.toList());
         }
