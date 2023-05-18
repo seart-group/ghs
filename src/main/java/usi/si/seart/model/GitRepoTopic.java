@@ -1,6 +1,11 @@
 package usi.si.seart.model;
 
-import lombok.*;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import lombok.experimental.FieldDefaults;
 
 import javax.persistence.*;
@@ -36,9 +41,9 @@ public class GitRepoTopic {
 
     @Override
     public boolean equals(Object obj) {
-        if (this == obj)
+        if (this == obj) {
             return true;
-        if (obj == null || getClass() != obj.getClass()) {
+        } if (obj == null || getClass() != obj.getClass()) {
             return false;
         }
 
