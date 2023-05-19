@@ -18,10 +18,10 @@ import usi.si.seart.converter.JsonObjectToErrorResponseConverter;
 import usi.si.seart.converter.JsonObjectToGitCommitConverter;
 import usi.si.seart.converter.JsonObjectToGitRepoConverter;
 import usi.si.seart.converter.JsonObjectToRateLimitConverter;
+import usi.si.seart.converter.SearchParameterDtoToGitRepoSearchConverter;
 import usi.si.seart.converter.StringToContactsConverter;
 import usi.si.seart.converter.StringToLicensesConverter;
 import usi.si.seart.converter.SupportedLanguageToDtoConverter;
-import usi.si.seart.converter.SearchParameterDtoToGitRepoSearchConverter;
 
 import java.time.Instant;
 import java.time.ZoneOffset;

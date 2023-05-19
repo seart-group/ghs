@@ -12,8 +12,6 @@ import usi.si.seart.model.Topic;
 import usi.si.seart.repository.GitRepoTopicRepository;
 import usi.si.seart.repository.TopicRepository;
 
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
 import javax.persistence.PersistenceContext;
 import javax.validation.constraints.NotNull;
 import java.util.List;
