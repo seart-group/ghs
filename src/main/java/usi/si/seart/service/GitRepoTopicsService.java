@@ -14,6 +14,7 @@ import usi.si.seart.repository.TopicRepository;
 
 import javax.validation.constraints.NotNull;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 public interface GitRepoTopicsService {
@@ -51,8 +52,15 @@ public interface GitRepoTopicsService {
 
         @Override
         public void createOrUpdateGitRepoTopics(GitRepo repo, List<GitRepoTopic> topics) {
-            gitRepoTopicRepository.deleteAllByRepo(repo);
-            gitRepoTopicRepository.saveAll(topics);
+            Set<GitRepoTopic> existingTopics = gitRepoTopicRepository.findAllByRepo(repo);
+            Set<GitRepoTopic> toBeDeleted = existingTopics.stream()
+                    .filter(t -> !topics.contains(t))
+                    .collect(Collectors.toSet());
+            Set<GitRepoTopic> toBeSaved = topics.stream()
+                    .filter(t -> !existingTopics.contains(t))
+                    .collect(Collectors.toSet());
+            gitRepoTopicRepository.deleteAll(toBeDeleted);
+            gitRepoTopicRepository.saveAll(toBeSaved);
         }
     }
 }
