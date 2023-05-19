@@ -20,6 +20,14 @@ Handlebars.registerHelper("bytes", function (value) {
     return `${f} ${units[i]}`;
 });
 
+// Localizes an integer (eg 100000 => '100,000')
+Handlebars.registerHelper("localized", function (value) {
+    return value.toLocaleString('en-US', {
+        useGrouping: true,
+        minimumFractionDigits: 0
+    });
+});
+
 Handlebars.registerHelper("percentage", function (value) {
     const percentage = value.toFixed(2);
     return percentage !== "0.00" ? `${percentage}%` : "< 0.01%";

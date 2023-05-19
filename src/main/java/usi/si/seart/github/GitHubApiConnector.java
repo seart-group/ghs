@@ -235,6 +235,16 @@ public class GitHubApiConnector {
         return fetchLastPageNumberFromHeader(url);
     }
 
+    public Long fetchNumberOfTopics(String name) {
+        URL url = HttpUrl.get(Endpoint.REPOSITORY_TOPICS.toURL(name.split("/")))
+                .newBuilder()
+                .addQueryParameter("page", "1")
+                .addQueryParameter("per_page", "1")
+                .build()
+                .url();
+        return fetchLastPageNumberFromHeader(url);
+    }
+
     private Long fetchLastPageNumberFromHeader(URL url) {
         Triple<HttpStatus, Headers, JsonElement> response = makeAPICall(url);
         HttpStatus status = response.getLeft();
@@ -291,6 +301,19 @@ public class GitHubApiConnector {
     @SneakyThrows(InterruptedException.class)
     public JsonObject fetchRepoLanguages(String name, Integer page) {
         URL url = HttpUrl.get(Endpoint.REPOSITORY_LANGUAGES.toURL(name.split("/")))
+                .newBuilder()
+                .addQueryParameter("page", page.toString())
+                .addQueryParameter("per_page", "100")
+                .build()
+                .url();
+        Triple<HttpStatus, Headers, JsonElement> response = makeAPICall(url);
+        TimeUnit.MILLISECONDS.sleep(500);
+        return response.getRight().getAsJsonObject();
+    }
+
+    @SneakyThrows(InterruptedException.class)
+    public JsonObject fetchRepoTopics(String name, Integer page) {
+        URL url = HttpUrl.get(Endpoint.REPOSITORY_TOPICS.toURL(name.split("/")))
                 .newBuilder()
                 .addQueryParameter("page", page.toString())
                 .addQueryParameter("per_page", "100")
