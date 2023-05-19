@@ -10,7 +10,7 @@
 
     const $search_label = $("#search-label");
     const $search_license = $("#search-license");
-    const $search_topics = $("#search-topics");
+    const $search_topics = $("#search-topic");
     const $search_language = $("#search-language");
 
     fetch(`${base}/r/labels`)
