@@ -3,8 +3,8 @@ package usi.si.seart.converter;
 import lombok.AllArgsConstructor;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.lang.NonNull;
-import usi.si.seart.repository.specification.GitRepoSearch;
 import usi.si.seart.dto.SearchParameterDto;
+import usi.si.seart.repository.specification.GitRepoSearch;
 import usi.si.seart.util.Ranges;
 
 @AllArgsConstructor
