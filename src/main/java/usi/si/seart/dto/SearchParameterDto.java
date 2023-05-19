@@ -29,7 +29,7 @@ public class SearchParameterDto {
     String language = "";
     String license = "";
     String label = "";
-    String topics = "";
+    String topic = "";
     
     Long commitsMin;
     Long commitsMax;
@@ -84,7 +84,7 @@ public class SearchParameterDto {
         parameters.put("language", language);
         parameters.put("license", license);
         parameters.put("label", label);
-        parameters.put("topics", topics);
+        parameters.put("topic", topic);
         parameters.put("commits", Ranges.build(commitsMin, commitsMax));
         parameters.put("contributors", Ranges.build(contributorsMin, contributorsMax));
         parameters.put("issues", Ranges.build(issuesMin, issuesMax));
