@@ -12,7 +12,6 @@ import usi.si.seart.model.Topic;
 import usi.si.seart.repository.GitRepoTopicRepository;
 import usi.si.seart.repository.TopicRepository;
 
-import javax.persistence.PersistenceContext;
 import javax.validation.constraints.NotNull;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -28,7 +27,6 @@ public interface GitRepoTopicsService {
     @Service
     @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
     @AllArgsConstructor(onConstructor_ = @Autowired)
-    @PersistenceContext
     class GitRepoTopicsServiceImpl implements GitRepoTopicsService {
 
         TopicRepository topicRepository;
