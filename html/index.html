@@ -140,8 +140,8 @@
               </div>
               <div class="col-12 col-md-4">
                 <input type="text"
-                       name="topics"
-                       id="search-topics"
+                       name="topic"
+                       id="search-topic"
                        class="form-control mb-3"
                        placeholder="Has topic"
                        aria-label="Repository Topic"
@@ -1059,11 +1059,11 @@
               </div>
             </div>
             {{/if}}
-            {{#if topics}}
+            {{#if topic}}
               <div class="col-12">
-                <div>Repository topics:</div>
+                <div>Repository topic:</div>
                 <div class="mb-2">
-                  {{#each topics}}
+                  {{#each topic}}
                     <span class="badge text-bg-dark">{{this}}</span>
                   {{/each}}
                 </div>

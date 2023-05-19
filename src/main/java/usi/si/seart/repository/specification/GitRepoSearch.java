@@ -6,8 +6,10 @@ import org.apache.commons.lang3.StringUtils;
 import usi.si.seart.model.GitRepo;
 import usi.si.seart.model.GitRepoLabel_;
 import usi.si.seart.model.GitRepoMetric_;
+import usi.si.seart.model.GitRepoTopic_;
 import usi.si.seart.model.GitRepo_;
 import usi.si.seart.model.MetricLanguage_;
+import usi.si.seart.model.Topic_;
 import usi.si.seart.repository.criteria.Criteria;
 import usi.si.seart.repository.criteria.KeyCriteria;
 import usi.si.seart.repository.criteria.KeyValueCriteria;
@@ -28,6 +30,7 @@ public class GitRepoSearch {
     String language;
     String license;
     String label;
+    String topic;
     Range<Long> commits;
     Range<Long> contributors;
     Range<Long> issues;
@@ -150,6 +153,8 @@ public class GitRepoSearch {
         if (totalLines.hasUpperBound())
             criteria.add(new KeyValueCriteria<>(totalLinesPath, totalLines.upperEndpoint(), BinaryOperation.LESS_THAN_EQUAL));
 
+        if (StringUtils.isNotBlank(topic))
+            criteria.add(new KeyValueCriteria<>(root.join(GitRepo_.topics).get(GitRepoTopic_.topic).get(Topic_.label), topic, BinaryOperation.EQUAL));
 
         if (created.hasLowerBound())
             criteria.add(new KeyValueCriteria<>(root.get(GitRepo_.createdAt), created.lowerEndpoint(), BinaryOperation.GREATER_THAN_EQUAL));
