@@ -5,7 +5,9 @@ import usi.si.seart.model.GitRepo;
 import usi.si.seart.model.GitRepoTopic;
 import usi.si.seart.model.GitRepoTopicKey;
 
+import java.util.Set;
+
 public interface GitRepoTopicRepository extends JpaRepository<GitRepoTopic, GitRepoTopicKey> {
 
-    void deleteAllByRepo(GitRepo repo);
+    Set<GitRepoTopic> findAllByRepo(GitRepo repo);
 }
