@@ -38,6 +38,7 @@ public class SearchParameterDtoToGitRepoSearchConverter implements Converter<Sea
                 .hasLicense(source.getHasLicense())
                 .codeLines(Ranges.build(source.getCodeLinesMin(), source.getCodeLinesMax()))
                 .commentLines(Ranges.build(source.getCommentLinesMin(), source.getCommentLinesMax()))
-                .totalLines(Ranges.build(source.getTotalLinesMin(), source.getTotalLinesMax())).build();
+                .totalLines(Ranges.build(source.getTotalLinesMin(), source.getTotalLinesMax()))
+                .topic(source.getTopic()).build();
     }
 }
