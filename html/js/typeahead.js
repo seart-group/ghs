@@ -10,6 +10,7 @@
 
     const $search_label = $("#search-label");
     const $search_license = $("#search-license");
+    const $search_topics = $("#search-topics");
     const $search_language = $("#search-language");
 
     fetch(`${base}/r/labels`)
@@ -19,6 +20,10 @@
     fetch(`${base}/r/licenses`)
         .then(response => response.json())
         .then(data => $search_license.typeahead({ ...typeaheadOptions, source: data }));
+
+    fetch(`${base}/r/topics`)
+        .then(response => response.json())
+        .then(data => $search_topics.typeahead({ ...typeaheadOptions, source: data }));
 
     fetch(`${base}/l`)
         .then(response => response.json())

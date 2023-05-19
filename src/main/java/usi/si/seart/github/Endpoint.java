@@ -72,6 +72,13 @@ public enum Endpoint {
     REPOSITORY_LANGUAGES(UriTemplate.of("repos/{owner}/{repo}/languages")),
 
     /**
+     * Endpoint used for listing repository topics.
+     *
+     * @see <a href="https://docs.github.com/en/rest/repos/repos#get-all-repository-topics">List repository topics</a>
+     */
+    REPOSITORY_TOPICS(UriTemplate.of("repos/{owner}/{repo}/topics")),
+
+    /**
      * Endpoint used for listing repository contributors.
      * GitHub identifies contributors by author email address.
      * This endpoint may return information that is a few

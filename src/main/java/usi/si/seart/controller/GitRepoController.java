@@ -41,13 +41,14 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import usi.si.seart.dto.GitRepoCsvDto;
 import usi.si.seart.dto.GitRepoDto;
-import usi.si.seart.repository.specification.GitRepoSearch;
 import usi.si.seart.dto.SearchParameterDto;
 import usi.si.seart.hateoas.DownloadLinkBuilder;
 import usi.si.seart.hateoas.SearchLinkBuilder;
 import usi.si.seart.model.GitRepo;
 import usi.si.seart.model.GitRepo_;
+import usi.si.seart.repository.specification.GitRepoSearch;
 import usi.si.seart.service.GitRepoService;
+import usi.si.seart.service.GitRepoTopicsService;
 
 import javax.persistence.EntityManager;
 import javax.servlet.http.HttpServletRequest;
@@ -99,6 +100,7 @@ public class GitRepoController {
     XmlMapper xmlMapper;
 
     GitRepoService gitRepoService;
+    GitRepoTopicsService gitRepoTopicsService;
     ConversionService conversionService;
 
     EntityManager entityManager;
@@ -315,6 +317,12 @@ public class GitRepoController {
     @Operation(summary = "Retrieve a list of all repository licenses mined across projects.")
     public ResponseEntity<?> getAllLicenses() {
         return ResponseEntity.ok(gitRepoService.getAllLicenses());
+    }
+
+    @GetMapping(value = "/topics", produces = MediaType.APPLICATION_JSON_VALUE)
+    @Operation(summary = "Retrieve a list of all repository topics mined across projects.")
+    public ResponseEntity<?> getAllTopics() {
+        return ResponseEntity.ok(gitRepoTopicsService.getAllTopicsSortByPopularity());
     }
 
     @GetMapping("/stats")

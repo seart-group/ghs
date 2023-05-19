@@ -20,7 +20,8 @@ public class CacheConfig {
                 new ConcurrentMapCache("labels"),
                 new ConcurrentMapCache("languageStatistics"),
                 new ConcurrentMapCache("licenses"),
-                new ConcurrentMapCache("languages")
+                new ConcurrentMapCache("languages"),
+                new ConcurrentMapCache("topics")
         ));
         return cacheManager;
     }

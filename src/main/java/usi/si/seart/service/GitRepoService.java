@@ -10,13 +10,13 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import usi.si.seart.repository.specification.GitRepoSearch;
 import usi.si.seart.model.GitRepo;
 import usi.si.seart.model.GitRepoLabel;
 import usi.si.seart.model.GitRepoLanguage;
 import usi.si.seart.repository.GitRepoLabelRepository;
 import usi.si.seart.repository.GitRepoLanguageRepository;
 import usi.si.seart.repository.GitRepoRepository;
+import usi.si.seart.repository.specification.GitRepoSearch;
 
 import javax.persistence.EntityNotFoundException;
 import javax.persistence.Tuple;
@@ -115,6 +115,7 @@ public interface GitRepoService {
                 existing.setLastCommitSHA(repo.getLastCommitSHA());
                 existing.setHasWiki(repo.getHasWiki());
                 existing.setIsArchived(repo.getIsArchived());
+                existing.setTopics(repo.getTopics());
                 existing.setCrawled(repo.getCrawled());
                 existing.setMetrics(repo.getMetrics() == null ? existing.getMetrics() : repo.getMetrics());
                 existing.setCloned(repo.getCloned() == null ? existing.getCloned() : repo.getCloned());
