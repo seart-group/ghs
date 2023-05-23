@@ -103,10 +103,10 @@ public class GitHubTokenManager {
 
     @SuppressWarnings({ "ConstantConditions", "resource" })
     @SneakyThrows({
-            IOException.class,
-            InterruptedException.class,
-            RetryException.class,
-            ExecutionException.class
+        IOException.class,
+        InterruptedException.class,
+        RetryException.class,
+        ExecutionException.class
     })
     public void replaceTokenIfExpired() {
         Request.Builder builder = new Request.Builder();
