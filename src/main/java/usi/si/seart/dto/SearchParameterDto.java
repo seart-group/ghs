@@ -72,11 +72,12 @@ public class SearchParameterDto {
     Boolean hasWiki = false;
     Boolean hasLicense = false;
 
-    public Map<String, Object> toMap(){
-        return mapper.convertValue(this, new TypeReference<>() {});
+    public Map<String, Object> toMap() {
+        return mapper.convertValue(this, new TypeReference<>() {
+        });
     }
 
-    public Map<String, Object> toParameterMap(){
+    public Map<String, Object> toParameterMap() {
         Map<String, Object> parameters = new HashMap<>();
 
         parameters.put("name", name);
