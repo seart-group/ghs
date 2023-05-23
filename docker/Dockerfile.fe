@@ -2,12 +2,12 @@ FROM node:lts-alpine AS build
 
 RUN apk update && apk add moreutils
 
-RUN npm install minify -g
+RUN npm install uglify-js -g
 
 COPY html html/
 
 RUN for file in html/js/*.js; \
-    do minify $file | sponge $file; \
+    do uglifyjs --compress --mangle -- $file | sponge $file; \
     done
 
 FROM nginx:1.23.4-alpine-slim
