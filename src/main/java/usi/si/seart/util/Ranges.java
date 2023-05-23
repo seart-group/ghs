@@ -84,7 +84,7 @@ public class Ranges {
 
         if (lower.equals(upper)) {
             String category = (range.isEmpty()) ? "empty" : "singleton";
-            throw new UnsplittableRangeException("Can split "+category+" range!");
+            throw new UnsplittableRangeException("Can split " + category + " range!");
         }
 
         T median = medianFunction.apply(lower, upper);
