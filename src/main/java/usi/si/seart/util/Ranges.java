@@ -41,7 +41,7 @@ public class Ranges {
      * if the lower bound is greater
      * than the upper bound.
      */
-    public <T extends Comparable> Range<T> build(T lower, T upper){
+    public <T extends Comparable> Range<T> build(T lower, T upper) {
         Range<T> lowerBound = (lower != null) ? Range.atLeast(lower) : Range.all();
         Range<T> upperBound = (upper != null) ? Range.atMost(upper) : Range.all();
         try {
