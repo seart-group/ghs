@@ -21,7 +21,6 @@ import java.util.Objects;
  * A topic assigned to a git repository.
  * It is a junction table for the ManyToMany relationship between GitRepo and Topic.
  */
-
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Getter
 @Setter
