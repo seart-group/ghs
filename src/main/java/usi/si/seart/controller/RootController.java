@@ -57,7 +57,7 @@ public class RootController {
         String name = buildProperties.getName();
         String version = buildProperties.getVersion();
         Instant instant = buildProperties.getTime();
-        return "<pre style=\"word-wrap: break-word; white-space: pre-wrap;\">"+banner+"</pre>" +
-                "<p>"+name+", version: "+version+", built on: "+instant+"</p>";
+        return "<pre style=\"word-wrap: break-word; white-space: pre-wrap;\">" + banner + "</pre>" +
+                "<p>" + name + ", version: " + version + ", built on: " + instant + "</p>";
     }
 }
