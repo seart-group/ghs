@@ -121,22 +121,22 @@ public class GitRepo {
     Date cloned;
 
     @Builder.Default
-    @OneToMany(mappedBy="repo", cascade=CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "repo", cascade = CascadeType.ALL, orphanRemoval = true)
     @Fetch(value = FetchMode.JOIN)
     Set<GitRepoLabel> labels = new HashSet<>();
 
     @Builder.Default
-    @OneToMany(mappedBy="repo", cascade= CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "repo", cascade = CascadeType.ALL, orphanRemoval = true)
     @Fetch(value = FetchMode.JOIN)
     Set<GitRepoLanguage> languages = new HashSet<>();
 
     @Builder.Default
-    @OneToMany(mappedBy="repo", cascade=CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "repo", cascade = CascadeType.ALL, orphanRemoval = true)
     @Fetch(value = FetchMode.JOIN)
     Set<GitRepoMetric> metrics = new HashSet<>();
 
     @Builder.Default
-    @OneToMany(mappedBy="repo", cascade=CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "repo", cascade = CascadeType.ALL, orphanRemoval = true)
     @Fetch(value = FetchMode.JOIN)
     Set<GitRepoTopic> topics = new HashSet<>();
 

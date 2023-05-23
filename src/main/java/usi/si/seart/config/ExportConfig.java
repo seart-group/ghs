@@ -74,7 +74,7 @@ public class ExportConfig {
                 .collect(Collectors.toList());
 
         CsvSchema.Builder schemaBuilder = CsvSchema.builder();
-        for (String field : fields){
+        for (String field : fields) {
             schemaBuilder.addColumn(field);
         }
 

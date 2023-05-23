@@ -99,7 +99,10 @@ public class CrawlProjectsJob {
                     assert startDate.before(endDate);
                     dateRange = Ranges.build(startDate, endDate);
                 } else {
-                    log.info("No previous crawling found for {}. We start from scratch: {}", language, defaultStartDate);
+                    log.info(
+                            "No previous crawling found for {}. We start from scratch: {}",
+                            language, defaultStartDate
+                    );
                     dateRange = Ranges.build(defaultStartDate, endDate);
                 }
             } catch (IllegalArgumentException ex) {
@@ -275,8 +278,12 @@ public class CrawlProjectsJob {
         Long contributors = gitHubApiConnector.fetchNumberOfContributors(name);
         Long totalPullRequests = gitHubApiConnector.fetchNumberOfAllPulls(name);
         Long openPullRequests = gitHubApiConnector.fetchNumberOfOpenPulls(name);
-        Long totalIssues = (!hasIssues) ? 0L : gitHubApiConnector.fetchNumberOfAllIssuesAndPulls(name) - totalPullRequests;
-        Long openIssues = (!hasIssues) ? 0L : gitHubApiConnector.fetchNumberOfOpenIssuesAndPulls(name) - openPullRequests;
+        Long totalIssues = (hasIssues)
+                ? gitHubApiConnector.fetchNumberOfAllIssuesAndPulls(name) - totalPullRequests
+                : 0L;
+        Long openIssues = (hasIssues)
+                ? gitHubApiConnector.fetchNumberOfOpenIssuesAndPulls(name) - openPullRequests
+                : 0L;
         GitCommit gitCommit = gitHubApiConnector.fetchLastCommitInfo(name);
         Date lastCommit = gitCommit.getDate();
         String lastCommitSHA = gitCommit.getSha();
@@ -365,7 +372,7 @@ public class CrawlProjectsJob {
                 JsonArray names = result.getAsJsonArray("names");
                 log.debug("\tAdding: {} topics.", names.size());
 
-                topics = StreamSupport.stream(names.spliterator(),true)
+                topics = StreamSupport.stream(names.spliterator(), true)
                         .map(entry -> {
                             Topic topic = gitRepoTopicsService.getOrCreateTopic(entry.getAsString());
                             return GitRepoTopic.builder()

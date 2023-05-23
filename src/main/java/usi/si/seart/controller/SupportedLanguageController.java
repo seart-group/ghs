@@ -24,7 +24,10 @@ import java.util.stream.Collectors;
 @RequestMapping("/l")
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
-@Tag(name = "supported-language", description = "Endpoints used for retrieving information regarding platform-supported languages.")
+@Tag(
+        name = "supported-language",
+        description = "Endpoints used for retrieving information regarding platform-supported languages."
+)
 public class SupportedLanguageController {
 
     SupportedLanguageService supportedLanguageService;

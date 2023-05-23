@@ -19,7 +19,6 @@ import javax.persistence.MapsId;
 import javax.persistence.Table;
 import java.util.Objects;
 
-
 /**
  * A metric for one language of a git repository.
  * It is a junction table for the ManyToMany relationship between GitRepo and MetricLanguage.

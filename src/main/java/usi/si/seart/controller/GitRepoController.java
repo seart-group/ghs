@@ -69,7 +69,10 @@ import java.util.stream.Stream;
 @RequestMapping("/r")
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
-@Tag(name = "git-repo", description = "Endpoints used for retrieving information regarding mined repositories.")
+@Tag(
+        name = "git-repo",
+        description = "Endpoints used for retrieving information regarding mined repositories."
+)
 public class GitRepoController {
 
     private static final Set<String> supportedFields = Set.of(

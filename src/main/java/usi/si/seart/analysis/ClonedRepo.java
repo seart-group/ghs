@@ -20,14 +20,15 @@ import java.util.stream.Stream;
 @Slf4j
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public
-class ClonedRepo implements AutoCloseable {
+public class ClonedRepo implements AutoCloseable {
 
     @Getter
     Path path;
 
     /**
-     * When used in a try-with-resources block, automatically deletes the folder on the filesystem once the clause is exited.
+     * When used in a try-with-resources block,
+     * automatically deletes the folder on the
+     * filesystem once the clause is exited.
      */
     @Override
     public void close() {
