@@ -79,7 +79,11 @@ public interface StaticCodeAnalysisService {
             // Deletes the temporary folder of the repo once outside of this clause.
             try (ClonedRepo clonedRepo = gitRepoClonerService.cloneRepo(new URL("https://github.com/" + repo.getName())).get()) {
                 // Runs cloc for gathering code metrics
-                String output = new TerminalExecution(clonedRepo.getPath(), "cloc --json --quiet .").start().getStdOut().lines().collect(Collectors.joining("\n"));
+                String output = new TerminalExecution(clonedRepo.getPath(), "cloc --json --quiet .")
+                        .start()
+                        .getStdOut()
+                        .lines()
+                        .collect(Collectors.joining("\n"));
                 if (!persist) {
                     return new AsyncResult<>(parseCodeMetrics(null, output));
                 }
