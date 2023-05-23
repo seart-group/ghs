@@ -17,5 +17,6 @@ public interface TopicRepository extends JpaRepository<Topic, Long> {
             "ORDER BY COUNT(*) DESC")
     @Cacheable(value = "topics")
     List<Topic> findAllSortByPopularity(Pageable pageable);
+
     Optional<Topic> findByLabel(String label);
 }
