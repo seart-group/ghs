@@ -54,7 +54,7 @@ public class CleanUpProjectsJob {
 
     @SneakyThrows(InterruptedException.class)
     @Scheduled(fixedDelayString = "${app.cleanup.scheduling}")
-    public void run(){
+    public void run() {
         long totalRepositories = gitRepoRepository.count();
         log.info("Started cleanup on {} repositories...", totalRepositories);
 
