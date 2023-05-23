@@ -11,10 +11,12 @@ import java.util.Optional;
 
 public interface TopicRepository extends JpaRepository<Topic, Long> {
 
-    @Query(value = "SELECT t FROM Topic t " +
-            "INNER JOIN GitRepoTopic grt ON t.id = grt.topic.id " +
-            "GROUP BY t.id " +
-            "ORDER BY COUNT(*) DESC")
+    @Query(
+            "select t from Topic t " +
+            "inner join GitRepoTopic grt on t.id = grt.topic.id " +
+            "group by t.id " +
+            "order by COUNT(*) desc"
+    )
     @Cacheable(value = "topics")
     List<Topic> findAllSortByPopularity(Pageable pageable);
 

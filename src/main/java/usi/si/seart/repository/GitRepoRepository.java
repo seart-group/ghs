@@ -21,23 +21,39 @@ public interface GitRepoRepository extends
         JpaSpecificationExecutor<GitRepo>,
         JpaStreamableSpecificationRepository<GitRepo>
 {
+
     Optional<GitRepo> findGitRepoById(Long id);
 
     Optional<GitRepo> findGitRepoByNameIgnoreCase(String name);
 
-    @Query("select distinct r.mainLanguage, count(r) from GitRepo r group by r.mainLanguage order by count(r) desc")
+    @Query(
+            "select distinct r.mainLanguage, count(r) from GitRepo r " +
+            "group by r.mainLanguage " +
+            "order by count(r) desc"
+    )
     @Cacheable(value = "languageStatistics")
     List<Tuple> getLanguageStatistics();
 
-    @Query("select distinct r.license from GitRepo r where r.license is not null group by r.license order by count(r.license) desc")
+    @Query(
+            "select distinct r.license from GitRepo r " +
+            "where r.license is not null " +
+            "group by r.license " +
+            "order by count(r.license) desc"
+    )
     @Cacheable(value = "licenses")
     List<String> findAllLicenses();
 
-    // Code metrics are outdated if the repository has new commits since the last cloned date or if there are no metrics at all
-    @Query("SELECT r.id FROM GitRepo r WHERE r.cloned is null OR r.cloned < r.lastCommit ORDER BY r.cloned ASC")
+    @Query(
+            "select r.id from GitRepo r " +
+            "where r.cloned is null or r.cloned < r.lastCommit " +
+            "order by r.cloned asc"
+    )
     Stream<Long> findAllRepoWithOutdatedCodeMetrics();
 
-    @Query("SELECT COUNT(r) FROM GitRepo r WHERE r.cloned is null OR r.cloned < r.lastCommit")
+    @Query(
+            "select COUNT(r) from GitRepo r " +
+            "where r.cloned is null or r.cloned < r.lastCommit"
+    )
     Long countAllRepoWithOutdatedCodeMetrics();
 
     default Page<GitRepo> findAllDynamically(GitRepoSearch parameters, Pageable pageable) {
