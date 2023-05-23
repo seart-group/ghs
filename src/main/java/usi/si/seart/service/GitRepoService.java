@@ -75,7 +75,7 @@ public interface GitRepoService {
         GitRepoLanguageRepository gitRepoLanguageRepository;
 
         @Override
-        public GitRepo getRepoById(Long id){
+        public GitRepo getRepoById(Long id) {
             return gitRepoRepository.findGitRepoById(id)
                     .orElseThrow(EntityNotFoundException::new);
         }
@@ -87,9 +87,9 @@ public interface GitRepoService {
         }
 
         @Override
-        public GitRepo createOrUpdateRepo(GitRepo repo){
+        public GitRepo createOrUpdateRepo(GitRepo repo) {
             Optional<GitRepo> opt = gitRepoRepository.findGitRepoByNameIgnoreCase(repo.getName());
-            if (opt.isPresent()){
+            if (opt.isPresent()) {
                 GitRepo existing = opt.get();
                 existing.setIsFork(repo.getIsFork());
                 existing.setCommits(repo.getCommits());
@@ -135,31 +135,31 @@ public interface GitRepoService {
         }
 
         @Override
-        public List<String> getAllLabels(Integer limit){
+        public List<String> getAllLabels(Integer limit) {
             return gitRepoLabelRepository.findMostFrequentLabels(PageRequest.of(0, limit));
         }
 
         @Override
-        public List<String> getAllLanguages(){
+        public List<String> getAllLanguages() {
             return gitRepoLanguageRepository.findAllLanguages();
         }
 
         @Override
-        public List<String> getAllLicenses(){
+        public List<String> getAllLicenses() {
             return gitRepoRepository.findAllLicenses();
         }
 
         @Override
-        public Map<String, Long> getAllLanguageStatistics(){
+        public Map<String, Long> getAllLanguageStatistics() {
             return getLanguageStatistics(gitRepoLanguageRepository::getLanguageStatistics);
         }
 
         @Override
-        public Map<String, Long> getMainLanguageStatistics(){
+        public Map<String, Long> getMainLanguageStatistics() {
             return getLanguageStatistics(gitRepoRepository::getLanguageStatistics);
         }
 
-        private Map<String, Long> getLanguageStatistics(Supplier<List<Tuple>> tupleListSupplier){
+        private Map<String, Long> getLanguageStatistics(Supplier<List<Tuple>> tupleListSupplier) {
             List<Tuple> languages = tupleListSupplier.get();
             return languages.stream()
                     .map(tuple -> Map.entry(tuple.get(0, String.class), tuple.get(1, Long.class)))
@@ -169,14 +169,14 @@ public interface GitRepoService {
 
         @Override
         @Transactional
-        public void createUpdateLabels(GitRepo repo, List<GitRepoLabel> labels){
+        public void createUpdateLabels(GitRepo repo, List<GitRepoLabel> labels) {
             gitRepoLabelRepository.deleteAll(repo.getLabels());
             gitRepoLabelRepository.saveAll(labels);
         }
 
         @Override
         @Transactional
-        public void createUpdateLanguages(GitRepo repo, List<GitRepoLanguage> languages){
+        public void createUpdateLanguages(GitRepo repo, List<GitRepoLanguage> languages) {
             gitRepoLanguageRepository.deleteAll(repo.getLanguages());
             gitRepoLanguageRepository.saveAll(languages);
         }

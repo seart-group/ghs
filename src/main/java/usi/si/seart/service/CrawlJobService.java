@@ -30,18 +30,18 @@ public interface CrawlJobService {
         SupportedLanguageRepository supportedLanguageRepository;
 
         @Override
-        public Date getCrawlDateByLanguage(String language){
+        public Date getCrawlDateByLanguage(String language) {
             Optional<CrawlJob> crawlJob = crawlJobRepository.findByLanguage(language);
             return crawlJob.map(CrawlJob::getCrawled).orElse(null);
         }
 
         @Override
-        public void updateCrawlDateForLanguage(String language, Date date){
+        public void updateCrawlDateForLanguage(String language, Date date) {
             log.info("{} repositories crawled up to: {}", language, date);
             SupportedLanguage supportedLanguage = supportedLanguageRepository.findByName(language)
                     .orElseThrow(EntityNotFoundException::new);
             Optional<CrawlJob> crawlJobOpt = crawlJobRepository.findByLanguage(supportedLanguage.getName());
-            if (crawlJobOpt.isEmpty()){
+            if (crawlJobOpt.isEmpty()) {
                 crawlJobRepository.save(CrawlJob.builder().language(supportedLanguage).crawled(date).build());
             } else {
                 CrawlJob crawlJob = crawlJobOpt.get();
