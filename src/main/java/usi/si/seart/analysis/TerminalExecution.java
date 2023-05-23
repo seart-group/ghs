@@ -48,7 +48,7 @@ public class TerminalExecution {
         try {
             process = processBuilder.start();
         } catch (IOException e) {
-            throw new TerminalExecutionException("Could not start terminal process",e);
+            throw new TerminalExecutionException("Could not start terminal process", e);
         }
         return this;
     }
@@ -95,10 +95,14 @@ public class TerminalExecution {
             exitCode = process.onExit().get().exitValue();
             if (exitCode != 0) {
                 final String stringErr = stderr.lines().collect(Collectors.joining("\n"));
-                throw new Exception("Terminal process returned error code "+exitCode+"\n== stderr:\n"+ stringErr +"\n===");
+                throw new Exception(
+                        "Terminal process returned error code " + exitCode + "\n== stderr:\n" + stringErr + "\n==="
+                );
             }
         } catch (Exception e) {
-            throw new TerminalExecutionException("Error occurred while waiting on the successful exit of the terminal process", e);
+            throw new TerminalExecutionException(
+                    "Error occurred while waiting on the successful exit of the terminal process", e
+            );
         }
 
         return this;
@@ -119,7 +123,7 @@ public class TerminalExecution {
      * Clears all previously-set shell environment variables and adds all the ones passed in input.
      * @param env the new set of shell environment variables.
      */
-    public TerminalExecution setEnv(Map<String,String> env) {
+    public TerminalExecution setEnv(Map<String, String> env) {
         processBuilder.environment().clear();
         processBuilder.environment().putAll(env);
         return this;
