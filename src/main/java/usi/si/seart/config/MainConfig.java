@@ -77,16 +77,16 @@ public class MainConfig {
 
             @Override
             public void addFormatters(@NotNull final FormatterRegistry registry) {
-                 registry.addConverter(new SupportedLanguageToDtoConverter());
-                 registry.addConverter(new GitRepoToDtoConverter());
-                 registry.addConverter(new JsonObjectToGitRepoConverter());
-                 registry.addConverter(new GitRepoDtoToCsvConverter(csvMapper));
-                 registry.addConverter(new JsonObjectToGitCommitConverter());
-                 registry.addConverter(new JsonObjectToRateLimitConverter());
-                 registry.addConverter(new JsonObjectToErrorResponseConverter());
-                 registry.addConverter(new StringToContactsConverter());
-                 registry.addConverter(new StringToLicensesConverter());
-                 registry.addConverter(new SearchParameterDtoToGitRepoSearchConverter());
+                registry.addConverter(new SupportedLanguageToDtoConverter());
+                registry.addConverter(new GitRepoToDtoConverter());
+                registry.addConverter(new JsonObjectToGitRepoConverter());
+                registry.addConverter(new GitRepoDtoToCsvConverter(csvMapper));
+                registry.addConverter(new JsonObjectToGitCommitConverter());
+                registry.addConverter(new JsonObjectToRateLimitConverter());
+                registry.addConverter(new JsonObjectToErrorResponseConverter());
+                registry.addConverter(new StringToContactsConverter());
+                registry.addConverter(new StringToLicensesConverter());
+                registry.addConverter(new SearchParameterDtoToGitRepoSearchConverter());
             }
         };
     }

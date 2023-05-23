@@ -51,13 +51,13 @@ public class Dates {
      * The corresponding Date object,
      * or null if the string cannot be parsed.
      */
-    public Date fromGitDateString(String date){
+    public Date fromGitDateString(String date) {
         Objects.requireNonNull(date, "Date string can not be null!");
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
         dateFormat.setTimeZone(TimeZone.getTimeZone("Universal"));
         try {
             return dateFormat.parse(date);
-        } catch (ParseException ex){
+        } catch (ParseException ex) {
             return null;
         }
     }

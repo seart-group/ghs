@@ -1,0 +1,17 @@
+name: 'Check Code Style'
+on: pull_request
+
+jobs:
+  checkstyle:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout latest
+        uses: actions/checkout@v3
+      - name: Run CheckStyle
+        uses: nikitasavinov/checkstyle-action@master
+        with:
+          level: error
+          fail_on_error: true
+          workdir: './src/main/java'
+          checkstyle_config: './checkstyle.xml'
+          github_token: ${{ secrets.GITHUB_TOKEN }}

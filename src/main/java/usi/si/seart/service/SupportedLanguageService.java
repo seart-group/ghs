@@ -29,7 +29,7 @@ public interface SupportedLanguageService {
         SupportedLanguageRepository supportedLanguageRepository;
 
         @Override
-        public List<SupportedLanguage> getAll(){
+        public List<SupportedLanguage> getAll() {
             return supportedLanguageRepository.findAll();
         }
 

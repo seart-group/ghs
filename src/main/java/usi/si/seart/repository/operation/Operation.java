@@ -6,7 +6,7 @@ public interface Operation {
 
     default RuntimeException toRuntimeException() {
         return new UnsupportedOperationException(
-                "Operation: ["+name()+"] not supported!"
+                "Operation: [" + name() + "] not supported!"
         );
     }
 }

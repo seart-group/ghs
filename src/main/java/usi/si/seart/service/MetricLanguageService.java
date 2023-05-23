@@ -22,7 +22,7 @@ public interface MetricLanguageService {
     @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
     @AllArgsConstructor(onConstructor_ = @Autowired)
     @PersistenceContext
-    class MetricLanguageServiceImpl implements MetricLanguageService{
+    class MetricLanguageServiceImpl implements MetricLanguageService {
 
         EntityManager entityManager;
 
@@ -55,5 +55,4 @@ public interface MetricLanguageService {
             });
         }
     }
-
 }

@@ -377,7 +377,7 @@ public class GitHubApiConnector {
                 if (xRateLimitRemaining != null) {
                     int rateLimitRemaining = Integer.parseInt(xRateLimitRemaining);
                     if (rateLimitRemaining > 0) {
-                        if(!body.contains("too large")) {
+                        if (!body.contains("too large")) {
                             log.error(
                                     "\n**********************************************************************\n" +
                                     "- Status code is 403, but the rate limit is not exceeded!\n" +

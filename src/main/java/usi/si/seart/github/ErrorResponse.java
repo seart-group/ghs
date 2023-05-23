@@ -31,7 +31,7 @@ public class ErrorResponse {
     @Override
     public String toString() {
         String causes = errors.stream()
-                .map(error -> "\""+error+"\"")
+                .map(error -> "\"" + error + "\"")
                 .collect(
                         () -> new StringJoiner(",", ": ", "").setEmptyValue(""),
                         StringJoiner::add,
