@@ -71,9 +71,9 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 		<java.version>1.11</java.version>
-		<kotlin.version>1.8.10</kotlin.version>
+		<kotlin.version>1.8.21</kotlin.version>
 		<jackson.version>2.15.1</jackson.version>
-		<okhttp.version>4.10.0</okhttp.version>
+		<okhttp.version>4.11.0</okhttp.version>
 		<springframework.version>2.7.10</springframework.version>
 	</properties>
 
