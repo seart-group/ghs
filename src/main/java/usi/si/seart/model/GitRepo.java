@@ -17,6 +17,9 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import java.util.Date;
@@ -136,9 +139,19 @@ public class GitRepo {
     Set<GitRepoMetric> metrics = new HashSet<>();
 
     @Builder.Default
-    @OneToMany(mappedBy = "repo", cascade = CascadeType.ALL, orphanRemoval = true)
+    @ManyToMany(cascade = {
+        CascadeType.PERSIST,
+        CascadeType.MERGE,
+        CascadeType.REFRESH,
+        CascadeType.DETACH
+    })
+    @JoinTable(
+        name = "repo_topic",
+        joinColumns = @JoinColumn(name = "repo_id"),
+        inverseJoinColumns = @JoinColumn(name = "topic_id")
+    )
     @Fetch(value = FetchMode.JOIN)
-    Set<GitRepoTopic> topics = new HashSet<>();
+    Set<Topic> topics = new HashSet<>();
 
     @Formula("(select sum(m.lines_code) from repo_metrics m where m.repo_id = id)")
     Long totalCodeLines;
