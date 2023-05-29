@@ -13,7 +13,7 @@ public interface TopicRepository extends JpaRepository<Topic, Long> {
 
     @Query(
             "select t from Topic t " +
-            "inner join GitRepoTopic grt on t.id = grt.topic.id " +
+            "join t.repos " +
             "group by t.id " +
             "order by COUNT(*) desc"
     )
