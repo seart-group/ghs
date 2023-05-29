@@ -4,22 +4,22 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
-import usi.si.seart.model.Topic;
+import usi.si.seart.model.Label;
 
 import javax.validation.constraints.NotNull;
 import java.util.List;
 import java.util.Optional;
 
-public interface TopicRepository extends JpaRepository<Topic, Long> {
+public interface LabelRepository extends JpaRepository<Label, Long> {
 
-    Optional<Topic> findByName(@NotNull String name);
+    Optional<Label> findByName(@NotNull String name);
 
     @Query(
-            "select t from Topic t " +
-            "join t.repos " +
-            "group by t.id " +
+            "select l from Label l " +
+            "join l.repos " +
+            "group by l.id " +
             "order by COUNT(*) desc"
     )
-    @Cacheable(value = "topics")
-    List<Topic> findMostFrequent(Pageable pageable);
+    @Cacheable(value = "labels")
+    List<Label> findMostFrequent(Pageable pageable);
 }
