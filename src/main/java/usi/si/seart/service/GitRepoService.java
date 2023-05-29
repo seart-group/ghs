@@ -6,14 +6,9 @@ import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import usi.si.seart.model.GitRepo;
-import usi.si.seart.model.GitRepoLabel;
-import usi.si.seart.model.GitRepoLanguage;
-import usi.si.seart.repository.GitRepoLabelRepository;
 import usi.si.seart.repository.GitRepoLanguageRepository;
 import usi.si.seart.repository.GitRepoRepository;
 import usi.si.seart.repository.specification.GitRepoSearch;
@@ -34,10 +29,9 @@ public interface GitRepoService {
     GitRepo getRepoById(Long id);
     GitRepo getByName(String name);
     GitRepo createOrUpdateRepo(GitRepo repo);
+    GitRepo updateRepo(GitRepo repo);
     Page<GitRepo> findDynamically(GitRepoSearch parameters, Pageable pageable);
     Stream<GitRepo> streamDynamically(GitRepoSearch parameters);
-    List<String> getAllLabels(Integer limit);
-    List<String> getAllLanguages();
     List<String> getAllLicenses();
 
     /**
@@ -61,9 +55,6 @@ public interface GitRepoService {
      */
     Map<String, Long> getMainLanguageStatistics();
 
-    void createUpdateLabels(GitRepo repo, List<GitRepoLabel> labels);
-    void createUpdateLanguages(GitRepo repo, List<GitRepoLanguage> languages);
-
     @Slf4j
     @Service
     @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
@@ -71,7 +62,6 @@ public interface GitRepoService {
     class GitRepoServiceImpl implements GitRepoService {
 
         GitRepoRepository gitRepoRepository;
-        GitRepoLabelRepository gitRepoLabelRepository;
         GitRepoLanguageRepository gitRepoLanguageRepository;
 
         @Override
@@ -125,6 +115,11 @@ public interface GitRepoService {
         }
 
         @Override
+        public GitRepo updateRepo(GitRepo repo) {
+            return gitRepoRepository.save(repo);
+        }
+
+        @Override
         public Page<GitRepo> findDynamically(GitRepoSearch parameters, Pageable pageable) {
             return gitRepoRepository.findAllDynamically(parameters, pageable);
         }
@@ -132,16 +127,6 @@ public interface GitRepoService {
         @Override
         public Stream<GitRepo> streamDynamically(GitRepoSearch parameters) {
             return gitRepoRepository.streamAllDynamically(parameters);
-        }
-
-        @Override
-        public List<String> getAllLabels(Integer limit) {
-            return gitRepoLabelRepository.findMostFrequentLabels(PageRequest.of(0, limit));
-        }
-
-        @Override
-        public List<String> getAllLanguages() {
-            return gitRepoLanguageRepository.findAllLanguages();
         }
 
         @Override
@@ -165,20 +150,6 @@ public interface GitRepoService {
                     .map(tuple -> Map.entry(tuple.get(0, String.class), tuple.get(1, Long.class)))
                     .sorted(Map.Entry.comparingByValue(Comparator.reverseOrder()))
                     .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (x, y) -> y, LinkedHashMap::new));
-        }
-
-        @Override
-        @Transactional
-        public void createUpdateLabels(GitRepo repo, List<GitRepoLabel> labels) {
-            gitRepoLabelRepository.deleteAll(repo.getLabels());
-            gitRepoLabelRepository.saveAll(labels);
-        }
-
-        @Override
-        @Transactional
-        public void createUpdateLanguages(GitRepo repo, List<GitRepoLanguage> languages) {
-            gitRepoLanguageRepository.deleteAll(repo.getLanguages());
-            gitRepoLanguageRepository.saveAll(languages);
         }
     }
 }
