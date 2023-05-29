@@ -10,15 +10,15 @@ import lombok.experimental.FieldDefaults;
 import org.hibernate.Hibernate;
 
 import javax.persistence.Column;
+import javax.persistence.Embeddable;
+import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.persistence.PrePersist;
-import javax.persistence.PreUpdate;
+import javax.persistence.MapsId;
 import javax.persistence.Table;
-import java.util.Date;
+import javax.validation.constraints.NotNull;
+import java.io.Serializable;
 import java.util.Objects;
 
 @FieldDefaults(level = AccessLevel.PRIVATE)
@@ -30,40 +30,63 @@ import java.util.Objects;
 @Table(name = "repo_language")
 @Entity
 public class GitRepoLanguage {
-    @Id
-    @GeneratedValue
-    @Column(name = "repo_language_id")
-    Long id;
 
-    @ManyToOne
+    @EmbeddedId
+    Key key;
+
+    @ManyToOne(optional = false)
+    @MapsId("repoId")
     @JoinColumn(name = "repo_id")
     GitRepo repo;
 
-    @Column(name = "repo_language_name")
-    String language;
+    @ManyToOne(optional = false)
+    @MapsId("languageId")
+    @JoinColumn(name = "language_id")
+    Language language;
 
+    @NotNull
     @Column(name = "size_of_code")
     Long sizeOfCode;
-
-    @Column(name = "crawled")
-    Date crawled;
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) return false;
-        GitRepoLanguage that = (GitRepoLanguage) o;
-        return id != null && Objects.equals(id, that.id);
+        GitRepoLanguage language = (GitRepoLanguage) o;
+        return getKey() != null && Objects.equals(getKey(), language.getKey());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, repo.getId(), language);
+        return Objects.hash(getKey());
     }
 
-    @PreUpdate
-    @PrePersist
-    private void onPersistAndUpdate() {
-        crawled = new Date();
+    @Getter
+    @Setter
+    @AllArgsConstructor
+    @NoArgsConstructor
+    @Embeddable
+    public static class Key implements Serializable {
+
+        @NotNull
+        @Column(name = "repo_id")
+        Long repoId;
+
+        @NotNull
+        @Column(name = "language_id")
+        Long languageId;
+
+        @Override
+        public boolean equals(Object obj) {
+            if (this == obj) return true;
+            if (obj == null || getClass() != obj.getClass()) return false;
+            Key other = (Key) obj;
+            return repoId.equals(other.repoId) && languageId.equals(other.languageId);
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(repoId, languageId);
+        }
     }
 }

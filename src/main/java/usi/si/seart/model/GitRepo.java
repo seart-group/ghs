@@ -139,7 +139,12 @@ public class GitRepo {
     Set<Label> labels = new HashSet<>();
 
     @Builder.Default
-    @OneToMany(mappedBy = "repo", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "repo", cascade = {
+        CascadeType.PERSIST,
+        CascadeType.MERGE,
+        CascadeType.REFRESH,
+        CascadeType.DETACH
+    })
     @Fetch(value = FetchMode.JOIN)
     Set<GitRepoLanguage> languages = new HashSet<>();
 
@@ -198,5 +203,4 @@ public class GitRepo {
     public void setCloned() {
         cloned = new Date();
     }
-
 }
