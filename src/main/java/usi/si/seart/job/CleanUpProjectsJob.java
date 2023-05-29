@@ -29,6 +29,7 @@ import java.io.IOException;
 import java.math.BigInteger;
 import java.net.ConnectException;
 import java.net.UnknownHostException;
+import java.nio.charset.StandardCharsets;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
@@ -144,7 +145,7 @@ public class CleanUpProjectsJob {
         builder.environment().put("GIT_TERMINAL_PROMPT", "0");
         Process process = builder.start();
 
-        String stderr = IOUtils.toString(process.getErrorStream());
+        String stderr = IOUtils.toString(process.getErrorStream(), StandardCharsets.UTF_8);
         boolean exited = process.waitFor(60, TimeUnit.SECONDS);
         int returnCode;
         if (exited) {
