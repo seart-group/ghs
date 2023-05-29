@@ -13,13 +13,12 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.PrePersist;
-import javax.persistence.PreUpdate;
+import javax.persistence.ManyToMany;
 import javax.persistence.Table;
-import java.util.Date;
+import javax.validation.constraints.NotNull;
+import java.util.HashSet;
 import java.util.Objects;
+import java.util.Set;
 
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Getter
@@ -27,40 +26,32 @@ import java.util.Objects;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "repo_label")
+@Table(name = "label")
 @Entity
-public class GitRepoLabel {
+public class Label {
+
     @Id
     @GeneratedValue
-    @Column(name = "repo_label_id")
+    @Column(name = "id")
     Long id;
 
-    @ManyToOne
-    @JoinColumn(name = "repo_id")
-    GitRepo repo;
+    @NotNull
+    @Column(name = "name")
+    String name;
 
-    @Column(name = "repo_label_name")
-    String label;
-
-    @Column(name = "crawled")
-    Date crawled;
+    @ManyToMany(mappedBy = "labels")
+    Set<GitRepo> repos = new HashSet<>();
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) return false;
-        GitRepoLabel that = (GitRepoLabel) o;
-        return id != null && Objects.equals(id, that.id);
+        Label label = (Label) o;
+        return getId() != null && Objects.equals(getId(), label.getId());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, repo.getId(), label);
-    }
-
-    @PreUpdate
-    @PrePersist
-    private void onPersistAndUpdate() {
-        crawled = new Date();
+        return Objects.hashCode(getId());
     }
 }

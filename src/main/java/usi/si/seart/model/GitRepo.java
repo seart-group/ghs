@@ -124,9 +124,19 @@ public class GitRepo {
     Date cloned;
 
     @Builder.Default
-    @OneToMany(mappedBy = "repo", cascade = CascadeType.ALL, orphanRemoval = true)
+    @ManyToMany(cascade = {
+        CascadeType.PERSIST,
+        CascadeType.MERGE,
+        CascadeType.REFRESH,
+        CascadeType.DETACH
+    })
+    @JoinTable(
+        name = "repo_label",
+        joinColumns = @JoinColumn(name = "repo_id"),
+        inverseJoinColumns = @JoinColumn(name = "label_id")
+    )
     @Fetch(value = FetchMode.JOIN)
-    Set<GitRepoLabel> labels = new HashSet<>();
+    Set<Label> labels = new HashSet<>();
 
     @Builder.Default
     @OneToMany(mappedBy = "repo", cascade = CascadeType.ALL, orphanRemoval = true)
