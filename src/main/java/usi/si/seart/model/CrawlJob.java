@@ -47,11 +47,11 @@ public class CrawlJob {
         if (this == o) return true;
         if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) return false;
         CrawlJob crawlJob = (CrawlJob) o;
-        return id != null && Objects.equals(id, crawlJob.id);
+        return getId() != null && Objects.equals(getId(), crawlJob.getId());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, language.getId());
+        return Objects.hashCode(getId());
     }
 }

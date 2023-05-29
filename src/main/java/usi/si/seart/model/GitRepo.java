@@ -154,12 +154,12 @@ public class GitRepo {
         if (this == o) return true;
         if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) return false;
         GitRepo gitRepo = (GitRepo) o;
-        return id != null && Objects.equals(id, gitRepo.id);
+        return getId() != null && Objects.equals(getId(), gitRepo.getId());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, name);
+        return Objects.hashCode(getId());
     }
 
     /**
