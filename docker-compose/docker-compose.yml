@@ -27,7 +27,7 @@ services:
   gse-bkp:
     build:
       context: ../
-      dockerfile: docker/Dockerfile.bkp
+      dockerfile: docker/backup/Dockerfile
     image: 'gse/backup:latest'
     container_name: gse-bkp
     restart: "no"
@@ -62,7 +62,7 @@ services:
   gse-fe:
     build:
       context: ../
-      dockerfile: docker/Dockerfile.fe
+      dockerfile: docker/website/Dockerfile
     image: 'gse/frontend:latest'
     container_name: gse-fe
     volumes:
@@ -82,7 +82,7 @@ services:
   gse-app:
     build:
       context: ../
-      dockerfile: docker/Dockerfile.be
+      dockerfile: docker/server/Dockerfile
     image: 'gse/backend:latest'
     container_name: gse-app
     volumes:
