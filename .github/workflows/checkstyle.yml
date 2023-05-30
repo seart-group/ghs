@@ -1,8 +1,5 @@
 name: 'Check Code Style'
-on:
-  pull_request:
-    paths:
-      - '/src/main/java/**'
+on: pull_request
 
 jobs:
   checkstyle:
