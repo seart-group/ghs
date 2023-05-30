@@ -10,12 +10,12 @@ import org.springframework.stereotype.Service;
 import usi.si.seart.model.SupportedLanguage;
 import usi.si.seart.repository.SupportedLanguageRepository;
 
+import java.util.Collection;
 import java.util.List;
 
-public interface SupportedLanguageService {
+public interface SupportedLanguageService extends EntityService<SupportedLanguage> {
 
-    List<SupportedLanguage> getAll();
-    List<SupportedLanguage> getQueue();
+    Collection<SupportedLanguage> getQueue();
 
     @Service
     @AllArgsConstructor(onConstructor_ = @Autowired)
@@ -29,12 +29,12 @@ public interface SupportedLanguageService {
         SupportedLanguageRepository supportedLanguageRepository;
 
         @Override
-        public List<SupportedLanguage> getAll() {
+        public Collection<SupportedLanguage> getAll() {
             return supportedLanguageRepository.findAll();
         }
 
         @Override
-        public List<SupportedLanguage> getQueue() {
+        public Collection<SupportedLanguage> getQueue() {
             return supportedLanguageRepository.findAllByNameInOrderByCrawled(languages);
         }
     }
