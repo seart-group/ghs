@@ -1,0 +1,34 @@
+name: 'Discover vulnerabilities with CodeQL'
+
+on:
+  push:
+    branches: [ 'master', 'develop' ]
+  pull_request:
+    branches: [ 'master', 'develop' ]
+  schedule:
+    - cron: '0 0 * * 1'
+
+jobs:
+  analyze:
+    runs-on: 'ubuntu-latest'
+    permissions:
+      actions: read
+      contents: read
+      security-events: write
+    strategy:
+      fail-fast: false
+      matrix:
+        language: [ 'java', 'javascript' ]
+    steps:
+      - name: Checkout latest
+        uses: actions/checkout@v3
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v2
+        with:
+          languages: ${{ matrix.language }}
+      - name: Compile with autobuild
+        uses: github/codeql-action/autobuild@v2
+      - name: Perform CodeQL analysis
+        uses: github/codeql-action/analyze@v2
+        with:
+          category: "/language:${{matrix.language}}"
