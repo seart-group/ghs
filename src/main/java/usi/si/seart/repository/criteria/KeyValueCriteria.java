@@ -38,7 +38,7 @@ public class KeyValueCriteria<E, T extends Comparable<T>> implements Criteria<E>
                 return criteriaBuilder.equal(key, value);
             case LIKE:
                 Assert.isInstanceOf(String.class, value, "Value must be a string for it to be used with LIKE");
-                Path<String> castKey = (Path<String>) key;
+                @SuppressWarnings("unchecked") Path<String> castKey = (Path<String>) key;
                 String castValue = (String) value;
                 return criteriaBuilder.like(
                         criteriaBuilder.lower(castKey),
