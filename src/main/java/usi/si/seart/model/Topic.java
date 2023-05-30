@@ -39,9 +39,9 @@ public class Topic {
     @Column(name = "label")
     String label;
 
-    @OneToMany(mappedBy = "language")
+    @OneToMany(mappedBy = "topic")
     @Fetch(value = FetchMode.JOIN)
-    Set<GitRepoMetric> metrics = new HashSet<>();
+    Set<GitRepoTopic> topics = new HashSet<>();
 
     @Override
     public boolean equals(Object obj) {
