@@ -40,8 +40,9 @@ public class Topic {
     @Column(name = "name")
     String name;
 
-    @ManyToMany(mappedBy = "topics")
-    Set<GitRepo> repos = new HashSet<>();
+    @OneToMany(mappedBy = "topic")
+    @Fetch(value = FetchMode.JOIN)
+    Set<GitRepoTopic> topics = new HashSet<>();
 
     @Override
     public boolean equals(Object o) {
