@@ -4,8 +4,6 @@ import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import usi.si.seart.model.Language;
@@ -33,9 +31,8 @@ public interface LanguageService extends NamedEntityService<Language> {
         }
 
         @Override
-        public Collection<Language> getRanked(Integer limit) {
-            Pageable pageable = PageRequest.of(0, limit, Sort.by("name"));
-            return languageRepository.findAll(pageable).getContent();
+        public Collection<Language> getRanked() {
+            return languageRepository.findAll(Sort.by("name"));
         }
     }
 }
