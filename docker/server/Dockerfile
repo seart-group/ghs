@@ -9,7 +9,11 @@ FROM eclipse-temurin:17.0.7_7-jre-alpine
 
 COPY --from=build /target/ghs-application-*.jar /server.jar
 
-RUN apk update && apk add git curl cloc bash
+RUN apk update && apk add --no-cache \
+                      bash \
+                      git \
+                      cloc \
+                      curl
 
 EXPOSE 8080
 
