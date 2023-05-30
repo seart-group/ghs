@@ -1,7 +1,6 @@
 package usi.si.seart.service;
 
 import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Positive;
 import java.util.Collection;
 
 /**
@@ -22,14 +21,10 @@ public interface NamedEntityService<E> {
     E getOrCreate(@NotNull String name);
 
     /**
-     * @param limit
-     * The result count limit.
-     * The total number of results is &le; this value.
-     * @return
-     * A collection of the entities in a specified order.
+     * @return A collection of the entities in a specified order.
      * The notion of "order" is left to the discretion of the programmer.
      * For instance one can order by the frequency of occurrence in descending order.
      * An alternative is to just order alphabetically.
      */
-    Collection<E> getRanked(@Positive Integer limit);
+    Collection<E> getRanked();
 }
