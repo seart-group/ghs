@@ -3,7 +3,7 @@ FROM maven:3.8.6-jdk-11-slim AS build
 COPY ./pom.xml /pom.xml
 COPY ./src ./src
 
-RUN mvn -e --no-transfer-progress clean package -am -DskipTests
+RUN mvn -e --no-transfer-progress clean install -am -DskipTests
 
 FROM adoptopenjdk/openjdk11:jre-11.0.19_7-alpine
 
