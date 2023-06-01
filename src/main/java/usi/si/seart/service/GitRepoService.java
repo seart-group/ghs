@@ -34,6 +34,7 @@ public interface GitRepoService {
     GitRepo getRepoById(Long id);
     GitRepo getByName(String name);
     GitRepo createOrUpdateRepo(GitRepo repo);
+    GitRepo updateRepo(GitRepo repo);
     Page<GitRepo> findDynamically(GitRepoSearch parameters, Pageable pageable);
     Stream<GitRepo> streamDynamically(GitRepoSearch parameters);
     List<String> getAllLabels(Integer limit);
@@ -120,6 +121,11 @@ public interface GitRepoService {
             } else {
                 return gitRepoRepository.save(repo);
             }
+        }
+
+        @Override
+        public GitRepo updateRepo(GitRepo repo) {
+            return gitRepoRepository.save(repo);
         }
 
         @Override
