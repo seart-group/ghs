@@ -7,8 +7,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.FieldDefaults;
-import org.hibernate.annotations.Fetch;
-import org.hibernate.annotations.FetchMode;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -40,7 +38,6 @@ public class MetricLanguage {
     String language;
 
     @OneToMany(mappedBy = "language")
-    @Fetch(value = FetchMode.JOIN)
     Set<GitRepoMetric> metrics = new HashSet<>();
 
     @Override
