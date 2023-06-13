@@ -14,7 +14,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import usi.si.seart.model.SupportedLanguage;
-import usi.si.seart.service.GitRepoService;
 import usi.si.seart.service.SupportedLanguageService;
 
 import java.util.stream.Collectors;
@@ -31,7 +30,6 @@ import java.util.stream.Collectors;
 public class SupportedLanguageController {
 
     SupportedLanguageService supportedLanguageService;
-    GitRepoService gitRepoService;
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     @Operation(summary = "Get the names of all currently supported languages")
@@ -44,12 +42,5 @@ public class SupportedLanguageController {
                         .sorted()
                         .collect(Collectors.toList())
         );
-    }
-
-    @GetMapping(value = "/stats", produces = MediaType.APPLICATION_JSON_VALUE)
-    @Operation(summary = "Get the number of mined repositories for each supported language")
-    @ApiResponse(responseCode = "200", description = "OK")
-    public ResponseEntity<?> getLanguageStatistics() {
-        return ResponseEntity.ok(gitRepoService.getAllLanguageStatistics());
     }
 }
