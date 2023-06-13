@@ -38,7 +38,6 @@ public class SchedulerConfig {
      * <ul>
      *     <li>Crawler</li>
      *     <li>CleanUp</li>
-     *     <li>CacheEvict</li>
      *     <li>CodeAnalysis</li>
      * </ul>
      *
@@ -48,7 +47,7 @@ public class SchedulerConfig {
     public ThreadPoolTaskScheduler threadPoolTaskScheduler() {
         ThreadPoolTaskScheduler threadPoolTaskScheduler = new ThreadPoolTaskScheduler();
         threadPoolTaskScheduler.setClock(Clock.systemUTC());
-        threadPoolTaskScheduler.setPoolSize(4);
+        threadPoolTaskScheduler.setPoolSize(3);
         threadPoolTaskScheduler.setThreadNamePrefix("GHSThread");
         threadPoolTaskScheduler.setErrorHandler(new SchedulerErrorHandler());
         threadPoolTaskScheduler.initialize();

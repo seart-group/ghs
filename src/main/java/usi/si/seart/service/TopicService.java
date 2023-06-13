@@ -4,14 +4,16 @@ import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import usi.si.seart.model.Topic;
+import usi.si.seart.model.view.TopicView;
 import usi.si.seart.repository.TopicRepository;
+import usi.si.seart.repository.TopicViewRepository;
 
 import javax.validation.constraints.NotNull;
 import java.util.Collection;
+import java.util.stream.Collectors;
 
 public interface TopicService extends NamedEntityService<Topic> {
 
@@ -21,6 +23,9 @@ public interface TopicService extends NamedEntityService<Topic> {
     class TopicServiceImpl implements TopicService {
 
         TopicRepository topicRepository;
+        TopicViewRepository topicViewRepository;
+
+        Pageable pageable;
 
         @Override
         public Topic getOrCreate(@NotNull String name) {
@@ -33,9 +38,11 @@ public interface TopicService extends NamedEntityService<Topic> {
         }
 
         @Override
-        public Collection<Topic> getRanked(Integer limit) {
-            Pageable pageable = PageRequest.of(0, limit);
-            return topicRepository.findMostFrequent(pageable);
+        public Collection<Topic> getRanked() {
+            Collection<String> names = topicViewRepository.findAll(pageable).stream()
+                    .map(TopicView::getName)
+                    .collect(Collectors.toList());
+            return topicRepository.findAllByNameIn(names);
         }
     }
 }

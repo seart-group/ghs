@@ -5,9 +5,12 @@ import com.google.gson.Gson;
 import lombok.AllArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.format.FormatterRegistry;
 import org.springframework.web.filter.ForwardedHeaderFilter;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
@@ -50,6 +53,11 @@ public class MainConfig {
             Instant truncated = instant.truncatedTo(ChronoUnit.SECONDS);
             return dateTimeFormatter().format(truncated);
         };
+    }
+
+    @Bean
+    public Pageable suggestionLimitPageable(@Value("${app.statistics.suggestion-limit}") Integer limit) {
+        return PageRequest.of(0, limit);
     }
 
     @Bean

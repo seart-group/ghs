@@ -9,19 +9,11 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import usi.si.seart.model.GitRepo;
-import usi.si.seart.repository.GitRepoLanguageRepository;
 import usi.si.seart.repository.GitRepoRepository;
 import usi.si.seart.repository.specification.GitRepoSearch;
 
 import javax.persistence.EntityNotFoundException;
-import javax.persistence.Tuple;
-import java.util.Comparator;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
 import java.util.Optional;
-import java.util.function.Supplier;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public interface GitRepoService {
@@ -32,28 +24,6 @@ public interface GitRepoService {
     GitRepo updateRepo(GitRepo repo);
     Page<GitRepo> findDynamically(GitRepoSearch parameters, Pageable pageable);
     Stream<GitRepo> streamDynamically(GitRepoSearch parameters);
-    List<String> getAllLicenses();
-
-    /**
-     * Retrieve the cumulative size (in bytes) of
-     * all source files written in a language,
-     * across all processed GitHub repositories.
-     *
-     * @return A map where the keys are language names Strings,
-     *         that map to the size in bytes for each language.
-     *         The map entries are sorted in descending fashion by value.
-     */
-    Map<String, Long> getAllLanguageStatistics();
-
-    /**
-     * Retrieve the number of processed GitHub
-     * repositories for each supported language.
-     *
-     * @return A map where the keys are language names Strings,
-     *         that map to the number of corresponding GitHub repositories.
-     *         The map entries are sorted in descending fashion by value.
-     */
-    Map<String, Long> getMainLanguageStatistics();
 
     @Slf4j
     @Service
@@ -62,7 +32,6 @@ public interface GitRepoService {
     class GitRepoServiceImpl implements GitRepoService {
 
         GitRepoRepository gitRepoRepository;
-        GitRepoLanguageRepository gitRepoLanguageRepository;
 
         @Override
         public GitRepo getRepoById(Long id) {
@@ -125,29 +94,6 @@ public interface GitRepoService {
         @Override
         public Stream<GitRepo> streamDynamically(GitRepoSearch parameters) {
             return gitRepoRepository.streamAllDynamically(parameters);
-        }
-
-        @Override
-        public List<String> getAllLicenses() {
-            return gitRepoRepository.findAllLicenses();
-        }
-
-        @Override
-        public Map<String, Long> getAllLanguageStatistics() {
-            return getLanguageStatistics(gitRepoLanguageRepository::getLanguageStatistics);
-        }
-
-        @Override
-        public Map<String, Long> getMainLanguageStatistics() {
-            return getLanguageStatistics(gitRepoRepository::getLanguageStatistics);
-        }
-
-        private Map<String, Long> getLanguageStatistics(Supplier<List<Tuple>> tupleListSupplier) {
-            List<Tuple> languages = tupleListSupplier.get();
-            return languages.stream()
-                    .map(tuple -> Map.entry(tuple.get(0, String.class), tuple.get(1, Long.class)))
-                    .sorted(Map.Entry.comparingByValue(Comparator.reverseOrder()))
-                    .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (x, y) -> y, LinkedHashMap::new));
         }
     }
 }
