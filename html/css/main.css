@@ -226,3 +226,7 @@ div[data-ghs-id] {
 .centered-children > * {
     vertical-align: middle!important;
 }
+
+.typeahead > li {
+    overflow: hidden!important;
+}
