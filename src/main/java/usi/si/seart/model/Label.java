@@ -11,14 +11,14 @@ import org.hibernate.Hibernate;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.OneToOne;
+import javax.persistence.ManyToMany;
 import javax.persistence.Table;
-import java.util.Date;
+import javax.validation.constraints.NotNull;
+import java.util.HashSet;
 import java.util.Objects;
+import java.util.Set;
 
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Getter
@@ -26,28 +26,28 @@ import java.util.Objects;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "crawl_job")
+@Table(name = "label")
 @Entity
-public class CrawlJob {
+public class Label {
 
     @Id
     @GeneratedValue
-    @Column(name = "crawl_id")
+    @Column(name = "id")
     Long id;
 
-    @Column(name = "crawled")
-    Date crawled;
+    @NotNull
+    @Column(name = "name")
+    String name;
 
-    @OneToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "language_id")
-    SupportedLanguage language;
+    @ManyToMany(mappedBy = "labels")
+    Set<GitRepo> repos = new HashSet<>();
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) return false;
-        CrawlJob crawlJob = (CrawlJob) o;
-        return getId() != null && Objects.equals(getId(), crawlJob.getId());
+        Label label = (Label) o;
+        return getId() != null && Objects.equals(getId(), label.getId());
     }
 
     @Override
