@@ -9,12 +9,13 @@ FROM adoptopenjdk/openjdk11:jre-11.0.19_7-alpine
 
 COPY --from=build /target/ghs-application-*.jar /server.jar
 
-RUN apk update && apk add --no-cache \
-                          --quiet \
-                          bash \
-                          git \
-                          cloc \
-                          curl
+RUN apk update --quiet
+RUN apk add --no-cache \
+            --quiet \
+            bash \
+            git \
+            cloc \
+            curl
 
 EXPOSE 8080
 
