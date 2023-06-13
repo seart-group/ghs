@@ -3,7 +3,7 @@ package usi.si.seart.converter;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.lang.NonNull;
 import usi.si.seart.dto.GitRepoDto;
-import usi.si.seart.dto.GitRepoMetricDTO;
+import usi.si.seart.dto.GitRepoMetricDto;
 import usi.si.seart.model.GitRepo;
 import usi.si.seart.model.GitRepoMetric;
 import usi.si.seart.model.Label;
@@ -17,7 +17,7 @@ import java.util.stream.Collectors;
 
 public class GitRepoToDtoConverter implements Converter<GitRepo, GitRepoDto> {
 
-    Converter<GitRepoMetric, GitRepoMetricDTO> metricConverter = new GitRepoMetricToDtoConverter();
+    Converter<GitRepoMetric, GitRepoMetricDto> metricConverter = new GitRepoMetricToDtoConverter();
 
     @Override
     @NonNull

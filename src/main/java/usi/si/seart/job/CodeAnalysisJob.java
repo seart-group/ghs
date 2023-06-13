@@ -8,7 +8,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import usi.si.seart.exception.StaticCodeAnalysisException;
 import usi.si.seart.repository.GitRepoRepository;
@@ -39,7 +38,6 @@ public class CodeAnalysisJob {
         gitRepoRepository.findAllRepoWithOutdatedCodeMetrics().forEach(this::analyze);
     }
 
-    @Transactional(propagation = Propagation.NESTED)
     public void analyze(Long repo) {
         try {
             staticCodeAnalysisService.getCodeMetrics(repo, true);
