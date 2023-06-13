@@ -1,6 +1,8 @@
 FROM node:lts-alpine AS build
 
-RUN apk update && apk add moreutils
+RUN apk update && apk add --no-cache \
+                          --quiet \
+                          moreutils
 
 RUN npm install -g --silent --no-progress \
         uglify-js \
