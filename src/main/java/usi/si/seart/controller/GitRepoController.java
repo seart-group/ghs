@@ -46,9 +46,14 @@ import usi.si.seart.hateoas.DownloadLinkBuilder;
 import usi.si.seart.hateoas.SearchLinkBuilder;
 import usi.si.seart.model.GitRepo;
 import usi.si.seart.model.GitRepo_;
+import usi.si.seart.model.Label;
+import usi.si.seart.model.Language;
+import usi.si.seart.model.Topic;
 import usi.si.seart.repository.specification.GitRepoSearch;
 import usi.si.seart.service.GitRepoService;
-import usi.si.seart.service.GitRepoTopicsService;
+import usi.si.seart.service.LabelService;
+import usi.si.seart.service.LanguageService;
+import usi.si.seart.service.TopicService;
 
 import javax.persistence.EntityManager;
 import javax.servlet.http.HttpServletRequest;
@@ -103,7 +108,9 @@ public class GitRepoController {
     XmlMapper xmlMapper;
 
     GitRepoService gitRepoService;
-    GitRepoTopicsService gitRepoTopicsService;
+    LabelService labelService;
+    TopicService topicService;
+    LanguageService languageService;
     ConversionService conversionService;
 
     EntityManager entityManager;
@@ -307,13 +314,21 @@ public class GitRepoController {
     @GetMapping(value = "/labels", produces = MediaType.APPLICATION_JSON_VALUE)
     @Operation(summary = "Retrieve a list of the 500 most popular issue labels mined across projects.")
     public ResponseEntity<?> getAllLabels() {
-        return ResponseEntity.ok(gitRepoService.getAllLabels(500));
+        return ResponseEntity.ok(
+                labelService.getRanked(500).stream()
+                        .map(Label::getName)
+                        .collect(Collectors.toList())
+        );
     }
 
     @GetMapping(value = "/languages", produces = MediaType.APPLICATION_JSON_VALUE)
     @Operation(summary = "Retrieve a list of all repository languages mined across projects.")
     public ResponseEntity<?> getAllLanguages() {
-        return ResponseEntity.ok(gitRepoService.getAllLanguages());
+        return ResponseEntity.ok(
+                languageService.getRanked(500).stream()
+                        .map(Language::getName)
+                        .collect(Collectors.toList())
+        );
     }
 
     @GetMapping(value = "/licenses", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -325,7 +340,11 @@ public class GitRepoController {
     @GetMapping(value = "/topics", produces = MediaType.APPLICATION_JSON_VALUE)
     @Operation(summary = "Retrieve a list of all repository topics mined across projects.")
     public ResponseEntity<?> getAllTopics() {
-        return ResponseEntity.ok(gitRepoTopicsService.getAllTopicsSortByPopularity());
+        return ResponseEntity.ok(
+                topicService.getRanked(500).stream()
+                        .map(Topic::getName)
+                        .collect(Collectors.toList())
+        );
     }
 
     @GetMapping("/stats")
