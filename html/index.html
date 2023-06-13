@@ -990,10 +990,14 @@
             </span>
             {{/case}}
             {{#case "totalLines" "codeLines" "commentLines" break=true}}
-            <span {{#if @root.languageMetrics.language}}
-                    data-bs-toggle="tooltip"
-                   data-bs-title="{{@root.languageMetrics.language}} {{startcase @key}}: {{localized (lookup @root.languageMetrics @key)}}"
-                   data-bs-placement="top" {{/if}}>
+            {{#if @root.languageMetrics.language}}
+            <span data-bs-toggle="tooltip"
+                  data-bs-title="{{@root.languageMetrics.language}} {{startcase @key}}: {{localized (lookup @root.languageMetrics @key)}}"
+                  data-bs-placement="top"
+            >
+            {{else}}
+            <span>
+            {{/if}}
               {{localized this}}
             </span>
             {{/case}}
