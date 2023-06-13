@@ -7,7 +7,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @Builder
-public class GitRepoMetricDTO {
+public class GitRepoMetricDto {
 
     String language;
     Long totalLines;
