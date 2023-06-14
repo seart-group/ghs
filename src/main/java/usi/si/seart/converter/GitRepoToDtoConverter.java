@@ -52,7 +52,7 @@ public class GitRepoToDtoConverter implements Converter<GitRepo, GitRepoDto> {
                 .totalCodeLines(source.getTotalCodeLines())
                 .metrics(source.getMetrics().stream()
                     .map(metricConverter::convert)
-                    .collect(Collectors.toList()))
+                    .toList())
                 .hasWiki(source.getHasWiki())
                 .isArchived(source.getIsArchived())
                 .languages(

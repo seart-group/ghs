@@ -13,7 +13,6 @@ import usi.si.seart.repository.TopicViewRepository;
 
 import jakarta.validation.constraints.NotNull;
 import java.util.Collection;
-import java.util.stream.Collectors;
 
 public interface TopicService extends NamedEntityService<Topic> {
 
@@ -41,7 +40,7 @@ public interface TopicService extends NamedEntityService<Topic> {
         public Collection<Topic> getRanked() {
             Collection<String> names = topicViewRepository.findAll(pageable).stream()
                     .map(TopicView::getName)
-                    .collect(Collectors.toList());
+                    .toList();
             return topicRepository.findAllByNameIn(names);
         }
     }
