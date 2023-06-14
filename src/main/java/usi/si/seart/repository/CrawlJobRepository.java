@@ -9,10 +9,12 @@ import java.util.Optional;
 
 public interface CrawlJobRepository extends JpaRepository<CrawlJob, Long> {
 
-    @Query(
-            "select c from CrawlJob c " +
-            "left join SupportedLanguage s on s.id = c.language.id " +
-            "where s.name = (:value)"
-    )
+    @Query("""
+    select cj
+    from CrawlJob cj
+    left join SupportedLanguage sl
+    on sl.id = cj.language.id
+    where sl.name = (:value)
+    """)
     Optional<CrawlJob> findByLanguage(@Param("value") String value);
 }
