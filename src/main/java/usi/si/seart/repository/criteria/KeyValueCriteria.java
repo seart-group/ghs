@@ -1,9 +1,5 @@
 package usi.si.seart.repository.criteria;
 
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.experimental.FieldDefaults;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.util.Assert;
 import usi.si.seart.repository.operation.BinaryOperation;
@@ -14,14 +10,9 @@ import jakarta.persistence.criteria.Path;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
 
-@Getter
-@AllArgsConstructor
-@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
-public class KeyValueCriteria<E, T extends Comparable<T>> implements Criteria<E> {
-
-    Path<T> key;
-    T value;
-    BinaryOperation operation;
+public record KeyValueCriteria<E, T extends Comparable<T>>(
+        Path<T> key, T value, BinaryOperation operation
+) implements Criteria<E> {
 
     @Override
     public Predicate toPredicate(
