@@ -26,12 +26,13 @@ public class KeyCriteria<E, T> implements Criteria<E> {
             @NotNull Root<E> root, @NotNull CriteriaQuery<?> query, @NotNull CriteriaBuilder criteriaBuilder
     ) {
         switch (operation) {
-            case IS_NULL:
+            case IS_NULL -> {
                 return criteriaBuilder.isNull(key);
-            case IS_NOT_NULL:
+            }
+            case IS_NOT_NULL -> {
                 return criteriaBuilder.isNotNull(key);
-            default:
-                throw operation.toRuntimeException();
+            }
+            default -> throw operation.toRuntimeException();
         }
     }
 }
