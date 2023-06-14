@@ -22,16 +22,17 @@ import usi.si.seart.exception.UnsplittableRangeException;
 import usi.si.seart.github.GitCommit;
 import usi.si.seart.github.GitHubApiConnector;
 import usi.si.seart.model.GitRepo;
-import usi.si.seart.model.GitRepoLabel;
 import usi.si.seart.model.GitRepoLanguage;
-import usi.si.seart.model.GitRepoTopic;
-import usi.si.seart.model.GitRepoTopicKey;
+import usi.si.seart.model.Label;
+import usi.si.seart.model.Language;
 import usi.si.seart.model.SupportedLanguage;
 import usi.si.seart.model.Topic;
 import usi.si.seart.service.CrawlJobService;
 import usi.si.seart.service.GitRepoService;
-import usi.si.seart.service.GitRepoTopicsService;
+import usi.si.seart.service.LabelService;
+import usi.si.seart.service.LanguageService;
 import usi.si.seart.service.SupportedLanguageService;
+import usi.si.seart.service.TopicService;
 import usi.si.seart.util.Dates;
 import usi.si.seart.util.Optionals;
 import usi.si.seart.util.Ranges;
@@ -39,9 +40,9 @@ import usi.si.seart.util.Ranges;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayDeque;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.Deque;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -61,7 +62,9 @@ public class CrawlProjectsJob {
     Deque<Range<Date>> requestQueue = new ArrayDeque<>();
 
     GitRepoService gitRepoService;
-    GitRepoTopicsService gitRepoTopicsService;
+    TopicService topicService;
+    LabelService labelService;
+    LanguageService languageService;
     CrawlJobService crawlJobService;
     SupportedLanguageService supportedLanguageService;
 
@@ -305,89 +308,75 @@ public class CrawlProjectsJob {
     }
 
     private void retrieveRepoLabels(GitRepo repo) {
-        List<GitRepoLabel> labels = new ArrayList<>();
-        boolean store = false;
+        Set<Label> labels = new HashSet<>();
         try {
             Long count = gitHubApiConnector.fetchNumberOfLabels(repo.getName());
             int pages = (int) Math.ceil(count / 100.0);
             for (int page = 1; page <= pages; page++) {
-                JsonArray objects = gitHubApiConnector.fetchRepoLabels(repo.getName(), page);
-                log.debug("\tAdding: {} labels.", objects.size());
-
-                for (JsonElement element : objects) {
-                    JsonObject object = element.getAsJsonObject();
-                    String label = object.get("name").getAsString();
-                    label = label.trim();
-                    label = label.substring(0, Math.min(label.length(), 60));  // 60: due to db column limit
-                    labels.add(GitRepoLabel.builder().repo(repo).label(label).build());
-                }
-
-                store = true;
+                JsonArray array = gitHubApiConnector.fetchRepoLabels(repo.getName(), page);
+                Set<Label> results = StreamSupport.stream(array.spliterator(), true)
+                        .map(element -> {
+                            JsonObject object = element.getAsJsonObject();
+                            String name = object.get("name").getAsString();
+                            return labelService.getOrCreate(name.toLowerCase());
+                        })
+                        .collect(Collectors.toSet());
+                labels.addAll(results);
             }
-            if (store) {
-                gitRepoService.createUpdateLabels(repo, labels);
-            }
+            log.debug("\tAdding: {} labels.", labels.size());
+            repo.setLabels(labels);
+            gitRepoService.updateRepo(repo);
         } catch (Exception e) {
             log.error("Failed to add repository labels", e);
         }
     }
 
     private void retrieveRepoLanguages(GitRepo repo) {
-        List<GitRepoLanguage> languages = new ArrayList<>();
-        boolean store = false;
+        Set<GitRepoLanguage> languages = new HashSet<>();
         try {
             Long count = gitHubApiConnector.fetchNumberOfLanguages(repo.getName());
             int pages = (int) Math.ceil(count / 100.0);
             for (int page = 1; page <= pages; page++) {
-                JsonObject result = gitHubApiConnector.fetchRepoLanguages(repo.getName(), page);
-                Set<Map.Entry<String, JsonElement>> entries = result.entrySet();
-                log.debug("\tAdding: {} languages.", entries.size());
-
-                languages = entries.stream()
-                        .map(entry -> GitRepoLanguage.builder()
-                                .repo(repo)
-                                .language(entry.getKey())
-                                .sizeOfCode(entry.getValue().getAsLong())
-                                .build())
-                        .collect(Collectors.toList());
-
-                store = true;
+                JsonObject object = gitHubApiConnector.fetchRepoLanguages(repo.getName(), page);
+                Set<Map.Entry<String, JsonElement>> entries = object.entrySet();
+                Set<GitRepoLanguage> results = entries.stream()
+                        .map(entry -> {
+                            Language language = languageService.getOrCreate(entry.getKey());
+                            GitRepoLanguage.Key key = new GitRepoLanguage.Key(repo.getId(), language.getId());
+                            return GitRepoLanguage.builder()
+                                    .key(key)
+                                    .repo(repo)
+                                    .language(language)
+                                    .sizeOfCode(entry.getValue().getAsLong())
+                                    .build();
+                        })
+                        .collect(Collectors.toSet());
+                languages.addAll(results);
             }
-            if (store) {
-                gitRepoService.createUpdateLanguages(repo, languages);
-            }
+            log.debug("\tAdding: {} languages.", languages.size());
+            repo.setLanguages(languages);
+            gitRepoService.updateRepo(repo);
         } catch (Exception e) {
             log.error("Failed to add repository languages", e);
         }
     }
 
     private void retrieveRepoTopics(GitRepo repo) {
-        List<GitRepoTopic> topics = new ArrayList<>();
-        boolean store = false;
+        Set<Topic> topics = new HashSet<>();
         try {
             Long count = gitHubApiConnector.fetchNumberOfTopics(repo.getName());
             int pages = (int) Math.ceil(count / 100.0);
             for (int page = 1; page <= pages; page++) {
-                JsonObject result = gitHubApiConnector.fetchRepoTopics(repo.getName(), page);
-                JsonArray names = result.getAsJsonArray("names");
-                log.debug("\tAdding: {} topics.", names.size());
-
-                topics = StreamSupport.stream(names.spliterator(), true)
-                        .map(entry -> {
-                            Topic topic = gitRepoTopicsService.getOrCreateTopic(entry.getAsString());
-                            return GitRepoTopic.builder()
-                                    .id(new GitRepoTopicKey(repo.getId(), topic.getId()))
-                                    .repo(repo)
-                                    .topic(topic)
-                                    .build();
-                        })
-                        .collect(Collectors.toList());
-
-                store = true;
+                JsonObject object = gitHubApiConnector.fetchRepoTopics(repo.getName(), page);
+                JsonArray array = object.getAsJsonArray("names");
+                Set<Topic> results = StreamSupport.stream(array.spliterator(), true)
+                        .map(entry -> topicService.getOrCreate(entry.getAsString()))
+                        .collect(Collectors.toSet());
+                topics.addAll(results);
             }
-            if (store) {
-                gitRepoTopicsService.createOrUpdateGitRepoTopics(repo, topics);
-            }
+            log.debug("\tAdding: {} topics.", topics.size());
+            repo.setTopics(topics);
+            gitRepoService.updateRepo(repo);
         } catch (Exception e) {
             log.error("Failed to add repository topics", e);
         }

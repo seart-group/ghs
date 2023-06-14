@@ -46,9 +46,13 @@ import usi.si.seart.hateoas.DownloadLinkBuilder;
 import usi.si.seart.hateoas.SearchLinkBuilder;
 import usi.si.seart.model.GitRepo;
 import usi.si.seart.model.GitRepo_;
+import usi.si.seart.model.Language;
+import usi.si.seart.model.view.License;
 import usi.si.seart.repository.specification.GitRepoSearch;
 import usi.si.seart.service.GitRepoService;
-import usi.si.seart.service.GitRepoTopicsService;
+import usi.si.seart.service.LanguageService;
+import usi.si.seart.service.LicenseService;
+import usi.si.seart.service.StatisticsService;
 
 import javax.persistence.EntityManager;
 import javax.servlet.http.HttpServletRequest;
@@ -103,8 +107,10 @@ public class GitRepoController {
     XmlMapper xmlMapper;
 
     GitRepoService gitRepoService;
-    GitRepoTopicsService gitRepoTopicsService;
+    LicenseService licenseService;
+    LanguageService languageService;
     ConversionService conversionService;
+    StatisticsService statisticsService;
 
     EntityManager entityManager;
 
@@ -307,30 +313,38 @@ public class GitRepoController {
     @GetMapping(value = "/labels", produces = MediaType.APPLICATION_JSON_VALUE)
     @Operation(summary = "Retrieve a list of the 500 most popular issue labels mined across projects.")
     public ResponseEntity<?> getAllLabels() {
-        return ResponseEntity.ok(gitRepoService.getAllLabels(500));
+        return ResponseEntity.ok(statisticsService.getTopRankedLabelNames());
     }
 
     @GetMapping(value = "/languages", produces = MediaType.APPLICATION_JSON_VALUE)
     @Operation(summary = "Retrieve a list of all repository languages mined across projects.")
     public ResponseEntity<?> getAllLanguages() {
-        return ResponseEntity.ok(gitRepoService.getAllLanguages());
+        return ResponseEntity.ok(
+                languageService.getRanked().stream()
+                        .map(Language::getName)
+                        .collect(Collectors.toList())
+        );
     }
 
     @GetMapping(value = "/licenses", produces = MediaType.APPLICATION_JSON_VALUE)
     @Operation(summary = "Retrieve a list of all repository licenses mined across projects.")
     public ResponseEntity<?> getAllLicenses() {
-        return ResponseEntity.ok(gitRepoService.getAllLicenses());
+        return ResponseEntity.ok(
+                licenseService.getAll().stream()
+                        .map(License::getName)
+                        .collect(Collectors.toList())
+        );
     }
 
     @GetMapping(value = "/topics", produces = MediaType.APPLICATION_JSON_VALUE)
     @Operation(summary = "Retrieve a list of all repository topics mined across projects.")
     public ResponseEntity<?> getAllTopics() {
-        return ResponseEntity.ok(gitRepoTopicsService.getAllTopicsSortByPopularity());
+        return ResponseEntity.ok(statisticsService.getTopRankedTopicNames());
     }
 
     @GetMapping("/stats")
     @Operation(summary = "Retrieve the number of repositories mined for each supported language.")
     public ResponseEntity<?> getRepoStatistics() {
-        return ResponseEntity.ok(gitRepoService.getMainLanguageStatistics());
+        return ResponseEntity.ok(statisticsService.getMainLanguageCount());
     }
 }

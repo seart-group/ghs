@@ -6,12 +6,12 @@
     <meta name="author" content="Ozren Dabić">
     <meta name="description" content="GitHub Search, SEART, Software Institute (SI), USI">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65" crossorigin="anonymous">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.3/font/bootstrap-icons.css" rel="stylesheet" integrity="sha384-b6lVK+yci+bfDmaY1u0zE8YYJt0TZxLEAFyYSLHId4xoVvsrQu3INevFKo+Xir8e" crossorigin="anonymous">
-    <link href="https://cdn.jsdelivr.net/npm/octicons-css@19.1.0/octicons/octicons-24/octicons.css" rel="stylesheet" integrity="sha384-qcLg1jZb7TjZ+DHRMzli4PtU/Pk7ujdVA/YeBCQzdlc4x3tAo4RUh326+W4uVa8t" crossorigin="anonymous">
-    <link href="https://cdn.jsdelivr.net/gh/devicons/devicon@v2.15.1/devicon.min.css" rel="stylesheet" integrity="sha384-mTX5j/NIzlehkuOql3BYfNpkDrnvRHS5S7V3ctncUhJjtlL1+85q8lCKi8A5sUb+" crossorigin="anonymous">
-    <link href="css/main.css" rel="stylesheet">
-    <link href="public/favicon.ico" rel="icon">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" integrity="sha384-Ay26V7L8bsJTsX9Sxclnvsn+hkdiwRnrjZJXqKmkIDobPgIIWBOVguEcQQLDuhfN" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/octicons-css@19.2.0/octicons/octicons-24/octicons.css" integrity="sha384-xOWa0H7MyXXVlzYmbzr5QZz/Y4/hHnXwAJlvbQFySKXH3uzTxIj6neGTCy+VjTvO" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/devicons/devicon@v2.15.1/devicon.min.css" integrity="sha384-mTX5j/NIzlehkuOql3BYfNpkDrnvRHS5S7V3ctncUhJjtlL1+85q8lCKi8A5sUb+" crossorigin="anonymous">
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="icon" href="public/favicon.ico">
   </head>
   <body class="min-vh-100 mw-100 d-flex flex-column justify-content-between">
     <header class="mb-3">
@@ -587,15 +587,6 @@
                 </div>
               </div>
             </div>
-            <div class="row align-items-end">
-              <div class="col-12 col-md-12">
-                <div class="row">
-                  <div class="col d-none d-md-flex justify-content-md-center">
-                    <button class="btn btn-secondary border-dark border-5 w-50 mb-3">Search</button>
-                  </div>
-                </div>
-              </div>
-            </div>
           </div>
           <div class="col-12 col-md-2">
             <div class="row">
@@ -677,9 +668,9 @@
             </div>
           </div>
         </div>
-        <div class="row">
-          <div class="col d-grid d-md-none">
-            <button class="btn btn-secondary border-dark border-5 mb-3">Search</button>
+        <div class="row justify-content-center">
+          <div class="col-12 col-md-4 d-grid d-md-flex justify-content-md-center">
+            <button class="btn btn-secondary border-dark border-2 mb-3 px-md-5">Search</button>
           </div>
         </div>
       </form>
@@ -920,9 +911,10 @@
             <p>
               Your download is being prepared. Please be patient, as it may take some time for our backend to generate
               your result file. In the meantime, why not
-              <a href="https://github.com/seart-group/ghs/stargazers" class="link-secondary" target="_blank">
-                give our project a star on GitHub
-              </a>?
+              <a href="https://github.com/seart-group/ghs/stargazers"
+                 class="link-secondary"
+                 target="_blank"
+              >give our project a star on GitHub</a>?
             </p>
           </div>
         </div>
@@ -985,14 +977,18 @@
                   data-bs-title="{{this}}"
                   data-bs-placement="top"
             >
-                    {{date this}}
-                  </span>
+              {{date this}}
+            </span>
             {{/case}}
             {{#case "totalLines" "codeLines" "commentLines" break=true}}
-            <span {{#if @root.languageMetrics.language}}
-                    data-bs-toggle="tooltip"
-                   data-bs-title="{{@root.languageMetrics.language}} {{startcase @key}}: {{localized (lookup @root.languageMetrics @key)}}"
-                   data-bs-placement="top" {{/if}}>
+            {{#if @root.languageMetrics.language}}
+            <span data-bs-toggle="tooltip"
+                  data-bs-title="{{@root.languageMetrics.language}} {{startcase @key}}: {{localized (lookup @root.languageMetrics @key)}}"
+                  data-bs-placement="top"
+            >
+            {{else}}
+            <span>
+            {{/if}}
               {{localized this}}
             </span>
             {{/case}}
@@ -1100,12 +1096,12 @@
       </div>
     </script>
     <script src="https://cdn.jsdelivr.net/npm/lodash@4.17.21/lodash.min.js" integrity="sha384-H6KKS1H1WwuERMSm+54dYLzjg0fKqRK5ZRyASdbrI/lwrCc6bXEmtGYr5SwvP1pZ" crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js" integrity="sha384-oBqDVmMz9ATKxIep9tiCxS/Z9fNfEXiDAYTujMAeBAsjFuCZSmKbSSUnQlmh/jp3" crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.3/dist/jquery.min.js" integrity="sha384-Ft/vb48LwsAEtgltj7o+6vtS2esTU9PCpDqcXs4OCVQFZu5BqprHtUCZ4kjK+bpE" crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.min.js" integrity="sha384-cuYeSxntonz0PPNlHhBs68uyIAVpIIOZZ5JqeqvYYIcEL727kskC66kF92t6Xl2V" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js" integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.7.0/dist/jquery.min.js" integrity="sha384-NXgwF8Kv9SSAr+jemKKcbvQsz+teULH/a5UNJvZc6kP47hZgl62M1vGnw6gHQhb1" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.min.js" integrity="sha384-fbbOQedDUMZZ5KreZpsbe1LCZPVmfTnH7ois6mU1QK+m14rQ1l2bGBq41eYeM/fS" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap-3-typeahead@4.0.2/bootstrap3-typeahead.min.js" integrity="sha384-EEbPKCLAcxVCiXCi8k9bdeuayzAxVSmBzP/wLpmpd0LVW+Lvh2mjS1W02kdYm5z1" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/twbs-pagination@1.4.2/jquery.twbsPagination.min.js" integrity="sha384-AzpIEA+V2ntWh1KXh0Nz69l/mYOfBMOiw6lbuvWaVKYfuEooT5t5k/qyU0W0B7uk" crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.2.1/dist/chart.umd.min.js" integrity="sha384-gdQErvCNWvHQZj6XZM0dNsAoY4v+j5P1XDpNkcM3HJG1Yx04ecqIHk7+4VBOCHOG" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.3.0/dist/chart.umd.min.js" integrity="sha384-YAshAm4KKjf8V01c4sdNbPYiwU0D0Q82fjMHhKw8VvP0ecY4fxXsZAHxC4r4Ei+T" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/handlebars@4.7.7/dist/handlebars.js" integrity="sha384-hlAB2iOjy5Dl7guHcQsJ/scYffh0k+rReCOxkZnYvr7gB22xtZbth64QiI3VUkZD" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/just-handlebars-helpers@1.0.19/dist/h.min.js" integrity="sha384-RqSUk94F6/91JrGD35T27ahIFGQ+tdqaM6fwX+dYRqsRr9aL4vuhAXGfHALP7Xcn" crossorigin="anonymous"></script>
     <script>const base = "http://localhost:8080/api";</script>

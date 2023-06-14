@@ -4,10 +4,9 @@ import com.google.common.collect.Range;
 import lombok.Builder;
 import org.apache.commons.lang3.StringUtils;
 import usi.si.seart.model.GitRepo;
-import usi.si.seart.model.GitRepoLabel_;
 import usi.si.seart.model.GitRepoMetric_;
-import usi.si.seart.model.GitRepoTopic_;
 import usi.si.seart.model.GitRepo_;
+import usi.si.seart.model.Label_;
 import usi.si.seart.model.MetricLanguage_;
 import usi.si.seart.model.Topic_;
 import usi.si.seart.repository.criteria.Criteria;
@@ -81,7 +80,7 @@ public class GitRepoSearch {
         }
 
         if (StringUtils.isNotBlank(label)) {
-            Path<String> path = root.join(GitRepo_.labels).get(GitRepoLabel_.label);
+            Path<String> path = root.join(GitRepo_.labels).get(Label_.name);
             criteria.add(new KeyValueCriteria<>(path, label, BinaryOperation.EQUAL));
         }
 
@@ -316,7 +315,7 @@ public class GitRepoSearch {
         if (StringUtils.isNotBlank(topic)) {
             criteria.add(
                     new KeyValueCriteria<>(
-                            root.join(GitRepo_.topics).get(GitRepoTopic_.topic).get(Topic_.label),
+                            root.join(GitRepo_.topics).get(Topic_.name),
                             topic,
                             BinaryOperation.EQUAL
                     )

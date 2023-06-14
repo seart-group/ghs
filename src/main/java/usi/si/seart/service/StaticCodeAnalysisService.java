@@ -92,9 +92,8 @@ public interface StaticCodeAnalysisService {
                 metrics = parseCodeMetrics(repo, output);
                 repo.setMetrics(metrics);
                 repo.setCloned();
-                gitRepoService.createOrUpdateRepo(repo);
+                gitRepoService.updateRepo(repo);
                 log.debug("Stored code metrics for repository '{}'", repo.getName());
-
             } catch (InterruptedException | ExecutionException | TerminalExecutionException | MalformedURLException e) {
                 log.error("Could not compute code metrics for repository '{}'", repo.getName(), e);
                 throw new StaticCodeAnalysisException(e);
@@ -125,6 +124,5 @@ public interface StaticCodeAnalysisService {
                 return builder.build();
             }).collect(Collectors.toSet());
         }
-
     }
 }

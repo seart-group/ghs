@@ -7,17 +7,18 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.FieldDefaults;
+import org.hibernate.Hibernate;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
-import javax.persistence.OneToMany;
+import javax.persistence.ManyToMany;
 import javax.persistence.Table;
+import javax.validation.constraints.NotNull;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
-
 
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Getter
@@ -25,34 +26,32 @@ import java.util.Set;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "metric_language")
+@Table(name = "label")
 @Entity
-public class MetricLanguage {
+public class Label {
 
     @Id
     @GeneratedValue
     @Column(name = "id")
     Long id;
 
-    @Column(name = "language")
-    String language;
+    @NotNull
+    @Column(name = "name")
+    String name;
 
-    @OneToMany(mappedBy = "language")
-    Set<GitRepoMetric> metrics = new HashSet<>();
+    @ManyToMany(mappedBy = "labels")
+    Set<GitRepo> repos = new HashSet<>();
 
     @Override
-    public boolean equals(Object obj) {
-        if (this == obj)
-            return true;
-        if (obj == null || getClass() != obj.getClass())
-            return false;
-
-        return id.equals(((MetricLanguage) obj).id)
-                && language.equals(((MetricLanguage) obj).language);
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) return false;
+        Label label = (Label) o;
+        return getId() != null && Objects.equals(getId(), label.getId());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, language);
+        return Objects.hashCode(getId());
     }
 }

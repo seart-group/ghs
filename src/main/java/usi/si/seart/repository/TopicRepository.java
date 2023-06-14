@@ -1,24 +1,15 @@
 package usi.si.seart.repository;
 
-import org.springframework.cache.annotation.Cacheable;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
 import usi.si.seart.model.Topic;
 
-import java.util.List;
+import javax.validation.constraints.NotNull;
+import java.util.Collection;
 import java.util.Optional;
 
 public interface TopicRepository extends JpaRepository<Topic, Long> {
 
-    @Query(
-            "select t from Topic t " +
-            "inner join GitRepoTopic grt on t.id = grt.topic.id " +
-            "group by t.id " +
-            "order by COUNT(*) desc"
-    )
-    @Cacheable(value = "topics")
-    List<Topic> findAllSortByPopularity(Pageable pageable);
+    Optional<Topic> findByName(@NotNull String name);
 
-    Optional<Topic> findByLabel(String label);
+    Collection<Topic> findAllByNameIn(Collection<@NotNull String> names);
 }

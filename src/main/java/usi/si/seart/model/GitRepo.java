@@ -17,6 +17,9 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import java.util.Date;
@@ -121,12 +124,27 @@ public class GitRepo {
     Date cloned;
 
     @Builder.Default
-    @OneToMany(mappedBy = "repo", cascade = CascadeType.ALL, orphanRemoval = true)
+    @ManyToMany(cascade = {
+        CascadeType.PERSIST,
+        CascadeType.MERGE,
+        CascadeType.REFRESH,
+        CascadeType.DETACH
+    })
+    @JoinTable(
+        name = "repo_label",
+        joinColumns = @JoinColumn(name = "repo_id"),
+        inverseJoinColumns = @JoinColumn(name = "label_id")
+    )
     @Fetch(value = FetchMode.JOIN)
-    Set<GitRepoLabel> labels = new HashSet<>();
+    Set<Label> labels = new HashSet<>();
 
     @Builder.Default
-    @OneToMany(mappedBy = "repo", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "repo", cascade = {
+        CascadeType.PERSIST,
+        CascadeType.MERGE,
+        CascadeType.REFRESH,
+        CascadeType.DETACH
+    })
     @Fetch(value = FetchMode.JOIN)
     Set<GitRepoLanguage> languages = new HashSet<>();
 
@@ -136,9 +154,19 @@ public class GitRepo {
     Set<GitRepoMetric> metrics = new HashSet<>();
 
     @Builder.Default
-    @OneToMany(mappedBy = "repo", cascade = CascadeType.ALL, orphanRemoval = true)
+    @ManyToMany(cascade = {
+        CascadeType.PERSIST,
+        CascadeType.MERGE,
+        CascadeType.REFRESH,
+        CascadeType.DETACH
+    })
+    @JoinTable(
+        name = "repo_topic",
+        joinColumns = @JoinColumn(name = "repo_id"),
+        inverseJoinColumns = @JoinColumn(name = "topic_id")
+    )
     @Fetch(value = FetchMode.JOIN)
-    Set<GitRepoTopic> topics = new HashSet<>();
+    Set<Topic> topics = new HashSet<>();
 
     @Formula("(select sum(m.lines_code) from repo_metrics m where m.repo_id = id)")
     Long totalCodeLines;
@@ -154,12 +182,12 @@ public class GitRepo {
         if (this == o) return true;
         if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) return false;
         GitRepo gitRepo = (GitRepo) o;
-        return id != null && Objects.equals(id, gitRepo.id);
+        return getId() != null && Objects.equals(getId(), gitRepo.getId());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, name);
+        return Objects.hashCode(getId());
     }
 
     /**
@@ -175,5 +203,4 @@ public class GitRepo {
     public void setCloned() {
         cloned = new Date();
     }
-
 }
