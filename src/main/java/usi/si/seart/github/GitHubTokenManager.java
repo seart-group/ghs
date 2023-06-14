@@ -25,7 +25,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Component;
 import usi.si.seart.collection.Cycle;
 
-import javax.annotation.PostConstruct;
+import jakarta.annotation.PostConstruct;
 import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.Callable;

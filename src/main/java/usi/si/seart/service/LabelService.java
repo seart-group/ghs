@@ -11,7 +11,7 @@ import usi.si.seart.model.view.LabelView;
 import usi.si.seart.repository.LabelRepository;
 import usi.si.seart.repository.LabelViewRepository;
 
-import javax.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotNull;
 import java.util.Collection;
 import java.util.stream.Collectors;
 

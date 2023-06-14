@@ -9,10 +9,10 @@ import org.springframework.util.ConcurrentReferenceHashMap;
 import usi.si.seart.model.MetricLanguage;
 import usi.si.seart.repository.MetricLanguageRepository;
 
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.PersistenceContext;
-import javax.validation.constraints.NotNull;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.EntityManagerFactory;
+import jakarta.persistence.PersistenceContext;
+import jakarta.validation.constraints.NotNull;
 
 public interface MetricLanguageService {
 

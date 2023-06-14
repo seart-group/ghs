@@ -4,8 +4,8 @@ import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
 import usi.si.seart.exception.TerminalExecutionException;
 
-import javax.annotation.Nullable;
-import javax.validation.constraints.NotNull;
+import jakarta.annotation.Nullable;
+import jakarta.validation.constraints.NotNull;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;

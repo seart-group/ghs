@@ -11,7 +11,7 @@ import usi.si.seart.model.view.TopicView;
 import usi.si.seart.repository.TopicRepository;
 import usi.si.seart.repository.TopicViewRepository;
 
-import javax.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotNull;
 import java.util.Collection;
 import java.util.stream.Collectors;
 

@@ -22,11 +22,10 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import usi.si.seart.repository.GitRepoRepository;
 
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.PersistenceException;
-import javax.persistence.Tuple;
+import jakarta.persistence.EntityManagerFactory;
+import jakarta.persistence.PersistenceException;
+import jakarta.persistence.Tuple;
 import java.io.IOException;
-import java.math.BigInteger;
 import java.net.ConnectException;
 import java.net.UnknownHostException;
 import java.nio.charset.StandardCharsets;
@@ -62,15 +61,15 @@ public class CleanUpProjectsJob {
         String sql = "SELECT id, name FROM repo ORDER BY RAND()";
         @Cleanup SessionFactory factory = entityManagerFactory.unwrap(SessionFactory.class);
         @Cleanup StatelessSession session = factory.openStatelessSession();
-        @Cleanup ScrollableResults results = session.createNativeQuery(sql, Tuple.class)
+        @Cleanup ScrollableResults<Tuple> results = session.createNativeQuery(sql, Tuple.class)
                 .setCacheable(false)
                 .setFetchSize(fetchSize)
                 .scroll(ScrollMode.FORWARD_ONLY);
 
         long totalDeleted = 0;
         while (results.next()) {
-            Tuple tuple = (Tuple) results.get(0);
-            Long id = tuple.get(0, BigInteger.class).longValue();
+            Tuple tuple = results.get();
+            Long id = tuple.get(0, Long.class);
             String name = tuple.get(1, String.class);
             log.debug("Checking if {} [id: {}] exists...", name, id);
             boolean exists = checkIfRepoExists(name);
@@ -80,19 +79,19 @@ public class CleanUpProjectsJob {
                 Transaction transaction = null;
                 try (Session nested = factory.openSession()) {
                     transaction = nested.beginTransaction();
-                    nested.createNativeQuery("DELETE FROM repo_label WHERE repo_id = :id")
+                    nested.createNativeMutationQuery("DELETE FROM repo_label WHERE repo_id = :id")
                             .setParameter("id", id)
                             .executeUpdate();
-                    nested.createNativeQuery("DELETE FROM repo_language WHERE repo_id = :id")
+                    nested.createNativeMutationQuery("DELETE FROM repo_language WHERE repo_id = :id")
                             .setParameter("id", id)
                             .executeUpdate();
-                    nested.createNativeQuery("DELETE FROM repo_metrics WHERE repo_id = :id")
+                    nested.createNativeMutationQuery("DELETE FROM repo_metrics WHERE repo_id = :id")
                             .setParameter("id", id)
                             .executeUpdate();
-                    nested.createNativeQuery("DELETE FROM repo_topic WHERE repo_id = :id")
+                    nested.createNativeMutationQuery("DELETE FROM repo_topic WHERE repo_id = :id")
                             .setParameter("id", id)
                             .executeUpdate();
-                    nested.createNativeQuery("DELETE FROM repo WHERE id = :id")
+                    nested.createNativeMutationQuery("DELETE FROM repo WHERE id = :id")
                             .setParameter("id", id)
                             .executeUpdate();
                     nested.flush();
