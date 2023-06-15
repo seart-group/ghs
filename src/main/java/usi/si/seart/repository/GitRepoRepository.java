@@ -37,8 +37,7 @@ public interface GitRepoRepository extends
     from GitRepo r
     where r.cloned is null
     or r.cloned < r.lastCommit
-    """
-    )
+    """)
     Long countAllRepoWithOutdatedCodeMetrics();
 
     default Page<GitRepo> findAllDynamically(GitRepoSearch parameters, Pageable pageable) {
