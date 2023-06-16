@@ -1,5 +1,12 @@
 name: 'Check Code Style'
-on: pull_request
+on:
+  push:
+    branches: [ 'master', 'develop' ]
+    paths:
+      - '**.java'
+  pull_request:
+    paths:
+      - '**.java'
 
 jobs:
   checkstyle:
