@@ -3,8 +3,10 @@ name: 'Discover vulnerabilities with CodeQL'
 on:
   push:
     branches: [ 'master', 'develop' ]
+    paths: [ '**.java', '**.js' ]
   pull_request:
     branches: [ 'master', 'develop' ]
+    paths: [ '**.java', '**.js' ]
   schedule:
     - cron: '0 0 * * 1'
 
