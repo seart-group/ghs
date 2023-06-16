@@ -105,12 +105,12 @@ Regardless of which method you choose for hosting, the back-end CORS restricts y
 
 The deployment stack consists of the following containers:
 
-| Service/Container name |                      Image                       | Purpose                           |            Enabled            |
-|------------------------|:------------------------------------------------:|-----------------------------------|:-----------------------------:|
-| `gse-app`              |       [gse/backend](docker/Dockerfile.be)        | for the spring application itself |      :white_check_mark:       |
-| `gse-fe`               |       [gse/frontend](docker/Dockerfile.fe)       | for supplying the front end files |      :white_check_mark:       |
-| `gse-db`               | [mysql](https://registry.hub.docker.com/_/mysql) | for the database                  |      :white_check_mark:       |
-| `gse-bkp`              |       [gse/backup](docker/Dockerfile.bkp)        | for the automatic backups         | :negative_squared_cross_mark: |
+| Service/Container name |                                Image                                 | Purpose                           |      Enabled by Default       |
+|------------------------|:--------------------------------------------------------------------:|-----------------------------------|:-----------------------------:|
+| `gse-app`              |                 [gse/backend](docker/Dockerfile.be)                  | for the spring application itself |      :white_check_mark:       |
+| `gse-fe`               |                 [gse/frontend](docker/Dockerfile.fe)                 | for supplying the front end files |      :white_check_mark:       |
+| `gse-db`               |           [mysql](https://registry.hub.docker.com/_/mysql)           | for the database                  |      :white_check_mark:       |
+| `gse-bkp`              | [tiredofit/db-backup](https://hub.docker.com/r/tiredofit/db-backup/) | for the automatic backups         | :negative_squared_cross_mark: |
 
 Deploying is as simple as, in the [docker-compose](docker-compose) directory, run:
 
