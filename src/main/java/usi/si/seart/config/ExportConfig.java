@@ -8,6 +8,7 @@ import com.fasterxml.jackson.dataformat.csv.CsvMapper;
 import com.fasterxml.jackson.dataformat.csv.CsvSchema;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import com.fasterxml.jackson.dataformat.xml.ser.ToXmlGenerator;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
@@ -37,6 +38,7 @@ public class ExportConfig {
     @Primary
     public ObjectMapper objectMapper() {
         ObjectMapper objectMapper = new ObjectMapper();
+        objectMapper.registerModule(new JavaTimeModule());
         objectMapper.setDateFormat(exportTimeFormat());
         return objectMapper;
     }
@@ -44,6 +46,7 @@ public class ExportConfig {
     @Bean
     public JsonMapper jsonMapper() {
         return JsonMapper.builder()
+                .addModule(new JavaTimeModule())
                 .defaultDateFormat(exportTimeFormat())
                 .build();
     }
@@ -52,6 +55,7 @@ public class ExportConfig {
     public CsvMapper csvMapper() {
         return CsvMapper.builder()
                 .defaultDateFormat(exportTimeFormat())
+                .addModule(new JavaTimeModule())
                 .enable(JsonGenerator.Feature.IGNORE_UNKNOWN)
                 .enable(CsvGenerator.Feature.ALWAYS_QUOTE_STRINGS)
                 .build();
@@ -61,6 +65,7 @@ public class ExportConfig {
     public XmlMapper xmlMapper() {
         return XmlMapper.builder()
                 .defaultDateFormat(exportTimeFormat())
+                .addModule(new JavaTimeModule())
                 .enable(ToXmlGenerator.Feature.WRITE_XML_DECLARATION)
                 .enable(ToXmlGenerator.Feature.WRITE_XML_1_1)
                 .build();
