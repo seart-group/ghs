@@ -19,8 +19,7 @@ public interface SupportedLanguageRepository extends JpaRepository<SupportedLang
     left join CrawlJob cj
     on cj.language.id = sl.id
     where sl.name in (:names)
-    order by cj.crawled nulls first
-    """)
+    order by cj.crawled nulls first""")
     List<SupportedLanguage> findAllByNameInOrderByCrawled(@Param("names") Collection<String> names);
 
     Boolean existsByName(String name);

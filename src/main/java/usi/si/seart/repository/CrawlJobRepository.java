@@ -14,7 +14,6 @@ public interface CrawlJobRepository extends JpaRepository<CrawlJob, Long> {
     from CrawlJob cj
     left join SupportedLanguage sl
     on sl.id = cj.language.id
-    where sl.name = (:value)
-    """)
+    where sl.name = (:value)""")
     Optional<CrawlJob> findByLanguage(@Param("value") String value);
 }
