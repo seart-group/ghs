@@ -19,6 +19,10 @@
 
   <module name="TreeWalker">
 
+    <!-- https://checkstyle.sourceforge.io/config_filters.html -->
+    <module name="SuppressionCommentFilter"/>
+    <module name="SuppressWarningsFilter"/>
+
     <!-- https://checkstyle.sourceforge.io/config_blocks.html -->
     <module name="AvoidNestedBlocks"/>
     <module name="EmptyBlock"/>
