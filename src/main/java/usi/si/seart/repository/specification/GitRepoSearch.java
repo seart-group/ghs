@@ -15,8 +15,8 @@ import usi.si.seart.repository.criteria.KeyValueCriteria;
 import usi.si.seart.repository.operation.BinaryOperation;
 import usi.si.seart.repository.operation.UnaryOperation;
 
-import javax.persistence.criteria.Path;
-import javax.persistence.criteria.Root;
+import jakarta.persistence.criteria.Path;
+import jakarta.persistence.criteria.Root;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;

@@ -11,7 +11,7 @@ import usi.si.seart.model.SupportedLanguage;
 import usi.si.seart.repository.CrawlJobRepository;
 import usi.si.seart.repository.SupportedLanguageRepository;
 
-import javax.persistence.EntityNotFoundException;
+import jakarta.persistence.EntityNotFoundException;
 import java.util.Date;
 import java.util.Optional;
 

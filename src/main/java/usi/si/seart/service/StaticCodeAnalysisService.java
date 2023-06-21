@@ -20,9 +20,9 @@ import usi.si.seart.model.GitRepoMetric;
 import usi.si.seart.model.GitRepoMetricKey;
 import usi.si.seart.model.MetricLanguage;
 
-import javax.annotation.Nullable;
-import javax.persistence.EntityNotFoundException;
-import javax.validation.constraints.NotNull;
+import jakarta.annotation.Nullable;
+import jakarta.persistence.EntityNotFoundException;
+import jakarta.validation.constraints.NotNull;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Map;
