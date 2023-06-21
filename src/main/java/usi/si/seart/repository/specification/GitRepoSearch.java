@@ -258,17 +258,17 @@ public class GitRepoSearch {
 
         Path<Long> commentLinesPath;
         Path<Long> codeLinesPath;
-        Path<Long> totalLinesPath;
+        Path<Long> linesPath;
         if (StringUtils.isNotBlank(language) && hasCodeMetricsFilters()) {
             Path<String> path = root.join(GitRepo_.metrics).join(GitRepoMetric_.language).get(MetricLanguage_.language);
             criteria.add(new KeyValueCriteria<>(path, language, BinaryOperation.EQUAL));
             commentLinesPath = root.join(GitRepo_.metrics).get(GitRepoMetric_.commentLines);
             codeLinesPath = root.join(GitRepo_.metrics).get(GitRepoMetric_.codeLines);
-            totalLinesPath = root.join(GitRepo_.metrics).get(GitRepoMetric_.totalLines);
+            linesPath = root.join(GitRepo_.metrics).get(GitRepoMetric_.lines);
         } else {
-            commentLinesPath = root.get(GitRepo_.totalCommentLines);
-            codeLinesPath = root.get(GitRepo_.totalCodeLines);
-            totalLinesPath = root.get(GitRepo_.totalLines);
+            commentLinesPath = root.get(GitRepo_.commentLines);
+            codeLinesPath = root.get(GitRepo_.codeLines);
+            linesPath = root.get(GitRepo_.lines);
         }
 
         if (codeLines.hasLowerBound()) {
@@ -300,14 +300,14 @@ public class GitRepoSearch {
         if (totalLines.hasLowerBound()) {
             criteria.add(
                     new KeyValueCriteria<>(
-                            totalLinesPath, totalLines.lowerEndpoint(), BinaryOperation.GREATER_THAN_EQUAL
+                            linesPath, totalLines.lowerEndpoint(), BinaryOperation.GREATER_THAN_EQUAL
                     )
             );
         }
         if (totalLines.hasUpperBound()) {
             criteria.add(
                     new KeyValueCriteria<>(
-                            totalLinesPath, totalLines.upperEndpoint(), BinaryOperation.LESS_THAN_EQUAL
+                            linesPath, totalLines.upperEndpoint(), BinaryOperation.LESS_THAN_EQUAL
                     )
             );
         }
