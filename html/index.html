@@ -980,7 +980,7 @@
               {{date this}}
             </span>
             {{/case}}
-            {{#case "totalLines" "codeLines" "commentLines" break=true}}
+            {{#case "lines" "codeLines" "commentLines" break=true}}
             {{#if @root.languageMetrics.language}}
             <span data-bs-toggle="tooltip"
                   data-bs-title="{{@root.languageMetrics.language}} {{startcase @key}}: {{localized (lookup @root.languageMetrics @key)}}"

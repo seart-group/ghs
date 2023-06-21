@@ -234,7 +234,7 @@ Handlebars.registerHelper("octicon", function (key) {
             return "code-square";
         case "commentLines":
             return "comment";
-        case "totalLines":
+        case "lines":
             return "project-roadmap";
         default:
             return "question";
