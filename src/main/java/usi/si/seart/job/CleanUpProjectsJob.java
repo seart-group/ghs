@@ -79,19 +79,19 @@ public class CleanUpProjectsJob {
                 Transaction transaction = null;
                 try (Session nested = factory.openSession()) {
                     transaction = nested.beginTransaction();
-                    nested.createNativeQuery("DELETE FROM repo_label WHERE repo_id = :id")
+                    nested.createNativeMutationQuery("DELETE FROM repo_label WHERE repo_id = :id")
                             .setParameter("id", id)
                             .executeUpdate();
-                    nested.createNativeQuery("DELETE FROM repo_language WHERE repo_id = :id")
+                    nested.createNativeMutationQuery("DELETE FROM repo_language WHERE repo_id = :id")
                             .setParameter("id", id)
                             .executeUpdate();
-                    nested.createNativeQuery("DELETE FROM repo_metrics WHERE repo_id = :id")
+                    nested.createNativeMutationQuery("DELETE FROM repo_metrics WHERE repo_id = :id")
                             .setParameter("id", id)
                             .executeUpdate();
-                    nested.createNativeQuery("DELETE FROM repo_topic WHERE repo_id = :id")
+                    nested.createNativeMutationQuery("DELETE FROM repo_topic WHERE repo_id = :id")
                             .setParameter("id", id)
                             .executeUpdate();
-                    nested.createNativeQuery("DELETE FROM repo WHERE id = :id")
+                    nested.createNativeMutationQuery("DELETE FROM repo WHERE id = :id")
                             .setParameter("id", id)
                             .executeUpdate();
                     nested.flush();
