@@ -2,10 +2,10 @@ package usi.si.seart.analysis;
 
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import usi.si.seart.exception.TerminalExecutionException;
 
-import javax.annotation.Nullable;
-import javax.validation.constraints.NotNull;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
