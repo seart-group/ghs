@@ -158,19 +158,17 @@ public class CleanUpProjectsJob {
         }
 
         switch (returnCode) {
-            case 0:
+            case NO_HOST_RESOLVE -> throw new UnknownHostException("Could not resolve host address!");
+            case NO_HOST_CONNECTION -> throw new ConnectException("Connection to host failed!");
+            case OPERATION_TIMEOUT -> throw new TimeoutException("Timed out while executing command: " + joined);
+            case 130 -> throw new InterruptedException("Process terminated via SIGTERM, exit code 130.");
+            case 0 -> {
                 return true;
-            case NO_HOST_RESOLVE:
-                throw new UnknownHostException("Could not resolve host address!");
-            case NO_HOST_CONNECTION:
-                throw new ConnectException("Connection to host failed!");
-            case OPERATION_TIMEOUT:
-                throw new TimeoutException("Timed out while executing command: " + joined);
-            case 130:
-                throw new InterruptedException("Process terminated via SIGTERM, exit code 130.");
-            default:
+            }
+            default -> {
                 log.debug("Command returned with non-zero exit code {}, stderr:\n{}", returnCode, stderr);
                 return false;
+            }
         }
     }
 }
