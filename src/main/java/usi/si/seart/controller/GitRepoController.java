@@ -333,7 +333,7 @@ public class GitRepoController {
         return ResponseEntity.ok(
                 languageService.getRanked().stream()
                         .map(Language::getName)
-                        .collect(Collectors.toList())
+                        .toList()
         );
     }
 
@@ -343,7 +343,7 @@ public class GitRepoController {
         return ResponseEntity.ok(
                 licenseService.getAll().stream()
                         .map(License::getName)
-                        .collect(Collectors.toList())
+                        .toList()
         );
     }
 

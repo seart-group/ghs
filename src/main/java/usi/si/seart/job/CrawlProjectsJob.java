@@ -88,7 +88,7 @@ public class CrawlProjectsJob {
         log.info("Initializing language queue...");
         List<String> languages = supportedLanguageService.getQueue().stream()
                 .map(SupportedLanguage::getName)
-                .collect(Collectors.toList());
+                .toList();
         log.info("Language crawling order: " + languages);
         Date endDate = Date.from(Instant.now().minus(Duration.ofHours(2)));
 
