@@ -310,6 +310,17 @@ public class GitRepoController {
         return ResponseEntity.ok(dto);
     }
 
+    @GetMapping(value = "/{owner}/{repo}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @Operation(summary = "Retrieve repository information based on its full name.")
+    public ResponseEntity<?> getRepoByName(
+            @PathVariable(value = "owner") String owner,
+            @PathVariable(value = "repo") String repo
+    ) {
+        GitRepo gitRepo = gitRepoService.getByName(owner + "/" + repo);
+        GitRepoDto dto = conversionService.convert(gitRepo, GitRepoDto.class);
+        return ResponseEntity.ok(dto);
+    }
+
     @GetMapping(value = "/labels", produces = MediaType.APPLICATION_JSON_VALUE)
     @Operation(summary = "Retrieve a list of the 500 most popular issue labels mined across projects.")
     public ResponseEntity<?> getAllLabels() {
