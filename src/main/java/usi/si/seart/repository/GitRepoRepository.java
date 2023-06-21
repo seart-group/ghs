@@ -23,17 +23,19 @@ public interface GitRepoRepository extends
 
     Optional<GitRepo> findGitRepoByNameIgnoreCase(String name);
 
-    @Query(
-            "select r.id from GitRepo r " +
-            "where r.cloned is null or r.cloned < r.lastCommit " +
-            "order by r.cloned asc"
-    )
+    @Query("""
+    select r.id
+    from GitRepo r
+    where r.cloned is null
+    or r.cloned < r.lastCommit
+    order by r.cloned asc""")
     Stream<Long> findAllRepoWithOutdatedCodeMetrics();
 
-    @Query(
-            "select COUNT(r) from GitRepo r " +
-            "where r.cloned is null or r.cloned < r.lastCommit"
-    )
+    @Query("""
+    select count(r)
+    from GitRepo r
+    where r.cloned is null
+    or r.cloned < r.lastCommit""")
     Long countAllRepoWithOutdatedCodeMetrics();
 
     default Page<GitRepo> findAllDynamically(GitRepoSearch parameters, Pageable pageable) {
