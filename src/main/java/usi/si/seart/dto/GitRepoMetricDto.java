@@ -10,7 +10,7 @@ import lombok.Setter;
 public class GitRepoMetricDto {
 
     String language;
-    Long totalLines;
+    Long lines;
     Long codeLines;
     Long commentLines;
 }
