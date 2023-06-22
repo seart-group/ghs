@@ -51,6 +51,9 @@ public class GitRepoMetric {
     @Column(name = "lines")
     Long lines;
 
+    @Column(name = "lines_non_blank")
+    Long nonBlankLines;
+
     @Column(name = "lines_blank")
     Long blankLines;
 
