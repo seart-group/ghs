@@ -11,7 +11,7 @@ services:
       - data:/var/lib/mysql
       - ./mysql.cnf:/etc/mysql/conf.d/mysql.cnf
     environment:
-      MYSQL_ROOT_PASSWORD: 9ijn8uhb7ygv
+      MYSQL_ALLOW_EMPTY_PASSWORD: yes
       MYSQL_DATABASE: gse
       MYSQL_USER: gseadmin
       MYSQL_PASSWORD: Lugano2020
