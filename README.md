@@ -15,6 +15,8 @@ This project is made of two components:
 - Maven (3.8+)
 - MySQL (8.0.33+)
 - Git
+- [Cloc](https://github.com/AlDanial/cloc)
+- Bash
 
 ### Database
 
@@ -76,16 +78,20 @@ java -Dapp.crawl.tokens=<your_access_token> -jar target/ghs-application.jar
 
 Here's a list of project-specific arguments supported by the application that you can find in the `application.properties`:
 
-| Variable Name                     | Type               | Default Value                                                           | Description                                                                                                                                                           |
-|-----------------------------------|--------------------|-------------------------------------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `app.crawl.enabled`               | Boolean            | true                                                                    | Specifies if the crawling jobs are enabled on startup                                                                                                                 |
-| `app.crawl.languages`             | List&lt;String&gt; | See [application.properties](src/main/resources/application.properties) | A comma-separated list of language names that will be targeted during crawling                                                                                        |
-| `app.crawl.tokens`                | List&lt;String&gt; |                                                                         | A comma-separated list of GitHub personal access tokens (PATs) that will be used for mining the GitHub API                                                            |
-| `app.crawl.scheduling`            | String             | 21600000 (6h, in ms)                                                    | Crawler scheduling rate, expressed as a numeric string                                                                                                                |
-| `app.crawl.startdate`             | String             | 2008-01-01T00:00:00                                                     | "Beginning of time". Basically the earliest supported date for crawling repos, if no crawl jobs were previously performed. Formatted as a yyyy-MM-ddTHH:MM:SS string. |
-| `app.cleanup.enabled`             | Boolean            | true                                                                    | Specified if the job responsible for removing unavailable repositories is enabled on startup                                                                          |
-| `app.cleanup.scheduling`          | String             | 21600000 (6h, in ms)                                                    | Cleanup scheduling rate, expressed as a numeric string                                                                                                                |
-| `app.statistics.suggestion-limit` | Integer            | 500                                                                     | The maximum number of suggestions that will be made available to the UI autocompletion fields                                                                         |
+| Variable Name                         | Type               | Default Value                                                           | Description                                                                                                                                                           |
+|---------------------------------------|--------------------|-------------------------------------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `app.crawl.enabled`                   | Boolean            | true                                                                    | Specifies if the crawling jobs are enabled on startup                                                                                                                 |
+| `app.crawl.languages`                 | List&lt;String&gt; | See [application.properties](src/main/resources/application.properties) | A comma-separated list of language names that will be targeted during crawling                                                                                        |
+| `app.crawl.tokens`                    | List&lt;String&gt; |                                                                         | A comma-separated list of GitHub personal access tokens (PATs) that will be used for mining the GitHub API                                                            |
+| `app.crawl.scheduling`                | String             | 21600000 (6h, in ms)                                                    | Crawler scheduling rate, expressed as a numeric string                                                                                                                |
+| `app.crawl.startdate`                 | String             | 2008-01-01T00:00:00                                                     | "Beginning of time". Basically the earliest supported date for crawling repos, if no crawl jobs were previously performed. Formatted as a yyyy-MM-ddTHH:MM:SS string. |
+| `app.cleanup.enabled`                 | Boolean            | true                                                                    | Specified if the job responsible for removing unavailable repositories is enabled on startup                                                                          |
+| `app.cleanup.scheduling`              | String             | 21600000 (6h, in ms)                                                    | Cleanup scheduling rate, expressed as a numeric string                                                                                                                |
+| `app.statistics.suggestion-limit`     | Integer            | 500                                                                     | The maximum number of suggestions that will be made available to the UI autocompletion fields                                                                         |
+| `app.crawl.analysis.enabled`          | Boolean            | true                                                                    | Specifies if the analysis job is enabled on startup                                                                                                                   |
+| `app.crawl.analysis.scheduling`       | String             | 21600000 (6h, in ms)                                                    | Analysis job scheduling rate, expressed as a numeric string                                                                                                             |
+| `app.crawl.analysis.folder-prefix`    | String             | ghs-cloned-                                                             | The prefix used for the names of the folders where Git repositories are cloned                                                                                        |
+| `app.crawl.analysis.max-pool-threads` | String             | 3                                                                       | The maximum amount of alive threads dedicated to clone git repositories, expressed as a numeric string                                                                |
 
 ### Web UI
 
