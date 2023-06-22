@@ -149,7 +149,12 @@ public class GitRepo {
     Set<GitRepoLanguage> languages = new HashSet<>();
 
     @Builder.Default
-    @OneToMany(mappedBy = "repo", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "repo", cascade = {
+        CascadeType.PERSIST,
+        CascadeType.MERGE,
+        CascadeType.REFRESH,
+        CascadeType.DETACH
+    })
     @Fetch(value = FetchMode.JOIN)
     Set<GitRepoMetric> metrics = new HashSet<>();
 
