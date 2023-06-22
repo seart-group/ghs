@@ -149,7 +149,12 @@ public class GitRepo {
     Set<GitRepoLanguage> languages = new HashSet<>();
 
     @Builder.Default
-    @OneToMany(mappedBy = "repo", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "repo", cascade = {
+        CascadeType.PERSIST,
+        CascadeType.MERGE,
+        CascadeType.REFRESH,
+        CascadeType.DETACH
+    })
     @Fetch(value = FetchMode.JOIN)
     Set<GitRepoMetric> metrics = new HashSet<>();
 
@@ -168,14 +173,20 @@ public class GitRepo {
     @Fetch(value = FetchMode.JOIN)
     Set<Topic> topics = new HashSet<>();
 
-    @Formula("(select sum(m.lines_code) from repo_metrics m where m.repo_id = id)")
-    Long totalCodeLines;
+    @Formula("(select m.lines_blank from repo_metrics_by_repo m where m.repo_id = id)")
+    Long blankLines;
 
-    @Formula("(select sum(m.lines_comment) from repo_metrics m where m.repo_id = id)")
-    Long totalCommentLines;
+    @Formula("(select m.lines_code from repo_metrics_by_repo m where m.repo_id = id)")
+    Long codeLines;
 
-    @Formula("(select sum(m.lines_code+m.lines_comment) from repo_metrics m where m.repo_id = id)")
-    Long totalLines;
+    @Formula("(select m.lines_comment from repo_metrics_by_repo m where m.repo_id = id)")
+    Long commentLines;
+
+    @Formula("(select m.lines from repo_metrics_by_repo m where m.repo_id = id)")
+    Long lines;
+
+    @Formula("(select m.lines_non_blank from repo_metrics_by_repo m where m.repo_id = id)")
+    Long nonBlankLines;
 
     @Override
     public boolean equals(Object o) {

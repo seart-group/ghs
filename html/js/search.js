@@ -1,6 +1,7 @@
 (function (base, $, _, Handlebars, Modal) {
     const $back = $(".btn-back");
     const $search = $("#search");
+    const $search_language = $("#search-language");
     const $spinner = $("#spinner");
     const $results = $("#results");
     const $results_count = $("#results-count");
@@ -155,9 +156,9 @@
             branches,
             contributors,
             metrics,
-            totalLines,
-            totalCodeLines,
-            totalCommentLines,
+            blankLines,
+            codeLines,
+            commentLines,
             totalIssues,
             totalPullRequests,
             openIssues,
@@ -175,14 +176,8 @@
         const total = _.sum(Object.values(languages));
         const normalized = _.mapValues(languages, (value) => value / total * 100);
 
-        const languageFilter = $search.serializeArray().find((entry) => entry.name === "language");
-        let languageMetrics = metrics.find((metric) => metric.language === languageFilter?.value);
-        languageMetrics = {
-            language: languageMetrics?.language,
-            totalLines: languageMetrics?.totalLines,
-            codeLines: languageMetrics?.codeLines,
-            commentLines: languageMetrics?.commentLines,
-        }
+        const selectedLanguage = $search_language.val();
+        const languageMetrics = metrics.find((metric) => metric.language === selectedLanguage);
 
         const context = {
             id: id,
@@ -214,11 +209,16 @@
                 updated: updatedAt,
                 lastPush: pushedAt,
                 lastCommit: lastCommit,
-                totalLines: totalLines,
-                codeLines: totalCodeLines,
-                commentLines: totalCommentLines,
+                codeLines: codeLines,
+                commentLines: commentLines,
+                blankLines: blankLines,
             },
-            languageMetrics: languageMetrics,
+            languageMetrics: {
+                language: languageMetrics?.language,
+                codeLines: languageMetrics?.codeLines,
+                commentLines: languageMetrics?.commentLines,
+                blankLines: languageMetrics?.blankLines,
+            },
             labels: labels,
             languages: normalized,
             topics: topics
