@@ -156,7 +156,7 @@
             branches,
             contributors,
             metrics,
-            lines,
+            blankLines,
             codeLines,
             commentLines,
             totalIssues,
@@ -177,13 +177,7 @@
         const normalized = _.mapValues(languages, (value) => value / total * 100);
 
         const selectedLanguage = $search_language.val();
-        let languageMetrics = metrics.find((metric) => metric.language === selectedLanguage);
-        languageMetrics = {
-            language: languageMetrics?.language,
-            lines: languageMetrics?.lines,
-            codeLines: languageMetrics?.codeLines,
-            commentLines: languageMetrics?.commentLines,
-        }
+        const languageMetrics = metrics.find((metric) => metric.language === selectedLanguage);
 
         const context = {
             id: id,
@@ -215,11 +209,16 @@
                 updated: updatedAt,
                 lastPush: pushedAt,
                 lastCommit: lastCommit,
-                lines: lines,
                 codeLines: codeLines,
                 commentLines: commentLines,
+                blankLines: blankLines,
             },
-            languageMetrics: languageMetrics,
+            languageMetrics: {
+                language: languageMetrics?.language,
+                codeLines: languageMetrics?.codeLines,
+                commentLines: languageMetrics?.commentLines,
+                blankLines: languageMetrics?.blankLines,
+            },
             labels: labels,
             languages: normalized,
             topics: topics

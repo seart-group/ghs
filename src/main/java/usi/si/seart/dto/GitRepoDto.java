@@ -45,7 +45,7 @@ public class GitRepoDto {
     Long openIssues;
     Long totalPullRequests;
     Long openPullRequests;
-    Long lines;
+    Long blankLines;
     Long codeLines;
     Long commentLines;
     @JacksonXmlElementWrapper(localName = "metrics")

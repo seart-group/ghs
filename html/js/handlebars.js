@@ -231,11 +231,9 @@ Handlebars.registerHelper("octicon", function (key) {
         case "lastCommit":
             return "file-diff";
         case "codeLines":
-            return "code-square";
+            return "code";
         case "commentLines":
             return "comment";
-        case "lines":
-            return "project-roadmap";
         default:
             return "question";
     }
@@ -246,6 +244,8 @@ Handlebars.registerHelper("other-styles", function (key) {
        case "openIssues":
        case "openPullReqs":
            return "text-danger";
+       case "blankLines":
+           return "opacity-0"
        default: return "";
    }
 });

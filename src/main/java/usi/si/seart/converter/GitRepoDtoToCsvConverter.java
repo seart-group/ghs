@@ -42,7 +42,7 @@ public class GitRepoDtoToCsvConverter implements Converter<GitRepoDto, GitRepoCs
                 .openIssues(source.getOpenIssues())
                 .totalPullRequests(source.getTotalPullRequests())
                 .openPullRequests(source.getOpenPullRequests())
-                .lines(source.getLines())
+                .blankLines(source.getBlankLines())
                 .codeLines(source.getCodeLines())
                 .commentLines(source.getCommentLines())
                 .metrics(source.getMetrics())
