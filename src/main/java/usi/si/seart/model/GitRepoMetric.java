@@ -8,6 +8,8 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.FieldDefaults;
 import org.hibernate.Hibernate;
+import org.hibernate.annotations.Generated;
+import org.hibernate.annotations.GenerationTime;
 
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
@@ -48,20 +50,36 @@ public class GitRepoMetric {
     @JoinColumn(name = "metric_language_id")
     MetricLanguage language;
 
-    @Column(name = "lines")
+    @Generated(value = GenerationTime.ALWAYS)
+    @Column(
+            name = "lines",
+            insertable = false,
+            updatable = false
+    )
     Long lines;
 
-    @Column(name = "lines_non_blank")
+    @Generated(value = GenerationTime.ALWAYS)
+    @Column(
+            name = "lines_non_blank",
+            insertable = false,
+            updatable = false
+    )
     Long nonBlankLines;
 
+    @NotNull
     @Column(name = "lines_blank")
-    Long blankLines;
+    @Builder.Default
+    Long blankLines = 0L;
 
+    @NotNull
     @Column(name = "lines_code")
-    Long codeLines;
+    @Builder.Default
+    Long codeLines = 0L;
 
+    @NotNull
     @Column(name = "lines_comment")
-    Long commentLines;
+    @Builder.Default
+    Long commentLines = 0L;
 
     @Override
     public boolean equals(Object o) {
