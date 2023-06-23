@@ -1,5 +1,5 @@
 
-# GitHub Search &middot; [![Status](https://badgen.net/https/dabico.npkn.net/ghs-status)](http://seart-ghs.si.usi.ch) [![MIT license](https://img.shields.io/badge/License-MIT-blue.svg)](https://github.com/seart-group/ghs/blob/master/LICENSE) [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.4588464.svg)](https://doi.org/10.5281/zenodo.4588464)
+# GitHub Search &middot; [![Status](https://badgen.net/https/dabico.npkn.net/ghs-status)](http://seart-ghs.si.usi.ch) [![MIT license](https://img.shields.io/badge/License-MIT-blue.svg)](https://github.com/seart-group/ghs/blob/master/LICENSE) [![Latest Dump](https://img.shields.io/badge/Latest_Dump-21.06.23-blue)](https://www.dropbox.com/s/6lz85igs5jdyddl/gse.sql.gz?dl=1) [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.4588464.svg)](https://doi.org/10.5281/zenodo.4588464)
 
 This project is made of two components:
 1. A Spring Boot powered back-end, responsible for:
@@ -11,9 +11,9 @@ This project is made of two components:
 
 ### Prerequisites
 
-- Java 11
-- Maven (3.8+)
-- MySQL (8.0.32+)
+- Java 17
+- Maven (3.9+)
+- MySQL (8.0.33+)
 - Git
 
 ### Database
@@ -42,10 +42,10 @@ Before choosing whether to start with a clean slate or pre-populated database, m
 If you want to start with a completely blank database, then no further action is required.
 The necessary tables will be created by virtue of Flyway migrations, which will run on initial server startup.
 However, if you want your local database to be pre-initialized with the data we have mined, then you can use the compressed SQL dump we provide.
-Said dump can be found in [docker-compose/initdb](docker-compose/initdb), and to import it you would run:
+We host said dump on [Dropbox](https://www.dropbox.com/s/6lz85igs5jdyddl/gse.sql.gz?dl=1), and after downloading, you can import the data by running:
 
 ```shell
-gzcat < docker-compose/initdb/gse.sql.gz | mysql -u gseadmin -pLugano2020 gse
+gzcat < gse.sql.gz | mysql -u gseadmin -pLugano2020 gse
 ```
 
 ### Server
@@ -119,13 +119,10 @@ docker-compose -f docker-compose.yml up -d
 ```
 
 It's worth mentioning that the database setup steps outlined in the previous section are not needed when running with docker,
-as the environment properties passed to the service will create the user and pre-populate the DB on first ever startup.
-The database data itself is kept in the `gse-data` volume,
-while detailed back-end logse are kept in a local mount called "logs" in [docker-compose](docker-compose).
-    
-The database backup service is disabled by default, as we use it primarily in production.
-Should you chose to enable it, you would have to define your own personal override file.
-Here's an example of a `docker-compose.override.yml` that re-enables backups:
+as the environment properties passed to the service will create the user and DB on first ever startup.
+However, the same does not apply to the database data, as the default deployment will create an empty database.
+If you want to use existing data from the dumps, then you have to override the compose deployment to use a custom database image that comes bundled with the dump.
+Create your `docker-compose.override.yml` file, and add to it the following contents:
 
 ```yaml
 version: '3.9'
@@ -133,13 +130,22 @@ name: 'gse'
 
 services:
 
-  gse-bkp:
-    restart: always
-    entrypoint: "/init"
+  gse-db:
+    build:
+      context: ../
+      dockerfile: docker/database/Dockerfile
+    image: 'gse/database:latest'
 ```
 
-You can also use this override file to change the service configurations of other services,
-for instance specifying your own PAT for the crawler:
+When deploying, you will need to specify the override file:
+
+```shell
+docker-compose -f docker-compose.yml -f docker-compose.override.yml up -d
+```
+
+The database data itself is kept in the `gse-data` volume, while detailed back-end logs are kept in a local mount called [logs](docker-compose/logs).
+
+You can also use this override file to change the configurations of other services, for instance specifying your own PAT for the crawler:
 
 ```yaml
 version: '3.9'
@@ -147,18 +153,31 @@ name: 'gse'
 
 services:
 
-   gse-app:
-      environment:
-         APP_CRAWL_ENABLED: 'true'
-         APP_CRAWL_TOKENS: '<your_access_token>'
+  # other services omitted...
+
+  gse-app:
+    environment:
+      APP_CRAWL_ENABLED: 'true'
+      APP_CRAWL_TOKENS: '<your_access_token>'
 ```
 
 Any of the Spring Boot properties or aforementioned application-specific properties can be overridden.
 Just keep in mind that `app.x.y` corresponds to the `APP_X_Y` service environment setting.
-Don't forget to specify the override file when running the command:
 
-```shell
-docker-compose -f docker-compose.yml -f docker-compose.override.yml up -d
+Another example is the automated database backup service, which is disabled by default.
+Should you chose to re-enable it, you would have to add the following to the override file:
+
+```yaml
+version: '3.9'
+name: 'gse'
+
+services:
+
+  # other services omitted...
+
+  gse-bkp:
+    restart: always
+    entrypoint: "/init"
 ```
 
 ---

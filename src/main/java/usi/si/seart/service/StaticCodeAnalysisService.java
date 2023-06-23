@@ -17,7 +17,6 @@ import usi.si.seart.exception.StaticCodeAnalysisException;
 import usi.si.seart.exception.TerminalExecutionException;
 import usi.si.seart.model.GitRepo;
 import usi.si.seart.model.GitRepoMetric;
-import usi.si.seart.model.GitRepoMetricKey;
 import usi.si.seart.model.MetricLanguage;
 
 import jakarta.annotation.Nullable;
@@ -115,7 +114,7 @@ public interface StaticCodeAnalysisService {
                 builder.language(language);
                 if (repo != null) {
                     builder.repo(repo);
-                    builder.id(new GitRepoMetricKey(repo.getId(), language.getId()));
+                    builder.key(new GitRepoMetric.Key(repo.getId(), language.getId()));
                 }
                 builder.blankLines(languageMetricJson.get("blank").getAsLong());
                 builder.commentLines(languageMetricJson.get("comment").getAsLong());
