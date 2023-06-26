@@ -2,3 +2,8 @@
 default-time-zone="+00:00"
 group-concat-max-len=10000
 log-bin-trust-function-creators=1
+
+[mysqldump]
+quick
+single-transaction
+max-allowed-packet=1G
