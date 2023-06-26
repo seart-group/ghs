@@ -75,15 +75,15 @@ public interface GitRepoService {
                 existing.setHasWiki(repo.getHasWiki());
                 existing.setIsArchived(repo.getIsArchived());
                 existing.setCrawled(repo.getCrawled());
-                return gitRepoRepository.saveAndFlush(existing);
+                return gitRepoRepository.save(existing);
             } else {
-                return gitRepoRepository.saveAndFlush(repo);
+                return gitRepoRepository.save(repo);
             }
         }
 
         @Override
         public GitRepo updateRepo(GitRepo repo) {
-            return gitRepoRepository.saveAndFlush(repo);
+            return gitRepoRepository.save(repo);
         }
 
         @Override
