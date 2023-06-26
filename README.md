@@ -1,5 +1,5 @@
 
-# GitHub Search &middot; [![Status](https://badgen.net/https/dabico.npkn.net/ghs-status)](http://seart-ghs.si.usi.ch) [![MIT license](https://img.shields.io/badge/License-MIT-blue.svg)](https://github.com/seart-group/ghs/blob/master/LICENSE) [![Latest Dump](https://img.shields.io/badge/Latest_Dump-21.06.23-blue)](https://www.dropbox.com/s/6lz85igs5jdyddl/gse.sql.gz?dl=1) [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.4588464.svg)](https://doi.org/10.5281/zenodo.4588464)
+# GitHub Search &middot; [![Status](https://badgen.net/https/dabico.npkn.net/ghs-status)](http://seart-ghs.si.usi.ch) [![MIT license](https://img.shields.io/badge/License-MIT-blue.svg)](https://github.com/seart-group/ghs/blob/master/LICENSE) [![Latest Dump](https://img.shields.io/badge/Latest_Dump-26.06.23-blue)](https://www.dropbox.com/s/exda7v3xjy6bafp/gse.sql.gz?dl=1) [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.4588464.svg)](https://doi.org/10.5281/zenodo.4588464)
 
 This project is made of two components:
 1. A Spring Boot powered back-end, responsible for:
@@ -42,7 +42,7 @@ Before choosing whether to start with a clean slate or pre-populated database, m
 If you want to start with a completely blank database, then no further action is required.
 The necessary tables will be created by virtue of Flyway migrations, which will run on initial server startup.
 However, if you want your local database to be pre-initialized with the data we have mined, then you can use the compressed SQL dump we provide.
-We host said dump on [Dropbox](https://www.dropbox.com/s/6lz85igs5jdyddl/gse.sql.gz?dl=1), and after downloading, you can import the data by running:
+We host said dump on [Dropbox](https://www.dropbox.com/s/exda7v3xjy6bafp/gse.sql.gz?dl=1), and after downloading, you can import the data by running:
 
 ```shell
 gzcat < gse.sql.gz | mysql -u gseadmin -pLugano2020 gse
