@@ -46,7 +46,7 @@ services:
       COMPRESSION: GZ
       CONTAINER_ENABLE_MONITORING: FALSE
       DEBUG_MODE: FALSE
-      EXTRA_OPTS: --ignore-table=gse.topic_ranked --ignore-table=gse.label_ranked
+      EXTRA_OPTS: "--ignore-table=gse.topic_ranked --ignore-table=gse.label_ranked"
     entrypoint: "true"
     depends_on:
       gse-db:
