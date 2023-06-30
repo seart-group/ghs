@@ -16,7 +16,7 @@ import javax.validation.constraints.PositiveOrZero;
 @AllArgsConstructor
 @Entity
 @Immutable
-@Subselect("SELECT name, count FROM count_repo_by_main_language")
+@Subselect("SELECT name, count FROM count_git_repo_by_main_language")
 public class MainLanguageCount {
 
     @Id
