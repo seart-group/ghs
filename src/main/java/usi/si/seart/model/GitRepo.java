@@ -10,7 +10,6 @@ import lombok.experimental.FieldDefaults;
 import org.hibernate.Hibernate;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
-import org.hibernate.annotations.Formula;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -179,21 +178,6 @@ public class GitRepo {
     )
     @Fetch(value = FetchMode.JOIN)
     Set<Topic> topics = new HashSet<>();
-
-    @Formula("(select m.lines_blank from git_repo_metrics_by_id m where m.repo_id = id)")
-    Long blankLines;
-
-    @Formula("(select m.lines_code from git_repo_metrics_by_id m where m.repo_id = id)")
-    Long codeLines;
-
-    @Formula("(select m.lines_comment from git_repo_metrics_by_id m where m.repo_id = id)")
-    Long commentLines;
-
-    @Formula("(select m.lines from git_repo_metrics_by_id m where m.repo_id = id)")
-    Long lines;
-
-    @Formula("(select m.lines_non_blank from git_repo_metrics_by_id m where m.repo_id = id)")
-    Long nonBlankLines;
 
     @Override
     public boolean equals(Object o) {
