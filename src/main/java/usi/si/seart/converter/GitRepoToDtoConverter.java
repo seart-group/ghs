@@ -48,7 +48,7 @@ public class GitRepoToDtoConverter implements Converter<GitRepo, GitRepoDto> {
                 .lastCommit(source.getLastCommit())
                 .lastCommitSHA(source.getLastCommitSHA())
                 .blankLines(source.getTotalMetrics().getBlankLines())
-                .commentLines(source.getTotalMetrics().getCodeLines())
+                .commentLines(source.getTotalMetrics().getCommentLines())
                 .codeLines(source.getTotalMetrics().getCodeLines())
                 .metrics(source.getMetrics().stream()
                     .map(metricConverter::convert)
