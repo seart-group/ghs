@@ -21,6 +21,8 @@ import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
+import javax.persistence.PrimaryKeyJoinColumn;
 import javax.persistence.Table;
 import java.util.Date;
 import java.util.HashSet;
@@ -157,6 +159,11 @@ public class GitRepo {
     })
     @Fetch(value = FetchMode.JOIN)
     Set<GitRepoMetric> metrics = new HashSet<>();
+
+    @PrimaryKeyJoinColumn
+    @OneToOne(mappedBy = "repo")
+    @Fetch(value = FetchMode.JOIN)
+    GitRepoMetricAggregate totalMetrics;
 
     @Builder.Default
     @ManyToMany(cascade = {
