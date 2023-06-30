@@ -16,7 +16,8 @@ SELECT
     main_language AS name,
     COUNT(id) AS count
 FROM git_repo
-GROUP BY main_language;
+GROUP BY main_language
+ORDER BY count DESC;
 
 DROP VIEW repo_metrics_by_repo;
 CREATE OR REPLACE VIEW git_repo_metrics_by_id AS
