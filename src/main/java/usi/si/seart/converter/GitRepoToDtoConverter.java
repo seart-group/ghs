@@ -6,6 +6,7 @@ import usi.si.seart.dto.GitRepoDto;
 import usi.si.seart.dto.GitRepoMetricDto;
 import usi.si.seart.model.GitRepo;
 import usi.si.seart.model.GitRepoMetric;
+import usi.si.seart.model.GitRepoMetricAggregate;
 import usi.si.seart.model.Label;
 import usi.si.seart.model.Topic;
 
@@ -22,6 +23,9 @@ public class GitRepoToDtoConverter implements Converter<GitRepo, GitRepoDto> {
     @Override
     @NonNull
     public GitRepoDto convert(@NonNull GitRepo source) {
+        GitRepoMetricAggregate totalMetrics = source.getTotalMetrics();
+        boolean hasMetrics = totalMetrics != null;
+
         return GitRepoDto.builder()
                 .id(source.getId())
                 .name(source.getName())
@@ -47,9 +51,9 @@ public class GitRepoToDtoConverter implements Converter<GitRepo, GitRepoDto> {
                 .openPullRequests(source.getOpenPullRequests())
                 .lastCommit(source.getLastCommit())
                 .lastCommitSHA(source.getLastCommitSHA())
-                .blankLines(source.getBlankLines())
-                .commentLines(source.getCommentLines())
-                .codeLines(source.getCodeLines())
+                .blankLines(hasMetrics ? totalMetrics.getBlankLines() : null)
+                .commentLines(hasMetrics ? totalMetrics.getCommentLines() : null)
+                .codeLines(hasMetrics ? totalMetrics.getCodeLines() : null)
                 .metrics(source.getMetrics().stream()
                     .map(metricConverter::convert)
                     .collect(Collectors.toList()))

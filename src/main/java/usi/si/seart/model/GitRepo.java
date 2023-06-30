@@ -10,7 +10,6 @@ import lombok.experimental.FieldDefaults;
 import org.hibernate.Hibernate;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
-import org.hibernate.annotations.Formula;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -21,6 +20,8 @@ import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
+import javax.persistence.PrimaryKeyJoinColumn;
 import javax.persistence.Table;
 import java.util.Date;
 import java.util.HashSet;
@@ -33,7 +34,7 @@ import java.util.Set;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "repo")
+@Table(name = "git_repo")
 @Entity
 public class GitRepo {
 
@@ -131,7 +132,7 @@ public class GitRepo {
         CascadeType.DETACH
     })
     @JoinTable(
-        name = "repo_label",
+        name = "git_repo_label",
         joinColumns = @JoinColumn(name = "repo_id"),
         inverseJoinColumns = @JoinColumn(name = "label_id")
     )
@@ -158,6 +159,11 @@ public class GitRepo {
     @Fetch(value = FetchMode.JOIN)
     Set<GitRepoMetric> metrics = new HashSet<>();
 
+    @PrimaryKeyJoinColumn
+    @OneToOne(mappedBy = "repo")
+    @Fetch(value = FetchMode.JOIN)
+    GitRepoMetricAggregate totalMetrics;
+
     @Builder.Default
     @ManyToMany(cascade = {
         CascadeType.PERSIST,
@@ -166,27 +172,12 @@ public class GitRepo {
         CascadeType.DETACH
     })
     @JoinTable(
-        name = "repo_topic",
+        name = "git_repo_topic",
         joinColumns = @JoinColumn(name = "repo_id"),
         inverseJoinColumns = @JoinColumn(name = "topic_id")
     )
     @Fetch(value = FetchMode.JOIN)
     Set<Topic> topics = new HashSet<>();
-
-    @Formula("(select m.lines_blank from repo_metrics_by_repo m where m.repo_id = id)")
-    Long blankLines;
-
-    @Formula("(select m.lines_code from repo_metrics_by_repo m where m.repo_id = id)")
-    Long codeLines;
-
-    @Formula("(select m.lines_comment from repo_metrics_by_repo m where m.repo_id = id)")
-    Long commentLines;
-
-    @Formula("(select m.lines from repo_metrics_by_repo m where m.repo_id = id)")
-    Long lines;
-
-    @Formula("(select m.lines_non_blank from repo_metrics_by_repo m where m.repo_id = id)")
-    Long nonBlankLines;
 
     @Override
     public boolean equals(Object o) {

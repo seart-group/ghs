@@ -4,6 +4,7 @@ import com.google.common.collect.Range;
 import lombok.Builder;
 import org.apache.commons.lang3.StringUtils;
 import usi.si.seart.model.GitRepo;
+import usi.si.seart.model.GitRepoMetricAggregate_;
 import usi.si.seart.model.GitRepoMetric_;
 import usi.si.seart.model.GitRepo_;
 import usi.si.seart.model.Label_;
@@ -256,60 +257,69 @@ public class GitRepoSearch {
         }
 
 
-        Path<Long> commentLinesPath;
-        Path<Long> codeLinesPath;
-        Path<Long> nonBlankLinesPath;
-        if (StringUtils.isNotBlank(language) && hasCodeMetricsFilters()) {
-            Path<String> path = root.join(GitRepo_.metrics).join(GitRepoMetric_.language).get(MetricLanguage_.language);
-            criteria.add(new KeyValueCriteria<>(path, language, BinaryOperation.EQUAL));
-            commentLinesPath = root.join(GitRepo_.metrics).get(GitRepoMetric_.commentLines);
-            codeLinesPath = root.join(GitRepo_.metrics).get(GitRepoMetric_.codeLines);
-            nonBlankLinesPath = root.join(GitRepo_.metrics).get(GitRepoMetric_.nonBlankLines);
-        } else {
-            commentLinesPath = root.get(GitRepo_.commentLines);
-            codeLinesPath = root.get(GitRepo_.codeLines);
-            nonBlankLinesPath = root.get(GitRepo_.nonBlankLines);
-        }
+        if (hasCodeMetricsFilters()) {
+            Path<Long> nonBlankLinesPath;
+            Path<Long> codeLinesPath;
+            Path<Long> commentLinesPath;
 
-        if (codeLines.hasLowerBound()) {
-            criteria.add(
-                    new KeyValueCriteria<>(codeLinesPath, codeLines.lowerEndpoint(), BinaryOperation.GREATER_THAN_EQUAL)
-            );
-        }
-        if (codeLines.hasUpperBound()) {
-            criteria.add(
-                    new KeyValueCriteria<>(codeLinesPath, codeLines.upperEndpoint(), BinaryOperation.LESS_THAN_EQUAL)
-            );
-        }
+            if (StringUtils.isNotBlank(language)) {
+                Path<String> path = root.join(GitRepo_.metrics)
+                        .join(GitRepoMetric_.language)
+                        .get(MetricLanguage_.language);
+                criteria.add(new KeyValueCriteria<>(path, language, BinaryOperation.EQUAL));
+                nonBlankLinesPath = root.join(GitRepo_.metrics).get(GitRepoMetric_.nonBlankLines);
+                codeLinesPath = root.join(GitRepo_.metrics).get(GitRepoMetric_.codeLines);
+                commentLinesPath = root.join(GitRepo_.metrics).get(GitRepoMetric_.commentLines);
+            } else {
+                nonBlankLinesPath = root.join(GitRepo_.totalMetrics).get(GitRepoMetricAggregate_.nonBlankLines);
+                codeLinesPath = root.join(GitRepo_.totalMetrics).get(GitRepoMetricAggregate_.codeLines);
+                commentLinesPath = root.join(GitRepo_.totalMetrics).get(GitRepoMetricAggregate_.commentLines);
+            }
 
-        if (commentLines.hasLowerBound()) {
-            criteria.add(
-                    new KeyValueCriteria<>(
-                            commentLinesPath, commentLines.lowerEndpoint(), BinaryOperation.GREATER_THAN_EQUAL
-                    )
-            );
-        }
-        if (commentLines.hasUpperBound()) {
-            criteria.add(
-                    new KeyValueCriteria<>(
-                            commentLinesPath, commentLines.upperEndpoint(), BinaryOperation.LESS_THAN_EQUAL
-                    )
-            );
-        }
+            if (nonBlankLines.hasLowerBound()) {
+                criteria.add(
+                        new KeyValueCriteria<>(
+                                nonBlankLinesPath, nonBlankLines.lowerEndpoint(), BinaryOperation.GREATER_THAN_EQUAL
+                        )
+                );
+            }
+            if (nonBlankLines.hasUpperBound()) {
+                criteria.add(
+                        new KeyValueCriteria<>(
+                                nonBlankLinesPath, nonBlankLines.upperEndpoint(), BinaryOperation.LESS_THAN_EQUAL
+                        )
+                );
+            }
 
-        if (nonBlankLines.hasLowerBound()) {
-            criteria.add(
-                    new KeyValueCriteria<>(
-                            nonBlankLinesPath, nonBlankLines.lowerEndpoint(), BinaryOperation.GREATER_THAN_EQUAL
-                    )
-            );
-        }
-        if (nonBlankLines.hasUpperBound()) {
-            criteria.add(
-                    new KeyValueCriteria<>(
-                            nonBlankLinesPath, nonBlankLines.upperEndpoint(), BinaryOperation.LESS_THAN_EQUAL
-                    )
-            );
+            if (codeLines.hasLowerBound()) {
+                criteria.add(
+                        new KeyValueCriteria<>(
+                                codeLinesPath, codeLines.lowerEndpoint(), BinaryOperation.GREATER_THAN_EQUAL
+                        )
+                );
+            }
+            if (codeLines.hasUpperBound()) {
+                criteria.add(
+                        new KeyValueCriteria<>(
+                                codeLinesPath, codeLines.upperEndpoint(), BinaryOperation.LESS_THAN_EQUAL
+                        )
+                );
+            }
+
+            if (commentLines.hasLowerBound()) {
+                criteria.add(
+                        new KeyValueCriteria<>(
+                                commentLinesPath, commentLines.lowerEndpoint(), BinaryOperation.GREATER_THAN_EQUAL
+                        )
+                );
+            }
+            if (commentLines.hasUpperBound()) {
+                criteria.add(
+                        new KeyValueCriteria<>(
+                                commentLinesPath, commentLines.upperEndpoint(), BinaryOperation.LESS_THAN_EQUAL
+                        )
+                );
+            }
         }
 
         if (StringUtils.isNotBlank(topic)) {
