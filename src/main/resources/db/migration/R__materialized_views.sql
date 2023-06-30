@@ -9,7 +9,7 @@ CREATE TABLE IF NOT EXISTS label_ranked (
 )
 SELECT l.name AS name
 FROM label l
-INNER JOIN repo_label rl ON l.id = rl.label_id
+INNER JOIN git_repo_label rl ON l.id = rl.label_id
 GROUP BY l.id
 ORDER BY COUNT(rl.repo_id) DESC;
 
@@ -40,7 +40,7 @@ CREATE TABLE IF NOT EXISTS topic_ranked (
 )
 SELECT t.name AS name
 FROM topic t
-INNER JOIN repo_topic rt ON t.id = rt.topic_id
+INNER JOIN git_repo_topic rt ON t.id = rt.topic_id
 GROUP BY t.id
 ORDER BY COUNT(rt.repo_id) DESC;
 
