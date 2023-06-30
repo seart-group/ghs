@@ -33,7 +33,7 @@ import java.util.Set;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "repo")
+@Table(name = "git_repo")
 @Entity
 public class GitRepo {
 
@@ -131,7 +131,7 @@ public class GitRepo {
         CascadeType.DETACH
     })
     @JoinTable(
-        name = "repo_label",
+        name = "git_repo_label",
         joinColumns = @JoinColumn(name = "repo_id"),
         inverseJoinColumns = @JoinColumn(name = "label_id")
     )
@@ -166,7 +166,7 @@ public class GitRepo {
         CascadeType.DETACH
     })
     @JoinTable(
-        name = "repo_topic",
+        name = "git_repo_topic",
         joinColumns = @JoinColumn(name = "repo_id"),
         inverseJoinColumns = @JoinColumn(name = "topic_id")
     )
