@@ -12,7 +12,7 @@ updates:
   - package-ecosystem: "docker"
     directory: "/docker"
     schedule:
-      interval: "weekly"
+      interval: weekly
     target-branch: "develop"
     labels:
       - dependencies
