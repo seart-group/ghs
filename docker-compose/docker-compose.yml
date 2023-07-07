@@ -29,7 +29,7 @@ services:
     restart: "no"
     volumes:
       - backup:/backup
-      - ./bkpdb:/assets/custom-scripts
+      - ./bkpdb:/assets/scripts/post
     environment:
       TZ: UTC
       TIMEZONE: Etc/UTC
