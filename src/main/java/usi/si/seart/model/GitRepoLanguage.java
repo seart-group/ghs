@@ -27,7 +27,7 @@ import java.util.Objects;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "repo_language")
+@Table(name = "git_repo_language")
 @Entity
 public class GitRepoLanguage {
 

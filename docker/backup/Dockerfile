@@ -1,3 +1,7 @@
-FROM tiredofit/db-backup:latest
+FROM tiredofit/db-backup:3.9.6
 
-RUN apk update && apk add openssh sshpass
+RUN apk update --quiet
+RUN apk add --no-cache \
+            --quiet \
+            openssh \
+            sshpass

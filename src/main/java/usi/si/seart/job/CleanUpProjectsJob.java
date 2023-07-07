@@ -58,7 +58,7 @@ public class CleanUpProjectsJob {
         long totalRepositories = gitRepoRepository.count();
         log.info("Started cleanup on {} repositories...", totalRepositories);
 
-        String sql = "SELECT id, name FROM repo ORDER BY RAND()";
+        String sql = "SELECT id, name FROM git_repo ORDER BY RAND()";
         @Cleanup SessionFactory factory = entityManagerFactory.unwrap(SessionFactory.class);
         @Cleanup StatelessSession session = factory.openStatelessSession();
         @Cleanup ScrollableResults<Tuple> results = session.createNativeQuery(sql, Tuple.class)
@@ -79,19 +79,19 @@ public class CleanUpProjectsJob {
                 Transaction transaction = null;
                 try (Session nested = factory.openSession()) {
                     transaction = nested.beginTransaction();
-                    nested.createNativeMutationQuery("DELETE FROM repo_label WHERE repo_id = :id")
+                    nested.createNativeMutationQuery("DELETE FROM git_repo_label WHERE repo_id = :id")
                             .setParameter("id", id)
                             .executeUpdate();
-                    nested.createNativeMutationQuery("DELETE FROM repo_language WHERE repo_id = :id")
+                    nested.createNativeMutationQuery("DELETE FROM git_repo_language WHERE repo_id = :id")
                             .setParameter("id", id)
                             .executeUpdate();
-                    nested.createNativeMutationQuery("DELETE FROM repo_metrics WHERE repo_id = :id")
+                    nested.createNativeMutationQuery("DELETE FROM git_repo_metrics WHERE repo_id = :id")
                             .setParameter("id", id)
                             .executeUpdate();
-                    nested.createNativeMutationQuery("DELETE FROM repo_topic WHERE repo_id = :id")
+                    nested.createNativeMutationQuery("DELETE FROM git_repo_topic WHERE repo_id = :id")
                             .setParameter("id", id)
                             .executeUpdate();
-                    nested.createNativeMutationQuery("DELETE FROM repo WHERE id = :id")
+                    nested.createNativeMutationQuery("DELETE FROM git_repo WHERE id = :id")
                             .setParameter("id", id)
                             .executeUpdate();
                     nested.flush();
