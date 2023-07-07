@@ -5,5 +5,7 @@ log-bin-trust-function-creators=1
 
 [mysqldump]
 quick
+triggers
+routines
 single-transaction
 max-allowed-packet=1G
