@@ -39,6 +39,7 @@ public class Language {
     @Column(name = "name")
     String name;
 
+    @Builder.Default
     @OneToMany(mappedBy = "language")
     Set<GitRepoLanguage> repos = new HashSet<>();
 

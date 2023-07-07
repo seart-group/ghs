@@ -40,6 +40,7 @@ public class Topic {
     @Column(name = "name")
     String name;
 
+    @Builder.Default
     @ManyToMany(mappedBy = "topics")
     Set<GitRepo> repos = new HashSet<>();
 

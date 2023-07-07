@@ -37,6 +37,7 @@ public class MetricLanguage {
     @Column(name = "language")
     String language;
 
+    @Builder.Default
     @OneToMany(mappedBy = "language")
     Set<GitRepoMetric> metrics = new HashSet<>();
 
