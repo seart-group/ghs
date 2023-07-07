@@ -6,7 +6,7 @@ services:
   gse-db:
     image: mysql:8.0.33
     container_name: gse-db
-    restart: always
+    restart: "always"
     volumes:
       - data:/var/lib/mysql
       - ./mysql.cnf:/etc/mysql/conf.d/mysql.cnf
