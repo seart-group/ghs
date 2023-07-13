@@ -6,7 +6,7 @@ services:
   gse-db:
     image: mysql:8.0.33
     container_name: gse-db
-    restart: always
+    restart: "always"
     volumes:
       - data:/var/lib/mysql
       - ./mysql.cnf:/etc/mysql/conf.d/mysql.cnf
@@ -24,12 +24,12 @@ services:
       retries: 5
 
   gse-bkp:
-    image: tiredofit/db-backup:latest
+    image: tiredofit/db-backup:3.9.6
     container_name: gse-bkp
     restart: "no"
     volumes:
       - backup:/backup
-      - ./bkpdb:/assets/custom-scripts
+      - ./bkpdb:/assets/scripts/post
     environment:
       TZ: UTC
       TIMEZONE: Etc/UTC

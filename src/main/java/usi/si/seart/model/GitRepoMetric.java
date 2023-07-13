@@ -33,7 +33,7 @@ import java.util.Objects;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "repo_metrics")
+@Table(name = "git_repo_metrics")
 @Entity
 public class GitRepoMetric {
 
