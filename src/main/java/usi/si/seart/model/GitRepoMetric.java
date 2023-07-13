@@ -9,7 +9,7 @@ import lombok.Setter;
 import lombok.experimental.FieldDefaults;
 import org.hibernate.Hibernate;
 import org.hibernate.annotations.Generated;
-import org.hibernate.annotations.GenerationTime;
+import org.hibernate.generator.EventType;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
@@ -50,7 +50,10 @@ public class GitRepoMetric {
     @JoinColumn(name = "metric_language_id")
     MetricLanguage language;
 
-    @Generated(value = GenerationTime.ALWAYS)
+    @Generated(event = {
+        EventType.INSERT,
+        EventType.UPDATE
+    })
     @Column(
             name = "lines",
             insertable = false,
@@ -58,7 +61,10 @@ public class GitRepoMetric {
     )
     Long lines;
 
-    @Generated(value = GenerationTime.ALWAYS)
+    @Generated(event = {
+        EventType.INSERT,
+        EventType.UPDATE
+    })
     @Column(
             name = "lines_non_blank",
             insertable = false,
