@@ -9,7 +9,6 @@ import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
-import org.springframework.scheduling.annotation.AsyncResult;
 import org.springframework.stereotype.Service;
 import usi.si.seart.analysis.ClonedRepo;
 import usi.si.seart.analysis.TerminalExecution;
@@ -26,6 +25,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.stream.Collectors;
@@ -84,7 +84,7 @@ public interface StaticCodeAnalysisService {
                         .lines()
                         .collect(Collectors.joining("\n"));
                 if (!persist) {
-                    return new AsyncResult<>(parseCodeMetrics(null, output));
+                    return CompletableFuture.completedFuture(parseCodeMetrics(null, output));
                 }
 
                 // Converts the string output from 'cloc' into a set of code metrics.
@@ -98,7 +98,7 @@ public interface StaticCodeAnalysisService {
                 throw new StaticCodeAnalysisException(e);
             }
 
-            return new AsyncResult<>(metrics);
+            return CompletableFuture.completedFuture(metrics);
         }
 
         private Set<GitRepoMetric> parseCodeMetrics(@Nullable GitRepo repo, @NotNull String clocStdout) {

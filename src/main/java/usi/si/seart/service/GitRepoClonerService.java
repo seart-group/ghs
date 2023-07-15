@@ -8,7 +8,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.EventListener;
-import org.springframework.scheduling.annotation.AsyncResult;
 import org.springframework.stereotype.Service;
 import usi.si.seart.analysis.ClonedRepo;
 import usi.si.seart.analysis.TerminalExecution;
@@ -21,6 +20,7 @@ import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Comparator;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Future;
 import java.util.stream.Stream;
 
@@ -75,7 +75,7 @@ public interface GitRepoClonerService {
                 }
                 throw new CloneException("'git clone' process did not start/exit successfully", e);
             }
-            return new AsyncResult<>(new ClonedRepo(tempDir));
+            return CompletableFuture.completedFuture(new ClonedRepo(tempDir));
         }
 
         /**
