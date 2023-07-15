@@ -1,10 +1,11 @@
 [mysqld]
+event-scheduler=on
 default-time-zone="+00:00"
 group-concat-max-len=10000
 log-bin-trust-function-creators=1
 
 [mysqldump]
-quick
+events
 triggers
 routines
 single-transaction
