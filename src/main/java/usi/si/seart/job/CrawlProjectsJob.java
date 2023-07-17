@@ -233,13 +233,13 @@ public class CrawlProjectsJob {
                 if (jsonLanguage.isJsonNull()) {
                     // This can happen (e.g. https://api.github.com/repos/aquynh/iVM).
                     json.addProperty("language", language);
-                }  else if (!jsonLanguage.getAsString().equals(language)) {
+                } else if (!jsonLanguage.getAsString().equals(language)) {
                     /*
                      * This can happen (e.g. https://api.github.com/search/repositories?q=baranowski/habit-vim).
                      * If you go to repository `homepage`, or the `language_url`
                      * (endpoint that shows language distribution),
                      * you will see that `main_language` is only wrong in the above link.
-                    */
+                     */
                     String format =
                             "Search language mismatch, while searching for {} repositories, " +
                             "the crawler encountered a repository erroneously reported as written in {}. " +
