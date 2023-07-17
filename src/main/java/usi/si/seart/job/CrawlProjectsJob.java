@@ -275,6 +275,8 @@ public class CrawlProjectsJob {
         String name = json.get("full_name").getAsString();
         boolean hasIssues = json.get("has_issues").getAsBoolean();
 
+        Language language = languageService.getOrCreate(json.get("language").getAsString());
+
         Long commits = gitHubApiConnector.fetchNumberOfCommits(name);
         Long branches = gitHubApiConnector.fetchNumberOfBranches(name);
         Long releases = gitHubApiConnector.fetchNumberOfReleases(name);
@@ -291,6 +293,7 @@ public class CrawlProjectsJob {
         Date lastCommit = gitCommit.getDate();
         String lastCommitSHA = gitCommit.getSha();
 
+        gitRepo.setMainLanguage(language);
         gitRepo.setCommits(commits);
         gitRepo.setBranches(branches);
         gitRepo.setReleases(releases);

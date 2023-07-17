@@ -8,6 +8,7 @@ import usi.si.seart.model.GitRepoMetricAggregate_;
 import usi.si.seart.model.GitRepoMetric_;
 import usi.si.seart.model.GitRepo_;
 import usi.si.seart.model.Label_;
+import usi.si.seart.model.Language_;
 import usi.si.seart.model.MetricLanguage_;
 import usi.si.seart.model.Topic_;
 import usi.si.seart.repository.criteria.Criteria;
@@ -73,7 +74,8 @@ public class GitRepoSearch {
         }
 
         if (StringUtils.isNotBlank(language)) {
-            criteria.add(new KeyValueCriteria<>(root.get(GitRepo_.mainLanguage), language, BinaryOperation.EQUAL));
+            Path<String> path = root.join(GitRepo_.mainLanguage).get(Language_.name);
+            criteria.add(new KeyValueCriteria<>(path, language, BinaryOperation.EQUAL));
         }
 
         if (StringUtils.isNotBlank(license)) {

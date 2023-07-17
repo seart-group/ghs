@@ -34,12 +34,8 @@ public class JsonObjectToGitRepoConverter implements Converter<JsonObject, GitRe
         builder.pushedAt(Dates.fromGitDateString(source.get("pushed_at").getAsString()));
         builder.updatedAt(Dates.fromGitDateString(source.get("updated_at").getAsString()));
         builder.homepage(homepage.isJsonNull() ? null : homepage.getAsString());
-        builder.mainLanguage(source.get("language").getAsString());
         builder.hasWiki(source.get("has_wiki").getAsBoolean());
         builder.isArchived(source.get("archived").getAsBoolean());
-
-        // open_issues in the response refers to sum of "issues" and "pull requests"
-        // builder.openIssues(repoJson.get("open_issues").getAsLong());
 
         return builder.build();
     }
