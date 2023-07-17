@@ -8,5 +8,5 @@ import java.util.Optional;
 
 public interface LanguageRepository extends JpaRepository<Language, Long> {
 
-    Optional<Language> findByName(@NotNull String name);
+    Optional<Language> findByNameIgnoreCase(@NotNull String name);
 }

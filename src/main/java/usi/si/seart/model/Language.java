@@ -42,6 +42,9 @@ public class Language {
     @OneToMany(mappedBy = "language")
     Set<GitRepoLanguage> repos = new HashSet<>();
 
+    @OneToMany(mappedBy = "language")
+    Set<GitRepoMetric> metrics = new HashSet<>();
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
