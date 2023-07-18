@@ -354,8 +354,8 @@ public class GitRepoController {
     }
 
     @GetMapping("/stats")
-    @Operation(summary = "Retrieve the number of repositories mined for each supported language.")
+    @Operation(summary = "Retrieve the number of repositories mined and analyzed for each supported language.")
     public ResponseEntity<?> getRepoStatistics() {
-        return ResponseEntity.ok(statisticsService.getMainLanguageCount());
+        return ResponseEntity.ok(statisticsService.getMainLanguageStats());
     }
 }
