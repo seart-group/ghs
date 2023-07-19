@@ -76,6 +76,19 @@ public class Language {
 
         @Column(name = "analyzed")
         Long analyzed;
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) return false;
+            Statistics statistics = (Statistics) o;
+            return getId() != null && Objects.equals(getId(), statistics.getId());
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hashCode(getId());
+        }
     }
 
     @Override
