@@ -56,6 +56,7 @@ CREATE TABLE language_statistics (
 SELECT * FROM count_git_repo_by_language;
 
 ALTER TABLE language_statistics ADD CHECK (mined >= analyzed);
+ALTER TABLE language_statistics ADD CHECK ( analyzed >= 0 );
 ALTER TABLE language_statistics ADD FOREIGN KEY (language_id) REFERENCES language(id);
 
 ALTER TABLE git_repo_metrics ADD COLUMN language_id BIGINT DEFAULT NULL AFTER repo_id;
