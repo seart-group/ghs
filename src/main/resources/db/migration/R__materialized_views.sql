@@ -13,21 +13,21 @@ INNER JOIN git_repo_label rl ON l.id = rl.label_id
 GROUP BY l.id
 ORDER BY COUNT(rl.repo_id) DESC;
 
-CREATE TRIGGER label_ranked_no_insert
+CREATE TRIGGER label_ranked_insert
 BEFORE INSERT ON label_ranked
 FOR EACH ROW
 BEGIN
 	CALL signal_table_immutable();
 END;
 
-CREATE TRIGGER label_ranked_no_update
+CREATE TRIGGER label_ranked_update
 BEFORE UPDATE ON label_ranked
 FOR EACH ROW
 BEGIN
 	CALL signal_table_immutable();
 END;
 
-CREATE TRIGGER label_ranked_no_delete
+CREATE TRIGGER label_ranked_delete
 BEFORE DELETE ON label_ranked
 FOR EACH ROW
 BEGIN
@@ -44,21 +44,21 @@ INNER JOIN git_repo_topic rt ON t.id = rt.topic_id
 GROUP BY t.id
 ORDER BY COUNT(rt.repo_id) DESC;
 
-CREATE TRIGGER topic_ranked_no_insert
+CREATE TRIGGER topic_ranked_insert
 BEFORE INSERT ON topic_ranked
 FOR EACH ROW
 BEGIN
 	CALL signal_table_immutable();
 END;
 
-CREATE TRIGGER topic_ranked_no_update
+CREATE TRIGGER topic_ranked_update
 BEFORE UPDATE ON topic_ranked
 FOR EACH ROW
 BEGIN
 	CALL signal_table_immutable();
 END;
 
-CREATE TRIGGER topic_ranked_no_delete
+CREATE TRIGGER topic_ranked_delete
 BEFORE DELETE ON topic_ranked
 FOR EACH ROW
 BEGIN
