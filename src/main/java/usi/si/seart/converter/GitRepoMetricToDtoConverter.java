@@ -11,7 +11,7 @@ public class GitRepoMetricToDtoConverter implements Converter<GitRepoMetric, Git
     @NonNull
     public GitRepoMetricDto convert(@NonNull GitRepoMetric source) {
         return GitRepoMetricDto.builder()
-                .language(source.getLanguage().getLanguage())
+                .language(source.getLanguage().getName())
                 .blankLines(source.getBlankLines())
                 .codeLines(source.getCodeLines())
                 .commentLines(source.getCommentLines())

@@ -9,7 +9,7 @@ import org.springframework.stereotype.Service;
 import usi.si.seart.model.view.LabelView;
 import usi.si.seart.model.view.TopicView;
 import usi.si.seart.repository.LabelViewRepository;
-import usi.si.seart.repository.MainLanguageCountRepository;
+import usi.si.seart.repository.LanguageStatisticsRepository;
 import usi.si.seart.repository.TopicViewRepository;
 
 import java.util.Collection;
@@ -20,14 +20,14 @@ import java.util.stream.Collectors;
 public interface StatisticsService {
 
     /**
-     * Retrieve the number of processed GitHub
-     * repositories for each supported language.
+     * Retrieve the number of mined and analyzed
+     * GitHub repositories for each supported language.
      *
      * @return A map where the keys are language names Strings,
      *         that map to the number of corresponding GitHub repositories.
      *         The map entries are sorted in descending fashion by value.
      */
-    Map<String, Long> getMainLanguageCount();
+    Map<String, Map<String, Long>> getMainLanguageStats();
 
     Collection<String> getTopRankedLabelNames();
 
@@ -40,14 +40,20 @@ public interface StatisticsService {
 
         LabelViewRepository labelViewRepository;
         TopicViewRepository topicViewRepository;
-        MainLanguageCountRepository mainLanguageCountRepository;
+        LanguageStatisticsRepository languageStatisticsRepository;
 
         Pageable pageable;
 
         @Override
-        public Map<String, Long> getMainLanguageCount() {
-            return mainLanguageCountRepository.findAll().stream()
-                    .map(mainLanguageCount -> Map.entry(mainLanguageCount.getName(), mainLanguageCount.getCount()))
+        public Map<String, Map<String, Long>> getMainLanguageStats() {
+            return languageStatisticsRepository.findByOrderByMinedDesc().stream()
+                    .map(statistics -> Map.entry(
+                            statistics.getLanguage().getName(),
+                            Map.of(
+                                    "mined", statistics.getMined(),
+                                    "analyzed", statistics.getAnalyzed()
+                            )
+                    ))
                     .collect(Collectors.toMap(
                             Map.Entry::getKey,
                             Map.Entry::getValue,
