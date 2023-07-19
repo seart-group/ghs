@@ -1,5 +1,6 @@
-(function (base, $, _, Chart) {
+(function (base, $, _, Chart, Toast) {
     const [ canvas ] = $("#statistics-chart").get();
+    const [ statistics_toast ] = $("#statistics-toast").get();
     const $statistics_mined = $("#statistics-mined");
     const $statistics_analyzed = $("#statistics-analyzed");
 
@@ -91,4 +92,5 @@
             };
         })
         .then(data => new Chart(canvas, { type: "bar", options, data }))
-}(base, jQuery, _, Chart));
+        .catch(() => new Toast(statistics_toast).show());
+}(base, jQuery, _, Chart, bootstrap.Toast));
