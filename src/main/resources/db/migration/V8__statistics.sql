@@ -96,3 +96,58 @@ ON SCHEDULE
                - INTERVAL SECOND(CURRENT_TIMESTAMP) SECOND
 ENABLE
 DO CALL language_statistics_update();
+
+CREATE TABLE language_progress (
+    language_id BIGINT NOT NULL
+        PRIMARY KEY,
+    checkpoint TIMESTAMP NOT NULL
+)
+SELECT
+    language.id AS language_id,
+    crawl_job.crawled AS checkpoint
+FROM crawl_job
+INNER JOIN supported_language
+    ON crawl_job.language_id = supported_language.id
+INNER JOIN language
+    ON language.name = supported_language.name;
+
+ALTER TABLE language_progress ADD FOREIGN KEY (language_id) REFERENCES language(id);
+
+DROP TABLE crawl_job;
+DROP TABLE supported_language;
+
+DROP PROCEDURE signal_table_immutable;
+CREATE PROCEDURE signal_table_immutable()
+BEGIN
+    SIGNAL SQLSTATE 'GSE00' SET
+        MESSAGE_TEXT = 'Table modification not allowed';
+END;
+
+CREATE PROCEDURE is_past_or_present(IN ts TIMESTAMP)
+BEGIN
+    IF ts > CURRENT_TIMESTAMP THEN
+        SIGNAL SQLSTATE 'GSE00' SET
+            MESSAGE_TEXT = 'Supplied parameter can not be future date';
+    END IF;
+END;
+
+CREATE TRIGGER language_progress_insert
+BEFORE INSERT ON language_progress
+FOR EACH ROW
+BEGIN
+    CALL is_past_or_present(NEW.checkpoint);
+END;
+
+CREATE TRIGGER language_progress_update
+BEFORE UPDATE ON language_progress
+FOR EACH ROW
+BEGIN
+    CALL is_past_or_present(NEW.checkpoint);
+END;
+
+CREATE TRIGGER language_progress_delete
+BEFORE DELETE ON language_progress
+FOR EACH ROW
+BEGIN
+    CALL signal_table_immutable();
+END;

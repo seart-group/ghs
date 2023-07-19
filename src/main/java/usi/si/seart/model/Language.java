@@ -21,6 +21,8 @@ import javax.persistence.OneToOne;
 import javax.persistence.PrimaryKeyJoinColumn;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.PastOrPresent;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
@@ -54,6 +56,10 @@ public class Language {
     @OneToOne(mappedBy = "language")
     Statistics statistics;
 
+    @PrimaryKeyJoinColumn
+    @OneToOne(mappedBy = "language")
+    Progress progress;
+
     @Getter
     @NoArgsConstructor
     @AllArgsConstructor
@@ -83,6 +89,43 @@ public class Language {
             if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) return false;
             Statistics statistics = (Statistics) o;
             return getId() != null && Objects.equals(getId(), statistics.getId());
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hashCode(getId());
+        }
+    }
+
+    @Getter
+    @Setter
+    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @Entity
+    @Table(name = "language_progress")
+    public static class Progress {
+
+        @Id
+        @Column(name = "language_id")
+        Long id;
+
+        @OneToOne(optional = false)
+        @MapsId("id")
+        @JoinColumn(name = "language_id")
+        Language language;
+
+        @NotNull
+        @PastOrPresent
+        @Column(name = "checkpoint")
+        Date checkpoint;
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) return false;
+            Progress progress = (Progress) o;
+            return getId() != null && Objects.equals(getId(), progress.getId());
         }
 
         @Override
