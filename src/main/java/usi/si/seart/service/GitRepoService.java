@@ -13,7 +13,6 @@ import usi.si.seart.repository.GitRepoRepository;
 import usi.si.seart.repository.specification.GitRepoSearch;
 
 import jakarta.persistence.EntityNotFoundException;
-import java.util.Optional;
 import java.util.stream.Stream;
 
 public interface GitRepoService {
