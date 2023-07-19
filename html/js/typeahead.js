@@ -10,7 +10,7 @@
 
     const $search_label = $("#search-label");
     const $search_license = $("#search-license");
-    const $search_topics = $("#search-topic");
+    const $search_topic = $("#search-topic");
     const $search_language = $("#search-language");
 
     fetch(`${base}/r/labels`)
@@ -23,7 +23,7 @@
 
     fetch(`${base}/r/topics`)
         .then(response => response.json())
-        .then(data => $search_topics.typeahead({ ...typeaheadOptions, source: data }));
+        .then(data => $search_topic.typeahead({ ...typeaheadOptions, source: data }));
 
     fetch(`${base}/l`)
         .then(response => response.json())
