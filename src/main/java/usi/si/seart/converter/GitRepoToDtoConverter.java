@@ -44,7 +44,7 @@ public class GitRepoToDtoConverter implements Converter<GitRepo, GitRepoDto> {
                 .pushedAt(source.getPushedAt())
                 .updatedAt(source.getUpdatedAt())
                 .homepage(source.getHomepage())
-                .mainLanguage(source.getMainLanguage())
+                .mainLanguage(source.getMainLanguage().getName())
                 .totalIssues(source.getTotalIssues())
                 .openIssues(source.getOpenIssues())
                 .totalPullRequests(source.getTotalPullRequests())

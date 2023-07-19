@@ -24,7 +24,6 @@ import usi.si.seart.converter.JsonObjectToRateLimitConverter;
 import usi.si.seart.converter.SearchParameterDtoToGitRepoSearchConverter;
 import usi.si.seart.converter.StringToContactsConverter;
 import usi.si.seart.converter.StringToLicensesConverter;
-import usi.si.seart.converter.SupportedLanguageToDtoConverter;
 
 import java.time.Instant;
 import java.time.ZoneOffset;
@@ -85,7 +84,6 @@ public class MainConfig {
 
             @Override
             public void addFormatters(@NotNull final FormatterRegistry registry) {
-                registry.addConverter(new SupportedLanguageToDtoConverter());
                 registry.addConverter(new GitRepoToDtoConverter());
                 registry.addConverter(new JsonObjectToGitRepoConverter());
                 registry.addConverter(new GitRepoDtoToCsvConverter(csvMapper));

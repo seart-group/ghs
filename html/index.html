@@ -8,7 +8,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" integrity="sha384-Ay26V7L8bsJTsX9Sxclnvsn+hkdiwRnrjZJXqKmkIDobPgIIWBOVguEcQQLDuhfN" crossorigin="anonymous">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/octicons-css@19.2.0/octicons/octicons-24/octicons.css" integrity="sha384-xOWa0H7MyXXVlzYmbzr5QZz/Y4/hHnXwAJlvbQFySKXH3uzTxIj6neGTCy+VjTvO" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/octicons-css/octicons.min.css" integrity="sha384-eKuQyOkONB5cRCSXlxFYJKjKugxw6N+oTNsesgJZG6Xk+pV2ryp14thy1/n+echk" crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/devicons/devicon@v2.15.1/devicon.min.css" integrity="sha384-mTX5j/NIzlehkuOql3BYfNpkDrnvRHS5S7V3ctncUhJjtlL1+85q8lCKi8A5sUb+" crossorigin="anonymous">
     <link rel="stylesheet" href="css/main.css">
     <link rel="icon" href="public/favicon.ico">
@@ -801,9 +801,16 @@
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
           <div class="modal-body">
-            <h2 class="fs-6 placeholder-glow">Total Number of Mined Projects: <span id="statistics-count" class="placeholder align-baseline bg-white">Loading...</span></h2>
             <div class="chart-container">
               <canvas id="statistics-chart" class="chart"></canvas>
+            </div>
+            <div class="d-flex justify-content-between justify-content-md-around">
+              <h2 class="fs-6 placeholder-glow">
+                Total Mined: <span id="statistics-mined" class="placeholder align-baseline bg-white">Loading...</span>
+              </h2>
+              <h2 class="fs-6 placeholder-glow">
+                Total Analyzed: <span id="statistics-analyzed" class="placeholder align-baseline bg-white">Loading...</span>
+              </h2>
             </div>
           </div>
         </div>
@@ -917,6 +924,48 @@
               >give our project a star on GitHub</a>?
             </p>
           </div>
+        </div>
+      </div>
+    </div>
+    <div class="toast-container position-fixed bottom-0 end-0 p-3">
+      <div id="statistics-toast" class="toast bg-light rounded-0" role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="d-flex">
+          <div class="toast-body">
+            Could not retrieve repository statistics!
+          </div>
+          <button type="button" data-bs-dismiss="toast" class="btn-close me-2 m-auto" aria-label="Close"></button>
+        </div>
+      </div>
+      <div id="language-toast" class="toast bg-light rounded-0" role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="d-flex">
+          <div class="toast-body">
+            Could not retrieve language suggestions!
+          </div>
+          <button type="button" data-bs-dismiss="toast" class="btn-close me-2 m-auto" aria-label="Close"></button>
+        </div>
+      </div>
+      <div id="license-toast" class="toast bg-light rounded-0" role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="d-flex">
+          <div class="toast-body">
+            Could not retrieve license suggestions!
+          </div>
+          <button type="button" data-bs-dismiss="toast" class="btn-close me-2 m-auto" aria-label="Close"></button>
+        </div>
+      </div>
+      <div id="topic-toast" class="toast bg-light rounded-0" role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="d-flex">
+          <div class="toast-body">
+            Could not retrieve topic suggestions!
+          </div>
+          <button type="button" data-bs-dismiss="toast" class="btn-close me-2 m-auto" aria-label="Close"></button>
+        </div>
+      </div>
+      <div id="label-toast" class="toast bg-light rounded-0" role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="d-flex">
+          <div class="toast-body">
+            Could not retrieve label suggestions!
+          </div>
+          <button type="button" data-bs-dismiss="toast" class="btn-close me-2 m-auto" aria-label="Close"></button>
         </div>
       </div>
     </div>

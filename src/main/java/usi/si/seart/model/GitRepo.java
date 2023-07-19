@@ -52,6 +52,10 @@ public class GitRepo {
     @Column(name = "id")
     Long id;
 
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "language_id")
+    Language mainLanguage;
+
     @Column(name = "name")
     String name;
 
@@ -99,9 +103,6 @@ public class GitRepo {
 
     @Column(name = "homepage")
     String homepage;
-
-    @Column(name = "main_language")
-    String mainLanguage;
 
     @Column(name = "total_issues")
     Long totalIssues;

@@ -46,9 +46,9 @@ public class GitRepoMetric {
     GitRepo repo;
 
     @ManyToOne(optional = false)
-    @MapsId("metricLanguageId")
-    @JoinColumn(name = "metric_language_id")
-    MetricLanguage language;
+    @MapsId("languageId")
+    @JoinColumn(name = "language_id")
+    Language language;
 
     @Generated(event = {
         EventType.INSERT,
@@ -112,20 +112,20 @@ public class GitRepoMetric {
         Long repoId;
 
         @NotNull
-        @Column(name = "metric_language_id")
-        Long metricLanguageId;
+        @Column(name = "language_id")
+        Long languageId;
 
         @Override
         public boolean equals(Object obj) {
             if (this == obj) return true;
             if (obj == null || getClass() != obj.getClass()) return false;
             GitRepoMetric.Key other = (GitRepoMetric.Key) obj;
-            return repoId.equals(other.repoId) && metricLanguageId.equals(other.metricLanguageId);
+            return repoId.equals(other.repoId) && languageId.equals(other.languageId);
         }
 
         @Override
         public int hashCode() {
-            return Objects.hash(repoId, metricLanguageId);
+            return Objects.hash(repoId, languageId);
         }
     }
 }

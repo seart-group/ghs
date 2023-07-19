@@ -15,7 +15,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.context.annotation.DependsOn;
 import org.springframework.core.convert.ConversionService;
-import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import usi.si.seart.exception.UnsplittableRangeException;
@@ -25,13 +24,10 @@ import usi.si.seart.model.GitRepo;
 import usi.si.seart.model.GitRepoLanguage;
 import usi.si.seart.model.Label;
 import usi.si.seart.model.Language;
-import usi.si.seart.model.SupportedLanguage;
 import usi.si.seart.model.Topic;
-import usi.si.seart.service.CrawlJobService;
 import usi.si.seart.service.GitRepoService;
 import usi.si.seart.service.LabelService;
 import usi.si.seart.service.LanguageService;
-import usi.si.seart.service.SupportedLanguageService;
 import usi.si.seart.service.TopicService;
 import usi.si.seart.util.Dates;
 import usi.si.seart.util.Optionals;
@@ -40,10 +36,10 @@ import usi.si.seart.util.Ranges;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayDeque;
+import java.util.Collection;
 import java.util.Date;
 import java.util.Deque;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
@@ -53,7 +49,7 @@ import java.util.stream.StreamSupport;
 
 @Slf4j
 @Service
-@DependsOn("SupportedLanguageInitializationBean")
+@DependsOn("LanguageInitializationBean")
 @ConditionalOnExpression(value = "${app.crawl.enabled:false} and not '${app.crawl.languages}'.isBlank()")
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
@@ -65,8 +61,6 @@ public class CrawlProjectsJob {
     TopicService topicService;
     LabelService labelService;
     LanguageService languageService;
-    CrawlJobService crawlJobService;
-    SupportedLanguageService supportedLanguageService;
 
     ConversionService conversionService;
 
@@ -76,61 +70,26 @@ public class CrawlProjectsJob {
     @Value(value = "${app.crawl.scheduling}")
     Long schedulingRate;
 
-    @NonFinal
-    @Value(value = "${app.crawl.startdate}")
-    @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss'Z'")
-    Date defaultStartDate;
-
     Function<Date, String> dateStringMapper;
 
     @Scheduled(fixedDelayString = "${app.crawl.scheduling}")
     public void run() {
         log.info("Initializing language queue...");
-        List<String> languages = supportedLanguageService.getQueue().stream()
-                .map(SupportedLanguage::getName)
-                .toList();
-        log.info("Language crawling order: " + languages);
-        Date endDate = Date.from(Instant.now().minus(Duration.ofHours(2)));
-
-        for (String language : languages) {
+        Collection<Language> languages = languageService.getTargetedLanguages();
+        log.info("Language crawling order: {}", languages.stream().map(Language::getName).collect(Collectors.toList()));
+        for (Language language : languages) {
             this.requestQueue.clear();
-            Date startDate = crawlJobService.getCrawlDateByLanguage(language);
-            Range<Date> dateRange;
-
-            try {
-                if (startDate != null) {
-                    assert startDate.before(endDate);
-                    dateRange = Ranges.build(startDate, endDate);
-                } else {
-                    log.info(
-                            "No previous crawling found for {}. We start from scratch: {}",
-                            language, defaultStartDate
-                    );
-                    dateRange = Ranges.build(defaultStartDate, endDate);
-                }
-            } catch (IllegalArgumentException ex) {
-                // Handler for cases where Start > End
-                log.warn("Language {} has bad range: {}", language, ex.getMessage());
-                continue;
-            }
-
-            crawlUpdatedRepos(dateRange, language);
+            Language.Progress progress = languageService.getProgress(language);
+            Date startDate = progress.getCheckpoint();
+            Date endDate = Date.from(Instant.now().minus(Duration.ofHours(2)));
+            Range<Date> dateRange = Ranges.build(startDate, endDate);
+            crawlRepositories(dateRange, language);
         }
         log.info("Next crawl scheduled for: {}", Date.from(Instant.now().plusMillis(schedulingRate)));
     }
 
-    private void crawlUpdatedRepos(Range<Date> range, String language) {
-        log.info("Starting crawling {} repositories updated through: {}", language, range);
-        crawlRepos(range, language);
-        log.info("Finished crawling {} repositories updated through: {}", language, range);
-    }
-
-    private void crawlRepos(Range<Date> range, String language) {
-        if (range.lowerEndpoint().compareTo(range.upperEndpoint()) >= 0) {
-            log.warn("Invalid interval Skipped: " + range);
-            return;
-        }
-
+    private void crawlRepositories(Range<Date> range, Language language) {
+        log.info("Starting crawling {} repositories updated through: {}", language.getName(), range);
         requestQueue.push(range);
         do {
             int limit = 5;
@@ -143,14 +102,16 @@ public class CrawlProjectsJob {
             if (size > limit)
                 log.info("\t{} omitted ...", size - limit);
             Range<Date> first = requestQueue.pop();
-            retrieveRepos(first, language);
+            retrieveRepositories(first, language);
         } while (!requestQueue.isEmpty());
+        log.info("Finished crawling {} repositories updated through: {}", language.getName(), range);
     }
 
-    private void retrieveRepos(Range<Date> range, String language) {
+    private void retrieveRepositories(Range<Date> range, Language language) {
+        String name = language.getName();
         int page = 1;
         try {
-            JsonObject json = gitHubApiConnector.searchRepositories(language, range, page);
+            JsonObject json = gitHubApiConnector.searchRepositories(name, range, page);
             int totalResults = json.get("total_count").getAsInt();
             int totalPages = (int) Math.ceil(totalResults / 100.0);
             if (totalResults == 0) return;
@@ -170,9 +131,11 @@ public class CrawlProjectsJob {
                 }
             }
             JsonArray results = json.get("items").getAsJsonArray();
-            saveRetrievedRepos(results, language, 1, totalResults);
-            retrieveRemainingRepos(range, language, totalPages);
-            crawlJobService.updateCrawlDateForLanguage(language, range.upperEndpoint());
+            saveRetrievedRepos(results, name, 1, totalResults);
+            retrieveRemainingRepos(range, name, totalPages);
+            Date checkpoint = range.upperEndpoint();
+            log.info("{} repositories crawled up to: {}", name, checkpoint);
+            languageService.updateProgress(language, checkpoint);
         } catch (Exception e) {
             log.error("Failed to retrieve repositories", e);
         }
@@ -233,13 +196,13 @@ public class CrawlProjectsJob {
                 if (jsonLanguage.isJsonNull()) {
                     // This can happen (e.g. https://api.github.com/repos/aquynh/iVM).
                     json.addProperty("language", language);
-                }  else if (!jsonLanguage.getAsString().equals(language)) {
+                } else if (!jsonLanguage.getAsString().equals(language)) {
                     /*
                      * This can happen (e.g. https://api.github.com/search/repositories?q=baranowski/habit-vim).
                      * If you go to repository `homepage`, or the `language_url`
                      * (endpoint that shows language distribution),
                      * you will see that `main_language` is only wrong in the above link.
-                    */
+                     */
                     String format =
                             "Search language mismatch, while searching for {} repositories, " +
                             "the crawler encountered a repository erroneously reported as written in {}. " +
@@ -275,6 +238,8 @@ public class CrawlProjectsJob {
         String name = json.get("full_name").getAsString();
         boolean hasIssues = json.get("has_issues").getAsBoolean();
 
+        Language language = languageService.getOrCreate(json.get("language").getAsString());
+
         Long commits = gitHubApiConnector.fetchNumberOfCommits(name);
         Long branches = gitHubApiConnector.fetchNumberOfBranches(name);
         Long releases = gitHubApiConnector.fetchNumberOfReleases(name);
@@ -291,6 +256,7 @@ public class CrawlProjectsJob {
         Date lastCommit = gitCommit.getDate();
         String lastCommitSHA = gitCommit.getSha();
 
+        gitRepo.setMainLanguage(language);
         gitRepo.setCommits(commits);
         gitRepo.setBranches(branches);
         gitRepo.setReleases(releases);

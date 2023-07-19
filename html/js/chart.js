@@ -1,14 +1,25 @@
-(function (base, $, Chart) {
+(function (base, $, _, Chart, Toast) {
     const [ canvas ] = $("#statistics-chart").get();
-    const $statistics_count = $("#statistics-count");
+    const [ statistics_toast ] = $("#statistics-toast").get();
+    const $statistics_mined = $("#statistics-mined");
+    const $statistics_analyzed = $("#statistics-analyzed");
 
-    // https://nagix.github.io/chartjs-plugin-colorschemes/colorchart.html#:~:text=tableau.Brown20%3A-,tableau.Gray20,-%3A
-    const colors = [
-        "#49525e", "#4f5864", "#555f6a", "#5b6570",
-        "#616c77", "#67737c", "#6e7a81", "#758087",
-        "#7c878d", "#848e93", "#8b9598", "#939c9e",
-        "#9ca3a4", "#a4a9ab", "#acb0b1", "#b4b7b7",
-        "#bcbfbe", "#c5c7c6", "#cdcecd", "#d5d5d5"
+    // https://github.com/nagix/chartjs-plugin-colorschemes/blob/d96a01846626881aa4bec56828c333af81050906/src/colorschemes/colorschemes.tableau.js#L39
+    const blue20 = [
+        "#2a5783", "#305d8a", "#376491", "#3d6a98",
+        "#437a9f", "#4878a6", "#4e7fac", "#5485b2",
+        "#5b8cb8", "#6394be", "#6a9bc3", "#72a3c9",
+        "#79aacf", "#80b0d5", "#89b8da", "#92c0df",
+        "#9bc7e4", "#a5cfe9", "#afd6ed", "#b9ddf1"
+    ];
+
+    // https://github.com/nagix/chartjs-plugin-colorschemes/blob/d96a01846626881aa4bec56828c333af81050906/src/colorschemes/colorschemes.tableau.js#L42
+    const red20 = [
+        "#ae123a", "#b8163a", "#c11a3b", "#ca223c",
+        "#d3293d", "#da323f", "#e13b42", "#e74545",
+        "#ec5049", "#f05c4d", "#f36754", "#f5715d",
+        "#f77b66", "#f9856e", "#fa8f79", "#fb9984",
+        "#fca290", "#fdab9b", "#feb4a6", "#ffbeb2"
     ];
 
     Chart.defaults.font.family = "Trebuchet MS";
@@ -16,11 +27,6 @@
     const options = {
         animation: {
             duration: 0
-        },
-        layout: {
-            padding: {
-                top: 30
-            }
         },
         responsive: true,
         scales: {
@@ -37,37 +43,54 @@
                 }
             }
         },
+        elements: {
+            bar: {
+                borderWidth: 1
+            }
+        },
         plugins: {
             tooltip: {
                 yAlign: "bottom",
                 titleAlign: "center",
                 cornerRadius: 0
-            },
-            legend: {
-                display: false
             }
         }
     };
 
     fetch(`${base}/r/stats`)
         .then(response => response.json())
-        .then(json => ({
-            _count: Object.values(json).reduce((_sum, _i) => _sum + _i, 0),
-            labels: Object.keys(json),
-            datasets: [{
-                label: "Projects",
-                data: Object.values(json),
-                borderWidth: 2,
-                borderColor: colors,
-                backgroundColor: colors.map(color => `${color}bf`)
-            }]
-        }))
-        .then(data => {
-            $statistics_count.replaceWith(`<span id="statistics-count">${data._count.toLocaleString()}</span>`);
-            new Chart(canvas, {
-                type: "bar",
-                data: data,
-                options: options
-            });
-        });
-}(base, jQuery, Chart));
+        .then(json => {
+            const languages = Object.keys(json);
+            const values = Object.values(json);
+            const [mined, analyzed] = values.reduce((acc, { mined: left, analyzed: right }) => {
+                acc[0].push(left);
+                acc[1].push(right);
+                return acc;
+            }, [[], []]);
+
+            $statistics_mined.replaceWith(`<span id="statistics-mined">${_.sum(mined).toLocaleString()}</span>`);
+            $statistics_analyzed.replaceWith(`<span id="statistics-analyzed">${_.sum(analyzed).toLocaleString()}</span>`);
+
+            return {
+                labels: languages,
+                datasets: [
+                    {
+                        label: "Mined",
+                        data: mined,
+                        borderColor: blue20,
+                        backgroundColor: blue20.map(color => `${color}bf`),
+                        barPercentage: 1
+                    },
+                    {
+                        label: "Analyzed",
+                        data: analyzed,
+                        borderColor: red20,
+                        backgroundColor: red20.map(color => `${color}bf`),
+                        barPercentage: 1
+                    }
+                ]
+            };
+        })
+        .then(data => new Chart(canvas, { type: "bar", options, data }))
+        .catch(() => new Toast(statistics_toast).show());
+}(base, jQuery, _, Chart, bootstrap.Toast));

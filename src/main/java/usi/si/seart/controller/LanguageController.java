@@ -13,8 +13,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import usi.si.seart.model.SupportedLanguage;
-import usi.si.seart.service.SupportedLanguageService;
+import usi.si.seart.model.Language;
+import usi.si.seart.service.LanguageService;
 
 @Slf4j
 @RestController
@@ -22,21 +22,21 @@ import usi.si.seart.service.SupportedLanguageService;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
 @Tag(
-        name = "supported-language",
+        name = "language",
         description = "Endpoints used for retrieving information regarding platform-supported languages."
 )
-public class SupportedLanguageController {
+public class LanguageController {
 
-    SupportedLanguageService supportedLanguageService;
+    LanguageService languageService;
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     @Operation(summary = "Get the names of all currently supported languages")
     @ApiResponse(responseCode = "200", description = "OK")
     public ResponseEntity<?> getLanguages() {
         return ResponseEntity.ok(
-                supportedLanguageService.getAll()
+                languageService.getTargetedLanguages()
                         .stream()
-                        .map(SupportedLanguage::getName)
+                        .map(Language::getName)
                         .sorted()
                         .toList()
         );

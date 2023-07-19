@@ -16,7 +16,7 @@ import usi.si.seart.exception.StaticCodeAnalysisException;
 import usi.si.seart.exception.TerminalExecutionException;
 import usi.si.seart.model.GitRepo;
 import usi.si.seart.model.GitRepoMetric;
-import usi.si.seart.model.MetricLanguage;
+import usi.si.seart.model.Language;
 
 import jakarta.annotation.Nullable;
 import jakarta.persistence.EntityNotFoundException;
@@ -48,7 +48,6 @@ public interface StaticCodeAnalysisService {
     @Async("GitCloning")
     Future<Set<GitRepoMetric>> getCodeMetrics(@NotNull Long repoId, boolean persist) throws StaticCodeAnalysisException;
 
-
     @Slf4j
     @Service
     @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
@@ -60,9 +59,7 @@ public interface StaticCodeAnalysisService {
         GitRepoClonerService gitRepoClonerService;
 
         GitRepoService gitRepoService;
-
-        MetricLanguageService metricLanguageService;
-
+        LanguageService languageService;
 
         public Future<Set<GitRepoMetric>> getCodeMetrics(
                 @NotNull Long repoId, boolean persist
@@ -110,7 +107,7 @@ public interface StaticCodeAnalysisService {
                 JsonObject languageMetricJson = entry.getValue().getAsJsonObject();
                 GitRepoMetric.GitRepoMetricBuilder builder = GitRepoMetric.builder();
 
-                MetricLanguage language = metricLanguageService.getOrCreateMetricLanguage(entry.getKey());
+                Language language = languageService.getOrCreate(entry.getKey());
                 builder.language(language);
                 if (repo != null) {
                     builder.repo(repo);
