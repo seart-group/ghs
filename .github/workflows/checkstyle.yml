@@ -1,5 +1,8 @@
-name: 'Check Code Style'
-on: pull_request
+name: 'Check Java files with CheckStyle'
+on:
+  pull_request:
+    paths:
+      - '**/*.java'
 
 jobs:
   checkstyle:
