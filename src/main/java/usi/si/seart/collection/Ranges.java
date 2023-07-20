@@ -33,7 +33,7 @@ public class Ranges {
      *     Ranges.builder().lower(...).upper(...).build();
      * }</pre>
      */
-    public <T extends Comparable<T>> Range<T> build(@Nullable T lower, @Nullable T upper) {
+    public <T extends Comparable<T>> Range<T> closed(@Nullable T lower, @Nullable T upper) {
         return new Builder<T>()
                 .lower(lower)
                 .upper(upper)

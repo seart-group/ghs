@@ -80,7 +80,7 @@ public class CrawlProjectsJob {
             Language.Progress progress = languageService.getProgress(language);
             Date lower = progress.getCheckpoint();
             Date upper = Date.from(Instant.now().minus(Duration.ofHours(1)));
-            Range<Date> dateRange = Ranges.build(lower, upper);
+            Range<Date> dateRange = Ranges.closed(lower, upper);
             crawlRepositories(dateRange, language);
         }
         log.info("Next crawl scheduled for: {}", Date.from(Instant.now().plus(schedulingRate)));
@@ -119,7 +119,7 @@ public class CrawlProjectsJob {
              */
             Date lower = range.lowerEndpoint();
             Date upper = Date.from(Instant.now().minus(Duration.ofHours(1)));
-            range = Ranges.build(lower, upper);
+            range = Ranges.closed(lower, upper);
         }
         String name = language.getName();
         int page = 1;

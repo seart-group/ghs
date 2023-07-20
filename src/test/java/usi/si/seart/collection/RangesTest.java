@@ -22,12 +22,12 @@ class RangesTest {
         Assertions.assertEquals(Range.all(), Ranges.builder().build());
         Assertions.assertEquals(Range.atLeast(5), Ranges.<Integer>builder().lower(5).build());
         Assertions.assertEquals(Range.atMost(10), Ranges.<Integer>builder().upper(10).build());
-        Assertions.assertEquals(Range.closed(5, 10), Ranges.build(5, 10));
+        Assertions.assertEquals(Range.closed(5, 10), Ranges.closed(5, 10));
     }
 
     @Test
     void testBuildException() {
-        Assertions.assertThrows(IllegalArgumentException.class, () -> Ranges.build(5, 1));
+        Assertions.assertThrows(IllegalArgumentException.class, () -> Ranges.closed(5, 1));
     }
 
     @Test
