@@ -155,6 +155,10 @@ input::-webkit-calendar-picker-indicator {
     background-color: var(--bs-gray)!important;
 }
 
+.page-link {
+    color: var(--bs-gray)!important;
+    background-color: var(--bs-gray-200)!important;
+}
 
 .page-item .page-link {
     height: 40px!important;
@@ -167,11 +171,6 @@ input::-webkit-calendar-picker-indicator {
             var(--bs-border-style)
             var(--bs-gray)
     !important;
-}
-
-.page-link {
-    color: var(--bs-gray)!important;
-    background-color: var(--bs-gray-200)!important;
 }
 
 .page-link.disabled {
