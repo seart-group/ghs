@@ -1,6 +1,6 @@
-(function (base, $, _, Chart, Toast) {
+(function (base, $, _, Chart) {
     const [ canvas ] = $("#statistics-chart").get();
-    const [ statistics_toast ] = $("#statistics-toast").get();
+    const $toast_container = $(".toast-container");
     const $statistics_mined = $("#statistics-mined");
     const $statistics_analyzed = $("#statistics-analyzed");
 
@@ -92,5 +92,8 @@
             };
         })
         .then(data => new Chart(canvas, { type: "bar", options, data }))
-        .catch(() => new Toast(statistics_toast).show());
-}(base, jQuery, _, Chart, bootstrap.Toast));
+        .catch(() => $toast_container.twbsToast({
+            id: "statistics-toast",
+            body: "Could not retrieve repository statistics!"
+        }));
+}(base, jQuery, _, Chart));
