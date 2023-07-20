@@ -40,7 +40,7 @@ input {
 }
 
 input:disabled {
-    opacity: 60%!important;
+    opacity: 0.6!important;
 }
 
 input:not([type="checkbox"]) {
@@ -175,7 +175,7 @@ input::-webkit-calendar-picker-indicator {
 }
 
 .page-link.disabled {
-    opacity: 60%!important;
+    opacity: 0.6!important;
 }
 
 .page-link:focus {
