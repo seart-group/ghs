@@ -59,6 +59,7 @@ public class Language {
     @OneToMany(mappedBy = "language")
     Set<GitRepoLanguage> repos = new HashSet<>();
 
+    @Builder.Default
     @OneToMany(mappedBy = "language")
     Set<GitRepoMetric> metrics = new HashSet<>();
 
