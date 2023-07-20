@@ -76,11 +76,11 @@ input::-webkit-calendar-picker-indicator {
     cursor: not-allowed!important;
 }
 
-.btn-collapse[aria-expanded="false"]:before {
+.btn-collapse[aria-expanded="false"]::before {
     content: "Show More";
 }
 
-.btn-collapse[aria-expanded="true"]:before {
+.btn-collapse[aria-expanded="true"]::before {
     content: "Show Less";
 }
 
