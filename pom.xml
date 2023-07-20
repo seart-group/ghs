@@ -75,7 +75,7 @@
 		<kotlin.version>1.8.22</kotlin.version>
 		<jackson.version>2.15.2</jackson.version>
 		<okhttp.version>4.11.0</okhttp.version>
-		<springframework.version>3.1.1</springframework.version>
+		<springframework.version>3.1.2</springframework.version>
 		<springdocopenapi.version>2.1.0</springdocopenapi.version>
 	</properties>
 
