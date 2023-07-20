@@ -288,7 +288,6 @@
 				<artifactId>spring-boot-maven-plugin</artifactId>
 				<executions>
 					<execution>
-						<id>build-info</id>
 						<goals>
 							<goal>build-info</goal>
 						</goals>
@@ -322,7 +321,6 @@
 				<version>${kotlin.version}</version>
 				<executions>
 					<execution>
-						<id>compile</id>
 						<phase>process-sources</phase>
 						<goals>
 							<goal>compile</goal>
@@ -335,7 +333,6 @@
 				<artifactId>build-helper-maven-plugin</artifactId>
 				<executions>
 					<execution>
-						<id>add-source</id>
 						<phase>generate-sources</phase>
 						<goals>
 							<goal>add-source</goal>
