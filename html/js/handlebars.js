@@ -42,7 +42,7 @@ Handlebars.registerHelper("switch", function (value, options) {
     return html;
 });
 
-Handlebars.registerHelper("case", function (value) {
+Handlebars.registerHelper("case", function (_value) {
     const args = Array.prototype.slice.call(arguments);
     const options = args.pop();
     if (this._switch_break_ || args.indexOf(this._switch_value_) === -1) {
