@@ -122,16 +122,16 @@ public class SchedulerConfig {
         @NotNull
         @Override
         protected String nextThreadName() {
-            ThreadGroup currentGroup = Thread.currentThread().getThreadGroup();
-            Thread[] th = new Thread[currentGroup.activeCount()];
-            currentGroup.enumerate(th);
-            Set<String> threadNames = Arrays.stream(th)
+            ThreadGroup group = Thread.currentThread().getThreadGroup();
+            Thread[] threads = new Thread[group.activeCount()];
+            group.enumerate(threads);
+            Set<String> names = Arrays.stream(threads)
                     .map(Thread::getName)
                     .collect(Collectors.toSet());
 
             return Stream.iterate(1, i -> i + 1)
                     .map(i -> getThreadNamePrefix() + i)
-                    .filter(name -> !threadNames.contains(name))
+                    .filter(name -> !names.contains(name))
                     .findFirst()
                     .orElseGet(super::nextThreadName);
         }
