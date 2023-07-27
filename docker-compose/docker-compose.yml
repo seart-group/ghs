@@ -89,18 +89,18 @@ services:
         condition: on-failure
         max_attempts: 5
     depends_on:
-      gse-app:
+      gse-server:
         condition: service_healthy
     networks:
       - default
 
 
-  gse-app:
+  gse-server:
     build:
       context: ../
       dockerfile: docker/server/Dockerfile
     image: 'gse/backend:latest'
-    container_name: gse-app
+    container_name: gse-server
     volumes:
       - ./logs:/logs
     environment:
