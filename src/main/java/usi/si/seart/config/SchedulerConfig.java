@@ -113,8 +113,7 @@ public class SchedulerConfig {
         return executor;
     }
 
-    static class GitCloningThreadPoolExecutor extends ThreadPoolTaskExecutor {
-
+    private static class GitCloningThreadPoolExecutor extends ThreadPoolTaskExecutor {
 
         /**
          * Overrides the default cloning thread name generation.
