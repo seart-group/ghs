@@ -43,9 +43,9 @@ services:
     networks:
       - default
 
-  gse-bkp:
+  gse-backup:
     image: tiredofit/db-backup:3.9.6
-    container_name: gse-bkp
+    container_name: gse-backup
     restart: "no"
     volumes:
       - backup:/backup
