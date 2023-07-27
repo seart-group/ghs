@@ -68,8 +68,8 @@ services:
       DEBUG_MODE: FALSE
     entrypoint: "true"
     depends_on:
-      gse-db:
-        condition: service_healthy
+      gse-migration:
+        condition: service_completed_successfully
     links:
       - gse-db
     networks:
@@ -124,8 +124,8 @@ services:
       timeout: 5s
       retries: 5
     depends_on:
-      gse-db:
-        condition: service_healthy
+      gse-migration:
+        condition: service_completed_successfully
     networks:
       - default
 
