@@ -14,6 +14,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.dao.NonTransientDataAccessException;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
@@ -75,6 +76,8 @@ public class SchedulerConfig {
             public void handleError(@NotNull Throwable t) {
                 if (t instanceof OutOfMemoryError) {
                     handleError((OutOfMemoryError) t);
+                } else if (t instanceof NonTransientDataAccessException) {
+                    handleError((NonTransientDataAccessException) t);
                 } else {
                     log.error("Unhandled exception occurred while performing a scheduled job.", t);
                 }
@@ -82,6 +85,10 @@ public class SchedulerConfig {
 
             private void handleError(OutOfMemoryError e) {
                 shutdown("Application has run out of memory!", e);
+            }
+
+            private void handleError(NonTransientDataAccessException e) {
+                shutdown("Non-transient exception occurred!", e);
             }
 
             private void shutdown(String message, Throwable cause) {
