@@ -99,10 +99,9 @@ public class CleanUpProjectsJob {
                     transaction.commit();
                 } catch (PersistenceException ex) {
                     log.error("Exception occurred while deleting GitRepo [id=" + id + ", name=" + name + "]!", ex);
-                    if (transaction != null) {
-                        log.info("Rolling back transaction...");
-                        transaction.rollback();
-                    }
+                    if (transaction == null) break;
+                    log.info("Rolling back transaction...");
+                    transaction.rollback();
                 }
 
                 totalDeleted++;
