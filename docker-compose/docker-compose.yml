@@ -70,7 +70,7 @@ services:
         max_attempts: 5
     depends_on:
       gse-app:
-        condition: service_started
+        condition: service_healthy
     networks:
       - default
 
@@ -97,6 +97,12 @@ services:
       restart_policy:
         condition: on-failure
         max_attempts: 5
+    healthcheck:
+      test: curl --fail --silent localhost:8080/api || exit 1
+      start_period: 20s
+      interval: 10s
+      timeout: 5s
+      retries: 5
     depends_on:
       gse-db:
         condition: service_healthy
