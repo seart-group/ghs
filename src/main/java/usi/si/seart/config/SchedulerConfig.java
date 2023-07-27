@@ -80,8 +80,8 @@ public class SchedulerConfig {
                 }
             }
 
-            private void handleError(OutOfMemoryError oome) {
-                log.error("Application has run out of memory!", oome);
+            private void handleError(OutOfMemoryError e) {
+                log.error("Application has run out of memory!", e);
                 log.error("Commencing shutdown...");
                 shutdown();
             }
