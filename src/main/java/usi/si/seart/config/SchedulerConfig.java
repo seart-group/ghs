@@ -1,13 +1,20 @@
 package usi.si.seart.config;
 
+import com.zaxxer.hikari.HikariDataSource;
 import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import lombok.experimental.NonFinal;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.SpringApplication;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.dao.NonTransientDataAccessException;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
@@ -25,11 +32,16 @@ import java.util.stream.Stream;
 @Configuration
 @EnableScheduling
 @EnableAsync
-@FieldDefaults(level = AccessLevel.PRIVATE)
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
+@RequiredArgsConstructor(onConstructor_ = @Autowired)
 public class SchedulerConfig {
 
+    @NonFinal
     @Value("${app.crawl.analysis.max-pool-threads}")
     int maxPoolThreads;
+
+    HikariDataSource hikariDataSource;
+    ApplicationContext applicationContext;
 
     /**
      * By default, Spring Boot will use just a single thread for all scheduled tasks to run.
@@ -49,19 +61,48 @@ public class SchedulerConfig {
         threadPoolTaskScheduler.setClock(Clock.systemUTC());
         threadPoolTaskScheduler.setPoolSize(3);
         threadPoolTaskScheduler.setThreadNamePrefix("GHSThread");
-        threadPoolTaskScheduler.setErrorHandler(new SchedulerErrorHandler());
+        threadPoolTaskScheduler.setErrorHandler(errorHandler());
         threadPoolTaskScheduler.initialize();
         return threadPoolTaskScheduler;
     }
 
-    private static class SchedulerErrorHandler implements ErrorHandler {
+    @Bean
+    public ErrorHandler errorHandler() {
+        return new ErrorHandler() {
 
-        private final Logger log = LoggerFactory.getLogger(this.getClass());
+            private final Logger log = LoggerFactory.getLogger("usi.si.seart.config.SchedulerConfig$ErrorHandler");
 
-        @Override
-        public void handleError(@NotNull Throwable t) {
-            log.error("Unhandled exception occurred while performing a scheduled job.", t);
-        }
+            @Override
+            public void handleError(@NotNull Throwable t) {
+                if (t instanceof OutOfMemoryError) {
+                    handleError((OutOfMemoryError) t);
+                } else if (t instanceof NonTransientDataAccessException) {
+                    handleError((NonTransientDataAccessException) t);
+                } else {
+                    log.error("Unhandled exception occurred while performing a scheduled job.", t);
+                }
+            }
+
+            private void handleError(OutOfMemoryError e) {
+                shutdown("Application has run out of memory!", e);
+            }
+
+            private void handleError(NonTransientDataAccessException e) {
+                shutdown("Non-transient exception occurred!", e);
+            }
+
+            private void shutdown(String message, Throwable cause) {
+                log.error(message, cause);
+                shutdown();
+            }
+
+            private void shutdown() {
+                log.error("Commencing shutdown...");
+                hikariDataSource.close();
+                int code = SpringApplication.exit(applicationContext, () -> 1);
+                System.exit(code);
+            }
+        };
     }
 
     /**
@@ -83,8 +124,7 @@ public class SchedulerConfig {
         return executor;
     }
 
-    static class GitCloningThreadPoolExecutor extends ThreadPoolTaskExecutor {
-
+    private static class GitCloningThreadPoolExecutor extends ThreadPoolTaskExecutor {
 
         /**
          * Overrides the default cloning thread name generation.
@@ -93,16 +133,16 @@ public class SchedulerConfig {
         @NotNull
         @Override
         protected String nextThreadName() {
-            ThreadGroup currentGroup = Thread.currentThread().getThreadGroup();
-            Thread[] th = new Thread[currentGroup.activeCount()];
-            currentGroup.enumerate(th);
-            Set<String> threadNames = Arrays.stream(th)
+            ThreadGroup group = Thread.currentThread().getThreadGroup();
+            Thread[] threads = new Thread[group.activeCount()];
+            group.enumerate(threads);
+            Set<String> names = Arrays.stream(threads)
                     .map(Thread::getName)
                     .collect(Collectors.toSet());
 
             return Stream.iterate(1, i -> i + 1)
                     .map(i -> getThreadNamePrefix() + i)
-                    .filter(name -> !threadNames.contains(name))
+                    .filter(name -> !names.contains(name))
                     .findFirst()
                     .orElseGet(super::nextThreadName);
         }

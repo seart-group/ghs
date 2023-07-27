@@ -3,9 +3,9 @@ name: 'gse'
 
 services:
 
-  gse-db:
+  gse-database:
     image: mysql:8.0.33
-    container_name: gse-db
+    container_name: gse-database
     restart: "always"
     volumes:
       - data:/var/lib/mysql
@@ -23,9 +23,29 @@ services:
       timeout: 5s
       retries: 5
 
-  gse-bkp:
+  gse-migration:
+    image: flyway/flyway:9.21.1-alpine
+    container_name: gse-migrations
+    restart: "no"
+    volumes:
+      - ../flyway/sql:/flyway/sql
+    environment:
+      TZ: UTC
+      FLYWAY_USER: gseadmin
+      FLYWAY_PASSWORD: Lugano2020
+      FLYWAY_URL: jdbc:mysql://gse-database:3306/gse?serverTimezone=UTC&useLegacyDatetimeCode=false&useUnicode=yes&characterEncoding=UTF-8&allowPublicKeyRetrieval=true
+      FLYWAY_SCHEMAS: gse
+      FLYWAY_DEFAULT_SCHEMA: gse
+    command: migrate
+    depends_on:
+      gse-database:
+        condition: service_healthy
+    networks:
+      - default
+
+  gse-backup:
     image: tiredofit/db-backup:3.9.6
-    container_name: gse-bkp
+    container_name: gse-backup
     restart: "no"
     volumes:
       - backup:/backup
@@ -34,7 +54,7 @@ services:
       TZ: UTC
       TIMEZONE: Etc/UTC
       DB_TYPE: mysql
-      DB_HOST: gse-db
+      DB_HOST: gse-database
       DB_NAME: gse
       DB_USER: gseadmin
       DB_PASS: Lugano2020
@@ -48,19 +68,19 @@ services:
       DEBUG_MODE: FALSE
     entrypoint: "true"
     depends_on:
-      gse-db:
-        condition: service_healthy
+      gse-migration:
+        condition: service_completed_successfully
     links:
-      - gse-db
+      - gse-database
     networks:
       - default
 
-  gse-fe:
+  gse-website:
     build:
       context: ../
       dockerfile: docker/website/Dockerfile
-    image: 'gse/frontend:latest'
-    container_name: gse-fe
+    image: gse/frontend:latest
+    container_name: gse-website
     volumes:
       - ./nginx/default.dev.conf:/etc/nginx/conf.d/default.conf
     ports: [ "7030:80" ]
@@ -69,25 +89,25 @@ services:
         condition: on-failure
         max_attempts: 5
     depends_on:
-      gse-app:
-        condition: service_started
+      gse-server:
+        condition: service_healthy
     networks:
       - default
 
 
-  gse-app:
+  gse-server:
     build:
       context: ../
       dockerfile: docker/server/Dockerfile
-    image: 'gse/backend:latest'
-    container_name: gse-app
+    image: gse/backend:latest
+    container_name: gse-server
     volumes:
       - ./logs:/logs
     environment:
-      WAIT_HOSTS: gse-db:3306
+      WAIT_HOSTS: gse-database:3306
       LOGGING_CONFIG: classpath:logback.prod.xml
-      SPRING_DATASOURCE_URL: jdbc:mysql://gse-db:3306/gse?serverTimezone=UTC&useLegacyDatetimeCode=false&useUnicode=yes&characterEncoding=UTF-8
-      SPRING_FLYWAY_URL: jdbc:mysql://gse-db:3306/gse?serverTimezone=UTC&useLegacyDatetimeCode=false&useUnicode=yes&characterEncoding=UTF-8
+      SPRING_DATASOURCE_URL: jdbc:mysql://gse-database:3306/gse?serverTimezone=UTC&useLegacyDatetimeCode=false&useUnicode=yes&characterEncoding=UTF-8
+      SPRING_FLYWAY_ENABLED: 'false'
       APP_CRAWL_ENABLED: 'false'
       APP_CRAWL_ANALYSIS_ENABLED: 'false'
       APP_CLEANUP_ENABLED: 'false'
@@ -97,9 +117,15 @@ services:
       restart_policy:
         condition: on-failure
         max_attempts: 5
+    healthcheck:
+      test: curl --fail --silent localhost:8080/api || exit 1
+      start_period: 20s
+      interval: 10s
+      timeout: 5s
+      retries: 5
     depends_on:
-      gse-db:
-        condition: service_healthy
+      gse-migration:
+        condition: service_completed_successfully
     networks:
       - default
 

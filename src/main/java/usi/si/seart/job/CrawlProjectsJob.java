@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.context.annotation.DependsOn;
 import org.springframework.core.convert.ConversionService;
+import org.springframework.dao.NonTransientDataAccessException;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import usi.si.seart.exception.UnsplittableRangeException;
@@ -136,6 +137,8 @@ public class CrawlProjectsJob {
             Date checkpoint = range.upperEndpoint();
             log.info("{} repositories crawled up to: {}", name, checkpoint);
             languageService.updateProgress(language, checkpoint);
+        } catch (NonTransientDataAccessException nte) {
+            throw nte;
         } catch (Exception e) {
             log.error("Failed to retrieve repositories", e);
         }
@@ -151,6 +154,8 @@ public class CrawlProjectsJob {
                     JsonArray results = json.get("items").getAsJsonArray();
                     saveRetrievedRepos(results, language, (page - 1) * 100 + 1, totalResults);
                     page++;
+                } catch (NonTransientDataAccessException nte) {
+                    throw nte;
                 } catch (Exception e) {
                     log.error("Failed to retrieve the remaining repositories", e);
                 }
@@ -217,6 +222,8 @@ public class CrawlProjectsJob {
                 retrieveRepoLabels(repo);
                 retrieveRepoLanguages(repo);
                 retrieveRepoTopics(repo);
+            } catch (NonTransientDataAccessException nte) {
+                throw nte;
             } catch (Exception e) {
                 log.error("Failed to save retrieved repositories", e);
             }
@@ -292,6 +299,8 @@ public class CrawlProjectsJob {
             log.debug("\tAdding: {} labels.", labels.size());
             repo.setLabels(labels);
             gitRepoService.updateRepo(repo);
+        } catch (NonTransientDataAccessException nte) {
+            throw nte;
         } catch (Exception e) {
             log.error("Failed to add repository labels", e);
         }
@@ -322,6 +331,8 @@ public class CrawlProjectsJob {
             log.debug("\tAdding: {} languages.", languages.size());
             repo.setLanguages(languages);
             gitRepoService.updateRepo(repo);
+        } catch (NonTransientDataAccessException nte) {
+            throw nte;
         } catch (Exception e) {
             log.error("Failed to add repository languages", e);
         }
@@ -343,6 +354,8 @@ public class CrawlProjectsJob {
             log.debug("\tAdding: {} topics.", topics.size());
             repo.setTopics(topics);
             gitRepoService.updateRepo(repo);
+        } catch (NonTransientDataAccessException nte) {
+            throw nte;
         } catch (Exception e) {
             log.error("Failed to add repository topics", e);
         }
