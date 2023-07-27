@@ -82,11 +82,11 @@ public class SchedulerConfig {
 
             private void handleError(OutOfMemoryError e) {
                 log.error("Application has run out of memory!", e);
-                log.error("Commencing shutdown...");
                 shutdown();
             }
 
             private void shutdown() {
+                log.error("Commencing shutdown...");
                 hikariDataSource.close();
                 int code = SpringApplication.exit(applicationContext, () -> 1);
                 System.exit(code);
