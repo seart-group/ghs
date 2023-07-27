@@ -33,7 +33,7 @@ Handlebars.registerHelper("percentage", function (value) {
     return percentage !== "0.00" ? `${percentage}%` : "< 0.01%";
 });
 
-Handlebars.registerHelper("switch", function(value, options) {
+Handlebars.registerHelper("switch", function (value, options) {
     this._switch_value_ = value;
     this._switch_break_ = false;
     const html = options.fn(this);
@@ -42,7 +42,7 @@ Handlebars.registerHelper("switch", function(value, options) {
     return html;
 });
 
-Handlebars.registerHelper("case", function(value) {
+Handlebars.registerHelper("case", function (_value) {
     const args = Array.prototype.slice.call(arguments);
     const options = args.pop();
     if (this._switch_break_ || args.indexOf(this._switch_value_) === -1) {

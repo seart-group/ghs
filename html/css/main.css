@@ -40,7 +40,7 @@ input {
 }
 
 input:disabled {
-    opacity: 60%!important;
+    opacity: 0.6!important;
 }
 
 input:not([type="checkbox"]) {
@@ -76,11 +76,11 @@ input::-webkit-calendar-picker-indicator {
     cursor: not-allowed!important;
 }
 
-.btn-collapse[aria-expanded="false"]:before {
+.btn-collapse[aria-expanded="false"]::before {
     content: "Show More";
 }
 
-.btn-collapse[aria-expanded="true"]:before {
+.btn-collapse[aria-expanded="true"]::before {
     content: "Show Less";
 }
 
@@ -155,6 +155,10 @@ input::-webkit-calendar-picker-indicator {
     background-color: var(--bs-gray)!important;
 }
 
+.page-link {
+    color: var(--bs-gray)!important;
+    background-color: var(--bs-gray-200)!important;
+}
 
 .page-item .page-link {
     height: 40px!important;
@@ -169,13 +173,8 @@ input::-webkit-calendar-picker-indicator {
     !important;
 }
 
-.page-link {
-    color: var(--bs-gray)!important;
-    background-color: var(--bs-gray-200)!important;
-}
-
 .page-link.disabled {
-    opacity: 60%!important;
+    opacity: 0.6!important;
 }
 
 .page-link:focus {
