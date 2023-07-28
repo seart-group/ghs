@@ -1,4 +1,4 @@
-package usi.si.seart.analysis;
+package usi.si.seart.git;
 
 
 import lombok.AccessLevel;

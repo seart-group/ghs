@@ -11,8 +11,9 @@ import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
-import usi.si.seart.analysis.LocalRepositoryClone;
 import usi.si.seart.analysis.TerminalExecution;
+import usi.si.seart.git.GitRepositoryCloner;
+import usi.si.seart.git.LocalRepositoryClone;
 import usi.si.seart.model.GitRepo;
 import usi.si.seart.model.GitRepoMetric;
 import usi.si.seart.model.Language;
@@ -51,15 +52,15 @@ public interface StaticCodeAnalysisService {
 
         Gson gson;
 
-        GitRepoClonerService gitRepoClonerService;
-
         GitRepoService gitRepoService;
         LanguageService languageService;
+
+        GitRepositoryCloner gitRepositoryCloner;
 
         @SneakyThrows(MalformedURLException.class)
         public Future<Set<GitRepoMetric>> getCodeMetrics(@NotNull String name) {
             URL url = new URL("https://github.com/" + name);
-            try (LocalRepositoryClone localRepository = gitRepoClonerService.cloneRepo(url).get()) {
+            try (LocalRepositoryClone localRepository = gitRepositoryCloner.clone(url).get()) {
                 GitRepo repo = gitRepoService.getByName(name);
                 log.debug("Analyzing repository: {} [{}]", repo.getName(), repo.getId());
                 Path path = localRepository.getPath();
