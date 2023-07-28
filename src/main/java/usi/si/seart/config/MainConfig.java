@@ -23,6 +23,7 @@ import usi.si.seart.converter.JsonObjectToGitRepoConverter;
 import usi.si.seart.converter.JsonObjectToRateLimitConverter;
 import usi.si.seart.converter.SearchParameterDtoToGitRepoSearchConverter;
 import usi.si.seart.converter.StringToContactsConverter;
+import usi.si.seart.converter.StringToGitExceptionConverter;
 import usi.si.seart.converter.StringToLicensesConverter;
 
 import java.nio.file.Path;
@@ -98,6 +99,7 @@ public class MainConfig {
                 registry.addConverter(new JsonObjectToErrorResponseConverter());
                 registry.addConverter(new StringToContactsConverter());
                 registry.addConverter(new StringToLicensesConverter());
+                registry.addConverter(new StringToGitExceptionConverter());
                 registry.addConverter(new SearchParameterDtoToGitRepoSearchConverter());
             }
         };
