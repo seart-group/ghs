@@ -5,6 +5,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
+import lombok.SneakyThrows;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -61,19 +62,20 @@ public interface StaticCodeAnalysisService {
         GitRepoService gitRepoService;
         LanguageService languageService;
 
+        @SneakyThrows(MalformedURLException.class)
         public Future<Set<GitRepoMetric>> getCodeMetrics(
                 @NotNull Long repoId, boolean persist
         ) throws StaticCodeAnalysisException {
             GitRepo repo;
             try {
                 repo = gitRepoService.getRepoById(repoId);
-            } catch (EntityNotFoundException e) {
-                throw new StaticCodeAnalysisException("Could not find repo with id " + repoId, e);
+            } catch (EntityNotFoundException ex) {
+                throw new StaticCodeAnalysisException("Could not find repo with id " + repoId, ex);
             }
 
             Set<GitRepoMetric> metrics;
-            // Deletes the temporary folder of the repo once outside of this clause.
-            try (ClonedRepo clonedRepo = gitRepoClonerService.cloneRepo(new URL("https://github.com/" + repo.getName())).get()) {
+            URL url = new URL("https://github.com/" + repo.getName());
+            try (ClonedRepo clonedRepo = gitRepoClonerService.cloneRepo(url).get()) {
                 // Runs cloc for gathering code metrics
                 String output = new TerminalExecution(clonedRepo.getPath(), "cloc --json --quiet .")
                         .start()
@@ -90,9 +92,9 @@ public interface StaticCodeAnalysisService {
                 repo.setCloned();
                 gitRepoService.updateRepo(repo);
                 log.debug("Stored code metrics for repository '{}'", repo.getName());
-            } catch (InterruptedException | ExecutionException | TerminalExecutionException | MalformedURLException e) {
-                log.error("Could not compute code metrics for repository '{}'", repo.getName(), e);
-                throw new StaticCodeAnalysisException(e);
+            } catch (InterruptedException | ExecutionException | TerminalExecutionException ex) {
+                log.error("Could not compute code metrics for repository '{}'", repo.getName(), ex);
+                throw new StaticCodeAnalysisException(ex);
             }
 
             return new AsyncResult<>(metrics);
