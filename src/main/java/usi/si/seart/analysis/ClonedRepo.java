@@ -12,6 +12,8 @@ import java.nio.file.Path;
 
 /**
  * A git repository cloned on the filesystem.
+ * This wrapper was introduced to more conveniently
+ * clean up the cloned files once operations finished.
  */
 @Getter
 @AllArgsConstructor
@@ -20,11 +22,6 @@ public class ClonedRepo implements AutoCloseable {
 
     Path path;
 
-    /**
-     * When used in a try-with-resources block,
-     * automatically deletes the folder on the
-     * filesystem once the clause is exited.
-     */
     @Override
     public void close() {
         File file = path.toFile();
