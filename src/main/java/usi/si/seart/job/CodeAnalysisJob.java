@@ -10,8 +10,8 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
+import usi.si.seart.analysis.StaticCodeAnalyzer;
 import usi.si.seart.repository.GitRepoRepository;
-import usi.si.seart.service.StaticCodeAnalysisService;
 
 /**
  * Mines code metrics for every needed repository.
@@ -23,9 +23,9 @@ import usi.si.seart.service.StaticCodeAnalysisService;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class CodeAnalysisJob {
 
-    StaticCodeAnalysisService staticCodeAnalysisService;
-
     GitRepoRepository gitRepoRepository;
+
+    StaticCodeAnalyzer staticCodeAnalyzer;
 
     @Transactional(readOnly = true)
     @Scheduled(fixedDelayString = "${app.crawl.analysis.scheduling}")
@@ -38,6 +38,6 @@ public class CodeAnalysisJob {
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void analyze(String name) {
-        staticCodeAnalysisService.getCodeMetrics(name);
+        staticCodeAnalyzer.getCodeMetrics(name);
     }
 }
