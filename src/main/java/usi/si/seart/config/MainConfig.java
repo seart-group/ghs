@@ -25,6 +25,7 @@ import usi.si.seart.converter.SearchParameterDtoToGitRepoSearchConverter;
 import usi.si.seart.converter.StringToContactsConverter;
 import usi.si.seart.converter.StringToLicensesConverter;
 
+import java.nio.file.Path;
 import java.time.Instant;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
@@ -37,6 +38,11 @@ import java.util.function.Function;
 public class MainConfig {
 
     CsvMapper csvMapper;
+
+    @Bean
+    public Path tmpDir(@Value("${java.io.tmpdir}") String value) {
+        return Path.of(value);
+    }
 
     @Bean
     public DateTimeFormatter dateTimeFormatter() {
