@@ -1,7 +1,6 @@
 package usi.si.seart.service;
 
 import com.google.gson.Gson;
-import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -24,7 +23,6 @@ import usi.si.seart.model.Language;
 import javax.persistence.EntityNotFoundException;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
@@ -91,25 +89,28 @@ public interface StaticCodeAnalysisService {
             return new AsyncResult<>(metrics);
         }
 
-        private Set<GitRepoMetric> parseCodeMetrics(@NotNull GitRepo repo, @NotNull String clocStdout) {
-            JsonObject source = gson.fromJson(clocStdout, JsonObject.class);
-
-            return source.entrySet().stream().filter((Map.Entry<String, JsonElement> entry) ->
-                    !entry.getKey().equals("header") && !entry.getKey().equals("SUM")
-            ).map(entry -> {
-                JsonObject languageMetricJson = entry.getValue().getAsJsonObject();
-                GitRepoMetric.GitRepoMetricBuilder builder = GitRepoMetric.builder();
-
-                Language language = languageService.getOrCreate(entry.getKey());
-                builder.language(language);
-                builder.repo(repo);
-                builder.key(new GitRepoMetric.Key(repo.getId(), language.getId()));
-                builder.blankLines(languageMetricJson.get("blank").getAsLong());
-                builder.commentLines(languageMetricJson.get("comment").getAsLong());
-                builder.codeLines(languageMetricJson.get("code").getAsLong());
-
-                return builder.build();
-            }).collect(Collectors.toSet());
+        private Set<GitRepoMetric> parseCodeMetrics(@NotNull GitRepo repo, @NotNull String output) {
+            return gson.fromJson(output, JsonObject.class)
+                    .entrySet()
+                    .stream()
+                    .filter(entry -> !entry.getKey().equals("header") && !entry.getKey().equals("SUM"))
+                    .map(entry -> {
+                        JsonObject json = entry.getValue().getAsJsonObject();
+                        Language language = languageService.getOrCreate(entry.getKey());
+                        GitRepoMetric.Key key = new GitRepoMetric.Key(repo.getId(), language.getId());
+                        long codeLines = json.get("code").getAsLong();
+                        long blankLines = json.get("blank").getAsLong();
+                        long commentLines = json.get("comment").getAsLong();
+                        return GitRepoMetric.builder()
+                                .key(key)
+                                .repo(repo)
+                                .language(language)
+                                .codeLines(codeLines)
+                                .blankLines(blankLines)
+                                .commentLines(commentLines)
+                                .build();
+                    })
+                    .collect(Collectors.toSet());
         }
     }
 }
