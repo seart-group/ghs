@@ -13,11 +13,11 @@ import java.nio.file.Path;
 /**
  * A git repository cloned on the filesystem.
  */
+@Getter
 @AllArgsConstructor
-@FieldDefaults(level = AccessLevel.PRIVATE)
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class ClonedRepo implements AutoCloseable {
 
-    @Getter
     Path path;
 
     /**
