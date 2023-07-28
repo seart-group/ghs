@@ -34,7 +34,7 @@ public class CodeAnalysisJob {
     public void run() {
         long total = gitRepoRepository.count();
         long outdated = gitRepoRepository.countAllRepoWithOutdatedCodeMetrics();
-        log.info("CodeAnalysis job started on {}/{} repositories", outdated, total);
+        log.info("Started analysis on {}/{} repositories", outdated, total);
         gitRepoRepository.findAllRepoWithOutdatedCodeMetrics().forEach(this::analyze);
     }
 
