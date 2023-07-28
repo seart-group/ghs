@@ -76,7 +76,7 @@ public class CleanUpProjectsJob {
             boolean exists = checkIfRepoExists(name);
             TimeUnit.MILLISECONDS.sleep(500);
             if (!exists) {
-                log.info("Deleting repository: {} [{}]", name, id);
+                log.info(" Deleting repository: {} [{}]", name, id);
                 Transaction transaction = null;
                 try (Session nested = factory.openSession()) {
                     transaction = nested.beginTransaction();

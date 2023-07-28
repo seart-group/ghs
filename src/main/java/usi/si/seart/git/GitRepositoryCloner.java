@@ -51,7 +51,7 @@ public class GitRepositoryCloner {
             ExternalProcess process = new ExternalProcess(
                     directory, "git", "clone", "--quiet", "--depth", "1", url.toString(), directory.toString()
             );
-            log.trace(" Cloning repository: {}", url);
+            log.trace("  Cloning repository: {}", url);
             ExternalProcess.Result result = process.execute(5, TimeUnit.MINUTES);
             if (result.succeeded()) {
                 return CompletableFuture.completedFuture(new LocalRepositoryClone(directory));
