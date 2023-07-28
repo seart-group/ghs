@@ -13,8 +13,6 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import usi.si.seart.analysis.ClonedRepo;
 import usi.si.seart.analysis.TerminalExecution;
-import usi.si.seart.exception.StaticCodeAnalysisException;
-import usi.si.seart.exception.TerminalExecutionException;
 import usi.si.seart.model.GitRepo;
 import usi.si.seart.model.GitRepoMetric;
 import usi.si.seart.model.Language;
@@ -22,10 +20,13 @@ import usi.si.seart.model.Language;
 import javax.persistence.EntityNotFoundException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.nio.file.Path;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 import java.util.stream.Collectors;
 
 /**
@@ -38,10 +39,9 @@ public interface StaticCodeAnalysisService {
      *
      * @param name the full name of the repository.
      * @return the set of computed code metrics.
-     * @throws StaticCodeAnalysisException if an error occurred while performing static code analysis.
      */
     @Async("GitCloning")
-    Future<Set<GitRepoMetric>> getCodeMetrics(@NotNull String name) throws StaticCodeAnalysisException;
+    Future<Set<GitRepoMetric>> getCodeMetrics(@NotNull String name);
 
     @Slf4j
     @Service
@@ -57,30 +57,34 @@ public interface StaticCodeAnalysisService {
         LanguageService languageService;
 
         @SneakyThrows(MalformedURLException.class)
-        public Future<Set<GitRepoMetric>> getCodeMetrics(@NotNull String name) throws StaticCodeAnalysisException {
+        public Future<Set<GitRepoMetric>> getCodeMetrics(@NotNull String name) {
             URL url = new URL("https://github.com/" + name);
             try (ClonedRepo clonedRepo = gitRepoClonerService.cloneRepo(url).get()) {
                 GitRepo repo = gitRepoService.getByName(name);
                 log.debug("Analyzing repository: {} [{}]", repo.getName(), repo.getId());
-                String output = new TerminalExecution(clonedRepo.getPath(), "cloc --json --quiet .")
-                        .start()
-                        .getStdOut()
-                        .lines()
-                        .collect(Collectors.joining("\n"));
-
+                Path path = clonedRepo.getPath();
+                TerminalExecution execution = new TerminalExecution(path, "cloc", "--json", "--quiet", ".");
+                TerminalExecution.Result result = execution.execute(5, TimeUnit.MINUTES);
+                String output = result.getStdOut();
                 Set<GitRepoMetric> metrics = parseCodeMetrics(repo, output);
                 repo.setMetrics(metrics);
                 repo.setCloned();
                 gitRepoService.updateRepo(repo);
                 return CompletableFuture.completedFuture(metrics);
-            } catch (
-                    EntityNotFoundException |
-                    ExecutionException |
-                    InterruptedException |
-                    TerminalExecutionException ex
-            ) {
-                log.error("Could not compute code metrics for: {}", name, ex);
-                throw new StaticCodeAnalysisException(ex);
+            } catch (ExecutionException ex) {
+                Throwable cause = ex.getCause();
+                log.warn("Repository cloning has failed, unable to proceed with analysis of: " + name, cause);
+                return CompletableFuture.failedFuture(cause);
+            } catch (InterruptedException ex) {
+                log.warn("Static code analysis interrupted for: {}", name);
+                Thread.currentThread().interrupt();
+                return CompletableFuture.failedFuture(ex);
+            } catch (TimeoutException ex) {
+                log.warn("Static code analysis timed out for: {}", name);
+                return CompletableFuture.failedFuture(ex);
+            } catch (EntityNotFoundException ex) {
+                log.error("Static code analysis can not be performed on repository that does not exist: {}", name);
+                return CompletableFuture.failedFuture(ex);
             }
         }
 

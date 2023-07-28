@@ -1,96 +1,75 @@
 package usi.si.seart.service;
 
 import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import lombok.experimental.NonFinal;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.context.event.ApplicationReadyEvent;
-import org.springframework.context.event.EventListener;
-import org.springframework.scheduling.annotation.AsyncResult;
+import org.springframework.core.convert.ConversionService;
 import org.springframework.stereotype.Service;
 import usi.si.seart.analysis.ClonedRepo;
 import usi.si.seart.analysis.TerminalExecution;
-import usi.si.seart.exception.CloneException;
 import usi.si.seart.exception.TerminalExecutionException;
+import usi.si.seart.exception.git.GitException;
 
-import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Comparator;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Future;
-import java.util.stream.Stream;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 /**
  * Service responsible for cloning git repositories into a temporary folder.
  */
 public interface GitRepoClonerService {
 
-    Future<ClonedRepo> cloneRepo(URL gitRepoURL) throws CloneException;
+    Future<ClonedRepo> cloneRepo(URL gitRepoURL);
 
     @Slf4j
     @Service
-    @FieldDefaults(level = AccessLevel.PRIVATE)
-    @NoArgsConstructor(onConstructor_ = @Autowired)
+    @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
+    @RequiredArgsConstructor(onConstructor_ = @Autowired)
     class GitRepoClonerImpl implements GitRepoClonerService {
 
-        // Prefix of the temporary folders where the repositories get cloned in
+        ConversionService conversionService;
+
+        @NonFinal
         @Value("${app.crawl.analysis.folder-prefix}")
         String folderPrefix;
 
         /**
-         * Clones a git repository into a temporary folder and returns a handle for the cloned repository.
+         * Clones a git repository into a temporary folder
+         * and returns a handle for the cloned repository.
          *
-         * @param gitRepoURL the URL of the git repository.
+         * @param url the URL corresponding to the git repository.
          * @return the handle of the cloned repository.
-         * @throws CloneException if the cloning operation was unsuccessful.
          */
-        public Future<ClonedRepo> cloneRepo(URL gitRepoURL) throws CloneException {
-            Path tempDir;
+        @SuppressWarnings("ConstantConditions")
+        public Future<ClonedRepo> cloneRepo(URL url) {
             try {
-                tempDir = Files.createTempDirectory(folderPrefix);
-            } catch (IOException ex) {
-                throw new CloneException(ex);
-            }
-
-            TerminalExecution cloneProcess = new TerminalExecution(
-                    tempDir, "git clone --depth 1", gitRepoURL.toString(), tempDir.toString()
-            );
-            try {
-                log.trace("Cloning repository '{}' ...", gitRepoURL);
-                cloneProcess.start().waitSuccessfulExit();
-                // clone process did either not start or failed
-            } catch (TerminalExecutionException e) {
-                cloneProcess.stop();
-                try (Stream<Path> walk = Files.walk(tempDir)) {
-                    // Deletes the temporary folder
-                    walk.sorted(Comparator.reverseOrder())
-                            .map(Path::toFile)
-                            .forEach(File::delete);
-                } catch (IOException ex) {
-                    throw new CloneException(ex);
+                Path directory = Files.createTempDirectory(folderPrefix);
+                TerminalExecution execution = new TerminalExecution(
+                        directory, "git", "clone", "--quiet", "--depth", "1", url.toString(), directory.toString()
+                );
+                log.trace(" Cloning repository: {}", url);
+                TerminalExecution.Result result = execution.execute(5, TimeUnit.MINUTES);
+                if (result.succeeded()) {
+                    return CompletableFuture.completedFuture(new ClonedRepo(directory));
+                } else {
+                    GitException exception = conversionService.convert(result.getStdErr(), GitException.class);
+                    return CompletableFuture.failedFuture(exception);
                 }
-                throw new CloneException("'git clone' process did not start/exit successfully", e);
+            } catch (IOException | TerminalExecutionException | TimeoutException ex) {
+                return CompletableFuture.failedFuture(ex);
+            } catch (InterruptedException ex) {
+                Thread.currentThread().interrupt();
+                return CompletableFuture.failedFuture(ex);
             }
-            return new AsyncResult<>(new ClonedRepo(tempDir));
-        }
-
-        /**
-         * Deleted leftover temporary folders on startup and on shutdown.
-         */
-        @EventListener({ApplicationReadyEvent.class})
-        public void cleanupAllTempFolders() {
-            try {
-                Path parent = Files.createTempDirectory(folderPrefix).getParent();
-                new TerminalExecution(parent, "rm -rf ", folderPrefix + "*").start().waitSuccessfulExit();
-            } catch (Exception e) {
-                log.error("Failed to cleanup cloned repository folders", e);
-                return;
-            }
-            log.info("Successfully cleaned up repository folder");
         }
     }
 }

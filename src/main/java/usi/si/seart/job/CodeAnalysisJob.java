@@ -10,14 +10,12 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
-import usi.si.seart.exception.StaticCodeAnalysisException;
 import usi.si.seart.repository.GitRepoRepository;
 import usi.si.seart.service.StaticCodeAnalysisService;
 
 /**
  * Mines code metrics for every needed repository.
- * */
-
+ */
 @Slf4j
 @Service
 @ConditionalOnProperty(value = "app.crawl.analysis.enabled", havingValue = "true")
@@ -40,10 +38,6 @@ public class CodeAnalysisJob {
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void analyze(String name) {
-        try {
-            staticCodeAnalysisService.getCodeMetrics(name);
-        } catch (StaticCodeAnalysisException e) {
-            log.error("Error during code analysis job", e);
-        }
+        staticCodeAnalysisService.getCodeMetrics(name);
     }
 }
