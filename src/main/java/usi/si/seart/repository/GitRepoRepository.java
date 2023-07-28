@@ -24,11 +24,11 @@ public interface GitRepoRepository extends
     Optional<GitRepo> findGitRepoByNameIgnoreCase(String name);
 
     @Query(
-            "select r.id from GitRepo r " +
+            "select r.name from GitRepo r " +
             "where r.cloned is null or r.cloned < r.lastCommit " +
             "order by r.cloned, RAND()"
     )
-    Stream<Long> findAllRepoWithOutdatedCodeMetrics();
+    Stream<String> findAllRepoWithOutdatedCodeMetrics();
 
     @Query(
             "select COUNT(r) from GitRepo r " +

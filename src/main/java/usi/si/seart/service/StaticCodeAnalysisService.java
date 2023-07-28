@@ -10,7 +10,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
-import org.springframework.scheduling.annotation.AsyncResult;
 import org.springframework.stereotype.Service;
 import usi.si.seart.analysis.ClonedRepo;
 import usi.si.seart.analysis.TerminalExecution;
@@ -24,6 +23,7 @@ import javax.persistence.EntityNotFoundException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Set;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.stream.Collectors;
@@ -36,12 +36,12 @@ public interface StaticCodeAnalysisService {
     /**
      * Computes the set of code metrics of a given repository.
      *
-     * @param repoId the git repo id
-     * @return the set of code metrics
+     * @param name the full name of the repository.
+     * @return the set of computed code metrics.
      * @throws StaticCodeAnalysisException if an error occurred while performing static code analysis.
      */
     @Async("GitCloning")
-    Future<Set<GitRepoMetric>> getCodeMetrics(@NotNull Long repoId) throws StaticCodeAnalysisException;
+    Future<Set<GitRepoMetric>> getCodeMetrics(@NotNull String name) throws StaticCodeAnalysisException;
 
     @Slf4j
     @Service
@@ -57,36 +57,31 @@ public interface StaticCodeAnalysisService {
         LanguageService languageService;
 
         @SneakyThrows(MalformedURLException.class)
-        public Future<Set<GitRepoMetric>> getCodeMetrics(@NotNull Long repoId) throws StaticCodeAnalysisException {
-            GitRepo repo;
-            try {
-                repo = gitRepoService.getRepoById(repoId);
-            } catch (EntityNotFoundException ex) {
-                throw new StaticCodeAnalysisException("Could not find repo with id " + repoId, ex);
-            }
-
-            Set<GitRepoMetric> metrics;
-            URL url = new URL("https://github.com/" + repo.getName());
+        public Future<Set<GitRepoMetric>> getCodeMetrics(@NotNull String name) throws StaticCodeAnalysisException {
+            URL url = new URL("https://github.com/" + name);
             try (ClonedRepo clonedRepo = gitRepoClonerService.cloneRepo(url).get()) {
-                // Runs cloc for gathering code metrics
+                GitRepo repo = gitRepoService.getByName(name);
+                log.debug("Analyzing repository: {} [{}]", repo.getName(), repo.getId());
                 String output = new TerminalExecution(clonedRepo.getPath(), "cloc --json --quiet .")
                         .start()
                         .getStdOut()
                         .lines()
                         .collect(Collectors.joining("\n"));
 
-                // Converts the string output from 'cloc' into a set of code metrics.
-                metrics = parseCodeMetrics(repo, output);
+                Set<GitRepoMetric> metrics = parseCodeMetrics(repo, output);
                 repo.setMetrics(metrics);
                 repo.setCloned();
                 gitRepoService.updateRepo(repo);
-                log.debug("Stored code metrics for repository '{}'", repo.getName());
-            } catch (InterruptedException | ExecutionException | TerminalExecutionException ex) {
-                log.error("Could not compute code metrics for repository '{}'", repo.getName(), ex);
+                return CompletableFuture.completedFuture(metrics);
+            } catch (
+                    EntityNotFoundException |
+                    ExecutionException |
+                    InterruptedException |
+                    TerminalExecutionException ex
+            ) {
+                log.error("Could not compute code metrics for: {}", name, ex);
                 throw new StaticCodeAnalysisException(ex);
             }
-
-            return new AsyncResult<>(metrics);
         }
 
         private Set<GitRepoMetric> parseCodeMetrics(@NotNull GitRepo repo, @NotNull String output) {

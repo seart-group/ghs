@@ -39,9 +39,9 @@ public class CodeAnalysisJob {
     }
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public void analyze(Long repo) {
+    public void analyze(String name) {
         try {
-            staticCodeAnalysisService.getCodeMetrics(repo);
+            staticCodeAnalysisService.getCodeMetrics(name);
         } catch (StaticCodeAnalysisException e) {
             log.error("Error during code analysis job", e);
         }
