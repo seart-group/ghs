@@ -9,7 +9,6 @@ import lombok.SneakyThrows;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.AsyncResult;
@@ -40,14 +39,11 @@ public interface StaticCodeAnalysisService {
      * Computes the set of code metrics of a given repository.
      *
      * @param repoId the git repo id
-     * @param persist whether to persist metrics for the given repository.
-     *                If true, a repo with that repo_name needs to exist in the DB.
-     *                If false, the GitRepo object won't be fetched.
      * @return the set of code metrics
      * @throws StaticCodeAnalysisException if an error occurred while performing static code analysis.
      */
     @Async("GitCloning")
-    Future<Set<GitRepoMetric>> getCodeMetrics(@NotNull Long repoId, boolean persist) throws StaticCodeAnalysisException;
+    Future<Set<GitRepoMetric>> getCodeMetrics(@NotNull Long repoId) throws StaticCodeAnalysisException;
 
     @Slf4j
     @Service
@@ -63,9 +59,7 @@ public interface StaticCodeAnalysisService {
         LanguageService languageService;
 
         @SneakyThrows(MalformedURLException.class)
-        public Future<Set<GitRepoMetric>> getCodeMetrics(
-                @NotNull Long repoId, boolean persist
-        ) throws StaticCodeAnalysisException {
+        public Future<Set<GitRepoMetric>> getCodeMetrics(@NotNull Long repoId) throws StaticCodeAnalysisException {
             GitRepo repo;
             try {
                 repo = gitRepoService.getRepoById(repoId);
@@ -82,9 +76,6 @@ public interface StaticCodeAnalysisService {
                         .getStdOut()
                         .lines()
                         .collect(Collectors.joining("\n"));
-                if (!persist) {
-                    return new AsyncResult<>(parseCodeMetrics(null, output));
-                }
 
                 // Converts the string output from 'cloc' into a set of code metrics.
                 metrics = parseCodeMetrics(repo, output);
@@ -100,7 +91,7 @@ public interface StaticCodeAnalysisService {
             return new AsyncResult<>(metrics);
         }
 
-        private Set<GitRepoMetric> parseCodeMetrics(@Nullable GitRepo repo, @NotNull String clocStdout) {
+        private Set<GitRepoMetric> parseCodeMetrics(@NotNull GitRepo repo, @NotNull String clocStdout) {
             JsonObject source = gson.fromJson(clocStdout, JsonObject.class);
 
             return source.entrySet().stream().filter((Map.Entry<String, JsonElement> entry) ->
@@ -111,10 +102,8 @@ public interface StaticCodeAnalysisService {
 
                 Language language = languageService.getOrCreate(entry.getKey());
                 builder.language(language);
-                if (repo != null) {
-                    builder.repo(repo);
-                    builder.key(new GitRepoMetric.Key(repo.getId(), language.getId()));
-                }
+                builder.repo(repo);
+                builder.key(new GitRepoMetric.Key(repo.getId(), language.getId()));
                 builder.blankLines(languageMetricJson.get("blank").getAsLong());
                 builder.commentLines(languageMetricJson.get("comment").getAsLong());
                 builder.codeLines(languageMetricJson.get("code").getAsLong());
