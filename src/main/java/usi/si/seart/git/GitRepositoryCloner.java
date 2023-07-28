@@ -11,7 +11,7 @@ import org.springframework.core.convert.ConversionService;
 import org.springframework.stereotype.Component;
 import usi.si.seart.exception.TerminalExecutionException;
 import usi.si.seart.exception.git.GitException;
-import usi.si.seart.io.TerminalExecution;
+import usi.si.seart.io.ExternalProcess;
 
 import java.io.IOException;
 import java.net.URL;
@@ -48,11 +48,11 @@ public class GitRepositoryCloner {
     public Future<LocalRepositoryClone> clone(URL url) {
         try {
             Path directory = Files.createTempDirectory(folderPrefix);
-            TerminalExecution execution = new TerminalExecution(
+            ExternalProcess process = new ExternalProcess(
                     directory, "git", "clone", "--quiet", "--depth", "1", url.toString(), directory.toString()
             );
             log.trace(" Cloning repository: {}", url);
-            TerminalExecution.Result result = execution.execute(5, TimeUnit.MINUTES);
+            ExternalProcess.Result result = process.execute(5, TimeUnit.MINUTES);
             if (result.succeeded()) {
                 return CompletableFuture.completedFuture(new LocalRepositoryClone(directory));
             } else {

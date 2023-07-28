@@ -22,7 +22,7 @@ import java.util.concurrent.TimeoutException;
 /**
  * A useful wrapper for managing the lifecycle of terminal processes.
  */
-public class TerminalExecution {
+public class ExternalProcess {
 
     private final ProcessBuilder processBuilder;
 
@@ -31,7 +31,7 @@ public class TerminalExecution {
      *
      * @param command Command and arguments.
      */
-    public TerminalExecution(@NotNull String... command) {
+    public ExternalProcess(@NotNull String... command) {
         this(Paths.get("").toAbsolutePath(), Map.of(), command);
     }
 
@@ -41,7 +41,7 @@ public class TerminalExecution {
      * @param workdir The working directory in which the command will be invoked.
      * @param command Command and arguments.
      */
-    public TerminalExecution(@NotNull Path workdir, @NotNull String... command) {
+    public ExternalProcess(@NotNull Path workdir, @NotNull String... command) {
         this(workdir, Map.of(), command);
     }
 
@@ -51,7 +51,7 @@ public class TerminalExecution {
      * @param environment Environment settings for the executing process.
      * @param command Command and arguments.
      */
-    public TerminalExecution(@NotNull Map<String, String> environment, @NotNull String... command) {
+    public ExternalProcess(@NotNull Map<String, String> environment, @NotNull String... command) {
         this(Paths.get("").toAbsolutePath(), environment, command);
     }
 
@@ -62,7 +62,7 @@ public class TerminalExecution {
      * @param environment Environment settings for the executing process.
      * @param command Command and arguments.
      */
-    public TerminalExecution(
+    public ExternalProcess(
             @NotNull Path workdir,
             @NotNull Map<String, String> environment,
             @NotNull String... command

@@ -10,7 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import usi.si.seart.exception.TerminalExecutionException;
-import usi.si.seart.io.TerminalExecution;
+import usi.si.seart.io.ExternalProcess;
 
 import java.nio.file.Path;
 
@@ -29,7 +29,7 @@ public class TemporaryDirectoryCleanerBean implements InitializingBean {
     @Override
     public void afterPropertiesSet() throws Exception {
         try {
-            new TerminalExecution(tmpDir, "rm", "-rf", folderPrefix + "*").execute();
+            new ExternalProcess(tmpDir, "rm", "-rf", folderPrefix + "*").execute();
             log.info("Successfully cleaned up repository folder");
         } catch (TerminalExecutionException ex) {
             log.error("Failed to clean up cloned repositories from previous runs", ex);
