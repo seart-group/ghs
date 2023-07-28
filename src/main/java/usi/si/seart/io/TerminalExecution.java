@@ -1,4 +1,4 @@
-package usi.si.seart.analysis;
+package usi.si.seart.io;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;

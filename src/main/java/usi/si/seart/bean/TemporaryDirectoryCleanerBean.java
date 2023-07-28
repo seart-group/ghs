@@ -9,8 +9,8 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-import usi.si.seart.analysis.TerminalExecution;
 import usi.si.seart.exception.TerminalExecutionException;
+import usi.si.seart.io.TerminalExecution;
 
 import java.nio.file.Path;
 

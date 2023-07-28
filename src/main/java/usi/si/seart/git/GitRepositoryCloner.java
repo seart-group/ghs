@@ -9,9 +9,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.stereotype.Component;
-import usi.si.seart.analysis.TerminalExecution;
 import usi.si.seart.exception.TerminalExecutionException;
 import usi.si.seart.exception.git.GitException;
+import usi.si.seart.io.TerminalExecution;
 
 import java.io.IOException;
 import java.net.URL;
