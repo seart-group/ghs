@@ -11,7 +11,7 @@ import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
-import usi.si.seart.analysis.ClonedRepo;
+import usi.si.seart.analysis.LocalRepositoryClone;
 import usi.si.seart.analysis.TerminalExecution;
 import usi.si.seart.model.GitRepo;
 import usi.si.seart.model.GitRepoMetric;
@@ -59,10 +59,10 @@ public interface StaticCodeAnalysisService {
         @SneakyThrows(MalformedURLException.class)
         public Future<Set<GitRepoMetric>> getCodeMetrics(@NotNull String name) {
             URL url = new URL("https://github.com/" + name);
-            try (ClonedRepo clonedRepo = gitRepoClonerService.cloneRepo(url).get()) {
+            try (LocalRepositoryClone localRepository = gitRepoClonerService.cloneRepo(url).get()) {
                 GitRepo repo = gitRepoService.getByName(name);
                 log.debug("Analyzing repository: {} [{}]", repo.getName(), repo.getId());
-                Path path = clonedRepo.getPath();
+                Path path = localRepository.getPath();
                 TerminalExecution execution = new TerminalExecution(path, "cloc", "--json", "--quiet", ".");
                 TerminalExecution.Result result = execution.execute(5, TimeUnit.MINUTES);
                 String output = result.getStdOut();

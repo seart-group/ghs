@@ -18,7 +18,7 @@ import java.nio.file.Path;
 @Getter
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
-public class ClonedRepo implements AutoCloseable {
+public class LocalRepositoryClone implements AutoCloseable {
 
     Path path;
 

@@ -9,7 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.stereotype.Service;
-import usi.si.seart.analysis.ClonedRepo;
+import usi.si.seart.analysis.LocalRepositoryClone;
 import usi.si.seart.analysis.TerminalExecution;
 import usi.si.seart.exception.TerminalExecutionException;
 import usi.si.seart.exception.git.GitException;
@@ -28,7 +28,7 @@ import java.util.concurrent.TimeoutException;
  */
 public interface GitRepoClonerService {
 
-    Future<ClonedRepo> cloneRepo(URL gitRepoURL);
+    Future<LocalRepositoryClone> cloneRepo(URL gitRepoURL);
 
     @Slf4j
     @Service
@@ -50,7 +50,7 @@ public interface GitRepoClonerService {
          * @return the handle of the cloned repository.
          */
         @SuppressWarnings("ConstantConditions")
-        public Future<ClonedRepo> cloneRepo(URL url) {
+        public Future<LocalRepositoryClone> cloneRepo(URL url) {
             try {
                 Path directory = Files.createTempDirectory(folderPrefix);
                 TerminalExecution execution = new TerminalExecution(
@@ -59,7 +59,7 @@ public interface GitRepoClonerService {
                 log.trace(" Cloning repository: {}", url);
                 TerminalExecution.Result result = execution.execute(5, TimeUnit.MINUTES);
                 if (result.succeeded()) {
-                    return CompletableFuture.completedFuture(new ClonedRepo(directory));
+                    return CompletableFuture.completedFuture(new LocalRepositoryClone(directory));
                 } else {
                     GitException exception = conversionService.convert(result.getStdErr(), GitException.class);
                     return CompletableFuture.failedFuture(exception);
