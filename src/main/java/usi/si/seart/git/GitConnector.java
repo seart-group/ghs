@@ -55,7 +55,8 @@ public class GitConnector {
             if (result.succeeded()) {
                 return new LocalRepositoryClone(directory);
             } else {
-                throw conversionService.convert(result.getStdErr(), GitException.class);
+                GitException exception = conversionService.convert(result.getStdErr(), GitException.class);
+                throw (GitException) exception.fillInStackTrace();
             }
         } catch (InterruptedException ex) {
             Thread.currentThread().interrupt();
