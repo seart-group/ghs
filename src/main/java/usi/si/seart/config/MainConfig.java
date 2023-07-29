@@ -20,11 +20,15 @@ import usi.si.seart.converter.GitRepoToDtoConverter;
 import usi.si.seart.converter.JsonObjectToErrorResponseConverter;
 import usi.si.seart.converter.JsonObjectToGitCommitConverter;
 import usi.si.seart.converter.JsonObjectToGitRepoConverter;
+import usi.si.seart.converter.JsonObjectToGitRepoMetricConverter;
 import usi.si.seart.converter.JsonObjectToRateLimitConverter;
 import usi.si.seart.converter.SearchParameterDtoToGitRepoSearchConverter;
 import usi.si.seart.converter.StringToContactsConverter;
+import usi.si.seart.converter.StringToGitExceptionConverter;
+import usi.si.seart.converter.StringToJsonObjectConverter;
 import usi.si.seart.converter.StringToLicensesConverter;
 
+import java.nio.file.Path;
 import java.time.Instant;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
@@ -37,6 +41,11 @@ import java.util.function.Function;
 public class MainConfig {
 
     CsvMapper csvMapper;
+
+    @Bean
+    public Path tmpDir(@Value("${java.io.tmpdir}") String value) {
+        return Path.of(value);
+    }
 
     @Bean
     public DateTimeFormatter dateTimeFormatter() {
@@ -90,8 +99,11 @@ public class MainConfig {
                 registry.addConverter(new JsonObjectToGitCommitConverter());
                 registry.addConverter(new JsonObjectToRateLimitConverter());
                 registry.addConverter(new JsonObjectToErrorResponseConverter());
+                registry.addConverter(new JsonObjectToGitRepoMetricConverter());
                 registry.addConverter(new StringToContactsConverter());
                 registry.addConverter(new StringToLicensesConverter());
+                registry.addConverter(new StringToJsonObjectConverter(gson()));
+                registry.addConverter(new StringToGitExceptionConverter());
                 registry.addConverter(new SearchParameterDtoToGitRepoSearchConverter());
             }
         };
