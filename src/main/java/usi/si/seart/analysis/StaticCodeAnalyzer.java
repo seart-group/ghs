@@ -26,8 +26,6 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.file.Path;
 import java.util.Set;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.stream.Collectors;
@@ -52,11 +50,10 @@ public class StaticCodeAnalyzer {
      * Computes the set of code metrics of a given repository.
      *
      * @param name the full name of the repository.
-     * @return the set of computed code metrics.
      */
     @Async("GitCloning")
     @SneakyThrows(MalformedURLException.class)
-    public Future<Set<GitRepoMetric>> getCodeMetrics(@NotNull String name) {
+    public void getCodeMetrics(@NotNull String name) {
         URL url = new URL("https://github.com/" + name + ".git");
         try (LocalRepositoryClone localRepository = gitConnector.clone(url)) {
             GitRepo repo = gitRepoService.getByName(name);
@@ -69,21 +66,15 @@ public class StaticCodeAnalyzer {
             repo.setMetrics(metrics);
             repo.setCloned();
             gitRepoService.updateRepo(repo);
-            return CompletableFuture.completedFuture(metrics);
         } catch (GitException ex) {
-            Throwable cause = ex.getCause();
-            log.warn("Repository cloning has failed, unable to proceed with analysis of: " + name, cause);
-            return CompletableFuture.failedFuture(cause);
+            log.warn("Repository cloning has failed, unable to proceed with analysis of: " + name, ex);
         } catch (InterruptedException ex) {
             log.warn("Static code analysis interrupted for: {}", name);
             Thread.currentThread().interrupt();
-            return CompletableFuture.failedFuture(ex);
         } catch (TimeoutException ex) {
             log.warn("Static code analysis timed out for: {}", name);
-            return CompletableFuture.failedFuture(ex);
         } catch (EntityNotFoundException ex) {
             log.error("Static code analysis can not be performed on repository that does not exist: {}", name);
-            return CompletableFuture.failedFuture(ex);
         }
     }
 
