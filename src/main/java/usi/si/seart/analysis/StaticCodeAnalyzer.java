@@ -11,6 +11,7 @@ import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
+import usi.si.seart.exception.StaticCodeAnalysisException;
 import usi.si.seart.exception.git.GitException;
 import usi.si.seart.git.GitConnector;
 import usi.si.seart.git.LocalRepositoryClone;
@@ -61,11 +62,17 @@ public class StaticCodeAnalyzer {
             Path path = localRepository.getPath();
             ExternalProcess process = new ExternalProcess(path, "cloc", "--json", "--quiet", ".");
             ExternalProcess.Result result = process.execute(5, TimeUnit.MINUTES);
-            String output = result.getStdOut();
-            Set<GitRepoMetric> metrics = parseCodeMetrics(repo, output);
-            repo.setMetrics(metrics);
-            repo.setCloned();
-            gitRepoService.updateRepo(repo);
+            if (result.succeeded()) {
+                String output = result.getStdOut();
+                Set<GitRepoMetric> metrics = parseCodeMetrics(repo, output);
+                repo.setMetrics(metrics);
+                repo.setCloned();
+                gitRepoService.updateRepo(repo);
+            } else {
+                throw new StaticCodeAnalysisException(result.getStdErr());
+            }
+        } catch (StaticCodeAnalysisException ex) {
+            log.error("Static code analysis failed for: " + name, ex);
         } catch (GitException ex) {
             log.error("Repository cloning has failed, unable to proceed with analysis of: " + name, ex);
         } catch (InterruptedException ex) {
