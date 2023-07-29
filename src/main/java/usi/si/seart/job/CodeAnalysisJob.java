@@ -38,6 +38,6 @@ public class CodeAnalysisJob {
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void analyze(String name) {
-        staticCodeAnalyzer.getCodeMetrics(name);
+        staticCodeAnalyzer.gatherCodeMetricsFor(name);
     }
 }
