@@ -3,6 +3,7 @@ package usi.si.seart.converter;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.lang.NonNull;
 import usi.si.seart.exception.git.CheckoutException;
+import usi.si.seart.exception.git.CompressionException;
 import usi.si.seart.exception.git.GitException;
 import usi.si.seart.exception.git.RepositoryNotFoundException;
 import usi.si.seart.exception.git.TerminalPromptsDisabledException;
@@ -13,6 +14,7 @@ public class StringToGitExceptionConverter implements Converter<String, GitExcep
 
     private static final String EMPTY = "";
     private static final String NOT_FOUND = "not found";
+    private static final String EARLY_EOF = "early EOF";
     private static final String LONG_FILE_NAME = "Filename too long";
     private static final String UNRESOLVABLE_HOST = "Could not resolve host: github.com";
     private static final String CHECKOUT_FAILED = "unable to checkout working tree";
@@ -38,6 +40,8 @@ public class StringToGitExceptionConverter implements Converter<String, GitExcep
         switch (fatal) {
             case EMPTY:
                 return new GitException();
+            case EARLY_EOF:
+                return new CompressionException(fatal);
             case PROMPTS_DISABLED:
                 return new TerminalPromptsDisabledException(fatal);
             case AUTHENTICATION_REQUIRED:
