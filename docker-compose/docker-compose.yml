@@ -103,6 +103,7 @@ services:
     container_name: gse-server
     volumes:
       - ./logs:/logs
+      - ./git/.dev.gitconfig:/root/.gitconfig
     environment:
       WAIT_HOSTS: gse-database:3306
       LOGGING_CONFIG: classpath:logback.prod.xml

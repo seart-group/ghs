@@ -1,0 +1,19 @@
+[user]
+	name = John Smith
+	username = john.smith
+    email = john.smith@example.com
+[github]
+    user =
+    token =
+[core]
+    longpaths = true
+    packedGitLimit = 512m
+    packedGitWindowSize = 512m
+[pack] ; - https://stackoverflow.com/a/29355320/17173324
+    windowMemory = 2047m
+    packSizeLimit = 2047m
+    deltaCacheSize = 2047m
+[http]
+    proxy =
+[https]
+    proxy =
