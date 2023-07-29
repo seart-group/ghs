@@ -67,7 +67,7 @@ public class StaticCodeAnalyzer {
             repo.setCloned();
             gitRepoService.updateRepo(repo);
         } catch (GitException ex) {
-            log.warn("Repository cloning has failed, unable to proceed with analysis of: " + name, ex);
+            log.error("Repository cloning has failed, unable to proceed with analysis of: " + name, ex);
         } catch (InterruptedException ex) {
             log.warn("Static code analysis interrupted for: {}", name);
             Thread.currentThread().interrupt();
