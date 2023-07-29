@@ -47,9 +47,8 @@ public class GitConnector {
     public LocalRepositoryClone clone(URL url) throws GitException {
         try {
             Path directory = Files.createTempDirectory(folderPrefix);
-            ExternalProcess process = new ExternalProcess(
-                    directory, "git", "clone", "--quiet", "--depth", "1", url.toString(), directory.toString()
-            );
+            String[] command = {"git", "clone", "--quiet", "--depth", "1", url.toString(), directory.toString()};
+            ExternalProcess process = new ExternalProcess(directory, command);
             log.trace("Cloning:\t{}", url);
             ExternalProcess.Result result = process.execute(5, TimeUnit.MINUTES);
             if (!result.succeeded()) {
