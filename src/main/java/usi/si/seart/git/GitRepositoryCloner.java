@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.stereotype.Component;
 import usi.si.seart.exception.TerminalExecutionException;
+import usi.si.seart.exception.git.CloneException;
 import usi.si.seart.exception.git.GitException;
 import usi.si.seart.io.ExternalProcess;
 
@@ -17,8 +18,6 @@ import java.io.IOException;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
@@ -45,7 +44,7 @@ public class GitRepositoryCloner {
      * @return the handle of the cloned repository.
      */
     @SuppressWarnings("ConstantConditions")
-    public Future<LocalRepositoryClone> clone(URL url) {
+    public LocalRepositoryClone clone(URL url) throws GitException {
         try {
             Path directory = Files.createTempDirectory(folderPrefix);
             ExternalProcess process = new ExternalProcess(
@@ -54,16 +53,15 @@ public class GitRepositoryCloner {
             log.trace("  Cloning repository: {}", url);
             ExternalProcess.Result result = process.execute(5, TimeUnit.MINUTES);
             if (result.succeeded()) {
-                return CompletableFuture.completedFuture(new LocalRepositoryClone(directory));
+                return new LocalRepositoryClone(directory);
             } else {
-                GitException exception = conversionService.convert(result.getStdErr(), GitException.class);
-                return CompletableFuture.failedFuture(exception);
+                throw conversionService.convert(result.getStdErr(), GitException.class);
             }
-        } catch (IOException | TerminalExecutionException | TimeoutException ex) {
-            return CompletableFuture.failedFuture(ex);
         } catch (InterruptedException ex) {
             Thread.currentThread().interrupt();
-            return CompletableFuture.failedFuture(ex);
+            throw new CloneException("Failed for: " + url, ex);
+        } catch (IOException | TerminalExecutionException | TimeoutException ex) {
+            throw new CloneException("Failed for: " + url, ex);
         }
     }
 }

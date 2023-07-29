@@ -11,6 +11,7 @@ import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
+import usi.si.seart.exception.git.GitException;
 import usi.si.seart.git.GitRepositoryCloner;
 import usi.si.seart.git.LocalRepositoryClone;
 import usi.si.seart.io.ExternalProcess;
@@ -26,7 +27,6 @@ import java.net.URL;
 import java.nio.file.Path;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
@@ -58,7 +58,7 @@ public class StaticCodeAnalyzer {
     @SneakyThrows(MalformedURLException.class)
     public Future<Set<GitRepoMetric>> getCodeMetrics(@NotNull String name) {
         URL url = new URL("https://github.com/" + name);
-        try (LocalRepositoryClone localRepository = gitRepositoryCloner.clone(url).get()) {
+        try (LocalRepositoryClone localRepository = gitRepositoryCloner.clone(url)) {
             GitRepo repo = gitRepoService.getByName(name);
             log.debug("Analyzing repository: {} [{}]", repo.getName(), repo.getId());
             Path path = localRepository.getPath();
@@ -70,7 +70,7 @@ public class StaticCodeAnalyzer {
             repo.setCloned();
             gitRepoService.updateRepo(repo);
             return CompletableFuture.completedFuture(metrics);
-        } catch (ExecutionException ex) {
+        } catch (GitException ex) {
             Throwable cause = ex.getCause();
             log.warn("Repository cloning has failed, unable to proceed with analysis of: " + name, cause);
             return CompletableFuture.failedFuture(cause);
