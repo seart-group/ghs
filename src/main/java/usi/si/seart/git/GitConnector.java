@@ -52,12 +52,12 @@ public class GitConnector {
             );
             log.trace("  Cloning repository: {}", url);
             ExternalProcess.Result result = process.execute(5, TimeUnit.MINUTES);
-            if (result.succeeded()) {
-                return new LocalRepositoryClone(directory);
-            } else {
+            if (!result.succeeded()) {
                 GitException exception = conversionService.convert(result.getStdErr(), GitException.class);
                 throw (GitException) exception.fillInStackTrace();
             }
+
+            return new LocalRepositoryClone(directory);
         } catch (InterruptedException ex) {
             Thread.currentThread().interrupt();
             throw new CloneException("Failed for: " + url, ex);
