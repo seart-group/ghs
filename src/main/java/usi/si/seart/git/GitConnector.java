@@ -28,7 +28,7 @@ import java.util.concurrent.TimeoutException;
 @Component
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
-public class GitRepositoryCloner {
+public class GitConnector {
 
     @NonFinal
     @Value("${app.crawl.analysis.folder-prefix}")
