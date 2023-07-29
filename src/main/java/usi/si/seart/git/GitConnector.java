@@ -50,7 +50,7 @@ public class GitConnector {
             ExternalProcess process = new ExternalProcess(
                     directory, "git", "clone", "--quiet", "--depth", "1", url.toString(), directory.toString()
             );
-            log.trace("  Cloning repository: {}", url);
+            log.trace("Cloning:\t{}", url);
             ExternalProcess.Result result = process.execute(5, TimeUnit.MINUTES);
             if (!result.succeeded()) {
                 GitException exception = conversionService.convert(result.getStdErr(), GitException.class);

@@ -177,8 +177,8 @@ public class CrawlProjectsJob {
             JsonObject result = element.getAsJsonObject();
             String name = result.get("full_name").getAsString();
             Optional<GitRepo> optional = Optionals.ofThrowable(() -> gitRepoService.getByName(name));
-            String action = optional.map(ignored -> " Updating").orElse("   Saving");
-            log.info("{} repository: {} [{}/{}]", action, name, lowerIndex, total);
+            String action = optional.map(ignored -> "Updating").orElse("Saving");
+            log.info("{}:\t{} [{}/{}]", action, name, lowerIndex, total);
 
             lowerIndex++;
 
