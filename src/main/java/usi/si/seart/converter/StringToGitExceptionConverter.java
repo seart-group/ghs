@@ -5,6 +5,7 @@ import org.springframework.lang.NonNull;
 import usi.si.seart.exception.git.CheckoutException;
 import usi.si.seart.exception.git.GitException;
 import usi.si.seart.exception.git.RepositoryNotFoundException;
+import usi.si.seart.exception.git.TerminalPromptsDisabledException;
 import usi.si.seart.exception.git.config.InvalidProxyConfigurationException;
 import usi.si.seart.exception.git.config.InvalidUsernameException;
 
@@ -17,6 +18,8 @@ public class StringToGitExceptionConverter implements Converter<String, GitExcep
     private static final String CHECKOUT_FAILED = "unable to checkout working tree";
     private static final String AUTHENTICATION_REQUIRED =
             "could not read Username for 'https://github.com': No such device or address";
+    private static final String PROMPTS_DISABLED =
+            "could not read Username for 'https://github.com': terminal prompts disabled";
 
     @Override
     @NonNull
@@ -35,6 +38,8 @@ public class StringToGitExceptionConverter implements Converter<String, GitExcep
         switch (fatal) {
             case EMPTY:
                 return new GitException();
+            case PROMPTS_DISABLED:
+                return new TerminalPromptsDisabledException(fatal);
             case AUTHENTICATION_REQUIRED:
                 return new InvalidUsernameException(fatal);
             case CHECKOUT_FAILED:
