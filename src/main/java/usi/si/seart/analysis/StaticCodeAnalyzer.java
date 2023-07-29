@@ -1,6 +1,5 @@
 package usi.si.seart.analysis;
 
-import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -9,6 +8,7 @@ import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.convert.ConversionService;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 import usi.si.seart.exception.StaticCodeAnalysisException;
@@ -40,8 +40,7 @@ import java.util.stream.Collectors;
 @AllArgsConstructor(onConstructor_ = @Autowired)
 public class StaticCodeAnalyzer {
 
-    Gson gson;
-
+    ConversionService conversionService;
     GitRepoService gitRepoService;
     LanguageService languageService;
 
@@ -54,6 +53,7 @@ public class StaticCodeAnalyzer {
      */
     @Async("GitCloning")
     @SneakyThrows(MalformedURLException.class)
+    @SuppressWarnings("ConstantConditions")
     public void gatherCodeMetricsFor(@NotNull String name) {
         URL url = new URL("https://github.com/" + name + ".git");
         try (LocalRepositoryClone localRepository = gitConnector.clone(url)) {
@@ -62,15 +62,29 @@ public class StaticCodeAnalyzer {
             Path path = localRepository.getPath();
             ExternalProcess process = new ExternalProcess(path, "cloc", "--json", "--quiet", ".");
             ExternalProcess.Result result = process.execute(5, TimeUnit.MINUTES);
-            if (result.succeeded()) {
-                String output = result.getStdOut();
-                Set<GitRepoMetric> metrics = parseCodeMetrics(repo, output);
-                repo.setMetrics(metrics);
-                repo.setCloned();
-                gitRepoService.updateRepo(repo);
-            } else {
+            if (!result.succeeded())
                 throw new StaticCodeAnalysisException(result.getStdErr());
-            }
+            String output = result.getStdOut();
+            JsonObject json = conversionService.convert(output, JsonObject.class);
+            json.remove("header");
+            json.remove("SUM");
+            Set<GitRepoMetric> metrics = json.entrySet().stream()
+                    .map(entry -> {
+                        Language language = languageService.getOrCreate(entry.getKey());
+                        GitRepoMetric.Key key = new GitRepoMetric.Key(repo.getId(), language.getId());
+                        JsonObject inner = entry.getValue().getAsJsonObject();
+                        GitRepoMetric metric = conversionService.convert(inner, GitRepoMetric.class);
+                        metric.setKey(key);
+                        metric.setRepo(repo);
+                        metric.setLanguage(language);
+                        return metric;
+                    })
+                    .collect(Collectors.toSet());
+            if (metrics.isEmpty())
+                log.warn("No metrics were computed for: {}", name);
+            repo.setMetrics(metrics);
+            repo.setCloned();
+            gitRepoService.updateRepo(repo);
         } catch (StaticCodeAnalysisException ex) {
             log.error("Static code analysis failed for: " + name, ex);
         } catch (GitException ex) {
@@ -83,29 +97,5 @@ public class StaticCodeAnalyzer {
         } catch (EntityNotFoundException ex) {
             log.error("Static code analysis can not be performed on repository that does not exist: {}", name);
         }
-    }
-
-    private Set<GitRepoMetric> parseCodeMetrics(@NotNull GitRepo repo, @NotNull String output) {
-        return gson.fromJson(output, JsonObject.class)
-                .entrySet()
-                .stream()
-                .filter(entry -> !entry.getKey().equals("header") && !entry.getKey().equals("SUM"))
-                .map(entry -> {
-                    JsonObject json = entry.getValue().getAsJsonObject();
-                    Language language = languageService.getOrCreate(entry.getKey());
-                    GitRepoMetric.Key key = new GitRepoMetric.Key(repo.getId(), language.getId());
-                    long codeLines = json.get("code").getAsLong();
-                    long blankLines = json.get("blank").getAsLong();
-                    long commentLines = json.get("comment").getAsLong();
-                    return GitRepoMetric.builder()
-                            .key(key)
-                            .repo(repo)
-                            .language(language)
-                            .codeLines(codeLines)
-                            .blankLines(blankLines)
-                            .commentLines(commentLines)
-                            .build();
-                })
-                .collect(Collectors.toSet());
     }
 }
