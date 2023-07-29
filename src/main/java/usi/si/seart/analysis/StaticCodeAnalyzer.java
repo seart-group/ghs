@@ -57,7 +57,7 @@ public class StaticCodeAnalyzer {
     @Async("GitCloning")
     @SneakyThrows(MalformedURLException.class)
     public Future<Set<GitRepoMetric>> getCodeMetrics(@NotNull String name) {
-        URL url = new URL("https://github.com/" + name);
+        URL url = new URL("https://github.com/" + name + ".git");
         try (LocalRepositoryClone localRepository = gitConnector.clone(url)) {
             GitRepo repo = gitRepoService.getByName(name);
             log.debug("Analyzing repository: {} [{}]", repo.getName(), repo.getId());
