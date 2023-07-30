@@ -59,7 +59,7 @@ public class RetryConfig {
     @Bean
     public RetryTemplate timeLimitedRetryTemplate() {
         return RetryTemplate.builder()
-                .withinMillis(7200000)
+                .withinMillis(7_200_000)
                 .customBackoff(backOffPolicy())
                 .retryOn(Exception.class)
                 .withListener(retryListener())
@@ -69,8 +69,8 @@ public class RetryConfig {
     @Bean
     public BackOffPolicy backOffPolicy() {
         ExponentialBackOffPolicy backOffPolicy = new ExponentialBackOffPolicy();
-        backOffPolicy.setInitialInterval(1250);
-        backOffPolicy.setMaxInterval(30000);
+        backOffPolicy.setInitialInterval(1_250);
+        backOffPolicy.setMaxInterval(30_000);
         backOffPolicy.setMultiplier(2);
         return backOffPolicy;
     }
