@@ -7,10 +7,9 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
 import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
-import lombok.SneakyThrows;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import okhttp3.Headers;
@@ -23,19 +22,22 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.retry.RetryCallback;
+import org.springframework.retry.RetryContext;
+import org.springframework.retry.support.RetryTemplate;
 import org.springframework.stereotype.Component;
+import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.HttpServerErrorException;
 import usi.si.seart.exception.GitHubAPIException;
 import usi.si.seart.util.Ranges;
 
-import java.io.IOException;
-import java.net.ConnectException;
-import java.net.SocketTimeoutException;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 import java.util.regex.Matcher;
@@ -50,13 +52,11 @@ public class GitHubAPIConnector {
 
     private static final int MIN_STARS = 10;
 
-    private static final int RETRY_MAX_ATTEMPTS = 3;
-    private static final int RETRY_SLEEP_DURATION = 1;
-    private static final TimeUnit RETRY_SLEEP_TIME_UNIT = TimeUnit.MINUTES;
-
     Pattern headerLinkPattern;
 
     OkHttpClient client;
+
+    RetryTemplate retryTemplate;
 
     Function<Date, String> dateStringMapper;
 
@@ -64,12 +64,6 @@ public class GitHubAPIConnector {
 
     ConversionService conversionService;
 
-    @SneakyThrows(InterruptedException.class)
-    private static void waitBeforeRetry() {
-        RETRY_SLEEP_TIME_UNIT.sleep(RETRY_SLEEP_DURATION);
-    }
-
-    @SneakyThrows(InterruptedException.class)
     public JsonObject searchRepositories(String language, Range<Date> dateRange, Integer page) {
         Map<String, String> query = ImmutableMap.<String, String>builder()
                 .put("language", URLEncoder.encode(language, StandardCharsets.UTF_8))
@@ -89,17 +83,14 @@ public class GitHubAPIConnector {
                 .build()
                 .url();
 
-        Triple<HttpStatus, Headers, JsonElement> response = makeAPICall(url);
-        TimeUnit.MILLISECONDS.sleep(500);
+        Triple<HttpStatus, Headers, JsonElement> response = fetch(url);
         return response.getRight().getAsJsonObject();
     }
 
 
-    @SneakyThrows(InterruptedException.class)
     public JsonObject fetchRepoInfo(String name) {
         URL url = Endpoint.REPOSITORY.toURL(name.split("/"));
-        Triple<HttpStatus, Headers, JsonElement> response = makeAPICall(url);
-        TimeUnit.MILLISECONDS.sleep(500);
+        Triple<HttpStatus, Headers, JsonElement> response = fetch(url);
         return response.getRight().getAsJsonObject();
     }
 
@@ -110,7 +101,7 @@ public class GitHubAPIConnector {
                 .addQueryParameter("per_page", "1")
                 .build()
                 .url();
-        Triple<HttpStatus, Headers, JsonElement> response = makeAPICall(url);
+        Triple<HttpStatus, Headers, JsonElement> response = fetch(url);
         JsonArray commits = response.getRight().getAsJsonArray();
         try {
             JsonObject latest = commits.get(0).getAsJsonObject();
@@ -242,7 +233,7 @@ public class GitHubAPIConnector {
     }
 
     private Long fetchLastPageNumberFromHeader(URL url) {
-        Triple<HttpStatus, Headers, JsonElement> response = makeAPICall(url);
+        Triple<HttpStatus, Headers, JsonElement> response = fetch(url);
         HttpStatus status = response.getLeft();
 
         Long count;
@@ -251,7 +242,7 @@ public class GitHubAPIConnector {
              * Response status code 403, two possibilities:
              * (1) The rate limit for the current token is exceeded
              * (2) The request is too expensive for GitHub to compute
-             * (eg. https://api.github.com/repos/torvalds/linux/contributors)
+             * (e.g. https://api.github.com/repos/torvalds/linux/contributors)
              *
              * Since we make use of guards for the former case,
              * then the latter is always the response cause.
@@ -281,7 +272,6 @@ public class GitHubAPIConnector {
         return count;
     }
 
-    @SneakyThrows(InterruptedException.class)
     public JsonArray fetchRepoLabels(String name, Integer page) {
         URL url = HttpUrl.get(Endpoint.REPOSITORY_LABELS.toURL(name.split("/")))
                 .newBuilder()
@@ -289,12 +279,10 @@ public class GitHubAPIConnector {
                 .addQueryParameter("per_page", "100")
                 .build()
                 .url();
-        Triple<HttpStatus, Headers, JsonElement> response = makeAPICall(url);
-        TimeUnit.MILLISECONDS.sleep(500);
+        Triple<HttpStatus, Headers, JsonElement> response = fetch(url);
         return response.getRight().getAsJsonArray();
     }
 
-    @SneakyThrows(InterruptedException.class)
     public JsonObject fetchRepoLanguages(String name, Integer page) {
         URL url = HttpUrl.get(Endpoint.REPOSITORY_LANGUAGES.toURL(name.split("/")))
                 .newBuilder()
@@ -302,12 +290,10 @@ public class GitHubAPIConnector {
                 .addQueryParameter("per_page", "100")
                 .build()
                 .url();
-        Triple<HttpStatus, Headers, JsonElement> response = makeAPICall(url);
-        TimeUnit.MILLISECONDS.sleep(500);
+        Triple<HttpStatus, Headers, JsonElement> response = fetch(url);
         return response.getRight().getAsJsonObject();
     }
 
-    @SneakyThrows(InterruptedException.class)
     public JsonObject fetchRepoTopics(String name, Integer page) {
         URL url = HttpUrl.get(Endpoint.REPOSITORY_TOPICS.toURL(name.split("/")))
                 .newBuilder()
@@ -315,102 +301,114 @@ public class GitHubAPIConnector {
                 .addQueryParameter("per_page", "100")
                 .build()
                 .url();
-        Triple<HttpStatus, Headers, JsonElement> response = makeAPICall(url);
-        TimeUnit.MILLISECONDS.sleep(500);
+        Triple<HttpStatus, Headers, JsonElement> response = fetch(url);
         return response.getRight().getAsJsonObject();
     }
 
+    Triple<HttpStatus, Headers, JsonElement> fetch(URL url) {
+        try {
+            Triple<HttpStatus, Headers, JsonElement> result = retryTemplate.execute(new APIFetchCallback(url));
+            TimeUnit.MILLISECONDS.sleep(250);
+            return result;
+        } catch (InterruptedException ex) {
+            Thread.currentThread().interrupt();
+            throw new GitHubAPIException("API call has been interrupted", ex);
+        } catch (Exception ex) {
+            String message = String.format("Request to %s failed", url);
+            throw new GitHubAPIException(message, ex);
+        }
+    }
 
-    @SuppressWarnings({ "ConstantConditions", "resource" })
-    @SneakyThrows({ IOException.class, InterruptedException.class })
-    Triple<HttpStatus, Headers, JsonElement> makeAPICall(URL url) {
-        int tryNum = 0;
-        while (tryNum < RETRY_MAX_ATTEMPTS) {
-            tryNum++;
+    @AllArgsConstructor(access = AccessLevel.PRIVATE)
+    @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
+    private class APIFetchCallback implements RetryCallback<Triple<HttpStatus, Headers, JsonElement>, Exception> {
+
+        URL url;
+
+        @Override
+        @SuppressWarnings("resource")
+        public Triple<HttpStatus, Headers, JsonElement> doWithRetry(RetryContext context) throws Exception {
             Request.Builder builder = new Request.Builder();
             builder.url(url);
             String currentToken = gitHubTokenManager.getCurrentToken();
             if (currentToken != null)
                 builder.addHeader(HttpHeaders.AUTHORIZATION, "Bearer " + currentToken);
             Request request = builder.build();
-
-            Response response;
-            try {
-                response = client.newCall(request).execute();
-            } catch (ConnectException cex) {
-                throw new GitHubAPIException("Failed to connect to the GitHub API", cex);
-            } catch (SocketTimeoutException sex) {
-                throw new GitHubAPIException("Timed out while trying to connect to GitHub API", sex);
-            } catch (IOException ioe) {
-                throw new GitHubAPIException("Exception occurred during request execution", ioe);
-            }
+            Response response = client.newCall(request).execute();
 
             HttpStatus status = HttpStatus.valueOf(response.code());
+            HttpStatus.Series series = status.series();
             Headers headers = response.headers();
             String body = response.body().string();
+            JsonElement element = conversionService.convert(body, JsonElement.class);
 
-            if (response.isSuccessful()) {
-                return Triple.of(status, headers, JsonParser.parseString(body));
-            } else if (response.isRedirect()) {
-                return Triple.of(status, headers, JsonNull.INSTANCE);
-            } else if (status == HttpStatus.UNAUTHORIZED) {
-                /*
-                 * Here we should not call `replaceTokenIfExpired()`
-                 * since it would lead to an infinite loop,
-                 * because we are checking the Rate Limit API
-                 * with the very same unauthorized token.
-                */
-                gitHubTokenManager.replaceToken();
-                TimeUnit.SECONDS.sleep(5);
-            } else if (status == HttpStatus.FORBIDDEN) {
-                /*
-                 * Response status code 403, two possibilities:
-                 * (1) The rate limit for the current token is exceeded
-                 * (2) The request is too expensive for GitHub to compute
-                 * (eg. https://api.github.com/repos/torvalds/linux/contributors)
-                */
-                String xRateLimitRemaining = headers.get("X-RateLimit-Remaining");
-                if (xRateLimitRemaining != null) {
-                    int rateLimitRemaining = Integer.parseInt(xRateLimitRemaining);
-                    if (rateLimitRemaining > 0) {
-                        if (!body.contains("too large")) {
-                            log.error(
-                                    "\n**********************************************************************\n" +
-                                    "- Status code is 403, but the rate limit is not exceeded!\n" +
-                                    "- The returned response contains no mention of the result being 'too long'!\n" +
-                                    " ################ AN UPDATE TO THE LOGIC IS REQUIRED ################ \n" +
-                                    "**********************************************************************"
-                            );
-                        }
-                        return Triple.of(status, headers, JsonParser.parseString(body));
-                    }
-                }
-                log.info(
-                        "Try #{}: Response Code = {} ({}), X-RateLimit-Remaining = {}",
-                        tryNum, status.value(), status.getReasonPhrase(), xRateLimitRemaining
-                );
-                gitHubTokenManager.replaceTokenIfExpired();
-            } else if (status == HttpStatus.TOO_MANY_REQUESTS) {
-                gitHubTokenManager.replaceTokenIfExpired();
-            } else if (status.isError()) {
-                JsonElement jsonElement = JsonParser.parseString(body);
-                JsonObject jsonObject = jsonElement.getAsJsonObject();
-                ErrorResponse errorResponse = conversionService.convert(jsonObject, ErrorResponse.class);
-                GitHubAPIException gae = new GitHubAPIException(errorResponse);
-                String format = "Try #%d: Response Code = %d (%s)";
-                String message = String.format(format, tryNum, status.value(), status.getReasonPhrase());
-                log.error(message, gae);
-                waitBeforeRetry();
-            } else {
-                log.error(
-                        "Try #{}: Response Code = {} ({}), Request URL = {}",
-                        tryNum, status.value(), status.getReasonPhrase(), url
-                );
-                gitHubTokenManager.replaceTokenIfExpired();
+            switch (series) {
+                case SUCCESSFUL:
+                    return Triple.of(status, headers, element);
+                case INFORMATIONAL:
+                case REDIRECTION:
+                    return Triple.of(status, headers, JsonNull.INSTANCE);
+                case CLIENT_ERROR:
+                    return handleClientError(status, headers, element.getAsJsonObject());
+                case SERVER_ERROR:
+                    return handleServerError(status, element.getAsJsonObject());
             }
+
+            throw new IllegalStateException("This line should never be reached");
         }
 
-        String message = String.format("Request to %s failed after %d retries.", url, RETRY_MAX_ATTEMPTS);
-        throw new GitHubAPIException(message);
+        private Triple<HttpStatus, Headers, JsonElement> handleServerError(HttpStatus status, JsonObject json) {
+            ErrorResponse errorResponse = conversionService.convert(json, ErrorResponse.class);
+            throw new HttpServerErrorException(status, errorResponse.getMessage());
+        }
+
+        @SuppressWarnings("java:S128")
+        private Triple<HttpStatus, Headers, JsonElement> handleClientError(
+                HttpStatus status, Headers headers, JsonObject json
+        ) throws InterruptedException {
+            ErrorResponse errorResponse = conversionService.convert(json, ErrorResponse.class);
+            switch (status) {
+                case UNAUTHORIZED:
+                    /*
+                     * Here we should not call `replaceTokenIfExpired()`
+                     * since it would lead to an infinite loop,
+                     * because we are checking the Rate Limit API
+                     * with the very same unauthorized token.
+                     */
+                    gitHubTokenManager.replaceToken();
+                    break;
+                case TOO_MANY_REQUESTS:
+                    TimeUnit.MINUTES.sleep(5);
+                    break;
+                case FORBIDDEN:
+                    /*
+                     * Response status code 403, two possibilities:
+                     * (1) The rate limit for the current token is exceeded
+                     * (2) The request is too expensive for GitHub to compute
+                     * (e.g. https://api.github.com/repos/torvalds/linux/contributors)
+                     */
+                    String header = "X-RateLimit-Remaining";
+                    int remaining = Optional.ofNullable(headers.get(header))
+                            .map(Integer::parseInt)
+                            .orElse(-1);
+                    if (remaining == -1) {
+                        String template = "The '%s' header could not be found, application logic needs an update";
+                        String message = String.format(template, header);
+                        throw new IllegalStateException(message);
+                    } else if (remaining == 0) {
+                        gitHubTokenManager.replaceTokenIfExpired();
+                        break;
+                    } else {
+                        /*
+                         * Case (2) encountered, so we propagate error upwards
+                         * @see fetchLastPageNumberFromHeader
+                         */
+                        return Triple.of(status, headers, json);
+                    }
+                default:
+                    // TODO: 30.07.23 Add any other special logic here
+            }
+            throw new HttpClientErrorException(status, errorResponse.getMessage());
+        }
     }
 }
