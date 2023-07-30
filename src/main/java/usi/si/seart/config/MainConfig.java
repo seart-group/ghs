@@ -25,6 +25,7 @@ import usi.si.seart.converter.JsonObjectToRateLimitConverter;
 import usi.si.seart.converter.SearchParameterDtoToGitRepoSearchConverter;
 import usi.si.seart.converter.StringToContactsConverter;
 import usi.si.seart.converter.StringToGitExceptionConverter;
+import usi.si.seart.converter.StringToJsonElementConverter;
 import usi.si.seart.converter.StringToJsonObjectConverter;
 import usi.si.seart.converter.StringToLicensesConverter;
 
@@ -112,6 +113,7 @@ public class MainConfig {
                 registry.addConverter(new JsonObjectToGitRepoMetricConverter());
                 registry.addConverter(new StringToContactsConverter());
                 registry.addConverter(new StringToLicensesConverter());
+                registry.addConverter(new StringToJsonElementConverter());
                 registry.addConverter(new StringToJsonObjectConverter(gson()));
                 registry.addConverter(new StringToGitExceptionConverter());
                 registry.addConverter(new SearchParameterDtoToGitRepoSearchConverter());
