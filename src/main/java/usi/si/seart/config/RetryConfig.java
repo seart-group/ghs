@@ -48,6 +48,7 @@ public class RetryConfig {
                 .maxAttempts(5)
                 .exponentialBackoff(1250, 2, 20000)
                 .retryOn(Exception.class)
+                .withListener(retryListener())
                 .build();
     }
 }
