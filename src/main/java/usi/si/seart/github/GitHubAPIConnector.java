@@ -46,7 +46,7 @@ import java.util.regex.Pattern;
 @Component
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
-public class GitHubApiConnector {
+public class GitHubAPIConnector {
 
     private static final int MIN_STARS = 10;
 

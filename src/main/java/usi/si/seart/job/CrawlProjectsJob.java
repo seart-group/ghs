@@ -20,7 +20,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import usi.si.seart.exception.UnsplittableRangeException;
 import usi.si.seart.github.GitCommit;
-import usi.si.seart.github.GitHubApiConnector;
+import usi.si.seart.github.GitHubAPIConnector;
 import usi.si.seart.model.GitRepo;
 import usi.si.seart.model.GitRepoLanguage;
 import usi.si.seart.model.Label;
@@ -65,7 +65,7 @@ public class CrawlProjectsJob {
 
     ConversionService conversionService;
 
-    GitHubApiConnector gitHubApiConnector;
+    GitHubAPIConnector gitHubApiConnector;
 
     @NonFinal
     @Value(value = "${app.crawl.scheduling}")
