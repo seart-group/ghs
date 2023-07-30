@@ -8,6 +8,7 @@ import org.springframework.retry.RetryCallback;
 import org.springframework.retry.RetryContext;
 import org.springframework.retry.RetryListener;
 import org.springframework.retry.annotation.EnableRetry;
+import org.springframework.retry.support.RetryTemplate;
 
 @Configuration
 @EnableRetry
@@ -39,5 +40,14 @@ public class RetryConfig {
                 log.warn(message, throwable);
             }
         };
+    }
+
+    @Bean
+    public RetryTemplate retryTemplate() {
+        return RetryTemplate.builder()
+                .maxAttempts(5)
+                .exponentialBackoff(1250, 2, 20000)
+                .retryOn(Exception.class)
+                .build();
     }
 }
