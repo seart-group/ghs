@@ -4,6 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Primary;
 import org.springframework.retry.RetryCallback;
 import org.springframework.retry.RetryContext;
 import org.springframework.retry.RetryListener;
@@ -45,9 +46,20 @@ public class RetryConfig {
     }
 
     @Bean
-    public RetryTemplate retryTemplate() {
+    @Primary
+    public RetryTemplate limitedRetryTemplate() {
         return RetryTemplate.builder()
                 .maxAttempts(5)
+                .customBackoff(backOffPolicy())
+                .retryOn(Exception.class)
+                .withListener(retryListener())
+                .build();
+    }
+
+    @Bean
+    public RetryTemplate unlimitedRetryTemplate() {
+        return RetryTemplate.builder()
+                .infiniteRetry()
                 .customBackoff(backOffPolicy())
                 .retryOn(Exception.class)
                 .withListener(retryListener())
