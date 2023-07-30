@@ -1,4 +1,4 @@
-package usi.si.seart.exception;
+package usi.si.seart.exception.github;
 
 import lombok.experimental.StandardException;
 

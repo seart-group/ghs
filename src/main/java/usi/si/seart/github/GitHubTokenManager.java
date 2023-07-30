@@ -22,7 +22,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
 import usi.si.seart.collection.Cycle;
-import usi.si.seart.exception.GitHubTokenManagerException;
+import usi.si.seart.exception.github.GitHubTokenManagerException;
 
 import javax.annotation.PostConstruct;
 import java.util.List;
