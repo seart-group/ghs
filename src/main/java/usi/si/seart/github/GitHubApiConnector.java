@@ -54,11 +54,7 @@ public class GitHubApiConnector {
     private static final int RETRY_SLEEP_DURATION = 1;
     private static final TimeUnit RETRY_SLEEP_TIME_UNIT = TimeUnit.MINUTES;
 
-    /*
-     * Pattern for matching Link header values of GitHub API responses.
-     * https://www.debuggex.com/r/A5_ziqVy-vFaesKK
-     */
-    private static final Pattern HEADER_LINK_PATTERN = Pattern.compile("(?:,\\s)?<([^>]+)>;\\srel=\"(\\w+)\"");
+    Pattern headerLinkPattern;
 
     OkHttpClient client;
 
@@ -268,7 +264,7 @@ public class GitHubApiConnector {
             String link = headers.get("link");
             if (link != null) {
                 Map<String, String> links = new HashMap<>();
-                Matcher matcher = HEADER_LINK_PATTERN.matcher(link);
+                Matcher matcher = headerLinkPattern.matcher(link);
                 while (matcher.find()) {
                     links.put(matcher.group(2), matcher.group(1));
                 }
