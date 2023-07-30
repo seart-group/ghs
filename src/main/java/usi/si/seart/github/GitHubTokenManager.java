@@ -1,17 +1,8 @@
 package usi.si.seart.github;
 
 import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
-import io.github.itning.retry.RetryException;
-import io.github.itning.retry.Retryer;
-import io.github.itning.retry.RetryerBuilder;
-import io.github.itning.retry.strategy.stop.StopStrategies;
-import io.github.itning.retry.strategy.stop.StopStrategy;
-import io.github.itning.retry.strategy.wait.WaitStrategies;
-import io.github.itning.retry.strategy.wait.WaitStrategy;
 import lombok.AccessLevel;
 import lombok.Getter;
-import lombok.SneakyThrows;
 import lombok.experimental.FieldDefaults;
 import lombok.experimental.NonFinal;
 import lombok.extern.slf4j.Slf4j;
@@ -19,19 +10,23 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.retry.RetryCallback;
+import org.springframework.retry.RetryContext;
+import org.springframework.retry.support.RetryTemplate;
 import org.springframework.stereotype.Component;
+import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.HttpServerErrorException;
 import usi.si.seart.collection.Cycle;
+import usi.si.seart.exception.GitHubTokenManagerException;
 
 import javax.annotation.PostConstruct;
-import java.io.IOException;
 import java.util.List;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
-import java.util.function.Predicate;
 
 /**
  * Responsible for managing personal access tokens (PATs)
@@ -44,12 +39,9 @@ import java.util.function.Predicate;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class GitHubTokenManager {
 
-    private static final WaitStrategy RETRY_WAIT_STRATEGY = WaitStrategies.exponentialWait(100, 5, TimeUnit.MINUTES);
-    private static final StopStrategy RETRY_STOP_STRATEGY = StopStrategies.stopAfterDelay(3, TimeUnit.HOURS);
-    private static final Predicate<Response> RETRY_RESULT_PREDICATE = response -> !response.isSuccessful();
-    private static final Class<Exception> RETRY_EXCEPTION_SUPERCLASS = Exception.class;
-
     OkHttpClient client;
+
+    RetryTemplate retryTemplate;
 
     ConversionService conversionService;
 
@@ -62,11 +54,14 @@ public class GitHubTokenManager {
     @Autowired
     public GitHubTokenManager(
             OkHttpClient client,
+            @Qualifier("timeLimitedRetryTemplate")
+            RetryTemplate retryTemplate,
             ConversionService conversionService,
             @Value("${app.crawl.tokens}")
             List<String> tokens
     ) {
         this.client = client;
+        this.retryTemplate = retryTemplate;
         this.conversionService = conversionService;
         this.tokens = new Cycle<>(tokens);
     }
@@ -101,41 +96,47 @@ public class GitHubTokenManager {
         }
     }
 
-    @SuppressWarnings({ "ConstantConditions", "resource" })
-    @SneakyThrows({
-        IOException.class,
-        InterruptedException.class,
-        RetryException.class,
-        ExecutionException.class
-    })
     public void replaceTokenIfExpired() {
-        Request.Builder builder = new Request.Builder();
-        builder.url(Endpoint.RATE_LIMIT);
-        if (currentToken != null)
-            builder.header(HttpHeaders.AUTHORIZATION, "Bearer " + currentToken);
-        Request request = builder.build();
-
-        Callable<Response> callable = () -> client.newCall(request).execute();
-        Retryer<Response> retryer = RetryerBuilder.<Response>newBuilder()
-                .retryIfResult(RETRY_RESULT_PREDICATE)
-                .retryIfExceptionOfType(RETRY_EXCEPTION_SUPERCLASS)
-                .withWaitStrategy(RETRY_WAIT_STRATEGY)
-                .withStopStrategy(RETRY_STOP_STRATEGY)
-                .build();
-
-        Response response = retryer.call(callable);
-        JsonObject body = JsonParser.parseString(response.body().string()).getAsJsonObject();
-        RateLimit rateLimit = conversionService.convert(body, RateLimit.class);
-        if (rateLimit.anyExceeded()) {
+        try {
+            RateLimit rateLimit = retryTemplate.execute(new RateLimitPollCallback());
             log.debug("GitHub API:   Core {}", rateLimit.getCoreResource());
             log.debug("GitHub API: Search {}", rateLimit.getSearchResource());
-            replaceToken();
-            long maxWaitSeconds = rateLimit.getMaxWaitSeconds();
-            if (maxWaitSeconds > 0) {
-                String maxWaitDuration = rateLimit.getMaxWaitReadable();
-                log.info("Rate limits exhausted, sleeping for {}...", maxWaitDuration);
-                TimeUnit.SECONDS.sleep(maxWaitSeconds + 1);
+            if (rateLimit.anyExceeded()) {
+                replaceToken();
+                long maxWaitSeconds = rateLimit.getMaxWaitSeconds();
+                if (maxWaitSeconds > 0) {
+                    String maxWaitDuration = rateLimit.getMaxWaitReadable();
+                    log.info("Rate limits exhausted, sleeping for {}...", maxWaitDuration);
+                    TimeUnit.SECONDS.sleep(maxWaitSeconds + 1);
+                }
             }
+        } catch (InterruptedException ex) {
+            Thread.currentThread().interrupt();
+            throw new GitHubTokenManagerException("Interrupted while waiting for token to replenish", ex);
+        } catch (Exception ex) {
+            throw new GitHubTokenManagerException("Token replacement failed", ex);
+        }
+    }
+
+    private class RateLimitPollCallback implements RetryCallback<RateLimit, Exception> {
+
+        @Override
+        @SuppressWarnings({"ConstantConditions", "resource"})
+        public RateLimit doWithRetry(RetryContext context) throws Exception {
+            Request.Builder builder = new Request.Builder();
+            builder.url(Endpoint.RATE_LIMIT);
+            if (currentToken != null)
+                builder.header(HttpHeaders.AUTHORIZATION, "Bearer " + currentToken);
+            Request request = builder.build();
+            Response response = client.newCall(request).execute();
+            HttpStatus status = HttpStatus.valueOf(response.code());
+            if (status.is4xxClientError())
+                throw new HttpClientErrorException(status);
+            if (status.is5xxServerError())
+                throw new HttpServerErrorException(status);
+            String body = response.body().string();
+            JsonObject json = conversionService.convert(body, JsonObject.class);
+            return conversionService.convert(json, RateLimit.class);
         }
     }
 }
