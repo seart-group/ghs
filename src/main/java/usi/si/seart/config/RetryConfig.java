@@ -47,7 +47,7 @@ public class RetryConfig {
 
     @Bean
     @Primary
-    public RetryTemplate limitedRetryTemplate() {
+    public RetryTemplate attemptLimitedRetryTemplate() {
         return RetryTemplate.builder()
                 .maxAttempts(5)
                 .customBackoff(backOffPolicy())
@@ -57,9 +57,9 @@ public class RetryConfig {
     }
 
     @Bean
-    public RetryTemplate unlimitedRetryTemplate() {
+    public RetryTemplate timeLimitedRetryTemplate() {
         return RetryTemplate.builder()
-                .infiniteRetry()
+                .withinMillis(7200000)
                 .customBackoff(backOffPolicy())
                 .retryOn(Exception.class)
                 .withListener(retryListener())
