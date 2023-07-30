@@ -8,6 +8,8 @@ import org.springframework.retry.RetryCallback;
 import org.springframework.retry.RetryContext;
 import org.springframework.retry.RetryListener;
 import org.springframework.retry.annotation.EnableRetry;
+import org.springframework.retry.backoff.BackOffPolicy;
+import org.springframework.retry.backoff.ExponentialBackOffPolicy;
 import org.springframework.retry.support.RetryTemplate;
 
 @Configuration
@@ -46,9 +48,18 @@ public class RetryConfig {
     public RetryTemplate retryTemplate() {
         return RetryTemplate.builder()
                 .maxAttempts(5)
-                .exponentialBackoff(1250, 2, 20000)
+                .customBackoff(backOffPolicy())
                 .retryOn(Exception.class)
                 .withListener(retryListener())
                 .build();
+    }
+
+    @Bean
+    public BackOffPolicy backOffPolicy() {
+        ExponentialBackOffPolicy backOffPolicy = new ExponentialBackOffPolicy();
+        backOffPolicy.setInitialInterval(1250);
+        backOffPolicy.setMaxInterval(30000);
+        backOffPolicy.setMultiplier(2);
+        return backOffPolicy;
     }
 }
