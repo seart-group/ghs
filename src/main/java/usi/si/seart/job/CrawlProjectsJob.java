@@ -275,8 +275,6 @@ public class CrawlProjectsJob {
         gitRepo.setLastCommit(lastCommit);
         gitRepo.setLastCommitSHA(lastCommitSHA);
 
-        gitRepo.setLastPinged();
-
         return gitRepo;
     }
 

@@ -22,6 +22,8 @@ import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
+import javax.persistence.PrePersist;
+import javax.persistence.PreUpdate;
 import javax.persistence.PrimaryKeyJoinColumn;
 import javax.persistence.Table;
 import javax.validation.constraints.PastOrPresent;
@@ -200,6 +202,8 @@ public class GitRepo {
     /**
      * To be called whenever the repository is encountered either in the API or during cleaning and analysis.
      */
+    @PrePersist
+    @PreUpdate
     public void setLastPinged() {
         lastPinged = new Date();
     }
