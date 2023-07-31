@@ -69,7 +69,7 @@ public class CrawlProjectsJob {
 
     @NonFinal
     @Value(value = "${app.crawl.scheduling}")
-    Long schedulingRate;
+    Duration schedulingRate;
 
     Function<Date, String> dateStringMapper;
 
@@ -86,7 +86,7 @@ public class CrawlProjectsJob {
             Range<Date> dateRange = Ranges.build(startDate, endDate);
             crawlRepositories(dateRange, language);
         }
-        log.info("Next crawl scheduled for: {}", Date.from(Instant.now().plusMillis(schedulingRate)));
+        log.info("Next crawl scheduled for: {}", Date.from(Instant.now().plus(schedulingRate)));
     }
 
     private void crawlRepositories(Range<Date> range, Language language) {
