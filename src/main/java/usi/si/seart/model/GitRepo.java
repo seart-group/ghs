@@ -24,6 +24,7 @@ import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.PrimaryKeyJoinColumn;
 import javax.persistence.Table;
+import javax.validation.constraints.PastOrPresent;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Objects;
@@ -120,9 +121,11 @@ public class GitRepo {
     @Column(name = "archived")
     Boolean isArchived;
 
+    @PastOrPresent
     @Column(name = "last_pinged")
     Date lastPinged;
 
+    @PastOrPresent
     @Column(name = "last_analyzed")
     Date lastAnalyzed;
 
