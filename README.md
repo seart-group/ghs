@@ -118,8 +118,8 @@ The deployment stack consists of the following containers:
 | `gse-database`         |           [mysql](https://registry.hub.docker.com/_/mysql)           | for the database                  |      :white_check_mark:       |                 |
 | `gse-migration`        |      [flyway](https://registry.hub.docker.com/r/flyway/flyway)       | for the schema migrations         |      :white_check_mark:       | `gse-database`  |
 | `gse-backup`           | [tiredofit/db-backup](https://hub.docker.com/r/tiredofit/db-backup/) | for the automatic backups         | :negative_squared_cross_mark: | `gse-migration` |
-| `gse-server`           |                 [gse/backend](docker/Dockerfile.be)                  | for the spring application itself |      :white_check_mark:       | `gse-migration` |
-| `gse-website`          |                 [gse/frontend](docker/Dockerfile.fe)                 | for supplying the front-end files |      :white_check_mark:       |  `gse-server`   |
+| `gse-server`           |               [gse/backend](docker/server/Dockerfile)                | for the spring application itself |      :white_check_mark:       | `gse-migration` |
+| `gse-website`          |              [gse/frontend](docker/website/Dockerfile)               | for supplying the front-end files |      :white_check_mark:       |  `gse-server`   |
 
 Deploying is as simple as, in the [docker-compose](docker-compose) directory, run:
 
