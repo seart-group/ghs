@@ -1,4 +1,4 @@
-package usi.si.seart.http;
+package usi.si.seart.http.interceptor;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;

@@ -8,8 +8,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpHeaders;
 import usi.si.seart.github.GitHubAPIConnector;
-import usi.si.seart.http.HeaderAttachmentInterceptor;
-import usi.si.seart.http.LoggingInterceptor;
+import usi.si.seart.http.interceptor.HeaderAttachmentInterceptor;
+import usi.si.seart.http.interceptor.LoggingInterceptor;
 
 import java.util.concurrent.TimeUnit;
 
