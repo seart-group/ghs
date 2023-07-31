@@ -49,7 +49,7 @@ public class GitConnector {
             Path directory = Files.createTempDirectory(folderPrefix);
             String[] command = {"git", "clone", "--quiet", "--depth", "1", url.toString(), directory.toString()};
             ExternalProcess process = new ExternalProcess(directory, command);
-            log.trace("Cloning:\t{}", url);
+            log.trace("Cloning:   {}", url);
             ExternalProcess.Result result = process.execute(5, TimeUnit.MINUTES);
             if (!result.succeeded()) {
                 GitException exception = conversionService.convert(result.getStdErr(), GitException.class);

@@ -69,7 +69,7 @@ public class CrawlProjectsJob {
 
     @NonFinal
     @Value(value = "${app.crawl.scheduling}")
-    Long schedulingRate;
+    Duration schedulingRate;
 
     Function<Date, String> dateStringMapper;
 
@@ -86,7 +86,7 @@ public class CrawlProjectsJob {
             Range<Date> dateRange = Ranges.build(startDate, endDate);
             crawlRepositories(dateRange, language);
         }
-        log.info("Next crawl scheduled for: {}", Date.from(Instant.now().plusMillis(schedulingRate)));
+        log.info("Next crawl scheduled for: {}", Date.from(Instant.now().plus(schedulingRate)));
     }
 
     private void crawlRepositories(Range<Date> range, Language language) {
@@ -177,8 +177,8 @@ public class CrawlProjectsJob {
             JsonObject result = element.getAsJsonObject();
             String name = result.get("full_name").getAsString();
             Optional<GitRepo> optional = Optionals.ofThrowable(() -> gitRepoService.getByName(name));
-            String action = optional.map(ignored -> "Updating").orElse("Saving");
-            log.info("{}:\t{} [{}/{}]", action, name, lowerIndex, total);
+            String action = optional.map(ignored -> "Updating:  ").orElse("Saving:    ");
+            log.info("{}{} [{}/{}]", action, name, lowerIndex, total);
 
             lowerIndex++;
 
