@@ -352,6 +352,7 @@ public class GitHubAPIConnector {
                     return handleClientError(status, headers, element.getAsJsonObject());
                 case SERVER_ERROR:
                     return handleServerError(status, element.getAsJsonObject());
+                default:
             }
 
             throw new IllegalStateException("This line should never be reached");
