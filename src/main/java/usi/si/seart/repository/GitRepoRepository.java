@@ -25,14 +25,14 @@ public interface GitRepoRepository extends
 
     @Query(
             "select r.name from GitRepo r " +
-            "where r.cloned is null or r.cloned < r.lastCommit " +
-            "order by r.cloned, RAND()"
+            "where r.lastAnalyzed is null or r.lastAnalyzed < r.lastCommit " +
+            "order by r.lastAnalyzed, RAND()"
     )
     Stream<String> findAllRepoWithOutdatedCodeMetrics();
 
     @Query(
             "select COUNT(r) from GitRepo r " +
-            "where r.cloned is null or r.cloned < r.lastCommit"
+            "where r.lastAnalyzed is null or r.lastAnalyzed < r.lastCommit"
     )
     Long countAllRepoWithOutdatedCodeMetrics();
 

@@ -120,11 +120,11 @@ public class GitRepo {
     @Column(name = "archived")
     Boolean isArchived;
 
-    @Column(name = "crawled")
-    Date crawled;
+    @Column(name = "last_pinged")
+    Date lastPinged;
 
-    @Column(name = "cloned")
-    Date cloned;
+    @Column(name = "last_analyzed")
+    Date lastAnalyzed;
 
     @Builder.Default
     @ManyToMany(cascade = {
@@ -195,16 +195,16 @@ public class GitRepo {
     }
 
     /**
-     * To be called when the repository has been crawled through GitHub's API.
+     * To be called whenever the repository is encountered either in the API or during cleaning and analysis.
      */
-    public void setCrawled() {
-        crawled = new Date();
+    public void setLastPinged() {
+        lastPinged = new Date();
     }
 
     /**
      * To be called when the repository's code metrics have been mined.
      */
-    public void setCloned() {
-        cloned = new Date();
+    public void setLastAnalyzed() {
+        lastAnalyzed = new Date();
     }
 }

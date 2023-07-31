@@ -83,7 +83,7 @@ public class StaticCodeAnalyzer {
             if (metrics.isEmpty())
                 log.warn("No metrics were computed for: {}", name);
             repo.setMetrics(metrics);
-            repo.setCloned();
+            repo.setLastAnalyzed();
             gitRepoService.updateRepo(repo);
         } catch (StaticCodeAnalysisException ex) {
             log.error("Static code analysis failed for: " + name, ex);
