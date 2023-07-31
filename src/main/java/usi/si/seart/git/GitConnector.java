@@ -12,6 +12,7 @@ import org.springframework.stereotype.Component;
 import usi.si.seart.exception.TerminalExecutionException;
 import usi.si.seart.exception.git.CloneException;
 import usi.si.seart.exception.git.GitException;
+import usi.si.seart.exception.git.RemoteReferenceDisplayException;
 import usi.si.seart.io.ExternalProcess;
 
 import java.io.IOException;
@@ -62,6 +63,27 @@ public class GitConnector {
             throw new CloneException("Failed for: " + url, ex);
         } catch (IOException | TerminalExecutionException | TimeoutException ex) {
             throw new CloneException("Failed for: " + url, ex);
+        }
+    }
+
+    /**
+     * Checks the reachability of a remote repository.
+     *
+     * @param url the URL corresponding to the git repository.
+     * @return true if the repository is public and reachable, false otherwise.
+     */
+    public boolean ping(URL url) throws GitException {
+        try {
+            String[] command = {"git", "ls-remote", url.toString(), "--exit-code"};
+            ExternalProcess process = new ExternalProcess(command);
+            log.trace("Pinging:   {}", url);
+            ExternalProcess.Result result = process.execute(1, TimeUnit.MINUTES);
+            return result.succeeded();
+        } catch (InterruptedException ex) {
+            Thread.currentThread().interrupt();
+            throw new RemoteReferenceDisplayException("Failed for: " + url, ex);
+        } catch (TerminalExecutionException | TimeoutException ex) {
+            throw new RemoteReferenceDisplayException("Failed for: " + url, ex);
         }
     }
 }
