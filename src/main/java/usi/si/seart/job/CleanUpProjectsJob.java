@@ -71,11 +71,11 @@ public class CleanUpProjectsJob {
             Tuple tuple = results.get();
             Long id = tuple.get(0, Long.class);
             String name = tuple.get(1, String.class);
-            log.debug("Checking if {} [id: {}] exists...", name, id);
+            log.debug("Pinging:   {} [{}]", name, id);
             boolean exists = checkIfRepoExists(name);
             TimeUnit.MILLISECONDS.sleep(500);
             if (!exists) {
-                log.info("Deleting:\t{} [{}]", name, id);
+                log.info("Deleting:  {} [{}]", name, id);
                 Transaction transaction = null;
                 try (Session nested = factory.openSession()) {
                     transaction = nested.beginTransaction();
