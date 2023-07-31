@@ -23,7 +23,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 /**
- * Component responsible for cloning git repositories into a temporary folder.
+ * Component responsible for interacting with the Git version control system.
  */
 @Slf4j
 @Component
@@ -43,6 +43,7 @@ public class GitConnector {
      *
      * @param url the URL corresponding to the git repository.
      * @return the handle of the cloned repository.
+     * @throws GitException if an error occurs while executing the underlying command.
      */
     @SuppressWarnings("ConstantConditions")
     public LocalRepositoryClone clone(URL url) throws GitException {
@@ -71,6 +72,7 @@ public class GitConnector {
      *
      * @param url the URL corresponding to the git repository.
      * @return true if the repository is public and reachable, false otherwise.
+     * @throws GitException if an error occurs while executing the underlying command.
      */
     public boolean ping(URL url) throws GitException {
         try {
