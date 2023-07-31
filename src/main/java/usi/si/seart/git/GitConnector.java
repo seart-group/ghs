@@ -61,7 +61,7 @@ public class GitConnector {
             return new LocalRepositoryClone(directory);
         } catch (InterruptedException ex) {
             Thread.currentThread().interrupt();
-            throw new CloneException("Failed for: " + url, ex);
+            throw new CloneException("Timed out for: " + url, ex);
         } catch (IOException | TerminalExecutionException | TimeoutException ex) {
             throw new CloneException("Failed for: " + url, ex);
         }
@@ -83,7 +83,7 @@ public class GitConnector {
             return result.succeeded();
         } catch (InterruptedException ex) {
             Thread.currentThread().interrupt();
-            throw new RemoteReferenceDisplayException("Failed for: " + url, ex);
+            throw new RemoteReferenceDisplayException("Timed out for: " + url, ex);
         } catch (TerminalExecutionException | TimeoutException ex) {
             throw new RemoteReferenceDisplayException("Failed for: " + url, ex);
         }
