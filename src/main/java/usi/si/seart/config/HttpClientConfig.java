@@ -7,7 +7,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpHeaders;
-import usi.si.seart.github.GitHubApiConnector;
+import usi.si.seart.github.GitHubAPIConnector;
 import usi.si.seart.http.HeaderAttachmentInterceptor;
 import usi.si.seart.http.LoggingInterceptor;
 
@@ -26,7 +26,7 @@ public class HttpClientConfig {
 
     @Bean
     public LoggingInterceptor httpLoggingInterceptor() {
-        Logger logger = LoggerFactory.getLogger(GitHubApiConnector.class);
+        Logger logger = LoggerFactory.getLogger(GitHubAPIConnector.class);
         return new LoggingInterceptor(logger);
     }
 

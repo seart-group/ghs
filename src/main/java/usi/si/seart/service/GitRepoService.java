@@ -5,8 +5,11 @@ import lombok.AllArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.TransientDataAccessException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.retry.annotation.Backoff;
+import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
 import usi.si.seart.model.GitRepo;
 import usi.si.seart.repository.GitRepoRepository;
@@ -19,7 +22,17 @@ public interface GitRepoService {
 
     GitRepo getRepoById(Long id);
     GitRepo getByName(String name);
+    @Retryable(
+            value = TransientDataAccessException.class,
+            backoff = @Backoff(delay = 250, multiplier = 2),
+            maxAttempts = 5
+    )
     GitRepo createOrUpdateRepo(GitRepo repo);
+    @Retryable(
+            value = TransientDataAccessException.class,
+            backoff = @Backoff(delay = 250, multiplier = 2),
+            maxAttempts = 5
+    )
     GitRepo updateRepo(GitRepo repo);
     Page<GitRepo> findDynamically(GitRepoSearch parameters, Pageable pageable);
     Stream<GitRepo> streamDynamically(GitRepoSearch parameters);
