@@ -54,7 +54,7 @@ public class MainConfig {
      * https://www.debuggex.com/r/A5_ziqVy-vFaesKK
      */
     @Bean
-    public Pattern headerLinkPattern(){
+    public Pattern headerLinkPattern() {
         return Pattern.compile("(?:,\\s)?<([^>]+)>;\\srel=\"(\\w+)\"");
     }
 
