@@ -25,7 +25,6 @@ import usi.si.seart.collection.Cycle;
 import usi.si.seart.exception.github.GitHubTokenManagerException;
 
 import jakarta.annotation.PostConstruct;
-import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
