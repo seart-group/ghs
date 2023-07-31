@@ -25,7 +25,7 @@ public class AsyncConfig {
 
     @Bean(name = "AnalysisExecutor")
     public Executor executor(@Value("${app.crawl.analysis.max-pool-threads}") int poolSize) {
-        ThreadPoolTaskExecutor executor = new GitCloningThreadPoolExecutor();
+        ThreadPoolTaskExecutor executor = new AnalysisThreadPoolExecutor();
         executor.setCorePoolSize(0);
         executor.setMaxPoolSize(poolSize);
         executor.setQueueCapacity(10);
@@ -57,7 +57,7 @@ public class AsyncConfig {
         };
     }
 
-    private static class GitCloningThreadPoolExecutor extends ThreadPoolTaskExecutor {
+    private static class AnalysisThreadPoolExecutor extends ThreadPoolTaskExecutor {
 
         /**
          * Overrides the default cloning thread name generation.
