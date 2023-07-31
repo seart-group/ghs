@@ -11,6 +11,7 @@ import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import lombok.experimental.NonFinal;
 import lombok.extern.slf4j.Slf4j;
 import okhttp3.Headers;
 import okhttp3.HttpUrl;
@@ -19,6 +20,7 @@ import okhttp3.Request;
 import okhttp3.Response;
 import org.apache.commons.lang3.tuple.Triple;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -50,7 +52,9 @@ import java.util.regex.Pattern;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class GitHubAPIConnector {
 
-    private static final int MIN_STARS = 10;
+    @NonFinal
+    @Value("${app.crawl.minimum-stars}")
+    Integer minimumStars;
 
     Pattern headerLinkPattern;
 
@@ -68,7 +72,7 @@ public class GitHubAPIConnector {
         Map<String, String> query = ImmutableMap.<String, String>builder()
                 .put("language", URLEncoder.encode(language, StandardCharsets.UTF_8))
                 .put("pushed", Ranges.toString(dateRange, dateStringMapper))
-                .put("stars", String.format(">=%d", MIN_STARS))
+                .put("stars", String.format(">=%d", minimumStars))
                 .put("fork", "true")
                 .put("is", "public")
                 .build();
