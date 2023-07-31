@@ -20,23 +20,43 @@ import usi.si.seart.converter.GitRepoToDtoConverter;
 import usi.si.seart.converter.JsonObjectToErrorResponseConverter;
 import usi.si.seart.converter.JsonObjectToGitCommitConverter;
 import usi.si.seart.converter.JsonObjectToGitRepoConverter;
+import usi.si.seart.converter.JsonObjectToGitRepoMetricConverter;
 import usi.si.seart.converter.JsonObjectToRateLimitConverter;
 import usi.si.seart.converter.SearchParameterDtoToGitRepoSearchConverter;
 import usi.si.seart.converter.StringToContactsConverter;
+import usi.si.seart.converter.StringToGitExceptionConverter;
+import usi.si.seart.converter.StringToJsonElementConverter;
+import usi.si.seart.converter.StringToJsonObjectConverter;
 import usi.si.seart.converter.StringToLicensesConverter;
 
+import java.nio.file.Path;
 import java.time.Instant;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.Date;
 import java.util.function.Function;
+import java.util.regex.Pattern;
 
 @AllArgsConstructor(onConstructor_ = @Autowired)
 @Configuration
 public class MainConfig {
 
     CsvMapper csvMapper;
+
+    @Bean
+    public Path tmpDir(@Value("${java.io.tmpdir}") String value) {
+        return Path.of(value);
+    }
+
+    /*
+     * Pattern for matching Link header values of GitHub API responses.
+     * https://www.debuggex.com/r/A5_ziqVy-vFaesKK
+     */
+    @Bean
+    public Pattern headerLinkPattern() {
+        return Pattern.compile("(?:,\\s)?<([^>]+)>;\\srel=\"(\\w+)\"");
+    }
 
     @Bean
     public DateTimeFormatter dateTimeFormatter() {
@@ -90,8 +110,12 @@ public class MainConfig {
                 registry.addConverter(new JsonObjectToGitCommitConverter());
                 registry.addConverter(new JsonObjectToRateLimitConverter());
                 registry.addConverter(new JsonObjectToErrorResponseConverter());
+                registry.addConverter(new JsonObjectToGitRepoMetricConverter());
                 registry.addConverter(new StringToContactsConverter());
                 registry.addConverter(new StringToLicensesConverter());
+                registry.addConverter(new StringToJsonElementConverter());
+                registry.addConverter(new StringToJsonObjectConverter(gson()));
+                registry.addConverter(new StringToGitExceptionConverter());
                 registry.addConverter(new SearchParameterDtoToGitRepoSearchConverter());
             }
         };
