@@ -51,7 +51,7 @@ public class StaticCodeAnalyzer {
      *
      * @param name the full name of the repository.
      */
-    @Async("GitCloning")
+    @Async("AnalysisExecutor")
     @SneakyThrows(MalformedURLException.class)
     @SuppressWarnings("ConstantConditions")
     public void gatherCodeMetricsFor(@NotNull String name) {

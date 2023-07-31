@@ -23,7 +23,7 @@ import java.util.stream.Stream;
 @EnableAsync
 public class AsyncConfig {
 
-    @Bean(name = "GitCloning")
+    @Bean(name = "AnalysisExecutor")
     public Executor executor(@Value("${app.crawl.analysis.max-pool-threads}") int poolSize) {
         ThreadPoolTaskExecutor executor = new GitCloningThreadPoolExecutor();
         executor.setCorePoolSize(0);
