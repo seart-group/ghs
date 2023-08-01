@@ -20,6 +20,7 @@ import java.util.stream.Stream;
 
 public interface GitRepoService {
 
+    Long count();
     GitRepo getRepoById(Long id);
     GitRepo getByName(String name);
     @Retryable(
@@ -44,6 +45,11 @@ public interface GitRepoService {
     class GitRepoServiceImpl implements GitRepoService {
 
         GitRepoRepository gitRepoRepository;
+
+        @Override
+        public Long count() {
+            return gitRepoRepository.count();
+        }
 
         @Override
         public GitRepo getRepoById(Long id) {
