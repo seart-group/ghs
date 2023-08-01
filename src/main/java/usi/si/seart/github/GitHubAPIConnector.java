@@ -37,13 +37,10 @@ import java.net.URL;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 @SuppressWarnings("ConstantConditions")
 @Slf4j
@@ -55,8 +52,6 @@ public class GitHubAPIConnector {
     @NonFinal
     @Value("${app.crawl.minimum-stars}")
     Integer minimumStars;
-
-    Pattern headerLinkPattern;
 
     OkHttpClient client;
 
@@ -254,13 +249,8 @@ public class GitHubAPIConnector {
             Headers headers = result.getHeaders();
             String link = headers.get("link");
             if (link != null) {
-                Map<String, String> links = new HashMap<>();
-                Matcher matcher = headerLinkPattern.matcher(link);
-                while (matcher.find()) {
-                    links.put(matcher.group(2), matcher.group(1));
-                }
-                HttpUrl last = HttpUrl.get(links.get("last"));
-                return Long.parseLong(last.queryParameter("page"));
+                NavigationLinks links = conversionService.convert(link, NavigationLinks.class);
+                return links.getLastPage();
             } else {
                 return result.size().map(Integer::longValue).orElse(1L);
             }

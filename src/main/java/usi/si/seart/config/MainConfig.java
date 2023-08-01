@@ -37,7 +37,6 @@ import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.Date;
 import java.util.function.Function;
-import java.util.regex.Pattern;
 
 @AllArgsConstructor(onConstructor_ = @Autowired)
 @Configuration
@@ -48,15 +47,6 @@ public class MainConfig {
     @Bean
     public Path tmpDir(@Value("${java.io.tmpdir}") String value) {
         return Path.of(value);
-    }
-
-    /*
-     * Pattern for matching Link header values of GitHub API responses.
-     * https://www.debuggex.com/r/A5_ziqVy-vFaesKK
-     */
-    @Bean
-    public Pattern headerLinkPattern() {
-        return Pattern.compile("(?:,\\s)?<([^>]+)>;\\srel=\"(\\w+)\"");
     }
 
     @Bean
