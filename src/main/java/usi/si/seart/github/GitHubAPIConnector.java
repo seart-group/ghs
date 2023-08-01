@@ -9,6 +9,7 @@ import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.experimental.NonFinal;
@@ -328,6 +329,34 @@ public class GitHubAPIConnector {
     private class APIFetchCallback implements RetryCallback<Triple<HttpStatus, Headers, JsonElement>, Exception> {
 
         URL url;
+
+        @Getter
+        @AllArgsConstructor(access = AccessLevel.PRIVATE)
+        @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
+        private class Result {
+
+            HttpStatus status;
+            Headers headers;
+            JsonElement jsonElement;
+
+            public JsonObject getJsonObject() {
+                return jsonElement.getAsJsonObject();
+            }
+
+            public JsonArray getJsonArray() {
+                return jsonElement.getAsJsonArray();
+            }
+
+            public Optional<Integer> size() {
+                if (jsonElement.isJsonArray()) {
+                    return Optional.of(jsonElement.getAsJsonArray().size());
+                } else if (jsonElement.isJsonObject()) {
+                    return Optional.of(jsonElement.getAsJsonObject().size());
+                } else {
+                    return Optional.empty();
+                }
+            }
+        }
 
         @Override
         @SuppressWarnings("resource")
