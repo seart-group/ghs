@@ -28,6 +28,7 @@ import usi.si.seart.converter.StringToGitExceptionConverter;
 import usi.si.seart.converter.StringToJsonElementConverter;
 import usi.si.seart.converter.StringToJsonObjectConverter;
 import usi.si.seart.converter.StringToLicensesConverter;
+import usi.si.seart.converter.StringToNavigationLinksConverter;
 
 import java.nio.file.Path;
 import java.time.Instant;
@@ -111,12 +112,13 @@ public class MainConfig {
                 registry.addConverter(new JsonObjectToRateLimitConverter());
                 registry.addConverter(new JsonObjectToErrorResponseConverter());
                 registry.addConverter(new JsonObjectToGitRepoMetricConverter());
+                registry.addConverter(new SearchParameterDtoToGitRepoSearchConverter());
                 registry.addConverter(new StringToContactsConverter());
-                registry.addConverter(new StringToLicensesConverter());
+                registry.addConverter(new StringToGitExceptionConverter());
                 registry.addConverter(new StringToJsonElementConverter());
                 registry.addConverter(new StringToJsonObjectConverter(gson()));
-                registry.addConverter(new StringToGitExceptionConverter());
-                registry.addConverter(new SearchParameterDtoToGitRepoSearchConverter());
+                registry.addConverter(new StringToLicensesConverter());
+                registry.addConverter(new StringToNavigationLinksConverter());
             }
         };
     }
