@@ -87,14 +87,14 @@ public class GitHubAPIConnector {
                 .build()
                 .url();
 
-        APIFetchCallback.Result result = fetch(url);
+        FetchCallback.Result result = fetch(url);
         return result.getJsonObject();
     }
 
 
     public JsonObject fetchRepoInfo(String name) {
         URL url = Endpoint.REPOSITORY.toURL(name.split("/"));
-        APIFetchCallback.Result result = fetch(url);
+        FetchCallback.Result result = fetch(url);
         return result.getJsonObject();
     }
 
@@ -105,7 +105,7 @@ public class GitHubAPIConnector {
                 .addQueryParameter("per_page", "1")
                 .build()
                 .url();
-        APIFetchCallback.Result result = fetch(url);
+        FetchCallback.Result result = fetch(url);
         JsonArray commits = result.getJsonArray();
         try {
             JsonObject latest = commits.get(0).getAsJsonObject();
@@ -237,7 +237,7 @@ public class GitHubAPIConnector {
     }
 
     private Long fetchLastPageNumberFromHeader(URL url) {
-        APIFetchCallback.Result result = fetch(url);
+        FetchCallback.Result result = fetch(url);
         if (result.getStatus() == HttpStatus.FORBIDDEN) {
             /*
              * Response status code 403, two possibilities:
@@ -274,7 +274,7 @@ public class GitHubAPIConnector {
                 .addQueryParameter("per_page", "100")
                 .build()
                 .url();
-        APIFetchCallback.Result result = fetch(url);
+        FetchCallback.Result result = fetch(url);
         return result.getJsonArray();
     }
 
@@ -285,7 +285,7 @@ public class GitHubAPIConnector {
                 .addQueryParameter("per_page", "100")
                 .build()
                 .url();
-        APIFetchCallback.Result result = fetch(url);
+        FetchCallback.Result result = fetch(url);
         return result.getJsonObject();
     }
 
@@ -296,13 +296,13 @@ public class GitHubAPIConnector {
                 .addQueryParameter("per_page", "100")
                 .build()
                 .url();
-        APIFetchCallback.Result result = fetch(url);
+        FetchCallback.Result result = fetch(url);
         return result.getJsonObject();
     }
 
-    private APIFetchCallback.Result fetch(URL url) {
+    private FetchCallback.Result fetch(URL url) {
         try {
-            APIFetchCallback.Result result = retryTemplate.execute(new APIFetchCallback(url));
+            FetchCallback.Result result = retryTemplate.execute(new FetchCallback(url));
             TimeUnit.MILLISECONDS.sleep(250);
             return result;
         } catch (InterruptedException ex) {
@@ -316,7 +316,7 @@ public class GitHubAPIConnector {
 
     @AllArgsConstructor(access = AccessLevel.PRIVATE)
     @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
-    private class APIFetchCallback implements RetryCallback<APIFetchCallback.Result, Exception> {
+    private class FetchCallback implements RetryCallback<FetchCallback.Result, Exception> {
 
         URL url;
 
@@ -350,7 +350,7 @@ public class GitHubAPIConnector {
 
         @Override
         @SuppressWarnings("resource")
-        public APIFetchCallback.Result doWithRetry(RetryContext context) throws Exception {
+        public FetchCallback.Result doWithRetry(RetryContext context) throws Exception {
             Request.Builder builder = new Request.Builder();
             builder.url(url);
             String currentToken = gitHubTokenManager.getCurrentToken();
@@ -381,13 +381,13 @@ public class GitHubAPIConnector {
             throw new IllegalStateException("This line should never be reached");
         }
 
-        private APIFetchCallback.Result handleServerError(HttpStatus status, JsonObject json) {
+        private FetchCallback.Result handleServerError(HttpStatus status, JsonObject json) {
             ErrorResponse errorResponse = conversionService.convert(json, ErrorResponse.class);
             throw new HttpServerErrorException(status, errorResponse.getMessage());
         }
 
         @SuppressWarnings("java:S128")
-        private APIFetchCallback.Result handleClientError(
+        private FetchCallback.Result handleClientError(
                 HttpStatus status, Headers headers, JsonObject json
         ) throws InterruptedException {
             ErrorResponse errorResponse = conversionService.convert(json, ErrorResponse.class);
