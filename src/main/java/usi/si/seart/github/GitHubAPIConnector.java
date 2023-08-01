@@ -19,7 +19,6 @@ import okhttp3.HttpUrl;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
-import org.apache.commons.lang3.tuple.Triple;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.convert.ConversionService;
@@ -88,15 +87,15 @@ public class GitHubAPIConnector {
                 .build()
                 .url();
 
-        Triple<HttpStatus, Headers, JsonElement> response = fetch(url);
-        return response.getRight().getAsJsonObject();
+        APIFetchCallback.Result result = fetch(url);
+        return result.getJsonObject();
     }
 
 
     public JsonObject fetchRepoInfo(String name) {
         URL url = Endpoint.REPOSITORY.toURL(name.split("/"));
-        Triple<HttpStatus, Headers, JsonElement> response = fetch(url);
-        return response.getRight().getAsJsonObject();
+        APIFetchCallback.Result result = fetch(url);
+        return result.getJsonObject();
     }
 
     public GitCommit fetchLastCommitInfo(String name) {
@@ -106,8 +105,8 @@ public class GitHubAPIConnector {
                 .addQueryParameter("per_page", "1")
                 .build()
                 .url();
-        Triple<HttpStatus, Headers, JsonElement> response = fetch(url);
-        JsonArray commits = response.getRight().getAsJsonArray();
+        APIFetchCallback.Result result = fetch(url);
+        JsonArray commits = result.getJsonArray();
         try {
             JsonObject latest = commits.get(0).getAsJsonObject();
             return conversionService.convert(latest, GitCommit.class);
@@ -238,11 +237,8 @@ public class GitHubAPIConnector {
     }
 
     private Long fetchLastPageNumberFromHeader(URL url) {
-        Triple<HttpStatus, Headers, JsonElement> response = fetch(url);
-        HttpStatus status = response.getLeft();
-
-        Long count;
-        if (status == HttpStatus.FORBIDDEN) {
+        APIFetchCallback.Result result = fetch(url);
+        if (result.getStatus() == HttpStatus.FORBIDDEN) {
             /*
              * Response status code 403, two possibilities:
              * (1) The rate limit for the current token is exceeded
@@ -253,10 +249,9 @@ public class GitHubAPIConnector {
              * then the latter is always the response cause.
              * As a result we return null value to denote the metric as unobtainable.
              */
-            count = null;
+            return null;
         } else {
-            JsonElement element = response.getRight();
-            Headers headers = response.getMiddle();
+            Headers headers = result.getHeaders();
             String link = headers.get("link");
             if (link != null) {
                 Map<String, String> links = new HashMap<>();
@@ -265,16 +260,11 @@ public class GitHubAPIConnector {
                     links.put(matcher.group(2), matcher.group(1));
                 }
                 HttpUrl last = HttpUrl.get(links.get("last"));
-                count = Long.parseLong(last.queryParameter("page"));
-            } else if (element.isJsonArray()) {
-                count = (long) element.getAsJsonArray().size();
-            } else if (element.isJsonObject()) {
-                count = (long) element.getAsJsonObject().size();
+                return Long.parseLong(last.queryParameter("page"));
             } else {
-                count = 1L;
+                return result.size().map(Integer::longValue).orElse(1L);
             }
         }
-        return count;
     }
 
     public JsonArray fetchRepoLabels(String name, Integer page) {
@@ -284,8 +274,8 @@ public class GitHubAPIConnector {
                 .addQueryParameter("per_page", "100")
                 .build()
                 .url();
-        Triple<HttpStatus, Headers, JsonElement> response = fetch(url);
-        return response.getRight().getAsJsonArray();
+        APIFetchCallback.Result result = fetch(url);
+        return result.getJsonArray();
     }
 
     public JsonObject fetchRepoLanguages(String name, Integer page) {
@@ -295,8 +285,8 @@ public class GitHubAPIConnector {
                 .addQueryParameter("per_page", "100")
                 .build()
                 .url();
-        Triple<HttpStatus, Headers, JsonElement> response = fetch(url);
-        return response.getRight().getAsJsonObject();
+        APIFetchCallback.Result result = fetch(url);
+        return result.getJsonObject();
     }
 
     public JsonObject fetchRepoTopics(String name, Integer page) {
@@ -306,13 +296,13 @@ public class GitHubAPIConnector {
                 .addQueryParameter("per_page", "100")
                 .build()
                 .url();
-        Triple<HttpStatus, Headers, JsonElement> response = fetch(url);
-        return response.getRight().getAsJsonObject();
+        APIFetchCallback.Result result = fetch(url);
+        return result.getJsonObject();
     }
 
-    Triple<HttpStatus, Headers, JsonElement> fetch(URL url) {
+    private APIFetchCallback.Result fetch(URL url) {
         try {
-            Triple<HttpStatus, Headers, JsonElement> result = retryTemplate.execute(new APIFetchCallback(url));
+            APIFetchCallback.Result result = retryTemplate.execute(new APIFetchCallback(url));
             TimeUnit.MILLISECONDS.sleep(250);
             return result;
         } catch (InterruptedException ex) {
@@ -326,7 +316,7 @@ public class GitHubAPIConnector {
 
     @AllArgsConstructor(access = AccessLevel.PRIVATE)
     @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
-    private class APIFetchCallback implements RetryCallback<Triple<HttpStatus, Headers, JsonElement>, Exception> {
+    private class APIFetchCallback implements RetryCallback<APIFetchCallback.Result, Exception> {
 
         URL url;
 
@@ -360,7 +350,7 @@ public class GitHubAPIConnector {
 
         @Override
         @SuppressWarnings("resource")
-        public Triple<HttpStatus, Headers, JsonElement> doWithRetry(RetryContext context) throws Exception {
+        public APIFetchCallback.Result doWithRetry(RetryContext context) throws Exception {
             Request.Builder builder = new Request.Builder();
             builder.url(url);
             String currentToken = gitHubTokenManager.getCurrentToken();
@@ -377,10 +367,10 @@ public class GitHubAPIConnector {
 
             switch (series) {
                 case SUCCESSFUL:
-                    return Triple.of(status, headers, element);
+                    return new Result(status, headers, element);
                 case INFORMATIONAL:
                 case REDIRECTION:
-                    return Triple.of(status, headers, JsonNull.INSTANCE);
+                    return new Result(status, headers, JsonNull.INSTANCE);
                 case CLIENT_ERROR:
                     return handleClientError(status, headers, element.getAsJsonObject());
                 case SERVER_ERROR:
@@ -391,13 +381,13 @@ public class GitHubAPIConnector {
             throw new IllegalStateException("This line should never be reached");
         }
 
-        private Triple<HttpStatus, Headers, JsonElement> handleServerError(HttpStatus status, JsonObject json) {
+        private APIFetchCallback.Result handleServerError(HttpStatus status, JsonObject json) {
             ErrorResponse errorResponse = conversionService.convert(json, ErrorResponse.class);
             throw new HttpServerErrorException(status, errorResponse.getMessage());
         }
 
         @SuppressWarnings("java:S128")
-        private Triple<HttpStatus, Headers, JsonElement> handleClientError(
+        private APIFetchCallback.Result handleClientError(
                 HttpStatus status, Headers headers, JsonObject json
         ) throws InterruptedException {
             ErrorResponse errorResponse = conversionService.convert(json, ErrorResponse.class);
@@ -437,7 +427,7 @@ public class GitHubAPIConnector {
                          * Case (2) encountered, so we propagate error upwards
                          * @see fetchLastPageNumberFromHeader
                          */
-                        return Triple.of(status, headers, json);
+                        return new Result(status, headers, json);
                     }
                 default:
                     // TODO: 30.07.23 Add any other special logic here
