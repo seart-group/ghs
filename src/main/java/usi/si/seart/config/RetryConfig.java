@@ -59,7 +59,7 @@ public class RetryConfig {
     @Bean
     public RetryTemplate timeLimitedRetryTemplate() {
         return RetryTemplate.builder()
-                .withinMillis(7_200_000)
+                .withTimeout(7_200_000)
                 .customBackoff(backOffPolicy())
                 .retryOn(Exception.class)
                 .withListener(retryListener())
