@@ -68,7 +68,7 @@ public class StaticCodeAnalyzer {
         URL url = new URL("https://github.com/" + name + ".git");
         try (LocalRepositoryClone localRepository = gitConnector.clone(url)) {
             log.debug("Analyzing: {} [{}]", name, id);
-            Path path = localRepository.getPath();
+            Path path = localRepository.path();
             ExternalProcess process = new ExternalProcess(path, "cloc", "--json", "--quiet", ".");
             ExternalProcess.Result result = process.execute(5, TimeUnit.MINUTES);
             if (!result.succeeded())
