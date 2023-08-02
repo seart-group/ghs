@@ -17,8 +17,8 @@ import usi.si.seart.git.GitConnector;
 import usi.si.seart.git.LocalRepositoryClone;
 import usi.si.seart.io.ExternalProcess;
 import usi.si.seart.model.GitRepo;
-import usi.si.seart.model.GitRepoMetric;
 import usi.si.seart.model.Language;
+import usi.si.seart.model.join.GitRepoMetric;
 import usi.si.seart.service.GitRepoService;
 import usi.si.seart.service.LanguageService;
 
@@ -83,7 +83,7 @@ public class StaticCodeAnalyzer {
             if (metrics.isEmpty())
                 log.warn("No metrics were computed for: {}", name);
             repo.setMetrics(metrics);
-            repo.setCloned();
+            repo.setLastAnalyzed();
             gitRepoService.updateRepo(repo);
         } catch (StaticCodeAnalysisException ex) {
             log.error("Static code analysis failed for: " + name, ex);

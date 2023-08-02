@@ -1,114 +1,55 @@
 package usi.si.seart.job;
 
 import lombok.AccessLevel;
-import lombok.Cleanup;
-import lombok.RequiredArgsConstructor;
+import lombok.AllArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.experimental.FieldDefaults;
-import lombok.experimental.NonFinal;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.io.IOUtils;
-import org.hibernate.ScrollMode;
-import org.hibernate.ScrollableResults;
-import org.hibernate.Session;
-import org.hibernate.SessionFactory;
-import org.hibernate.StatelessSession;
-import org.hibernate.Transaction;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
-import usi.si.seart.repository.GitRepoRepository;
+import usi.si.seart.exception.ClientURLException;
+import usi.si.seart.exception.git.GitException;
+import usi.si.seart.git.GitConnector;
+import usi.si.seart.http.ClientURLConnector;
+import usi.si.seart.service.GitRepoService;
 
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.PersistenceException;
-import javax.persistence.Tuple;
-import java.io.IOException;
-import java.math.BigInteger;
-import java.net.ConnectException;
-import java.net.UnknownHostException;
-import java.nio.charset.StandardCharsets;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
+import javax.annotation.PostConstruct;
+import java.net.MalformedURLException;
+import java.net.URL;
 
 @Slf4j
 @Service
-@EnableScheduling
 @ConditionalOnProperty(value = "app.cleanup.enabled", havingValue = "true")
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
-@RequiredArgsConstructor(onConstructor_ = @Autowired)
+@AllArgsConstructor(onConstructor_ = @Autowired)
 public class CleanUpProjectsJob {
 
-    private static final int NO_HOST_RESOLVE = 6;
-    private static final int NO_HOST_CONNECTION = 7;
-    private static final int OPERATION_TIMEOUT = 28;
+    GitConnector gitConnector;
+    ClientURLConnector curlConnector;
 
-    EntityManagerFactory entityManagerFactory;
+    GitRepoService gitRepoService;
 
-    GitRepoRepository gitRepoRepository;
+    @PostConstruct
+    void postConstruct() {
+        log.info("Started cleanup on {} repositories...", gitRepoService.count());
+    }
 
-    @NonFinal
-    @Value("${spring.jpa.properties.hibernate.jdbc.fetch_size}")
-    Integer fetchSize;
-
-    @SneakyThrows(InterruptedException.class)
-    @Scheduled(fixedDelayString = "${app.cleanup.scheduling}")
+    @Scheduled(fixedDelay = 500)
     public void run() {
-        long totalRepositories = gitRepoRepository.count();
-        log.info("Started cleanup on {} repositories...", totalRepositories);
-
-        String sql = "SELECT id, name FROM git_repo ORDER BY RAND()";
-        @Cleanup SessionFactory factory = entityManagerFactory.unwrap(SessionFactory.class);
-        @Cleanup StatelessSession session = factory.openStatelessSession();
-        @Cleanup ScrollableResults results = session.createNativeQuery(sql, Tuple.class)
-                .setCacheable(false)
-                .setFetchSize(fetchSize)
-                .scroll(ScrollMode.FORWARD_ONLY);
-
-        long totalDeleted = 0;
-        while (results.next()) {
-            Tuple tuple = (Tuple) results.get(0);
-            Long id = tuple.get(0, BigInteger.class).longValue();
-            String name = tuple.get(1, String.class);
-            log.debug("Pinging:   {} [{}]", name, id);
+        gitRepoService.getNextDeletionCandidate().ifPresent(gitRepo -> {
+            Long id = gitRepo.getId();
+            String name = gitRepo.getName();
             boolean exists = checkIfRepoExists(name);
-            TimeUnit.MILLISECONDS.sleep(500);
             if (!exists) {
                 log.info("Deleting:  {} [{}]", name, id);
-                Transaction transaction = null;
-                try (Session nested = factory.openSession()) {
-                    transaction = nested.beginTransaction();
-                    nested.createNativeQuery("DELETE FROM git_repo_label WHERE repo_id = :id")
-                            .setParameter("id", id)
-                            .executeUpdate();
-                    nested.createNativeQuery("DELETE FROM git_repo_language WHERE repo_id = :id")
-                            .setParameter("id", id)
-                            .executeUpdate();
-                    nested.createNativeQuery("DELETE FROM git_repo_metrics WHERE repo_id = :id")
-                            .setParameter("id", id)
-                            .executeUpdate();
-                    nested.createNativeQuery("DELETE FROM git_repo_topic WHERE repo_id = :id")
-                            .setParameter("id", id)
-                            .executeUpdate();
-                    nested.createNativeQuery("DELETE FROM git_repo WHERE id = :id")
-                            .setParameter("id", id)
-                            .executeUpdate();
-                    nested.flush();
-                    transaction.commit();
-                } catch (PersistenceException ex) {
-                    log.error("Exception occurred while deleting GitRepo [id=" + id + ", name=" + name + "]!", ex);
-                    if (transaction == null) break;
-                    log.info("Rolling back transaction...");
-                    transaction.rollback();
-                }
-
-                totalDeleted++;
+                gitRepoService.deleteRepoById(id);
+            } else {
+                gitRepo.setLastPinged();
+                gitRepoService.updateRepo(gitRepo);
             }
-        }
-
-        log.info("Finished! {}/{} repositories deleted.", totalDeleted, totalRepositories);
+        });
     }
 
     /*
@@ -117,60 +58,21 @@ public class CleanUpProjectsJob {
      * but in my tests SSH would trigger prompts which kill the command.
      * Prompts should remain disabled otherwise GitHub asks credentials for private repos.
      */
+    @SneakyThrows(MalformedURLException.class)
     private boolean checkIfRepoExists(String name) {
-        String url = String.format("https://github.com/%s", name);
+        URL url = new URL(String.format("https://github.com/%s", name));
         try {
-            return checkWithGit(url) || checkWithCURL(url);
-        } catch (Exception ex) {
-            // It's safer to keep projects which we fail to check, rather than removing them from DB.
-            // Let's say there is a bug with our implementation, do we prefer to lose repos one by one?
+            // try with git first and if that fails try with cURL
+            return gitConnector.ping(url) || curlConnector.ping(url);
+        } catch (GitException | ClientURLException ex) {
+            /*
+             * It's safer to keep projects which we fail to check,
+             * rather than removing them from the database.
+             * Let's say there is a bug with our implementation,
+             * do we prefer to lose stored entries one by one?
+             */
             log.error("An exception has occurred during cleanup!", ex);
             return true;
-        }
-    }
-
-    private boolean checkWithGit(String url) throws IOException, InterruptedException, TimeoutException {
-        return executeCommand("git", "ls-remote", url, "--exit-code");
-    }
-
-    private boolean checkWithCURL(String url) throws IOException, InterruptedException, TimeoutException {
-        return executeCommand("curl", "-Is", "--fail-with-body", "--show-error", "--connect-timeout", "45", url);
-    }
-
-    private boolean executeCommand(String... command) throws IOException, InterruptedException, TimeoutException {
-        String joined = String.join(" ", command);
-        log.trace("\tExecuting command: {}", joined);
-        ProcessBuilder builder = new ProcessBuilder(command);
-        builder.environment().put("GIT_TERMINAL_PROMPT", "0");
-        Process process = builder.start();
-
-        String stderr = IOUtils.toString(process.getErrorStream(), StandardCharsets.UTF_8);
-        boolean exited = process.waitFor(60, TimeUnit.SECONDS);
-        int returnCode;
-        if (exited) {
-            returnCode = process.exitValue();
-        } else {
-            long pid = process.pid();
-            log.debug("\tProcess [{}]: Timed out! Attempting to terminate...", pid);
-            while (process.isAlive()) process.destroyForcibly();
-            log.debug("\tProcess [{}]: Terminated!", pid);
-            returnCode = OPERATION_TIMEOUT;
-        }
-
-        switch (returnCode) {
-            case 0:
-                return true;
-            case NO_HOST_RESOLVE:
-                throw new UnknownHostException("Could not resolve host address!");
-            case NO_HOST_CONNECTION:
-                throw new ConnectException("Connection to host failed!");
-            case OPERATION_TIMEOUT:
-                throw new TimeoutException("Timed out while executing command: " + joined);
-            case 130:
-                throw new InterruptedException("Process terminated via SIGTERM, exit code 130.");
-            default:
-                log.debug("Command returned with non-zero exit code {}, stderr:\n{}", returnCode, stderr);
-                return false;
         }
     }
 }

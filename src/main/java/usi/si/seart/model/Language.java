@@ -9,6 +9,8 @@ import lombok.Setter;
 import lombok.experimental.FieldDefaults;
 import org.hibernate.Hibernate;
 import org.hibernate.annotations.Immutable;
+import usi.si.seart.model.join.GitRepoLanguage;
+import usi.si.seart.model.join.GitRepoMetric;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;

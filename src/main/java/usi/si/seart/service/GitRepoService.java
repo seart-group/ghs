@@ -7,19 +7,33 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.TransientDataAccessException;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.retry.annotation.Backoff;
 import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import usi.si.seart.model.GitRepo;
+import usi.si.seart.repository.GitRepoLabelRepository;
+import usi.si.seart.repository.GitRepoLanguageRepository;
+import usi.si.seart.repository.GitRepoMetricRepository;
 import usi.si.seart.repository.GitRepoRepository;
+import usi.si.seart.repository.GitRepoTopicRepository;
 import usi.si.seart.repository.specification.GitRepoSearch;
 
 import javax.persistence.EntityNotFoundException;
+import java.util.Optional;
 import java.util.stream.Stream;
 
 public interface GitRepoService {
 
+    @Retryable(
+            value = TransientDataAccessException.class,
+            backoff = @Backoff(delay = 250, multiplier = 2),
+            maxAttempts = 5
+    )
+    void deleteRepoById(Long id);
+    Long count();
     GitRepo getRepoById(Long id);
     GitRepo getByName(String name);
     @Retryable(
@@ -34,6 +48,7 @@ public interface GitRepoService {
             maxAttempts = 5
     )
     GitRepo updateRepo(GitRepo repo);
+    Optional<GitRepo> getNextDeletionCandidate();
     Page<GitRepo> findDynamically(GitRepoSearch parameters, Pageable pageable);
     Stream<GitRepo> streamDynamically(GitRepoSearch parameters);
 
@@ -44,6 +59,25 @@ public interface GitRepoService {
     class GitRepoServiceImpl implements GitRepoService {
 
         GitRepoRepository gitRepoRepository;
+        GitRepoLabelRepository gitRepoLabelRepository;
+        GitRepoLanguageRepository gitRepoLanguageRepository;
+        GitRepoMetricRepository gitRepoMetricRepository;
+        GitRepoTopicRepository gitRepoTopicRepository;
+
+        @Override
+        @Transactional
+        public void deleteRepoById(Long id) {
+            gitRepoLabelRepository.deleteByRepoId(id);
+            gitRepoLanguageRepository.deleteByRepoId(id);
+            gitRepoMetricRepository.deleteByRepoId(id);
+            gitRepoTopicRepository.deleteByRepoId(id);
+            gitRepoRepository.deleteById(id);
+        }
+
+        @Override
+        public Long count() {
+            return gitRepoRepository.count();
+        }
 
         @Override
         public GitRepo getRepoById(Long id) {
@@ -70,6 +104,13 @@ public interface GitRepoService {
         @Override
         public GitRepo updateRepo(GitRepo repo) {
             return gitRepoRepository.save(repo);
+        }
+
+        @Override
+        public Optional<GitRepo> getNextDeletionCandidate() {
+            Pageable pageable = PageRequest.of(0, 1);
+            Page<GitRepo> page = gitRepoRepository.findGitRepoByOrderByLastPinged(pageable);
+            return page.stream().findFirst();
         }
 
         @Override
