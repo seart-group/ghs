@@ -12,6 +12,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.retry.annotation.Backoff;
 import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import usi.si.seart.model.GitRepo;
 import usi.si.seart.repository.GitRepoLabelRepository;
@@ -65,7 +66,7 @@ public interface GitRepoService {
         GitRepoTopicRepository gitRepoTopicRepository;
 
         @Override
-        @Transactional
+        @Transactional(propagation = Propagation.REQUIRES_NEW)
         public void deleteRepoById(Long id) {
             gitRepoLabelRepository.deleteByRepoId(id);
             gitRepoLanguageRepository.deleteByRepoId(id);
