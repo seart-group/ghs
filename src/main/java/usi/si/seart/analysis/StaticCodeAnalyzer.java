@@ -21,8 +21,8 @@ import usi.si.seart.model.Language;
 import usi.si.seart.model.join.GitRepoMetric;
 import usi.si.seart.service.GitRepoService;
 import usi.si.seart.service.LanguageService;
+import usi.si.seart.util.Optionals;
 
-import javax.persistence.EntityNotFoundException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.file.Path;
@@ -52,13 +52,21 @@ public class StaticCodeAnalyzer {
      * @param name the full name of the repository.
      */
     @Async("AnalysisExecutor")
+    public void gatherCodeMetricsFor(@NotNull String name) {
+        Optionals.ofThrowable(() -> gitRepoService.getByName(name)).ifPresentOrElse(
+                this::gatherCodeMetricsFor,
+                () -> log.warn("Skipping non-existing repository: [{}]", name)
+        );
+    }
+
     @SneakyThrows(MalformedURLException.class)
     @SuppressWarnings("ConstantConditions")
-    public void gatherCodeMetricsFor(@NotNull String name) {
+    private void gatherCodeMetricsFor(@NotNull GitRepo gitRepo) {
+        Long id = gitRepo.getId();
+        String name = gitRepo.getName();
         URL url = new URL("https://github.com/" + name + ".git");
         try (LocalRepositoryClone localRepository = gitConnector.clone(url)) {
-            GitRepo repo = gitRepoService.getByName(name);
-            log.debug("Analyzing: {} [{}]", repo.getName(), repo.getId());
+            log.debug("Analyzing: {} [{}]", name, id);
             Path path = localRepository.getPath();
             ExternalProcess process = new ExternalProcess(path, "cloc", "--json", "--quiet", ".");
             ExternalProcess.Result result = process.execute(5, TimeUnit.MINUTES);
@@ -71,20 +79,20 @@ public class StaticCodeAnalyzer {
             Set<GitRepoMetric> metrics = json.entrySet().stream()
                     .map(entry -> {
                         Language language = languageService.getOrCreate(entry.getKey());
-                        GitRepoMetric.Key key = new GitRepoMetric.Key(repo.getId(), language.getId());
+                        GitRepoMetric.Key key = new GitRepoMetric.Key(id, language.getId());
                         JsonObject inner = entry.getValue().getAsJsonObject();
                         GitRepoMetric metric = conversionService.convert(inner, GitRepoMetric.class);
                         metric.setKey(key);
-                        metric.setRepo(repo);
+                        metric.setRepo(gitRepo);
                         metric.setLanguage(language);
                         return metric;
                     })
                     .collect(Collectors.toSet());
             if (metrics.isEmpty())
                 log.warn("No metrics were computed for: {}", name);
-            repo.setMetrics(metrics);
-            repo.setLastAnalyzed();
-            gitRepoService.updateRepo(repo);
+            gitRepo.setMetrics(metrics);
+            gitRepo.setLastAnalyzed();
+            gitRepoService.updateRepo(gitRepo);
         } catch (StaticCodeAnalysisException ex) {
             log.error("Static code analysis failed for: " + name, ex);
         } catch (GitException ex) {
@@ -94,8 +102,6 @@ public class StaticCodeAnalyzer {
             Thread.currentThread().interrupt();
         } catch (TimeoutException ex) {
             log.warn("Static code analysis timed out for: {}", name);
-        } catch (EntityNotFoundException ex) {
-            log.error("Static code analysis can not be performed on repository that does not exist: {}", name);
         }
     }
 }
