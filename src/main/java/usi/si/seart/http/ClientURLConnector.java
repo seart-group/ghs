@@ -25,11 +25,11 @@ public class ClientURLConnector {
     public boolean ping(URL url) throws ClientURLException {
         try {
             String[] command = {
-                    "curl", "-Is",
-                    "--connect-timeout", "60",
-                    "--fail-with-body",
-                    "--show-error",
-                    url.toString()
+                "curl", "-Is",
+                "--connect-timeout", "60",
+                "--fail-with-body",
+                "--show-error",
+                url.toString()
             };
             ExternalProcess process = new ExternalProcess(command);
             log.trace("Pinging:   {}", url);
