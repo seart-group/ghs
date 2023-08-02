@@ -9,7 +9,6 @@ import lombok.Setter;
 import lombok.experimental.FieldDefaults;
 import org.hibernate.Hibernate;
 import org.hibernate.annotations.Generated;
-import org.hibernate.annotations.GenerationTime;
 import org.hibernate.generator.EventType;
 import usi.si.seart.model.GitRepo;
 import usi.si.seart.model.Language;
