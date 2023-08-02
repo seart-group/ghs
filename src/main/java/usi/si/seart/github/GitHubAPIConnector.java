@@ -9,7 +9,6 @@ import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.experimental.NonFinal;
@@ -203,7 +202,7 @@ public class GitHubAPIConnector {
 
     private Long fetchLastPageNumberFromHeader(URL url) {
         FetchCallback.Result result = fetch(url);
-        if (result.getStatus() == HttpStatus.FORBIDDEN) {
+        if (result.status() == HttpStatus.FORBIDDEN) {
             /*
              * Response status code 403, two possibilities:
              * (1) The rate limit for the current token is exceeded
@@ -216,7 +215,7 @@ public class GitHubAPIConnector {
              */
             return null;
         } else {
-            Headers headers = result.getHeaders();
+            Headers headers = result.headers();
             String link = headers.get("link");
             if (link != null) {
                 NavigationLinks links = conversionService.convert(link, NavigationLinks.class);
@@ -238,7 +237,7 @@ public class GitHubAPIConnector {
         do {
             FetchCallback.Result result = fetch(url);
             array.addAll(result.getJsonArray());
-            Headers headers = result.getHeaders();
+            Headers headers = result.headers();
             String link = headers.get("link");
             url = Optional.ofNullable(link).map(str -> {
                 NavigationLinks links = conversionService.convert(str, NavigationLinks.class);
@@ -259,7 +258,7 @@ public class GitHubAPIConnector {
         do {
             FetchCallback.Result result = fetch(url);
             result.getJsonObject().entrySet().forEach(entry -> object.add(entry.getKey(), entry.getValue()));
-            Headers headers = result.getHeaders();
+            Headers headers = result.headers();
             String link = headers.get("link");
             url = Optional.ofNullable(link).map(str -> {
                 NavigationLinks links = conversionService.convert(str, NavigationLinks.class);
@@ -281,7 +280,7 @@ public class GitHubAPIConnector {
             FetchCallback.Result result = fetch(url);
             JsonObject object = result.getJsonObject();
             array.addAll(object.getAsJsonArray("names"));
-            Headers headers = result.getHeaders();
+            Headers headers = result.headers();
             String link = headers.get("link");
             url = Optional.ofNullable(link).map(str -> {
                 NavigationLinks links = conversionService.convert(str, NavigationLinks.class);
@@ -311,14 +310,7 @@ public class GitHubAPIConnector {
 
         URL url;
 
-        @Getter
-        @AllArgsConstructor(access = AccessLevel.PRIVATE)
-        @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
-        private class Result {
-
-            HttpStatus status;
-            Headers headers;
-            JsonElement jsonElement;
+        private record Result(HttpStatus status, Headers headers, JsonElement jsonElement) {
 
             public JsonObject getJsonObject() {
                 return jsonElement.getAsJsonObject();
