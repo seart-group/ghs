@@ -4,12 +4,15 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import usi.si.seart.model.GitRepo;
 import usi.si.seart.repository.specification.GitRepoSearch;
 import usi.si.seart.repository.specification.GitRepoSpecification;
 import usi.si.seart.repository.specification.JpaStreamableSpecificationRepository;
 
+import javax.validation.constraints.NotNull;
 import java.util.Optional;
 import java.util.stream.Stream;
 
@@ -18,6 +21,10 @@ public interface GitRepoRepository extends
         JpaSpecificationExecutor<GitRepo>,
         JpaStreamableSpecificationRepository<GitRepo>
 {
+
+    @Modifying
+    @Query("DELETE FROM GitRepo WHERE id = :id")
+    void deleteById(@NotNull @Param("id") Long id);
 
     Optional<GitRepo> findGitRepoById(Long id);
 
