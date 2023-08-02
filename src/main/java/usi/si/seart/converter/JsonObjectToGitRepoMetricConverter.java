@@ -3,7 +3,7 @@ package usi.si.seart.converter;
 import com.google.gson.JsonObject;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.core.convert.converter.Converter;
-import usi.si.seart.model.GitRepoMetric;
+import usi.si.seart.model.join.GitRepoMetric;
 
 public class JsonObjectToGitRepoMetricConverter implements Converter<JsonObject, GitRepoMetric> {
 

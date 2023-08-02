@@ -3,7 +3,7 @@ package usi.si.seart.converter;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.lang.NonNull;
 import usi.si.seart.dto.GitRepoMetricDto;
-import usi.si.seart.model.GitRepoMetric;
+import usi.si.seart.model.join.GitRepoMetric;
 
 public class GitRepoMetricToDtoConverter implements Converter<GitRepoMetric, GitRepoMetricDto> {
 

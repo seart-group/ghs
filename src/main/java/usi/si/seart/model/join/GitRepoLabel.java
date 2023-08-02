@@ -1,4 +1,4 @@
-package usi.si.seart.model;
+package usi.si.seart.model.join;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -7,6 +7,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.FieldDefaults;
+import usi.si.seart.model.GitRepo;
+import usi.si.seart.model.Label;
 
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
@@ -26,9 +28,9 @@ import java.util.Objects;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "git_repo_topic")
+@Table(name = "git_repo_label")
 @Entity
-public class GitRepoTopic {
+public class GitRepoLabel {
 
     @EmbeddedId
     Key key;
@@ -39,9 +41,9 @@ public class GitRepoTopic {
     GitRepo repo;
 
     @ManyToOne(optional = false)
-    @MapsId("topicId")
-    @JoinColumn(name = "topic_id")
-    Topic topic;
+    @MapsId("labelId")
+    @JoinColumn(name = "label_id")
+    Label label;
 
     @Getter
     @Setter
@@ -55,20 +57,20 @@ public class GitRepoTopic {
         Long repoId;
 
         @NotNull
-        @Column(name = "topic_id")
-        Long topicId;
+        @Column(name = "label_id")
+        Long labelId;
 
         @Override
         public boolean equals(Object obj) {
             if (this == obj) return true;
             if (obj == null || getClass() != obj.getClass()) return false;
             Key other = (Key) obj;
-            return repoId.equals(other.repoId) && topicId.equals(other.topicId);
+            return repoId.equals(other.repoId) && labelId.equals(other.labelId);
         }
 
         @Override
         public int hashCode() {
-            return Objects.hash(repoId, topicId);
+            return Objects.hash(repoId, labelId);
         }
     }
 }

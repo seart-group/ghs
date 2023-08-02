@@ -5,10 +5,10 @@ import org.springframework.lang.NonNull;
 import usi.si.seart.dto.GitRepoDto;
 import usi.si.seart.dto.GitRepoMetricDto;
 import usi.si.seart.model.GitRepo;
-import usi.si.seart.model.GitRepoMetric;
 import usi.si.seart.model.GitRepoMetricAggregate;
 import usi.si.seart.model.Label;
 import usi.si.seart.model.Topic;
+import usi.si.seart.model.join.GitRepoMetric;
 
 import java.util.Comparator;
 import java.util.LinkedHashMap;

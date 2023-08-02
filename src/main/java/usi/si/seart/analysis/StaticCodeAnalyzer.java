@@ -17,8 +17,8 @@ import usi.si.seart.git.GitConnector;
 import usi.si.seart.git.LocalRepositoryClone;
 import usi.si.seart.io.ExternalProcess;
 import usi.si.seart.model.GitRepo;
-import usi.si.seart.model.GitRepoMetric;
 import usi.si.seart.model.Language;
+import usi.si.seart.model.join.GitRepoMetric;
 import usi.si.seart.service.GitRepoService;
 import usi.si.seart.service.LanguageService;
 

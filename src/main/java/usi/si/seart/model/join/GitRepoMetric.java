@@ -1,4 +1,4 @@
-package usi.si.seart.model;
+package usi.si.seart.model.join;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -10,6 +10,8 @@ import lombok.experimental.FieldDefaults;
 import org.hibernate.Hibernate;
 import org.hibernate.annotations.Generated;
 import org.hibernate.annotations.GenerationTime;
+import usi.si.seart.model.GitRepo;
+import usi.si.seart.model.Language;
 
 import javax.persistence.Column;
 import javax.persistence.Embeddable;

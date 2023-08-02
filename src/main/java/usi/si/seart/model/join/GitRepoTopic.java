@@ -1,4 +1,4 @@
-package usi.si.seart.model;
+package usi.si.seart.model.join;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -7,7 +7,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.FieldDefaults;
-import org.hibernate.Hibernate;
+import usi.si.seart.model.GitRepo;
+import usi.si.seart.model.Topic;
 
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
@@ -27,9 +28,9 @@ import java.util.Objects;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "git_repo_language")
+@Table(name = "git_repo_topic")
 @Entity
-public class GitRepoLanguage {
+public class GitRepoTopic {
 
     @EmbeddedId
     Key key;
@@ -40,26 +41,9 @@ public class GitRepoLanguage {
     GitRepo repo;
 
     @ManyToOne(optional = false)
-    @MapsId("languageId")
-    @JoinColumn(name = "language_id")
-    Language language;
-
-    @NotNull
-    @Column(name = "size_of_code")
-    Long sizeOfCode;
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) return false;
-        GitRepoLanguage language = (GitRepoLanguage) o;
-        return getKey() != null && Objects.equals(getKey(), language.getKey());
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(getKey());
-    }
+    @MapsId("topicId")
+    @JoinColumn(name = "topic_id")
+    Topic topic;
 
     @Getter
     @Setter
@@ -73,20 +57,20 @@ public class GitRepoLanguage {
         Long repoId;
 
         @NotNull
-        @Column(name = "language_id")
-        Long languageId;
+        @Column(name = "topic_id")
+        Long topicId;
 
         @Override
         public boolean equals(Object obj) {
             if (this == obj) return true;
             if (obj == null || getClass() != obj.getClass()) return false;
             Key other = (Key) obj;
-            return repoId.equals(other.repoId) && languageId.equals(other.languageId);
+            return repoId.equals(other.repoId) && topicId.equals(other.topicId);
         }
 
         @Override
         public int hashCode() {
-            return Objects.hash(repoId, languageId);
+            return Objects.hash(repoId, topicId);
         }
     }
 }
