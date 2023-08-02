@@ -18,12 +18,12 @@ public class SecurityConfig {
         return httpSecurity
                 .csrf(configurer -> configurer.csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse()))
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .authorizeHttpRequests(registry -> {
-                    registry.requestMatchers("/actuator/**")
-                            .authenticated()
-                            .anyRequest()
-                            .permitAll();
-                })
+                .authorizeHttpRequests(registry ->
+                        registry.requestMatchers("/actuator/**")
+                                .authenticated()
+                                .anyRequest()
+                                .permitAll()
+                )
                 .httpBasic(Customizer.withDefaults())
                 .build();
     }
