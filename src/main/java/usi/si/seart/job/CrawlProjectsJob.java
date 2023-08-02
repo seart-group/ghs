@@ -40,8 +40,6 @@ import java.util.ArrayDeque;
 import java.util.Collection;
 import java.util.Date;
 import java.util.Deque;
-import java.util.HashSet;
-import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
@@ -281,21 +279,15 @@ public class CrawlProjectsJob {
     }
 
     private void retrieveRepoLabels(GitRepo repo) {
-        Set<Label> labels = new HashSet<>();
         try {
-            Long count = gitHubApiConnector.fetchNumberOfLabels(repo.getName());
-            int pages = (int) Math.ceil(count / 100.0);
-            for (int page = 1; page <= pages; page++) {
-                JsonArray array = gitHubApiConnector.fetchRepoLabels(repo.getName(), page);
-                Set<Label> results = StreamSupport.stream(array.spliterator(), true)
-                        .map(element -> {
-                            JsonObject object = element.getAsJsonObject();
-                            String name = object.get("name").getAsString();
-                            return labelService.getOrCreate(name.toLowerCase());
-                        })
-                        .collect(Collectors.toSet());
-                labels.addAll(results);
-            }
+            JsonArray array = gitHubApiConnector.fetchRepoLabels(repo.getName());
+            Set<Label> labels = StreamSupport.stream(array.spliterator(), true)
+                    .map(element -> {
+                        JsonObject object = element.getAsJsonObject();
+                        String name = object.get("name").getAsString();
+                        return labelService.getOrCreate(name.toLowerCase());
+                    })
+                    .collect(Collectors.toSet());
             log.debug("\tAdding: {} labels.", labels.size());
             repo.setLabels(labels);
             gitRepoService.updateRepo(repo);
@@ -307,27 +299,20 @@ public class CrawlProjectsJob {
     }
 
     private void retrieveRepoLanguages(GitRepo repo) {
-        Set<GitRepoLanguage> languages = new HashSet<>();
         try {
-            Long count = gitHubApiConnector.fetchNumberOfLanguages(repo.getName());
-            int pages = (int) Math.ceil(count / 100.0);
-            for (int page = 1; page <= pages; page++) {
-                JsonObject object = gitHubApiConnector.fetchRepoLanguages(repo.getName(), page);
-                Set<Map.Entry<String, JsonElement>> entries = object.entrySet();
-                Set<GitRepoLanguage> results = entries.stream()
-                        .map(entry -> {
-                            Language language = languageService.getOrCreate(entry.getKey());
-                            GitRepoLanguage.Key key = new GitRepoLanguage.Key(repo.getId(), language.getId());
-                            return GitRepoLanguage.builder()
-                                    .key(key)
-                                    .repo(repo)
-                                    .language(language)
-                                    .sizeOfCode(entry.getValue().getAsLong())
-                                    .build();
-                        })
-                        .collect(Collectors.toSet());
-                languages.addAll(results);
-            }
+            JsonObject object = gitHubApiConnector.fetchRepoLanguages(repo.getName());
+            Set<GitRepoLanguage> languages = object.entrySet().stream()
+                    .map(entry -> {
+                        Language language = languageService.getOrCreate(entry.getKey());
+                        GitRepoLanguage.Key key = new GitRepoLanguage.Key(repo.getId(), language.getId());
+                        return GitRepoLanguage.builder()
+                                .key(key)
+                                .repo(repo)
+                                .language(language)
+                                .sizeOfCode(entry.getValue().getAsLong())
+                                .build();
+                    })
+                    .collect(Collectors.toSet());
             log.debug("\tAdding: {} languages.", languages.size());
             repo.setLanguages(languages);
             gitRepoService.updateRepo(repo);
@@ -339,18 +324,11 @@ public class CrawlProjectsJob {
     }
 
     private void retrieveRepoTopics(GitRepo repo) {
-        Set<Topic> topics = new HashSet<>();
         try {
-            Long count = gitHubApiConnector.fetchNumberOfTopics(repo.getName());
-            int pages = (int) Math.ceil(count / 100.0);
-            for (int page = 1; page <= pages; page++) {
-                JsonObject object = gitHubApiConnector.fetchRepoTopics(repo.getName(), page);
-                JsonArray array = object.getAsJsonArray("names");
-                Set<Topic> results = StreamSupport.stream(array.spliterator(), true)
-                        .map(entry -> topicService.getOrCreate(entry.getAsString()))
-                        .collect(Collectors.toSet());
-                topics.addAll(results);
-            }
+            JsonArray array = gitHubApiConnector.fetchRepoTopics(repo.getName());
+            Set<Topic> topics = StreamSupport.stream(array.spliterator(), true)
+                    .map(entry -> topicService.getOrCreate(entry.getAsString()))
+                    .collect(Collectors.toSet());
             log.debug("\tAdding: {} topics.", topics.size());
             repo.setTopics(topics);
             gitRepoService.updateRepo(repo);

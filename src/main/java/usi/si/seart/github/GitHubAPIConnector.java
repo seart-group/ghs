@@ -201,36 +201,6 @@ public class GitHubAPIConnector {
         return fetchLastPageNumberFromHeader(url);
     }
 
-    public Long fetchNumberOfLabels(String name) {
-        URL url = HttpUrl.get(Endpoint.REPOSITORY_LABELS.toURL(name.split("/")))
-                .newBuilder()
-                .addQueryParameter("page", "1")
-                .addQueryParameter("per_page", "1")
-                .build()
-                .url();
-        return fetchLastPageNumberFromHeader(url);
-    }
-
-    public Long fetchNumberOfLanguages(String name) {
-        URL url = HttpUrl.get(Endpoint.REPOSITORY_LANGUAGES.toURL(name.split("/")))
-                .newBuilder()
-                .addQueryParameter("page", "1")
-                .addQueryParameter("per_page", "1")
-                .build()
-                .url();
-        return fetchLastPageNumberFromHeader(url);
-    }
-
-    public Long fetchNumberOfTopics(String name) {
-        URL url = HttpUrl.get(Endpoint.REPOSITORY_TOPICS.toURL(name.split("/")))
-                .newBuilder()
-                .addQueryParameter("page", "1")
-                .addQueryParameter("per_page", "1")
-                .build()
-                .url();
-        return fetchLastPageNumberFromHeader(url);
-    }
-
     private Long fetchLastPageNumberFromHeader(URL url) {
         FetchCallback.Result result = fetch(url);
         if (result.getStatus() == HttpStatus.FORBIDDEN) {
@@ -257,37 +227,68 @@ public class GitHubAPIConnector {
         }
     }
 
-    public JsonArray fetchRepoLabels(String name, Integer page) {
+    public JsonArray fetchRepoLabels(String name) {
+        JsonArray array = new JsonArray();
         URL url = HttpUrl.get(Endpoint.REPOSITORY_LABELS.toURL(name.split("/")))
                 .newBuilder()
-                .addQueryParameter("page", page.toString())
+                .addQueryParameter("page", "1")
                 .addQueryParameter("per_page", "100")
                 .build()
                 .url();
-        FetchCallback.Result result = fetch(url);
-        return result.getJsonArray();
+        do {
+            FetchCallback.Result result = fetch(url);
+            array.addAll(result.getJsonArray());
+            Headers headers = result.getHeaders();
+            String link = headers.get("link");
+            url = Optional.ofNullable(link).map(str -> {
+                NavigationLinks links = conversionService.convert(str, NavigationLinks.class);
+                return links.getNext();
+            }).orElse(null);
+        } while (url != null);
+        return array;
     }
 
-    public JsonObject fetchRepoLanguages(String name, Integer page) {
+    public JsonObject fetchRepoLanguages(String name) {
+        JsonObject object = new JsonObject();
         URL url = HttpUrl.get(Endpoint.REPOSITORY_LANGUAGES.toURL(name.split("/")))
                 .newBuilder()
-                .addQueryParameter("page", page.toString())
+                .addQueryParameter("page", "1")
                 .addQueryParameter("per_page", "100")
                 .build()
                 .url();
-        FetchCallback.Result result = fetch(url);
-        return result.getJsonObject();
+        do {
+            FetchCallback.Result result = fetch(url);
+            result.getJsonObject().entrySet().forEach(entry -> object.add(entry.getKey(), entry.getValue()));
+            Headers headers = result.getHeaders();
+            String link = headers.get("link");
+            url = Optional.ofNullable(link).map(str -> {
+                NavigationLinks links = conversionService.convert(str, NavigationLinks.class);
+                return links.getNext();
+            }).orElse(null);
+        } while (url != null);
+        return object;
     }
 
-    public JsonObject fetchRepoTopics(String name, Integer page) {
+    public JsonArray fetchRepoTopics(String name) {
+        JsonArray array = new JsonArray();
         URL url = HttpUrl.get(Endpoint.REPOSITORY_TOPICS.toURL(name.split("/")))
                 .newBuilder()
-                .addQueryParameter("page", page.toString())
+                .addQueryParameter("page", "1")
                 .addQueryParameter("per_page", "100")
                 .build()
                 .url();
-        FetchCallback.Result result = fetch(url);
-        return result.getJsonObject();
+        do {
+            FetchCallback.Result result = fetch(url);
+            JsonObject object = result.getJsonObject();
+            array.addAll(object.getAsJsonArray("names"));
+            Headers headers = result.getHeaders();
+            String link = headers.get("link");
+            url = Optional.ofNullable(link).map(str -> {
+                NavigationLinks links = conversionService.convert(str, NavigationLinks.class);
+                return links.getNext();
+            }).orElse(null);
+        } while (url != null);
+        return array;
     }
 
     private FetchCallback.Result fetch(URL url) {
