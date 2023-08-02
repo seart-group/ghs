@@ -1,4 +1,4 @@
-package usi.si.seart.model;
+package usi.si.seart.model.join;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -8,6 +8,11 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.FieldDefaults;
 import org.hibernate.Hibernate;
+import org.hibernate.annotations.Generated;
+import org.hibernate.annotations.GenerationTime;
+import org.hibernate.generator.EventType;
+import usi.si.seart.model.GitRepo;
+import usi.si.seart.model.Language;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
@@ -21,15 +26,19 @@ import jakarta.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.util.Objects;
 
+/**
+ * A metric for one language of a git repository.
+ * It is a junction table for the ManyToMany relationship between GitRepo and MetricLanguage.
+ */
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Getter
 @Setter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "git_repo_language")
+@Table(name = "git_repo_metrics")
 @Entity
-public class GitRepoLanguage {
+public class GitRepoMetric {
 
     @EmbeddedId
     Key key;
@@ -44,16 +53,49 @@ public class GitRepoLanguage {
     @JoinColumn(name = "language_id")
     Language language;
 
+    @Generated(event = {
+        EventType.INSERT,
+        EventType.UPDATE
+    })
+    @Column(
+            name = "lines",
+            insertable = false,
+            updatable = false
+    )
+    Long lines;
+
+    @Generated(event = {
+        EventType.INSERT,
+        EventType.UPDATE
+    })
+    @Column(
+            name = "lines_non_blank",
+            insertable = false,
+            updatable = false
+    )
+    Long nonBlankLines;
+
     @NotNull
-    @Column(name = "size_of_code")
-    Long sizeOfCode;
+    @Column(name = "lines_blank")
+    @Builder.Default
+    Long blankLines = 0L;
+
+    @NotNull
+    @Column(name = "lines_code")
+    @Builder.Default
+    Long codeLines = 0L;
+
+    @NotNull
+    @Column(name = "lines_comment")
+    @Builder.Default
+    Long commentLines = 0L;
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) return false;
-        GitRepoLanguage language = (GitRepoLanguage) o;
-        return getKey() != null && Objects.equals(getKey(), language.getKey());
+        GitRepoMetric metric = (GitRepoMetric) o;
+        return getKey() != null && Objects.equals(getKey(), metric.getKey());
     }
 
     @Override
@@ -80,7 +122,7 @@ public class GitRepoLanguage {
         public boolean equals(Object obj) {
             if (this == obj) return true;
             if (obj == null || getClass() != obj.getClass()) return false;
-            Key other = (Key) obj;
+            GitRepoMetric.Key other = (GitRepoMetric.Key) obj;
             return repoId.equals(other.repoId) && languageId.equals(other.languageId);
         }
 

@@ -10,6 +10,8 @@ import lombok.experimental.FieldDefaults;
 import org.hibernate.Hibernate;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
+import usi.si.seart.model.join.GitRepoLanguage;
+import usi.si.seart.model.join.GitRepoMetric;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -23,9 +25,12 @@ import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
+import jakarta.persistence.PrePersist;
+import jakarta.persistence.PreUpdate;
 import jakarta.persistence.PrimaryKeyJoinColumn;
 import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.PastOrPresent;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Objects;
@@ -129,11 +134,13 @@ public class GitRepo {
     @Column(name = "archived")
     Boolean isArchived;
 
-    @Column(name = "crawled")
-    Date crawled;
+    @PastOrPresent
+    @Column(name = "last_pinged")
+    Date lastPinged;
 
-    @Column(name = "cloned")
-    Date cloned;
+    @PastOrPresent
+    @Column(name = "last_analyzed")
+    Date lastAnalyzed;
 
     @Builder.Default
     @ManyToMany(cascade = {
@@ -204,16 +211,18 @@ public class GitRepo {
     }
 
     /**
-     * To be called when the repository has been crawled through GitHub's API.
+     * To be called whenever the repository is encountered either in the API or during cleaning and analysis.
      */
-    public void setCrawled() {
-        crawled = new Date();
+    @PrePersist
+    @PreUpdate
+    public void setLastPinged() {
+        lastPinged = new Date();
     }
 
     /**
      * To be called when the repository's code metrics have been mined.
      */
-    public void setCloned() {
-        cloned = new Date();
+    public void setLastAnalyzed() {
+        lastAnalyzed = new Date();
     }
 }

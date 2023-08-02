@@ -9,6 +9,7 @@ import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.experimental.NonFinal;
@@ -18,7 +19,6 @@ import okhttp3.HttpUrl;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
-import org.apache.commons.lang3.tuple.Triple;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.convert.ConversionService;
@@ -37,13 +37,10 @@ import java.net.URL;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 @SuppressWarnings("ConstantConditions")
 @Slf4j
@@ -55,8 +52,6 @@ public class GitHubAPIConnector {
     @NonFinal
     @Value("${app.crawl.minimum-stars}")
     Integer minimumStars;
-
-    Pattern headerLinkPattern;
 
     OkHttpClient client;
 
@@ -87,15 +82,15 @@ public class GitHubAPIConnector {
                 .build()
                 .url();
 
-        Triple<HttpStatus, Headers, JsonElement> response = fetch(url);
-        return response.getRight().getAsJsonObject();
+        FetchCallback.Result result = fetch(url);
+        return result.getJsonObject();
     }
 
 
     public JsonObject fetchRepoInfo(String name) {
         URL url = Endpoint.REPOSITORY.toURL(name.split("/"));
-        Triple<HttpStatus, Headers, JsonElement> response = fetch(url);
-        return response.getRight().getAsJsonObject();
+        FetchCallback.Result result = fetch(url);
+        return result.getJsonObject();
     }
 
     public GitCommit fetchLastCommitInfo(String name) {
@@ -105,8 +100,8 @@ public class GitHubAPIConnector {
                 .addQueryParameter("per_page", "1")
                 .build()
                 .url();
-        Triple<HttpStatus, Headers, JsonElement> response = fetch(url);
-        JsonArray commits = response.getRight().getAsJsonArray();
+        FetchCallback.Result result = fetch(url);
+        JsonArray commits = result.getJsonArray();
         try {
             JsonObject latest = commits.get(0).getAsJsonObject();
             return conversionService.convert(latest, GitCommit.class);
@@ -206,42 +201,9 @@ public class GitHubAPIConnector {
         return fetchLastPageNumberFromHeader(url);
     }
 
-    public Long fetchNumberOfLabels(String name) {
-        URL url = HttpUrl.get(Endpoint.REPOSITORY_LABELS.toURL(name.split("/")))
-                .newBuilder()
-                .addQueryParameter("page", "1")
-                .addQueryParameter("per_page", "1")
-                .build()
-                .url();
-        return fetchLastPageNumberFromHeader(url);
-    }
-
-    public Long fetchNumberOfLanguages(String name) {
-        URL url = HttpUrl.get(Endpoint.REPOSITORY_LANGUAGES.toURL(name.split("/")))
-                .newBuilder()
-                .addQueryParameter("page", "1")
-                .addQueryParameter("per_page", "1")
-                .build()
-                .url();
-        return fetchLastPageNumberFromHeader(url);
-    }
-
-    public Long fetchNumberOfTopics(String name) {
-        URL url = HttpUrl.get(Endpoint.REPOSITORY_TOPICS.toURL(name.split("/")))
-                .newBuilder()
-                .addQueryParameter("page", "1")
-                .addQueryParameter("per_page", "1")
-                .build()
-                .url();
-        return fetchLastPageNumberFromHeader(url);
-    }
-
     private Long fetchLastPageNumberFromHeader(URL url) {
-        Triple<HttpStatus, Headers, JsonElement> response = fetch(url);
-        HttpStatus status = response.getLeft();
-
-        Long count;
-        if (status == HttpStatus.FORBIDDEN) {
+        FetchCallback.Result result = fetch(url);
+        if (result.getStatus() == HttpStatus.FORBIDDEN) {
             /*
              * Response status code 403, two possibilities:
              * (1) The rate limit for the current token is exceeded
@@ -252,66 +214,86 @@ public class GitHubAPIConnector {
              * then the latter is always the response cause.
              * As a result we return null value to denote the metric as unobtainable.
              */
-            count = null;
+            return null;
         } else {
-            JsonElement element = response.getRight();
-            Headers headers = response.getMiddle();
+            Headers headers = result.getHeaders();
             String link = headers.get("link");
             if (link != null) {
-                Map<String, String> links = new HashMap<>();
-                Matcher matcher = headerLinkPattern.matcher(link);
-                while (matcher.find()) {
-                    links.put(matcher.group(2), matcher.group(1));
-                }
-                HttpUrl last = HttpUrl.get(links.get("last"));
-                count = Long.parseLong(last.queryParameter("page"));
-            } else if (element.isJsonArray()) {
-                count = (long) element.getAsJsonArray().size();
-            } else if (element.isJsonObject()) {
-                count = (long) element.getAsJsonObject().size();
+                NavigationLinks links = conversionService.convert(link, NavigationLinks.class);
+                return links.getLastPage();
             } else {
-                count = 1L;
+                return result.size().map(Integer::longValue).orElse(1L);
             }
         }
-        return count;
     }
 
-    public JsonArray fetchRepoLabels(String name, Integer page) {
+    public JsonArray fetchRepoLabels(String name) {
+        JsonArray array = new JsonArray();
         URL url = HttpUrl.get(Endpoint.REPOSITORY_LABELS.toURL(name.split("/")))
                 .newBuilder()
-                .addQueryParameter("page", page.toString())
+                .addQueryParameter("page", "1")
                 .addQueryParameter("per_page", "100")
                 .build()
                 .url();
-        Triple<HttpStatus, Headers, JsonElement> response = fetch(url);
-        return response.getRight().getAsJsonArray();
+        do {
+            FetchCallback.Result result = fetch(url);
+            array.addAll(result.getJsonArray());
+            Headers headers = result.getHeaders();
+            String link = headers.get("link");
+            url = Optional.ofNullable(link).map(str -> {
+                NavigationLinks links = conversionService.convert(str, NavigationLinks.class);
+                return links.getNext();
+            }).orElse(null);
+        } while (url != null);
+        return array;
     }
 
-    public JsonObject fetchRepoLanguages(String name, Integer page) {
+    public JsonObject fetchRepoLanguages(String name) {
+        JsonObject object = new JsonObject();
         URL url = HttpUrl.get(Endpoint.REPOSITORY_LANGUAGES.toURL(name.split("/")))
                 .newBuilder()
-                .addQueryParameter("page", page.toString())
+                .addQueryParameter("page", "1")
                 .addQueryParameter("per_page", "100")
                 .build()
                 .url();
-        Triple<HttpStatus, Headers, JsonElement> response = fetch(url);
-        return response.getRight().getAsJsonObject();
+        do {
+            FetchCallback.Result result = fetch(url);
+            result.getJsonObject().entrySet().forEach(entry -> object.add(entry.getKey(), entry.getValue()));
+            Headers headers = result.getHeaders();
+            String link = headers.get("link");
+            url = Optional.ofNullable(link).map(str -> {
+                NavigationLinks links = conversionService.convert(str, NavigationLinks.class);
+                return links.getNext();
+            }).orElse(null);
+        } while (url != null);
+        return object;
     }
 
-    public JsonObject fetchRepoTopics(String name, Integer page) {
+    public JsonArray fetchRepoTopics(String name) {
+        JsonArray array = new JsonArray();
         URL url = HttpUrl.get(Endpoint.REPOSITORY_TOPICS.toURL(name.split("/")))
                 .newBuilder()
-                .addQueryParameter("page", page.toString())
+                .addQueryParameter("page", "1")
                 .addQueryParameter("per_page", "100")
                 .build()
                 .url();
-        Triple<HttpStatus, Headers, JsonElement> response = fetch(url);
-        return response.getRight().getAsJsonObject();
+        do {
+            FetchCallback.Result result = fetch(url);
+            JsonObject object = result.getJsonObject();
+            array.addAll(object.getAsJsonArray("names"));
+            Headers headers = result.getHeaders();
+            String link = headers.get("link");
+            url = Optional.ofNullable(link).map(str -> {
+                NavigationLinks links = conversionService.convert(str, NavigationLinks.class);
+                return links.getNext();
+            }).orElse(null);
+        } while (url != null);
+        return array;
     }
 
-    Triple<HttpStatus, Headers, JsonElement> fetch(URL url) {
+    private FetchCallback.Result fetch(URL url) {
         try {
-            Triple<HttpStatus, Headers, JsonElement> result = retryTemplate.execute(new APIFetchCallback(url));
+            FetchCallback.Result result = retryTemplate.execute(new FetchCallback(url));
             TimeUnit.MILLISECONDS.sleep(250);
             return result;
         } catch (InterruptedException ex) {
@@ -325,13 +307,41 @@ public class GitHubAPIConnector {
 
     @AllArgsConstructor(access = AccessLevel.PRIVATE)
     @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
-    private class APIFetchCallback implements RetryCallback<Triple<HttpStatus, Headers, JsonElement>, Exception> {
+    private class FetchCallback implements RetryCallback<FetchCallback.Result, Exception> {
 
         URL url;
 
+        @Getter
+        @AllArgsConstructor(access = AccessLevel.PRIVATE)
+        @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
+        private class Result {
+
+            HttpStatus status;
+            Headers headers;
+            JsonElement jsonElement;
+
+            public JsonObject getJsonObject() {
+                return jsonElement.getAsJsonObject();
+            }
+
+            public JsonArray getJsonArray() {
+                return jsonElement.getAsJsonArray();
+            }
+
+            public Optional<Integer> size() {
+                if (jsonElement.isJsonArray()) {
+                    return Optional.of(jsonElement.getAsJsonArray().size());
+                } else if (jsonElement.isJsonObject()) {
+                    return Optional.of(jsonElement.getAsJsonObject().size());
+                } else {
+                    return Optional.empty();
+                }
+            }
+        }
+
         @Override
         @SuppressWarnings("resource")
-        public Triple<HttpStatus, Headers, JsonElement> doWithRetry(RetryContext context) throws Exception {
+        public FetchCallback.Result doWithRetry(RetryContext context) throws Exception {
             Request.Builder builder = new Request.Builder();
             builder.url(url);
             String currentToken = gitHubTokenManager.getCurrentToken();
@@ -348,10 +358,10 @@ public class GitHubAPIConnector {
 
             switch (series) {
                 case SUCCESSFUL:
-                    return Triple.of(status, headers, element);
+                    return new Result(status, headers, element);
                 case INFORMATIONAL:
                 case REDIRECTION:
-                    return Triple.of(status, headers, JsonNull.INSTANCE);
+                    return new Result(status, headers, JsonNull.INSTANCE);
                 case CLIENT_ERROR:
                     return handleClientError(status, headers, element.getAsJsonObject());
                 case SERVER_ERROR:
@@ -362,13 +372,13 @@ public class GitHubAPIConnector {
             throw new IllegalStateException("This line should never be reached");
         }
 
-        private Triple<HttpStatus, Headers, JsonElement> handleServerError(HttpStatus status, JsonObject json) {
+        private FetchCallback.Result handleServerError(HttpStatus status, JsonObject json) {
             ErrorResponse errorResponse = conversionService.convert(json, ErrorResponse.class);
             throw new HttpServerErrorException(status, errorResponse.getMessage());
         }
 
         @SuppressWarnings("java:S128")
-        private Triple<HttpStatus, Headers, JsonElement> handleClientError(
+        private FetchCallback.Result handleClientError(
                 HttpStatus status, Headers headers, JsonObject json
         ) throws InterruptedException {
             ErrorResponse errorResponse = conversionService.convert(json, ErrorResponse.class);
@@ -408,7 +418,7 @@ public class GitHubAPIConnector {
                          * Case (2) encountered, so we propagate error upwards
                          * @see fetchLastPageNumberFromHeader
                          */
-                        return Triple.of(status, headers, json);
+                        return new Result(status, headers, json);
                     }
                 default:
                     // TODO: 30.07.23 Add any other special logic here
