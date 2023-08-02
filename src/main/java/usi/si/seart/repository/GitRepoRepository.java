@@ -23,6 +23,8 @@ public interface GitRepoRepository extends
 
     Optional<GitRepo> findGitRepoByNameIgnoreCase(String name);
 
+    Page<GitRepo> findGitRepoByOrderByLastPinged(Pageable pageable);
+
     @Query(
             "select r.name from GitRepo r " +
             "where r.lastAnalyzed is null or r.lastAnalyzed < r.lastCommit " +
