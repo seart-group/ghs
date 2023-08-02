@@ -11,12 +11,12 @@ import java.util.regex.Pattern;
 
 public class StringToLicensesConverter implements Converter<String, License[]> {
 
-    Pattern pattern = Pattern.compile("License\\s\\{name=([^,]+),\\surl=([^\\}]+)}");
+    private static final Pattern PATTERN = Pattern.compile("License\\s\\{name=([^,]+),\\surl=([^\\}]+)}");
 
     @Override
     @NonNull
     public License[] convert(@NonNull String source) {
-        Matcher matcher = pattern.matcher(source);
+        Matcher matcher = PATTERN.matcher(source);
         List<License> licenses = new ArrayList<>();
         while (matcher.find()) {
             License license = new License()
