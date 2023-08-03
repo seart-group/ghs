@@ -11,8 +11,9 @@ import usi.si.seart.model.view.LabelView;
 import usi.si.seart.repository.LabelRepository;
 import usi.si.seart.repository.LabelViewRepository;
 
-import jakarta.validation.constraints.NotNull;
+import javax.validation.constraints.NotNull;
 import java.util.Collection;
+import java.util.stream.Collectors;
 
 public interface LabelService extends NamedEntityService<Label> {
 
@@ -40,7 +41,7 @@ public interface LabelService extends NamedEntityService<Label> {
         public Collection<Label> getRanked() {
             Collection<String> names = labelViewRepository.findAll(pageable).stream()
                     .map(LabelView::getName)
-                    .toList();
+                    .collect(Collectors.toList());
             return labelRepository.findAllByNameIn(names);
         }
     }

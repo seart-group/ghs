@@ -54,9 +54,9 @@ import usi.si.seart.service.LanguageService;
 import usi.si.seart.service.LicenseService;
 import usi.si.seart.service.StatisticsService;
 
-import jakarta.persistence.EntityManager;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
+import javax.persistence.EntityManager;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.xml.namespace.QName;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -184,22 +184,37 @@ public class GitRepoController {
             return;
         }
 
-        String contentType = switch (format) {
-            case "json" -> "application/" + format;
-            case "csv", "xml" -> "text/" + format;
-            default -> throw new IllegalStateException("Default portion of this switch should not be reachable!");
-        };
+        String contentType;
+        switch (format) {
+            case "json":
+                contentType = "application/" + format;
+                break;
+            case "csv":
+            case "xml":
+                contentType = "text/" + format;
+                break;
+            default:
+                throw new IllegalStateException("Default portion of this switch should not be reachable!");
+        }
 
         response.setContentType(contentType);
         response.setHeader("Content-Disposition", "attachment;filename=results." + format);
 
         PrintWriter writer = response.getWriter();
-        JsonGenerator generator = switch (format) {
-            case "csv" -> new CsvFactory().createGenerator(writer);
-            case "json" -> new JsonFactory().createGenerator(writer);
-            case "xml" -> new XmlFactory().createGenerator(writer);
-            default -> throw new IllegalStateException("Default portion of this switch should not be reachable!");
-        };
+        JsonGenerator generator;
+        switch (format) {
+            case "csv":
+                generator = new CsvFactory().createGenerator(writer);
+                break;
+            case "json":
+                generator = new JsonFactory().createGenerator(writer);
+                break;
+            case "xml":
+                generator = new XmlFactory().createGenerator(writer);
+                break;
+            default:
+                throw new IllegalStateException("Default portion of this switch should not be reachable!");
+        }
 
         GitRepoSearch search = conversionService.convert(searchParameterDto, GitRepoSearch.class);
         @Cleanup Stream<GitRepoDto> results = gitRepoService.streamDynamically(search)
@@ -211,20 +226,21 @@ public class GitRepoController {
         Iterable<GitRepoDto> dtos = results::iterator;
 
         switch (format) {
-            case "csv" -> {
+            case "csv":
                 generator.setCodec(csvMapper);
                 generator.setSchema(csvSchema);
                 writeResults((CsvGenerator) generator, dtos, searchParameterDto);
-            }
-            case "json" -> {
+                break;
+            case "json":
                 generator.setCodec(jsonMapper);
                 writeResults(generator, dtos, searchParameterDto);
-            }
-            case "xml" -> {
+                break;
+            case "xml":
                 generator.setCodec(xmlMapper);
                 writeResults((ToXmlGenerator) generator, dtos, searchParameterDto);
-            }
-            default -> throw new IllegalStateException("Default portion of this switch should not be reachable!");
+                break;
+            default:
+                throw new IllegalStateException("Default portion of this switch should not be reachable!");
         }
 
         generator.close();
@@ -317,7 +333,7 @@ public class GitRepoController {
         return ResponseEntity.ok(
                 languageService.getRanked().stream()
                         .map(Language::getName)
-                        .toList()
+                        .collect(Collectors.toList())
         );
     }
 
@@ -327,7 +343,7 @@ public class GitRepoController {
         return ResponseEntity.ok(
                 licenseService.getAll().stream()
                         .map(License::getName)
-                        .toList()
+                        .collect(Collectors.toList())
         );
     }
 

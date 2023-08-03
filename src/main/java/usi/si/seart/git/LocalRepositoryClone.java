@@ -1,5 +1,10 @@
 package usi.si.seart.git;
 
+
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.experimental.FieldDefaults;
 import org.springframework.util.FileSystemUtils;
 
 import java.io.File;
@@ -10,7 +15,12 @@ import java.nio.file.Path;
  * This wrapper was introduced to more conveniently
  * clean up the cloned files once operations finished.
  */
-public record LocalRepositoryClone(Path path) implements AutoCloseable {
+@Getter
+@AllArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
+public class LocalRepositoryClone implements AutoCloseable {
+
+    Path path;
 
     @Override
     public void close() {

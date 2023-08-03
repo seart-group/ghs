@@ -6,7 +6,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import usi.si.seart.model.join.GitRepoTopic;
 
-import jakarta.validation.constraints.NotNull;
+import javax.validation.constraints.NotNull;
 
 public interface GitRepoTopicRepository extends JpaRepository<GitRepoTopic, GitRepoTopic.Key> {
 

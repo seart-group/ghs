@@ -1,5 +1,9 @@
 package usi.si.seart.github;
 
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.experimental.FieldDefaults;
 import org.apache.commons.lang3.time.DurationFormatUtils;
 
 import java.time.Instant;
@@ -13,7 +17,13 @@ import java.time.Instant;
  * @see <a href="https://docs.github.com/en/rest/rate-limit?apiVersion=2022-11-28">Rate limit</a>
  * @see <a href="https://docs.github.com/en/rest/overview/resources-in-the-rest-api?apiVersion=2022-11-28">Resources in the REST API</a>
  */
-public record RateLimit(Resource core, Resource search) {
+@Getter
+@AllArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
+public class RateLimit {
+
+    Resource coreResource;
+    Resource searchResource;
 
     /**
      * Calculates the maximum wait time (in seconds) between API
@@ -22,7 +32,10 @@ public record RateLimit(Resource core, Resource search) {
      * @return Maximum wait time in seconds between core and search.
      */
     public long getMaxWaitSeconds() {
-        return Math.max(core.getWaitSeconds(), search.getWaitSeconds());
+        return Math.max(
+                coreResource.getWaitSeconds(),
+                searchResource.getWaitSeconds()
+        );
     }
 
     /**
@@ -41,7 +54,7 @@ public record RateLimit(Resource core, Resource search) {
      * @return true if even a single resource has been exhausted, false otherwise
      */
     public boolean anyExceeded() {
-        return core.isExceeded() || search.isExceeded();
+        return coreResource.isExceeded() || searchResource.isExceeded();
     }
 
     /**
@@ -50,13 +63,21 @@ public record RateLimit(Resource core, Resource search) {
      * the number of remaining API calls associated with the client,
      * and the time in Unix seconds at which the rates will reset.
      */
-    public record Resource(int limit, int remaining, long reset) {
+    @Getter
+    @AllArgsConstructor
+    @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
+    public static class Resource {
+
+        int limit;
+        int remaining;
+        long reset;
 
         /**
          * Calculates the number of seconds to wait before making another
          * API call, based on the number of remaining calls and reset time.
          *
-         * @return Number of seconds until the rate limits reset,
+         * @return
+         * Number of seconds until the rate limits reset,
          * if there are no remaining calls, 0 otherwise.
          */
         public long getWaitSeconds() {

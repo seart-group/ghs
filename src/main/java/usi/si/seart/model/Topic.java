@@ -9,15 +9,13 @@ import lombok.Setter;
 import lombok.experimental.FieldDefaults;
 import org.hibernate.Hibernate;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.ManyToMany;
-import jakarta.persistence.SequenceGenerator;
-import jakarta.persistence.Table;
-import jakarta.validation.constraints.NotNull;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.ManyToMany;
+import javax.persistence.Table;
+import javax.validation.constraints.NotNull;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
@@ -34,14 +32,7 @@ import java.util.Set;
 public class Topic {
 
     @Id
-    @GeneratedValue(
-        strategy = GenerationType.SEQUENCE,
-        generator = "hibernate_sequence"
-    )
-    @SequenceGenerator(
-        name = "hibernate_sequence",
-        allocationSize = 1
-    )
+    @GeneratedValue
     @Column(name = "id")
     Long id;
 
@@ -49,7 +40,6 @@ public class Topic {
     @Column(name = "name")
     String name;
 
-    @Builder.Default
     @ManyToMany(mappedBy = "topics")
     Set<GitRepo> repos = new HashSet<>();
 

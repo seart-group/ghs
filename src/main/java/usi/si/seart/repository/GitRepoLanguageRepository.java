@@ -6,7 +6,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import usi.si.seart.model.join.GitRepoLanguage;
 
-import jakarta.validation.constraints.NotNull;
+import javax.validation.constraints.NotNull;
 
 public interface GitRepoLanguageRepository extends JpaRepository<GitRepoLanguage, GitRepoLanguage.Key> {
 

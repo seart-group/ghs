@@ -66,14 +66,14 @@ public interface StatisticsService {
         public Collection<String> getTopRankedLabelNames() {
             return labelViewRepository.findAll(pageable).stream()
                     .map(LabelView::getName)
-                    .toList();
+                    .collect(Collectors.toList());
         }
 
         @Override
         public Collection<String> getTopRankedTopicNames() {
             return topicViewRepository.findAll(pageable).stream()
                     .map(TopicView::getName)
-                    .toList();
+                    .collect(Collectors.toList());
         }
     }
 }

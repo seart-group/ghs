@@ -13,7 +13,6 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 import usi.si.seart.exception.StaticCodeAnalysisException;
 import usi.si.seart.exception.git.GitException;
-import usi.si.seart.exception.git.RepositoryNotFoundException;
 import usi.si.seart.git.GitConnector;
 import usi.si.seart.git.LocalRepositoryClone;
 import usi.si.seart.io.ExternalProcess;
@@ -68,7 +67,7 @@ public class StaticCodeAnalyzer {
         URL url = new URL("https://github.com/" + name + ".git");
         try (LocalRepositoryClone localRepository = gitConnector.clone(url)) {
             log.debug("Analyzing: {} [{}]", name, id);
-            Path path = localRepository.path();
+            Path path = localRepository.getPath();
             ExternalProcess process = new ExternalProcess(path, "cloc", "--json", "--quiet", ".");
             ExternalProcess.Result result = process.execute(5, TimeUnit.MINUTES);
             if (!result.succeeded())
@@ -96,9 +95,6 @@ public class StaticCodeAnalyzer {
             gitRepoService.updateRepo(gitRepo);
         } catch (StaticCodeAnalysisException ex) {
             log.error("Static code analysis failed for: " + name, ex);
-        } catch (RepositoryNotFoundException ignored) {
-            log.warn("Remote not found for {} [{}], proceeding with cleanup instead...", name, id);
-            gitRepoService.deleteRepoById(id);
         } catch (GitException ex) {
             log.error("Repository cloning has failed, unable to proceed with analysis of: " + name, ex);
         } catch (InterruptedException ex) {

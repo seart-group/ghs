@@ -56,7 +56,7 @@ public class GitRepoToDtoConverter implements Converter<GitRepo, GitRepoDto> {
                 .codeLines(hasMetrics ? totalMetrics.getCodeLines() : null)
                 .metrics(source.getMetrics().stream()
                     .map(metricConverter::convert)
-                    .toList())
+                    .collect(Collectors.toList()))
                 .hasWiki(source.getHasWiki())
                 .isArchived(source.getIsArchived())
                 .languages(

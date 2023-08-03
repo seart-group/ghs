@@ -12,7 +12,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 import usi.si.seart.controller.GitRepoController;
 import usi.si.seart.dto.SearchParameterDto;
 
-import jakarta.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletRequest;
 import java.lang.reflect.Method;
 import java.net.URI;
 import java.util.ArrayList;

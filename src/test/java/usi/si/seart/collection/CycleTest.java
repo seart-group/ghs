@@ -13,7 +13,7 @@ class CycleTest {
     @Test
     void cycleTest() {
         Cycle<Integer> cycle = new Cycle<>(1, 2, 3, 4);
-        Assertions.assertEquals(4, cycle.size());
+        Assertions.assertEquals(4, cycle.getSize());
         Assertions.assertTrue(cycle.hasNext());
         Assertions.assertEquals(1, cycle.next());
         Assertions.assertTrue(cycle.hasNext());
@@ -36,7 +36,7 @@ class CycleTest {
     @Test
     void singletonCycleTest() {
         Cycle<Integer> cycle = new Cycle<>(1);
-        Assertions.assertEquals(1, cycle.size());
+        Assertions.assertEquals(1, cycle.getSize());
         Assertions.assertTrue(cycle.hasNext());
         Assertions.assertEquals(1, cycle.next());
         Assertions.assertTrue(cycle.hasNext());
@@ -47,7 +47,7 @@ class CycleTest {
     @Test
     void emptyCycleTest() {
         Cycle<Integer> cycle = new Cycle<>();
-        Assertions.assertEquals(0, cycle.size());
+        Assertions.assertEquals(0, cycle.getSize());
         Assertions.assertFalse(cycle.hasNext());
         Assertions.assertThrows(NoSuchElementException.class, cycle::next);
     }
