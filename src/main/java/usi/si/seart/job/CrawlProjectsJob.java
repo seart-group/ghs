@@ -1,5 +1,6 @@
 package usi.si.seart.job;
 
+import com.google.common.base.Strings;
 import com.google.common.collect.Range;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
@@ -162,9 +163,6 @@ public class CrawlProjectsJob {
         }
     }
 
-    /**
-     * Given JSON info of 100 repos, store them in DB
-     */
     private void saveRetrievedRepos(JsonArray results, String language, int lowerIndex, int total) {
         int upperIndex = lowerIndex + results.size() - 1;
         log.info(
@@ -174,121 +172,138 @@ public class CrawlProjectsJob {
 
         for (JsonElement element : results) {
             JsonObject result = element.getAsJsonObject();
-            String name = result.get("full_name").getAsString();
-            Optional<GitRepo> optional = Optionals.ofThrowable(() -> gitRepoService.getByName(name));
-            String action = optional.map(ignored -> "Updating:  ").orElse("Saving:    ");
-            log.info("{}{} [{}/{}]", action, name, lowerIndex, total);
-
+            saveRetrievedRepo(result, language, lowerIndex, total);
             lowerIndex++;
-
-            // Optimization thing
-            if (optional.isPresent()) {
-                GitRepo existing = optional.get();
-                if (hasNotBeenUpdated(existing, result)) {
-                    Date updatedAt = existing.getUpdatedAt();
-                    Date pushedAt = existing.getPushedAt();
-                    log.debug("\tSKIPPED: We already have the latest info!");
-                    log.trace("\t\tUpdated: {}", updatedAt);
-                    log.trace("\t\tPushed:  {}", pushedAt);
-                    continue;
-                }
-            }
-
-            try {
-                JsonObject json = gitHubApiConnector.fetchRepoInfo(name);
-                JsonElement jsonLanguage = json.get("language");
-                if (jsonLanguage.isJsonNull()) {
-                    // This can happen (e.g. https://api.github.com/repos/aquynh/iVM).
-                    json.addProperty("language", language);
-                } else if (!jsonLanguage.getAsString().equals(language)) {
-                    /*
-                     * This can happen (e.g. https://api.github.com/search/repositories?q=baranowski/habit-vim).
-                     * If you go to repository `homepage`, or the `language_url`
-                     * (endpoint that shows language distribution),
-                     * you will see that `main_language` is only wrong in the above link.
-                     */
-                    String format =
-                            "Search language mismatch, while searching for {} repositories, " +
-                            "the crawler encountered a repository erroneously reported as written in {}. " +
-                            "Overwriting...";
-                    log.warn(format, language, jsonLanguage.getAsString());
-                    json.addProperty("language", language);
-                }
-
-                GitRepo repo = createRepoFromResponse(json);
-                repo = gitRepoService.createOrUpdateRepo(repo);
-                log.debug("\tAdding: Basic repository information.");
-
-                Set<Label> labels = retrieveRepoLabels(repo);
-                if (!labels.isEmpty())
-                    log.debug("\tAdding: {} labels.", labels.size());
-                repo.setLabels(labels);
-
-                Set<GitRepoLanguage> languages = retrieveRepoLanguages(repo);
-                if (!languages.isEmpty())
-                    log.debug("\tAdding: {} languages.", languages.size());
-                repo.setLanguages(languages);
-
-                Set<Topic> topics = retrieveTopics(repo);
-                if (!topics.isEmpty())
-                    log.debug("\tAdding: {} topics.", topics.size());
-                repo.setTopics(topics);
-
-                gitRepoService.updateRepo(repo);
-            } catch (NonTransientDataAccessException ex) {
-                throw ex;
-            } catch (Exception ex) {
-                log.error("Failed to save repository", ex);
-            }
         }
     }
 
-    private boolean hasNotBeenUpdated(GitRepo repo, JsonObject response) {
-        Date dbUpdated = repo.getUpdatedAt();
-        Date dbPushed = repo.getPushedAt();
-        Date apiUpdated = Dates.fromGitDateString(response.get("updated_at").getAsString());
-        Date apiPushed = Dates.fromGitDateString(response.get("pushed_at").getAsString());
-        return dbUpdated.compareTo(apiUpdated) == 0 && dbPushed.compareTo(apiPushed) == 0;
+    private void saveRetrievedRepo(JsonObject result, String language, int lowerIndex, int total) {
+        String name = result.get("full_name").getAsString();
+        Optional<GitRepo> optional = Optionals.ofThrowable(() -> gitRepoService.getByName(name));
+        GitRepo gitRepo = optional.orElseGet(() -> GitRepo.builder().name(name).build());
+        String action = (gitRepo.getId() != null)
+                ? "Updating:  "
+                : "Saving:    ";
+        log.info("{}{} [{}/{}]", action, name, lowerIndex, total);
+
+        Date createdAt = Dates.fromGitDateString(result.get("created_at").getAsString());
+        Date updatedAt = Dates.fromGitDateString(result.get("updated_at").getAsString());
+        Date pushedAt = Dates.fromGitDateString(result.get("pushed_at").getAsString());
+
+        if (shouldSkip(gitRepo, updatedAt, pushedAt)) {
+            log.debug("\tSKIPPED: We already have the latest info!");
+            log.trace("\t\tUpdated: {}", updatedAt);
+            log.trace("\t\tPushed:  {}", pushedAt);
+            return;
+        }
+
+        try {
+            JsonObject json = gitHubApiConnector.fetchRepoInfo(name);
+
+            String defaultBranch = json.get("default_branch").getAsString();
+            gitRepo.setDefaultBranch(defaultBranch);
+
+            String license = (!json.get("license").isJsonNull())
+                    ? json.getAsJsonObject("license")
+                    .getAsJsonPrimitive("name")
+                    .getAsString()
+                    .replace("\"", "")
+                    : null;
+            gitRepo.setLicense(license);
+
+            String homepage = (!json.get("homepage").isJsonNull())
+                    ? json.getAsJsonPrimitive("homepage").getAsString()
+                    : null;
+            gitRepo.setHomepage(Strings.emptyToNull(homepage));
+
+            Long stargazers = json.getAsJsonPrimitive("stargazers_count").getAsLong();
+            gitRepo.setStargazers(stargazers);
+            Long forks = json.getAsJsonPrimitive("forks_count").getAsLong();
+            gitRepo.setForks(forks);
+            Long watchers = json.getAsJsonPrimitive("subscribers_count").getAsLong();
+            gitRepo.setWatchers(watchers);
+            Long size = json.getAsJsonPrimitive("size").getAsLong();
+            gitRepo.setSize(size);
+
+            gitRepo.setCreatedAt(createdAt);
+            gitRepo.setPushedAt(pushedAt);
+            gitRepo.setUpdatedAt(updatedAt);
+
+            boolean hasWiki = json.getAsJsonPrimitive("has_wiki").getAsBoolean();
+            gitRepo.setHasWiki(hasWiki);
+            Boolean isFork = json.getAsJsonPrimitive("fork").getAsBoolean();
+            gitRepo.setIsFork(isFork);
+            Boolean isArchived = json.getAsJsonPrimitive("archived").getAsBoolean();
+            gitRepo.setIsArchived(isArchived);
+
+            Long commits = gitHubApiConnector.fetchNumberOfCommits(name);
+            Long branches = gitHubApiConnector.fetchNumberOfBranches(name);
+            Long releases = gitHubApiConnector.fetchNumberOfReleases(name);
+            Long contributors = gitHubApiConnector.fetchNumberOfContributors(name);
+            gitRepo.setCommits(commits);
+            gitRepo.setBranches(branches);
+            gitRepo.setReleases(releases);
+            gitRepo.setContributors(contributors);
+
+            Long totalPullRequests = gitHubApiConnector.fetchNumberOfAllPulls(name);
+            Long openPullRequests = gitHubApiConnector.fetchNumberOfOpenPulls(name);
+            gitRepo.setTotalPullRequests(totalPullRequests);
+            gitRepo.setOpenPullRequests(openPullRequests);
+
+            boolean hasIssues = json.getAsJsonPrimitive("has_issues").getAsBoolean();
+            if (hasIssues) {
+                Long totalIssues = gitHubApiConnector.fetchNumberOfAllIssuesAndPulls(name) - totalPullRequests;
+                Long openIssues = gitHubApiConnector.fetchNumberOfOpenIssuesAndPulls(name) - openPullRequests;
+                gitRepo.setTotalIssues(totalIssues);
+                gitRepo.setOpenIssues(openIssues);
+            } else {
+                gitRepo.setTotalIssues(0L);
+                gitRepo.setOpenIssues(0L);
+            }
+
+            GitCommit gitCommit = gitHubApiConnector.fetchLastCommitInfo(name);
+            Date lastCommit = gitCommit.getDate();
+            String lastCommitSHA = gitCommit.getSha();
+            gitRepo.setLastCommit(lastCommit);
+            gitRepo.setLastCommitSHA(lastCommitSHA);
+
+            Language mainLanguage = languageService.getOrCreate(language);
+            gitRepo.setMainLanguage(mainLanguage);
+
+            Set<Label> labels = retrieveRepoLabels(gitRepo);
+            if (!labels.isEmpty())
+                log.debug("\tAdding: {} labels.", labels.size());
+            gitRepo.setLabels(labels);
+
+            Set<GitRepoLanguage> languages = retrieveRepoLanguages(gitRepo);
+            if (!languages.isEmpty())
+                log.debug("\tAdding: {} languages.", languages.size());
+            gitRepo.setLanguages(languages);
+
+            Set<Topic> topics = retrieveTopics(gitRepo);
+            if (!topics.isEmpty())
+                log.debug("\tAdding: {} topics.", topics.size());
+            gitRepo.setTopics(topics);
+
+            gitRepoService.updateRepo(gitRepo);
+        } catch (NonTransientDataAccessException ex) {
+            throw ex;
+        } catch (Exception ex) {
+            log.error("Failed to save repository", ex);
+        }
     }
 
-    @SuppressWarnings("ConstantConditions")
-    private GitRepo createRepoFromResponse(JsonObject json) {
-        GitRepo gitRepo = conversionService.convert(json, GitRepo.class);
-
-        String name = json.get("full_name").getAsString();
-        boolean hasIssues = json.get("has_issues").getAsBoolean();
-
-        Language language = languageService.getOrCreate(json.get("language").getAsString());
-
-        Long commits = gitHubApiConnector.fetchNumberOfCommits(name);
-        Long branches = gitHubApiConnector.fetchNumberOfBranches(name);
-        Long releases = gitHubApiConnector.fetchNumberOfReleases(name);
-        Long contributors = gitHubApiConnector.fetchNumberOfContributors(name);
-        Long totalPullRequests = gitHubApiConnector.fetchNumberOfAllPulls(name);
-        Long openPullRequests = gitHubApiConnector.fetchNumberOfOpenPulls(name);
-        Long totalIssues = (hasIssues)
-                ? gitHubApiConnector.fetchNumberOfAllIssuesAndPulls(name) - totalPullRequests
-                : 0L;
-        Long openIssues = (hasIssues)
-                ? gitHubApiConnector.fetchNumberOfOpenIssuesAndPulls(name) - openPullRequests
-                : 0L;
-        GitCommit gitCommit = gitHubApiConnector.fetchLastCommitInfo(name);
-        Date lastCommit = gitCommit.getDate();
-        String lastCommitSHA = gitCommit.getSha();
-
-        gitRepo.setMainLanguage(language);
-        gitRepo.setCommits(commits);
-        gitRepo.setBranches(branches);
-        gitRepo.setReleases(releases);
-        gitRepo.setContributors(contributors);
-        gitRepo.setTotalIssues(totalIssues);
-        gitRepo.setOpenIssues(openIssues);
-        gitRepo.setTotalPullRequests(totalPullRequests);
-        gitRepo.setOpenPullRequests(openPullRequests);
-        gitRepo.setLastCommit(lastCommit);
-        gitRepo.setLastCommitSHA(lastCommitSHA);
-
-        return gitRepo;
+    /*
+     * Optimization for cases when crawler restarts
+     * mid-interval and encounters unchanged information.
+     */
+    private boolean shouldSkip(GitRepo gitRepo, Date apiUpdatedAt, Date apiPushedAt) {
+        Date dbUpdatedAt = gitRepo.getUpdatedAt();
+        Date dbPushedAt = gitRepo.getPushedAt();
+        boolean dbHasData = dbUpdatedAt != null && dbPushedAt != null;
+        return dbHasData
+                && dbUpdatedAt.compareTo(apiUpdatedAt) == 0
+                && dbPushedAt.compareTo(apiPushedAt) == 0;
     }
 
     private Set<Label> retrieveRepoLabels(GitRepo repo) {
