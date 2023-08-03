@@ -18,6 +18,7 @@ import org.springframework.core.convert.ConversionService;
 import org.springframework.dao.NonTransientDataAccessException;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
+import usi.si.seart.exception.MetadataCrawlingException;
 import usi.si.seart.exception.UnsplittableRangeException;
 import usi.si.seart.github.GitCommit;
 import usi.si.seart.github.GitHubAPIConnector;
@@ -217,9 +218,23 @@ public class CrawlProjectsJob {
                 GitRepo repo = createRepoFromResponse(json);
                 repo = gitRepoService.createOrUpdateRepo(repo);
                 log.debug("\tAdding: Basic repository information.");
-                retrieveRepoLabels(repo);
-                retrieveRepoLanguages(repo);
-                retrieveRepoTopics(repo);
+
+                Set<Label> labels = retrieveRepoLabels(repo);
+                if (!labels.isEmpty())
+                    log.debug("\tAdding: {} labels.", labels.size());
+                repo.setLabels(labels);
+
+                Set<GitRepoLanguage> languages = retrieveRepoLanguages(repo);
+                if (!languages.isEmpty())
+                    log.debug("\tAdding: {} languages.", languages.size());
+                repo.setLanguages(languages);
+
+                Set<Topic> topics = retrieveTopics(repo);
+                if (!topics.isEmpty())
+                    log.debug("\tAdding: {} topics.", topics.size());
+                repo.setTopics(topics);
+
+                gitRepoService.updateRepo(repo);
             } catch (NonTransientDataAccessException ex) {
                 throw ex;
             } catch (Exception ex) {
@@ -276,30 +291,27 @@ public class CrawlProjectsJob {
         return gitRepo;
     }
 
-    private void retrieveRepoLabels(GitRepo repo) {
+    private Set<Label> retrieveRepoLabels(GitRepo repo) {
         try {
             JsonArray array = gitHubApiConnector.fetchRepoLabels(repo.getName());
-            Set<Label> labels = StreamSupport.stream(array.spliterator(), true)
+            return StreamSupport.stream(array.spliterator(), true)
                     .map(element -> {
                         JsonObject object = element.getAsJsonObject();
                         String name = object.get("name").getAsString();
                         return labelService.getOrCreate(name.toLowerCase());
                     })
                     .collect(Collectors.toSet());
-            log.debug("\tAdding: {} labels.", labels.size());
-            repo.setLabels(labels);
-            gitRepoService.updateRepo(repo);
         } catch (NonTransientDataAccessException ex) {
             throw ex;
         } catch (Exception ex) {
-            log.error("Failed to add repository labels", ex);
+            throw new MetadataCrawlingException("Failed to retrieve repository labels", ex);
         }
     }
 
-    private void retrieveRepoLanguages(GitRepo repo) {
+    private Set<GitRepoLanguage> retrieveRepoLanguages(GitRepo repo) {
         try {
             JsonObject object = gitHubApiConnector.fetchRepoLanguages(repo.getName());
-            Set<GitRepoLanguage> languages = object.entrySet().stream()
+            return object.entrySet().stream()
                     .map(entry -> {
                         Language language = languageService.getOrCreate(entry.getKey());
                         GitRepoLanguage.Key key = new GitRepoLanguage.Key(repo.getId(), language.getId());
@@ -311,29 +323,23 @@ public class CrawlProjectsJob {
                                 .build();
                     })
                     .collect(Collectors.toSet());
-            log.debug("\tAdding: {} languages.", languages.size());
-            repo.setLanguages(languages);
-            gitRepoService.updateRepo(repo);
         } catch (NonTransientDataAccessException ex) {
             throw ex;
         } catch (Exception ex) {
-            log.error("Failed to add repository languages", ex);
+            throw new MetadataCrawlingException("Failed to retrieve repository languages", ex);
         }
     }
 
-    private void retrieveRepoTopics(GitRepo repo) {
+    private Set<Topic> retrieveTopics(GitRepo repo) {
         try {
             JsonArray array = gitHubApiConnector.fetchRepoTopics(repo.getName());
-            Set<Topic> topics = StreamSupport.stream(array.spliterator(), true)
+            return StreamSupport.stream(array.spliterator(), true)
                     .map(entry -> topicService.getOrCreate(entry.getAsString()))
                     .collect(Collectors.toSet());
-            log.debug("\tAdding: {} topics.", topics.size());
-            repo.setTopics(topics);
-            gitRepoService.updateRepo(repo);
         } catch (NonTransientDataAccessException ex) {
             throw ex;
         } catch (Exception ex) {
-            log.error("Failed to add repository topics", ex);
+            throw new MetadataCrawlingException("Failed to retrieve repository topics", ex);
         }
     }
 }
