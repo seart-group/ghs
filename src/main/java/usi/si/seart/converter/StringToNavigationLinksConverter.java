@@ -29,20 +29,11 @@ public class StringToNavigationLinksConverter implements Converter<String, Navig
             String value = matcher.group(1);
             URL url = new URL(value);
             switch (key) {
-                case "first":
-                    builder.first(url);
-                    break;
-                case "prev":
-                    builder.previous(url);
-                    break;
-                case "next":
-                    builder.next(url);
-                    break;
-                case "last":
-                    builder.last(url);
-                    break;
-                default:
-                    break;
+                case "first" -> builder.first(url);
+                case "prev" -> builder.previous(url);
+                case "next" -> builder.next(url);
+                case "last" -> builder.last(url);
+                default -> throw new IllegalStateException("Default case should not be reachable");
             }
         }
         return builder.build();

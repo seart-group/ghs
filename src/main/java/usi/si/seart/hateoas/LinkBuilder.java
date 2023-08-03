@@ -5,7 +5,7 @@ import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 import java.lang.reflect.Method;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
@@ -42,7 +42,7 @@ public abstract class LinkBuilder<T> {
                 .map(entry -> {
                     List<String> encoded = Stream.of(entry.getValue())
                             .map(value -> URLEncoder.encode(value, StandardCharsets.UTF_8))
-                            .collect(Collectors.toList());
+                            .toList();
                     return Map.entry(entry.getKey(), encoded);
                 })
                 .collect(Collectors.toMap(

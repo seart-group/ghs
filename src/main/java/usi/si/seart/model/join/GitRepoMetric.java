@@ -9,19 +9,19 @@ import lombok.Setter;
 import lombok.experimental.FieldDefaults;
 import org.hibernate.Hibernate;
 import org.hibernate.annotations.Generated;
-import org.hibernate.annotations.GenerationTime;
+import org.hibernate.generator.EventType;
 import usi.si.seart.model.GitRepo;
 import usi.si.seart.model.Language;
 
-import javax.persistence.Column;
-import javax.persistence.Embeddable;
-import javax.persistence.EmbeddedId;
-import javax.persistence.Entity;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.MapsId;
-import javax.persistence.Table;
-import javax.validation.constraints.NotNull;
+import jakarta.persistence.Column;
+import jakarta.persistence.Embeddable;
+import jakarta.persistence.EmbeddedId;
+import jakarta.persistence.Entity;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.MapsId;
+import jakarta.persistence.Table;
+import jakarta.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.util.Objects;
 
@@ -52,7 +52,10 @@ public class GitRepoMetric {
     @JoinColumn(name = "language_id")
     Language language;
 
-    @Generated(value = GenerationTime.ALWAYS)
+    @Generated(event = {
+        EventType.INSERT,
+        EventType.UPDATE
+    })
     @Column(
             name = "lines",
             insertable = false,
@@ -60,7 +63,10 @@ public class GitRepoMetric {
     )
     Long lines;
 
-    @Generated(value = GenerationTime.ALWAYS)
+    @Generated(event = {
+        EventType.INSERT,
+        EventType.UPDATE
+    })
     @Column(
             name = "lines_non_blank",
             insertable = false,

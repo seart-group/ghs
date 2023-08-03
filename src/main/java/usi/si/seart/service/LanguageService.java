@@ -13,7 +13,7 @@ import usi.si.seart.model.Language;
 import usi.si.seart.repository.LanguageProgressRepository;
 import usi.si.seart.repository.LanguageRepository;
 
-import javax.persistence.EntityNotFoundException;
+import jakarta.persistence.EntityNotFoundException;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;

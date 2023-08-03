@@ -13,22 +13,24 @@ import org.hibernate.annotations.FetchMode;
 import usi.si.seart.model.join.GitRepoLanguage;
 import usi.si.seart.model.join.GitRepoMetric;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToMany;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
-import javax.persistence.PrePersist;
-import javax.persistence.PreUpdate;
-import javax.persistence.PrimaryKeyJoinColumn;
-import javax.persistence.Table;
-import javax.validation.constraints.PastOrPresent;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.PrePersist;
+import jakarta.persistence.PreUpdate;
+import jakarta.persistence.PrimaryKeyJoinColumn;
+import jakarta.persistence.SequenceGenerator;
+import jakarta.persistence.Table;
+import jakarta.validation.constraints.PastOrPresent;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Objects;
@@ -45,7 +47,14 @@ import java.util.Set;
 public class GitRepo {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(
+        strategy = GenerationType.SEQUENCE,
+        generator = "hibernate_sequence"
+    )
+    @SequenceGenerator(
+        name = "hibernate_sequence",
+        allocationSize = 1
+    )
     @Column(name = "id")
     Long id;
 

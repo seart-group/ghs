@@ -3,7 +3,7 @@ package usi.si.seart.repository;
 import org.springframework.data.jpa.repository.JpaRepository;
 import usi.si.seart.model.Label;
 
-import javax.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotNull;
 import java.util.Collection;
 import java.util.Optional;
 
