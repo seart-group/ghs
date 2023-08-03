@@ -223,7 +223,7 @@ public class CrawlProjectsJob {
             } catch (NonTransientDataAccessException ex) {
                 throw ex;
             } catch (Exception ex) {
-                log.error("Failed to save retrieved repositories", ex);
+                log.error("Failed to save repository", ex);
             }
         }
     }
