@@ -15,7 +15,7 @@ import usi.si.seart.git.GitConnector;
 import usi.si.seart.http.ClientURLConnector;
 import usi.si.seart.service.GitRepoService;
 
-import jakarta.annotation.PostConstruct;
+import javax.annotation.PostConstruct;
 import java.net.MalformedURLException;
 import java.net.URL;
 

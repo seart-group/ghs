@@ -16,6 +16,8 @@ import org.springframework.web.bind.annotation.RestController;
 import usi.si.seart.model.Language;
 import usi.si.seart.service.LanguageService;
 
+import java.util.stream.Collectors;
+
 @Slf4j
 @RestController
 @RequestMapping("/l")
@@ -38,7 +40,7 @@ public class LanguageController {
                         .stream()
                         .map(Language::getName)
                         .sorted()
-                        .toList()
+                        .collect(Collectors.toList())
         );
     }
 }

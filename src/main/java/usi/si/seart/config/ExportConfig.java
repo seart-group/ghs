@@ -20,6 +20,7 @@ import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Configuration
 public class ExportConfig {
@@ -75,7 +76,7 @@ public class ExportConfig {
     public CsvSchema csvSchema() {
         List<String> fields = Arrays.stream(GitRepoDto.class.getDeclaredFields())
                 .map(Field::getName)
-                .toList();
+                .collect(Collectors.toList());
 
         CsvSchema.Builder schemaBuilder = CsvSchema.builder();
         for (String field : fields) {

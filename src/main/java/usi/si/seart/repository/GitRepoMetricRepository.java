@@ -6,7 +6,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import usi.si.seart.model.join.GitRepoMetric;
 
-import jakarta.validation.constraints.NotNull;
+import javax.validation.constraints.NotNull;
 
 public interface GitRepoMetricRepository extends JpaRepository<GitRepoMetric, GitRepoMetric.Key> {
 

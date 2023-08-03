@@ -12,7 +12,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.retry.annotation.Backoff;
 import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import usi.si.seart.model.GitRepo;
 import usi.si.seart.repository.GitRepoLabelRepository;
@@ -22,14 +21,14 @@ import usi.si.seart.repository.GitRepoRepository;
 import usi.si.seart.repository.GitRepoTopicRepository;
 import usi.si.seart.repository.specification.GitRepoSearch;
 
-import jakarta.persistence.EntityNotFoundException;
+import javax.persistence.EntityNotFoundException;
 import java.util.Optional;
 import java.util.stream.Stream;
 
 public interface GitRepoService {
 
     @Retryable(
-            retryFor = TransientDataAccessException.class,
+            value = TransientDataAccessException.class,
             backoff = @Backoff(delay = 250, multiplier = 2),
             maxAttempts = 5
     )
@@ -38,13 +37,13 @@ public interface GitRepoService {
     GitRepo getRepoById(Long id);
     GitRepo getByName(String name);
     @Retryable(
-            retryFor = TransientDataAccessException.class,
+            value = TransientDataAccessException.class,
             backoff = @Backoff(delay = 250, multiplier = 2),
             maxAttempts = 5
     )
     GitRepo createOrUpdateRepo(GitRepo repo);
     @Retryable(
-            retryFor = TransientDataAccessException.class,
+            value = TransientDataAccessException.class,
             backoff = @Backoff(delay = 250, multiplier = 2),
             maxAttempts = 5
     )
@@ -66,7 +65,7 @@ public interface GitRepoService {
         GitRepoTopicRepository gitRepoTopicRepository;
 
         @Override
-        @Transactional(propagation = Propagation.REQUIRES_NEW)
+        @Transactional
         public void deleteRepoById(Long id) {
             gitRepoLabelRepository.deleteByRepoId(id);
             gitRepoLanguageRepository.deleteByRepoId(id);

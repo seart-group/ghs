@@ -11,12 +11,12 @@ import java.util.regex.Pattern;
 
 public class StringToContactsConverter implements Converter<String, Contact[]> {
 
-    private static final Pattern PATTERN = Pattern.compile("Contributor\\s\\{name=([^,]+),\\semail=([^\\}]+)}");
+    Pattern pattern = Pattern.compile("Contributor\\s\\{name=([^,]+),\\semail=([^\\}]+)}");
 
     @Override
     @NonNull
     public Contact[] convert(@NonNull String source) {
-        Matcher matcher = PATTERN.matcher(source);
+        Matcher matcher = pattern.matcher(source);
         List<Contact> contacts = new ArrayList<>();
         while (matcher.find()) {
             Contact contact = new Contact()

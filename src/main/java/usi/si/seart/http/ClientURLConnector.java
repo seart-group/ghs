@@ -35,12 +35,16 @@ public class ClientURLConnector {
             log.trace("Pinging:   {}", url);
             ExternalProcess.Result result = process.execute(1, TimeUnit.MINUTES);
             int code = result.getCode();
-            return switch (code) {
-                case 0 -> true;
-                case 6 -> throw new UnknownHostException("Could not resolve host address!");
-                case 7 -> throw new ConnectException("Connection to host failed!");
-                default -> false;
-            };
+            switch (code) {
+                case 0:
+                    return true;
+                case 6:
+                    throw new UnknownHostException("Could not resolve host address!");
+                case 7:
+                    throw new ConnectException("Connection to host failed!");
+                default:
+                    return false;
+            }
         } catch (InterruptedException ex) {
             Thread.currentThread().interrupt();
             throw new ClientURLException("Timed out for: " + url, ex);

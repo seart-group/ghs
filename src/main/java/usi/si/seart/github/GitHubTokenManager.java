@@ -24,7 +24,7 @@ import org.springframework.web.client.HttpServerErrorException;
 import usi.si.seart.collection.Cycle;
 import usi.si.seart.exception.github.GitHubTokenManagerException;
 
-import jakarta.annotation.PostConstruct;
+import javax.annotation.PostConstruct;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -68,26 +68,25 @@ public class GitHubTokenManager {
 
     @PostConstruct
     void postConstruct() {
-        int size = tokens.size();
+        int size = tokens.getSize();
         switch (size) {
-            case 0 -> {
+            case 0:
                 log.warn("Access tokens not specified, GitHub API mining will be performed at a much slower rate!");
                 log.info(
                         "Generate a new access token on https://github.com/settings/tokens " +
                         "and add it to the `app.crawl.tokens` property in `application.properties`!"
                 );
-            }
-            case 1 -> {
+                break;
+            case 1:
                 log.info(
                         "Single token specified for GitHub API mining, " +
                         "consider adding more tokens to increase the crawler's efficiency."
                 );
                 currentToken = tokens.next();
-            }
-            default -> {
+                break;
+            default:
                 log.info("Loaded {} tokens for usage in mining!", size);
                 currentToken = tokens.next();
-            }
         }
     }
 
@@ -100,8 +99,8 @@ public class GitHubTokenManager {
     public void replaceTokenIfExpired() {
         try {
             RateLimit rateLimit = retryTemplate.execute(new RateLimitPollCallback());
-            log.debug("GitHub API:   Core {}", rateLimit.core());
-            log.debug("GitHub API: Search {}", rateLimit.search());
+            log.debug("GitHub API:   Core {}", rateLimit.getCoreResource());
+            log.debug("GitHub API: Search {}", rateLimit.getSearchResource());
             if (rateLimit.anyExceeded()) {
                 replaceToken();
                 long maxWaitSeconds = rateLimit.getMaxWaitSeconds();
