@@ -293,12 +293,7 @@ public class GitHubAPIConnector {
 
     private FetchCallback.Result fetch(URL url) {
         try {
-            FetchCallback.Result result = retryTemplate.execute(new FetchCallback(url));
-            TimeUnit.MILLISECONDS.sleep(250);
-            return result;
-        } catch (InterruptedException ex) {
-            Thread.currentThread().interrupt();
-            throw new GitHubAPIException("API call has been interrupted", ex);
+            return retryTemplate.execute(new FetchCallback(url));
         } catch (Exception ex) {
             String message = String.format("Request to %s failed", url);
             throw new GitHubAPIException(message, ex);
