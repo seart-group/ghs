@@ -42,13 +42,7 @@ public interface GitRepoService {
             backoff = @Backoff(delay = 250, multiplier = 2),
             maxAttempts = 5
     )
-    GitRepo createOrUpdateRepo(GitRepo repo);
-    @Retryable(
-            value = TransientDataAccessException.class,
-            backoff = @Backoff(delay = 250, multiplier = 2),
-            maxAttempts = 5
-    )
-    GitRepo updateRepo(GitRepo repo);
+    GitRepo createOrUpdate(GitRepo repo);
     Optional<GitRepo> getNextDeletionCandidate();
     Page<GitRepo> findDynamically(GitRepoSearch parameters, Pageable pageable);
     Stream<GitRepo> streamDynamically(GitRepoSearch parameters);
@@ -93,17 +87,7 @@ public interface GitRepoService {
         }
 
         @Override
-        public GitRepo createOrUpdateRepo(GitRepo repo) {
-            String name = repo.getName();
-            Long id = gitRepoRepository.findGitRepoByNameIgnoreCase(name)
-                    .map(GitRepo::getId)
-                    .orElse(null);
-            repo.setId(id);
-            return gitRepoRepository.save(repo);
-        }
-
-        @Override
-        public GitRepo updateRepo(GitRepo repo) {
+        public GitRepo createOrUpdate(GitRepo repo) {
             return gitRepoRepository.save(repo);
         }
 

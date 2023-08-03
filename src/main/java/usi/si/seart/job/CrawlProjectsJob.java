@@ -282,7 +282,7 @@ public class CrawlProjectsJob {
             Language mainLanguage = languageService.getOrCreate(language);
             gitRepo.setMainLanguage(mainLanguage);
 
-            gitRepo = gitRepoService.updateRepo(gitRepo);
+            gitRepo = gitRepoService.createOrUpdate(gitRepo);
 
             Set<Label> labels = retrieveRepoLabels(gitRepo);
             if (!labels.isEmpty())
@@ -299,7 +299,7 @@ public class CrawlProjectsJob {
                 log.debug("\tAdding: {} topics.", topics.size());
             gitRepo.setTopics(topics);
 
-            gitRepoService.updateRepo(gitRepo);
+            gitRepoService.createOrUpdate(gitRepo);
         } catch (NonTransientDataAccessException ex) {
             throw ex;
         } catch (Exception ex) {
