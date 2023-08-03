@@ -178,7 +178,7 @@ public class CrawlProjectsJob {
     }
 
     private void saveRetrievedRepo(JsonObject result, String language, int lowerIndex, int total) {
-        String name = result.get("full_name").getAsString();
+        String name = result.getAsJsonPrimitive("full_name").getAsString();
         Optional<GitRepo> optional = Optionals.ofThrowable(() -> gitRepoService.getByName(name));
         GitRepo gitRepo = optional.orElseGet(() -> GitRepo.builder().name(name).build());
         String action = (gitRepo.getId() != null)
@@ -186,9 +186,9 @@ public class CrawlProjectsJob {
                 : "Saving:    ";
         log.info("{}{} [{}/{}]", action, name, lowerIndex, total);
 
-        Date createdAt = Dates.fromGitDateString(result.get("created_at").getAsString());
-        Date updatedAt = Dates.fromGitDateString(result.get("updated_at").getAsString());
-        Date pushedAt = Dates.fromGitDateString(result.get("pushed_at").getAsString());
+        Date createdAt = Dates.fromGitDateString(result.getAsJsonPrimitive("created_at").getAsString());
+        Date updatedAt = Dates.fromGitDateString(result.getAsJsonPrimitive("updated_at").getAsString());
+        Date pushedAt = Dates.fromGitDateString(result.getAsJsonPrimitive("pushed_at").getAsString());
 
         if (shouldSkip(gitRepo, updatedAt, pushedAt)) {
             log.debug("\tSKIPPED: We already have the latest info!");
