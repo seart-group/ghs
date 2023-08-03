@@ -78,9 +78,9 @@ public class CrawlProjectsJob {
         for (Language language : languages) {
             this.requestQueue.clear();
             Language.Progress progress = languageService.getProgress(language);
-            Date startDate = progress.getCheckpoint();
-            Date endDate = Date.from(Instant.now().minus(Duration.ofHours(2)));
-            Range<Date> dateRange = Ranges.build(startDate, endDate);
+            Date lower = progress.getCheckpoint();
+            Date upper = Date.from(Instant.now().minus(Duration.ofHours(1)));
+            Range<Date> dateRange = Ranges.build(lower, upper);
             crawlRepositories(dateRange, language);
         }
         log.info("Next crawl scheduled for: {}", Date.from(Instant.now().plus(schedulingRate)));
@@ -106,6 +106,21 @@ public class CrawlProjectsJob {
     }
 
     private void retrieveRepositories(Range<Date> range, Language language) {
+        if (requestQueue.isEmpty()) {
+            /*
+             * Issue #145
+             *
+             * If this is the last range in the request queue,
+             * re-adjust it as it may be behind the current time.
+             * This is to make up for the fact that the range should
+             * technically continuously expand as we mine.
+             * I don't really like this code, but I guess
+             * this is the fastest solution to the problem.
+             */
+            Date lower = range.lowerEndpoint();
+            Date upper = Date.from(Instant.now().minus(Duration.ofHours(1)));
+            range = Ranges.build(lower, upper);
+        }
         String name = language.getName();
         int page = 1;
         try {
