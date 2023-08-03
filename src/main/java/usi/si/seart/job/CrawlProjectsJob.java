@@ -15,7 +15,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.context.annotation.DependsOn;
-import org.springframework.core.convert.ConversionService;
 import org.springframework.dao.NonTransientDataAccessException;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
@@ -62,8 +61,6 @@ public class CrawlProjectsJob {
     TopicService topicService;
     LabelService labelService;
     LanguageService languageService;
-
-    ConversionService conversionService;
 
     GitHubAPIConnector gitHubApiConnector;
 
