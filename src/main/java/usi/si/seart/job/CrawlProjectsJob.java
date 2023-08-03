@@ -282,6 +282,8 @@ public class CrawlProjectsJob {
             Language mainLanguage = languageService.getOrCreate(language);
             gitRepo.setMainLanguage(mainLanguage);
 
+            gitRepo = gitRepoService.updateRepo(gitRepo);
+
             Set<Label> labels = retrieveRepoLabels(gitRepo);
             if (!labels.isEmpty())
                 log.debug("\tAdding: {} labels.", labels.size());
