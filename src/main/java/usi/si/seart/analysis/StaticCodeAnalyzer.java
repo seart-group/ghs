@@ -94,20 +94,17 @@ public class StaticCodeAnalyzer {
             gitRepo.setMetrics(metrics);
             gitRepo.setLastAnalyzed();
             gitRepoService.createOrUpdate(gitRepo);
-        } catch (StaticCodeAnalysisException ex) {
-            log.error("Static code analysis failed for: {}", name);
-            log.debug("", ex);
         } catch (RepositoryNotFoundException ignored) {
             log.warn("Remote not found for {} [{}], proceeding with cleanup instead...", name, id);
             gitRepoService.deleteRepoById(id);
-        } catch (GitException ex) {
-            log.error("Repository cloning has failed, unable to proceed with analysis of: {}", name);
-            log.debug("", ex);
         } catch (InterruptedException ex) {
-            log.warn("Static code analysis interrupted for: {}", name);
+            log.warn("Interrupt: {} [{}]", name, id);
             Thread.currentThread().interrupt();
         } catch (TimeoutException ex) {
-            log.warn("Static code analysis timed out for: {}", name);
+            log.warn("Timeout:   {} [{}]", name, id);
+        } catch (StaticCodeAnalysisException | GitException ex) {
+            log.error("Failed:    {} [{}] ({})", name, id, ex.getClass().getSimpleName());
+            log.debug("", ex);
         }
     }
 }
