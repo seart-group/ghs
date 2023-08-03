@@ -47,7 +47,7 @@ public class CleanUpProjectsJob {
                 gitRepoService.deleteRepoById(id);
             } else {
                 gitRepo.setLastPinged();
-                gitRepoService.updateRepo(gitRepo);
+                gitRepoService.createOrUpdate(gitRepo);
             }
         });
     }

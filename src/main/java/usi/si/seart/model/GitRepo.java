@@ -28,6 +28,7 @@ import javax.persistence.PrePersist;
 import javax.persistence.PreUpdate;
 import javax.persistence.PrimaryKeyJoinColumn;
 import javax.persistence.Table;
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.PastOrPresent;
 import java.util.Date;
 import java.util.HashSet;
@@ -53,7 +54,8 @@ public class GitRepo {
     @JoinColumn(name = "language_id")
     Language mainLanguage;
 
-    @Column(name = "name")
+    @NotBlank
+    @Column(name = "name", unique = true)
     String name;
 
     @Column(name = "is_fork_project")

@@ -93,7 +93,7 @@ public class StaticCodeAnalyzer {
                 log.warn("No metrics were computed for: {}", name);
             gitRepo.setMetrics(metrics);
             gitRepo.setLastAnalyzed();
-            gitRepoService.updateRepo(gitRepo);
+            gitRepoService.createOrUpdate(gitRepo);
         } catch (StaticCodeAnalysisException ex) {
             log.error("Static code analysis failed for: {}", name);
             log.debug("", ex);

@@ -19,7 +19,6 @@ import usi.si.seart.converter.GitRepoDtoToCsvConverter;
 import usi.si.seart.converter.GitRepoToDtoConverter;
 import usi.si.seart.converter.JsonObjectToErrorResponseConverter;
 import usi.si.seart.converter.JsonObjectToGitCommitConverter;
-import usi.si.seart.converter.JsonObjectToGitRepoConverter;
 import usi.si.seart.converter.JsonObjectToGitRepoMetricConverter;
 import usi.si.seart.converter.JsonObjectToRateLimitConverter;
 import usi.si.seart.converter.SearchParameterDtoToGitRepoSearchConverter;
@@ -96,7 +95,6 @@ public class MainConfig {
             @Override
             public void addFormatters(@NotNull final FormatterRegistry registry) {
                 registry.addConverter(new GitRepoToDtoConverter());
-                registry.addConverter(new JsonObjectToGitRepoConverter());
                 registry.addConverter(new GitRepoDtoToCsvConverter(csvMapper));
                 registry.addConverter(new JsonObjectToGitCommitConverter());
                 registry.addConverter(new JsonObjectToRateLimitConverter());
