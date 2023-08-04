@@ -21,7 +21,6 @@ import usi.si.seart.converter.GitRepoToDtoConverter;
 import usi.si.seart.converter.JsonObjectToErrorResponseConverter;
 import usi.si.seart.converter.JsonObjectToGitCommitConverter;
 import usi.si.seart.converter.JsonObjectToGitRepoMetricConverter;
-import usi.si.seart.converter.JsonObjectToRateLimitConverter;
 import usi.si.seart.converter.SearchParameterDtoToGitRepoSearchConverter;
 import usi.si.seart.converter.StringToContactsConverter;
 import usi.si.seart.converter.StringToGitExceptionConverter;
@@ -114,7 +113,6 @@ public class MainConfig {
                 registry.addConverter(new GitRepoToDtoConverter());
                 registry.addConverter(new GitRepoDtoToCsvConverter(csvMapper));
                 registry.addConverter(new JsonObjectToGitCommitConverter());
-                registry.addConverter(new JsonObjectToRateLimitConverter());
                 registry.addConverter(new JsonObjectToErrorResponseConverter());
                 registry.addConverter(new JsonObjectToGitRepoMetricConverter());
                 registry.addConverter(new SearchParameterDtoToGitRepoSearchConverter());
