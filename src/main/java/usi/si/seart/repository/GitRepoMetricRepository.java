@@ -11,6 +11,6 @@ import javax.validation.constraints.NotNull;
 public interface GitRepoMetricRepository extends JpaRepository<GitRepoMetric, GitRepoMetric.Key> {
 
     @Modifying
-    @Query("DELETE FROM GitRepoMetric WHERE repo.id = :id")
+    @Query("delete from GitRepoMetric where repo.id = :id")
     void deleteByRepoId(@NotNull @Param("id") Long repoId);
 }

@@ -24,7 +24,7 @@ public interface GitRepoRepository extends
 {
 
     @Modifying
-    @Query("DELETE FROM GitRepo WHERE id = :id")
+    @Query("delete from GitRepo where id = :id")
     void deleteById(@NotNull @Param("id") Long id);
 
     @Modifying

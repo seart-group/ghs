@@ -11,6 +11,6 @@ import javax.validation.constraints.NotNull;
 public interface GitRepoLabelRepository extends JpaRepository<GitRepoLabel, GitRepoLabel.Key> {
 
     @Modifying
-    @Query("DELETE FROM GitRepoLabel WHERE repo.id = :id")
+    @Query("delete from GitRepoLabel where repo.id = :id")
     void deleteByRepoId(@NotNull @Param("id") Long repoId);
 }
