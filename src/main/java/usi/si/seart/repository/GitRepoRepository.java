@@ -40,6 +40,7 @@ public interface GitRepoRepository extends
             "where DATEDIFF(CURRENT_TIMESTAMP(), r.lastPinged) > 35" +
             "order by r.lastPinged, RAND()"
     )
+    // FIXME: 04.08.23 DATEDIFF is vendor-specific
     Stream<Tuple> streamIdentifiersWithOutdatedLastPinged();
 
     @Query(
@@ -53,6 +54,7 @@ public interface GitRepoRepository extends
             "select COUNT(r) from GitRepo r " +
             "where DATEDIFF(CURRENT_TIMESTAMP(), r.lastPinged) > 35"
     )
+    // FIXME: 04.08.23 DATEDIFF is vendor-specific
     Long countWithOutdatedLastPinged();
 
     @Query(
