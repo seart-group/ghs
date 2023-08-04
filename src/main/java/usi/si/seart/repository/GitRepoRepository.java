@@ -27,11 +27,20 @@ public interface GitRepoRepository extends
     @Query("DELETE FROM GitRepo WHERE id = :id")
     void deleteById(@NotNull @Param("id") Long id);
 
+    @Modifying
+    @Query("update GitRepo set lastPinged = CURRENT_TIMESTAMP() where id = :id")
+    void updateLastPingedById(@NotNull @Param("id") Long id);
+
     Optional<GitRepo> findGitRepoById(Long id);
 
     Optional<GitRepo> findGitRepoByNameIgnoreCase(String name);
 
-    Page<GitRepo> findGitRepoByOrderByLastPinged(Pageable pageable);
+    @Query(
+            "select r.id as id, r.name as name from GitRepo r " +
+            "where DATEDIFF(CURRENT_TIMESTAMP(), r.lastPinged) > 35" +
+            "order by r.lastPinged, RAND()"
+    )
+    Stream<Tuple> streamIdentifiersWithOutdatedLastPinged();
 
     @Query(
             "select r.id as id, r.name as name from GitRepo r " +
@@ -39,6 +48,12 @@ public interface GitRepoRepository extends
             "order by r.lastAnalyzed, RAND()"
     )
     Stream<Tuple> streamIdentifiersWithOutdatedCodeMetrics();
+
+    @Query(
+            "select COUNT(r) from GitRepo r " +
+            "where DATEDIFF(CURRENT_TIMESTAMP(), r.lastPinged) > 35"
+    )
+    Long countWithOutdatedLastPinged();
 
     @Query(
             "select COUNT(r) from GitRepo r " +

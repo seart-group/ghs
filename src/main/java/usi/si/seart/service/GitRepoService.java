@@ -7,7 +7,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.TransientDataAccessException;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.util.Pair;
 import org.springframework.retry.annotation.Backoff;
@@ -24,7 +23,7 @@ import usi.si.seart.repository.GitRepoTopicRepository;
 import usi.si.seart.repository.specification.GitRepoSearch;
 
 import javax.persistence.EntityNotFoundException;
-import java.util.Optional;
+import javax.persistence.Tuple;
 import java.util.stream.Stream;
 
 public interface GitRepoService {
@@ -35,7 +34,14 @@ public interface GitRepoService {
             maxAttempts = 5
     )
     void deleteRepoById(Long id);
+    @Retryable(
+            value = TransientDataAccessException.class,
+            backoff = @Backoff(delay = 250, multiplier = 2),
+            maxAttempts = 5
+    )
+    void pingById(Long id);
     Long count();
+    Long countCleanupCandidates();
     Long countAnalysisCandidates();
     GitRepo getById(Long id);
     GitRepo getByName(String name);
@@ -45,9 +51,9 @@ public interface GitRepoService {
             maxAttempts = 5
     )
     GitRepo createOrUpdate(GitRepo repo);
-    Optional<GitRepo> getNextDeletionCandidate();
     Page<GitRepo> findDynamically(GitRepoSearch parameters, Pageable pageable);
     Stream<GitRepo> streamDynamically(GitRepoSearch parameters);
+    Stream<Pair<Long, String>> streamCleanupCandidates();
     Stream<Pair<Long, String>> streamAnalysisCandidates();
 
     @Slf4j
@@ -73,8 +79,19 @@ public interface GitRepoService {
         }
 
         @Override
+        @Transactional(propagation = Propagation.REQUIRES_NEW)
+        public void pingById(Long id) {
+            gitRepoRepository.updateLastPingedById(id);
+        }
+
+        @Override
         public Long count() {
             return gitRepoRepository.count();
+        }
+
+        @Override
+        public Long countCleanupCandidates() {
+            return gitRepoRepository.countWithOutdatedLastPinged();
         }
 
         @Override
@@ -100,13 +117,6 @@ public interface GitRepoService {
         }
 
         @Override
-        public Optional<GitRepo> getNextDeletionCandidate() {
-            Pageable pageable = PageRequest.of(0, 1);
-            Page<GitRepo> page = gitRepoRepository.findGitRepoByOrderByLastPinged(pageable);
-            return page.stream().findFirst();
-        }
-
-        @Override
         public Page<GitRepo> findDynamically(GitRepoSearch parameters, Pageable pageable) {
             return gitRepoRepository.findAllDynamically(parameters, pageable);
         }
@@ -117,12 +127,20 @@ public interface GitRepoService {
         }
 
         @Override
+        public Stream<Pair<Long, String>> streamCleanupCandidates() {
+            return gitRepoRepository.streamIdentifiersWithOutdatedLastPinged().map(this::convert);
+        }
+
+        @Override
         public Stream<Pair<Long, String>> streamAnalysisCandidates() {
-            return gitRepoRepository.streamIdentifiersWithOutdatedCodeMetrics()
-                    .map(tuple -> Pair.of(
-                            tuple.get("id", Long.class),
-                            tuple.get("name", String.class)
-                    ));
+            return gitRepoRepository.streamIdentifiersWithOutdatedCodeMetrics().map(this::convert);
+        }
+
+        private Pair<Long, String> convert(Tuple tuple) {
+            return Pair.of(
+                    tuple.get("id", Long.class),
+                    tuple.get("name", String.class)
+            );
         }
     }
 }
