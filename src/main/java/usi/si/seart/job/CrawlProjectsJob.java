@@ -130,18 +130,11 @@ public class CrawlProjectsJob {
             if (totalResults == 0) return;
             log.info("Retrieved results: " + totalResults);
             if (totalResults > 1000) {
-                try {
-                    Pair<Range<Date>, Range<Date>> ranges = Ranges.split(range, Dates::median);
-                    requestQueue.push(ranges.getRight());
-                    requestQueue.push(ranges.getLeft());
-                    return;
-                } catch (UnsplittableRangeException ure) {
-                    log.warn(
-                            "Encountered range that could not be further split [{}]!",
-                            Ranges.toString(range, dateStringMapper)
-                    );
-                    log.info("Proceeding with mining anyway to mitigate data loss...");
-                }
+                boolean splittable = splitAndEnqueue(range);
+                if (splittable) return;
+                String value = Ranges.toString(range, dateStringMapper);
+                log.warn("Encountered range that could not be further split [{}]!", value);
+                log.info("Proceeding with mining anyway to mitigate data loss...");
             }
             JsonArray results = json.get("items").getAsJsonArray();
             saveRetrievedRepos(results, name, 1, totalResults);
@@ -153,6 +146,17 @@ public class CrawlProjectsJob {
             throw ex;
         } catch (Exception ex) {
             log.error("Failed to retrieve repositories", ex);
+        }
+    }
+
+    private boolean splitAndEnqueue(Range<Date> range) {
+        try {
+            Pair<Range<Date>, Range<Date>> ranges = Ranges.split(range, Dates::median);
+            requestQueue.push(ranges.getRight());
+            requestQueue.push(ranges.getLeft());
+            return true;
+        } catch (UnsplittableRangeException ure) {
+            return false;
         }
     }
 
