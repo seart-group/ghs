@@ -1,6 +1,5 @@
 package usi.si.seart.config;
 
-import com.google.gson.Gson;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -76,11 +75,6 @@ public class MainConfig {
     @Bean
     public Pageable suggestionLimitPageable(@Value("${app.statistics.suggestion-limit}") Integer limit) {
         return PageRequest.of(0, limit);
-    }
-
-    @Bean
-    public Gson gson() {
-        return new Gson();
     }
 
     @Bean
