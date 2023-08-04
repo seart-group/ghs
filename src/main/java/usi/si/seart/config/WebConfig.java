@@ -27,10 +27,7 @@ public class WebConfig implements WebMvcConfigurer {
                         "http://localhost:7030",
                         "https://seart-ghs.si.usi.ch"
                 )
-                .exposedHeaders(
-                        "X-Link-Search",
-                        "X-Link-Download"
-                );
+                .exposedHeaders("X-Link-Search", "X-Link-Download");
     }
 
     @Override
