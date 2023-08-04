@@ -39,6 +39,7 @@ public class Label {
     @Column(name = "name")
     String name;
 
+    @Builder.Default
     @ManyToMany(mappedBy = "labels")
     Set<GitRepo> repos = new HashSet<>();
 
