@@ -30,6 +30,7 @@ import javax.persistence.PrimaryKeyJoinColumn;
 import javax.persistence.Table;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.PastOrPresent;
+import javax.validation.constraints.PositiveOrZero;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Objects;
@@ -61,33 +62,41 @@ public class GitRepo {
     @Column(name = "is_fork_project")
     Boolean isFork;
 
+    @PositiveOrZero
     @Column(name = "commits")
     Long commits;
 
+    @PositiveOrZero
     @Column(name = "branches")
     Long branches;
 
     @Column(name = "default_branch")
     String defaultBranch;
 
+    @PositiveOrZero
     @Column(name = "releases")
     Long releases;
 
+    @PositiveOrZero
     @Column(name = "contributors")
     Long contributors;
 
     @Column(name = "license")
     String license;
 
+    @PositiveOrZero
     @Column(name = "watchers")
     Long watchers;
 
+    @PositiveOrZero
     @Column(name = "stargazers")
     Long stargazers;
 
+    @PositiveOrZero
     @Column(name = "forks")
     Long forks;
 
+    @PositiveOrZero
     @Column(name = "size")
     Long size;
 
@@ -103,15 +112,19 @@ public class GitRepo {
     @Column(name = "homepage")
     String homepage;
 
+    @PositiveOrZero
     @Column(name = "total_issues")
     Long totalIssues;
 
+    @PositiveOrZero
     @Column(name = "open_issues")
     Long openIssues;
 
+    @PositiveOrZero
     @Column(name = "total_pull_requests")
     Long totalPullRequests;
 
+    @PositiveOrZero
     @Column(name = "open_pull_requests")
     Long openPullRequests;
 
