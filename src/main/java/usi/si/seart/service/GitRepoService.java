@@ -37,7 +37,7 @@ public interface GitRepoService {
     void deleteRepoById(Long id);
     Long count();
     Long countAnalysisCandidates();
-    GitRepo getRepoById(Long id);
+    GitRepo getById(Long id);
     GitRepo getByName(String name);
     @Retryable(
             value = TransientDataAccessException.class,
@@ -83,7 +83,7 @@ public interface GitRepoService {
         }
 
         @Override
-        public GitRepo getRepoById(Long id) {
+        public GitRepo getById(Long id) {
             return gitRepoRepository.findGitRepoById(id)
                     .orElseThrow(EntityNotFoundException::new);
         }

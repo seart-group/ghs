@@ -305,7 +305,7 @@ public class GitRepoController {
             @PathVariable(value = "id")
             Long id
     ) {
-        GitRepo gitRepo = gitRepoService.getRepoById(id);
+        GitRepo gitRepo = gitRepoService.getById(id);
         GitRepoDto dto = conversionService.convert(gitRepo, GitRepoDto.class);
         return ResponseEntity.ok(dto);
     }
