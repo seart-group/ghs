@@ -35,6 +35,7 @@ public interface GitRepoService {
     )
     void deleteRepoById(Long id);
     Long count();
+    Long countAnalysisCandidates();
     GitRepo getRepoById(Long id);
     GitRepo getByName(String name);
     @Retryable(
@@ -46,6 +47,7 @@ public interface GitRepoService {
     Optional<GitRepo> getNextDeletionCandidate();
     Page<GitRepo> findDynamically(GitRepoSearch parameters, Pageable pageable);
     Stream<GitRepo> streamDynamically(GitRepoSearch parameters);
+    Stream<String> streamAnalysisCandidates();
 
     @Slf4j
     @Service
@@ -72,6 +74,11 @@ public interface GitRepoService {
         @Override
         public Long count() {
             return gitRepoRepository.count();
+        }
+
+        @Override
+        public Long countAnalysisCandidates() {
+            return gitRepoRepository.countAllRepoWithOutdatedCodeMetrics();
         }
 
         @Override
@@ -106,6 +113,11 @@ public interface GitRepoService {
         @Override
         public Stream<GitRepo> streamDynamically(GitRepoSearch parameters) {
             return gitRepoRepository.streamAllDynamically(parameters);
+        }
+
+        @Override
+        public Stream<String> streamAnalysisCandidates() {
+            return gitRepoRepository.findAllRepoWithOutdatedCodeMetrics();
         }
     }
 }
