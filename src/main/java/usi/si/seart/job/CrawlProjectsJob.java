@@ -18,6 +18,7 @@ import org.springframework.context.annotation.DependsOn;
 import org.springframework.dao.NonTransientDataAccessException;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
+import usi.si.seart.collection.Ranges;
 import usi.si.seart.exception.MetadataCrawlingException;
 import usi.si.seart.exception.UnsplittableRangeException;
 import usi.si.seart.github.GitCommit;
@@ -33,7 +34,6 @@ import usi.si.seart.service.LanguageService;
 import usi.si.seart.service.TopicService;
 import usi.si.seart.util.Dates;
 import usi.si.seart.util.Optionals;
-import usi.si.seart.util.Ranges;
 
 import java.time.Duration;
 import java.time.Instant;

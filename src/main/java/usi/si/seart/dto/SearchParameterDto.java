@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.FieldDefaults;
 import org.springframework.format.annotation.DateTimeFormat;
-import usi.si.seart.util.Ranges;
+import usi.si.seart.collection.Ranges;
 
 import java.util.Date;
 import java.util.HashMap;

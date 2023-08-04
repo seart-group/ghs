@@ -1,4 +1,4 @@
-package usi.si.seart.util;
+package usi.si.seart.collection;
 
 import com.google.common.collect.Range;
 import lombok.AccessLevel;

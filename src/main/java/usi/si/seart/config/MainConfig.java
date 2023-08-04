@@ -15,6 +15,7 @@ import org.springframework.format.FormatterRegistry;
 import org.springframework.web.filter.ForwardedHeaderFilter;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+import usi.si.seart.collection.Ranges;
 import usi.si.seart.converter.GitRepoDtoToCsvConverter;
 import usi.si.seart.converter.GitRepoToDtoConverter;
 import usi.si.seart.converter.JsonObjectToErrorResponseConverter;
@@ -28,7 +29,6 @@ import usi.si.seart.converter.StringToJsonElementConverter;
 import usi.si.seart.converter.StringToJsonObjectConverter;
 import usi.si.seart.converter.StringToLicensesConverter;
 import usi.si.seart.converter.StringToNavigationLinksConverter;
-import usi.si.seart.util.Ranges;
 
 import java.nio.file.Path;
 import java.time.Instant;

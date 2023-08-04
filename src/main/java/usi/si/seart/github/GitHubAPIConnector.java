@@ -30,8 +30,8 @@ import org.springframework.retry.support.RetryTemplate;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
+import usi.si.seart.collection.Ranges;
 import usi.si.seart.exception.github.GitHubAPIException;
-import usi.si.seart.util.Ranges;
 
 import java.net.URL;
 import java.net.URLEncoder;
