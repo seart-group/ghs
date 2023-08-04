@@ -4,17 +4,17 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.Immutable;
-import org.hibernate.annotations.Subselect;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.Table;
 
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
 @Immutable
-@Subselect("SELECT name FROM topic_ranked")
+@Table(name = "topic_ranked")
 public class TopicView {
 
     @Id
