@@ -87,11 +87,10 @@ public class CodeAnalysisJob {
     public void gatherCodeMetricsFor(Pair<Long, String> identifiers) {
         Long id = identifiers.getFirst();
         String name = identifiers.getSecond();
-        Optionals.ofThrowable(() -> gitRepoService.getById(id))
-                .ifPresentOrElse(
-                        this::gatherCodeMetricsFor,
-                        () -> log.debug("Skipping:  {} [{}]", name, id)
-                );
+        Optionals.ofThrowable(() -> gitRepoService.getById(id)).ifPresentOrElse(
+                this::gatherCodeMetricsFor,
+                () -> log.debug("Skipping:  {} [{}]", name, id)
+        );
     }
 
     @SneakyThrows(MalformedURLException.class)
