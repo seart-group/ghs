@@ -7,11 +7,17 @@ import lombok.experimental.FieldDefaults;
 import org.apache.commons.lang3.time.DurationFormatUtils;
 
 import java.time.Instant;
+import java.util.stream.Stream;
 
 /**
  * Models a rate limit for the GitHub API.
- * Contains two {@code Resource} objects: {@code core} and {@code search},
- * each representing the rate limits for two different types of API calls.
+ * Contains the following {@code Resource} objects:
+ * <ul>
+ *     <li>{@code core}</li>
+ *     <li>{@code search}</li>
+ *     <li>{@code graphql}</li>
+ * </ul>
+ * each corresponding to rate limit information for two different types of API calls.
  *
  * @author Ozren Dabić
  * @see <a href="https://docs.github.com/en/rest/rate-limit?apiVersion=2022-11-28">Rate limit</a>
@@ -22,8 +28,9 @@ import java.time.Instant;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class RateLimit {
 
-    Resource coreResource;
-    Resource searchResource;
+    Resource core;
+    Resource search;
+    Resource graphql;
 
     /**
      * Calculates the maximum wait time (in seconds) between API
@@ -32,10 +39,10 @@ public class RateLimit {
      * @return Maximum wait time in seconds between core and search.
      */
     public long getMaxWaitSeconds() {
-        return Math.max(
-                coreResource.getWaitSeconds(),
-                searchResource.getWaitSeconds()
-        );
+        return Stream.of(resources())
+                .mapToLong(Resource::getWaitSeconds)
+                .max()
+                .orElseThrow();
     }
 
     /**
@@ -54,7 +61,12 @@ public class RateLimit {
      * @return true if even a single resource has been exhausted, false otherwise
      */
     public boolean anyExceeded() {
-        return coreResource.isExceeded() || searchResource.isExceeded();
+        return Stream.of(resources()).anyMatch(Resource::isExceeded);
+    }
+
+    // Convenience method for extensibility
+    private Resource[] resources() {
+        return new Resource[] {core, search, graphql};
     }
 
     /**

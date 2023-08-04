@@ -19,9 +19,12 @@ public class JsonObjectToRateLimitConverter implements Converter<JsonObject, Rat
     public RateLimit convert(@NonNull JsonObject source) {
         JsonObject resources = source.getAsJsonObject("resources");
         JsonObject core = resources.getAsJsonObject("core");
-        RateLimit.Resource coreResource = resourceConverter.convert(core);
         JsonObject search = resources.getAsJsonObject("search");
-        RateLimit.Resource searchResource = resourceConverter.convert(search);
-        return new RateLimit(coreResource, searchResource);
+        JsonObject graphql = resources.getAsJsonObject("graphql");
+        return new RateLimit(
+                resourceConverter.convert(core),
+                resourceConverter.convert(search),
+                resourceConverter.convert(graphql)
+        );
     }
 }
