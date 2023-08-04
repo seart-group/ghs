@@ -110,7 +110,7 @@
   <logger name="usi.si.seart.job.CleanUpProjectsJob" level="TRACE">
     <appender-ref ref="FILE-CLEANER" />
   </logger>
-  <logger name="usi.si.seart.analysis.StaticCodeAnalyzer" level="TRACE">
+  <logger name="usi.si.seart.job.CodeAnalysisJob" level="TRACE">
     <appender-ref ref="FILE-ANALYSIS" />
   </logger>
   <logger name="org.springframework.web.servlet.DispatcherServlet" level="DEBUG">
