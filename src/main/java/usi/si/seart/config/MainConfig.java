@@ -1,6 +1,5 @@
 package usi.si.seart.config;
 
-import com.fasterxml.jackson.dataformat.csv.CsvMapper;
 import com.google.gson.Gson;
 import lombok.AllArgsConstructor;
 import org.jetbrains.annotations.NotNull;
@@ -16,7 +15,6 @@ import org.springframework.web.filter.ForwardedHeaderFilter;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import usi.si.seart.collection.Ranges;
-import usi.si.seart.converter.GitRepoDtoToCsvConverter;
 import usi.si.seart.converter.GitRepoToDtoConverter;
 import usi.si.seart.converter.JsonObjectToErrorResponseConverter;
 import usi.si.seart.converter.JsonObjectToGitCommitConverter;
@@ -41,8 +39,6 @@ import java.util.Date;
 @AllArgsConstructor(onConstructor_ = @Autowired)
 @Configuration
 public class MainConfig {
-
-    CsvMapper csvMapper;
 
     @Bean
     public Path tmpDir(@Value("${java.io.tmpdir}") String value) {
@@ -111,7 +107,6 @@ public class MainConfig {
             @Override
             public void addFormatters(@NotNull final FormatterRegistry registry) {
                 registry.addConverter(new GitRepoToDtoConverter());
-                registry.addConverter(new GitRepoDtoToCsvConverter(csvMapper));
                 registry.addConverter(new JsonObjectToGitCommitConverter());
                 registry.addConverter(new JsonObjectToErrorResponseConverter());
                 registry.addConverter(new JsonObjectToGitRepoMetricConverter());
