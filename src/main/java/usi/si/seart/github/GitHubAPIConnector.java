@@ -40,7 +40,6 @@ import java.util.Date;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
-import java.util.function.Function;
 
 @SuppressWarnings("ConstantConditions")
 @Slf4j
@@ -57,16 +56,16 @@ public class GitHubAPIConnector {
 
     RetryTemplate retryTemplate;
 
-    Function<Date, String> dateStringMapper;
+    Ranges.Printer<Date> rangePrinter;
 
     GitHubTokenManager gitHubTokenManager;
 
     ConversionService conversionService;
 
-    public JsonObject searchRepositories(String language, Range<Date> dateRange, Integer page) {
+    public JsonObject searchRepositories(String language, Range<Date> range, Integer page) {
         Map<String, String> query = ImmutableMap.<String, String>builder()
                 .put("language", URLEncoder.encode(language, StandardCharsets.UTF_8))
-                .put("pushed", Ranges.toString(dateRange, dateStringMapper))
+                .put("pushed", rangePrinter.print(range))
                 .put("stars", String.format(">=%d", minimumStars))
                 .put("fork", "true")
                 .put("is", "public")

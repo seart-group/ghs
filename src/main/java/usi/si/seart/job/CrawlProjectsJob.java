@@ -43,7 +43,6 @@ import java.util.Date;
 import java.util.Deque;
 import java.util.Optional;
 import java.util.Set;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
@@ -68,7 +67,8 @@ public class CrawlProjectsJob {
     @Value(value = "${app.crawl.scheduling}")
     Duration schedulingRate;
 
-    Function<Date, String> dateStringMapper;
+    Ranges.Printer<Date> rangePrinter;
+    Ranges.Splitter<Date> rangeSplitter;
 
     @Scheduled(fixedDelayString = "${app.crawl.scheduling}")
     public void run() {
@@ -95,7 +95,7 @@ public class CrawlProjectsJob {
             log.info("Next crawl intervals:");
             requestQueue.stream()
                     .limit(limit)
-                    .map(item -> Ranges.toString(item, dateStringMapper))
+                    .map(rangePrinter::print)
                     .forEach(string -> log.info("\t[{}]", string));
             if (size > limit)
                 log.info("\t{} omitted ...", size - limit);
@@ -132,7 +132,7 @@ public class CrawlProjectsJob {
             if (totalResults > 1000) {
                 boolean splittable = splitAndEnqueue(range);
                 if (splittable) return;
-                String value = Ranges.toString(range, dateStringMapper);
+                String value = rangePrinter.print(range);
                 log.warn("Encountered range that could not be further split [{}]!", value);
                 log.info("Proceeding with mining anyway to mitigate data loss...");
             }
@@ -151,7 +151,7 @@ public class CrawlProjectsJob {
 
     private boolean splitAndEnqueue(Range<Date> range) {
         try {
-            Pair<Range<Date>, Range<Date>> ranges = Ranges.split(range, Dates::median);
+            Pair<Range<Date>, Range<Date>> ranges = rangeSplitter.split(range);
             requestQueue.push(ranges.getRight());
             requestQueue.push(ranges.getLeft());
             return true;

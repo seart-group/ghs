@@ -6,20 +6,22 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import usi.si.seart.exception.UnsplittableRangeException;
 
-import java.text.Format;
-import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.function.BinaryOperator;
 
 class RangesTest {
 
+    private static final Ranges.Splitter<Long> splitter = new Ranges.Splitter<>((lower, upper) -> (lower + upper)/2);
+    private static final Ranges.Printer<Integer> integerPrinter = new Ranges.Printer<>(Object::toString);
+    private static final Ranges.Printer<Date> dateprinter = new Ranges.Printer<>(new SimpleDateFormat("yyyy-MM-dd"));
+    private static final Ranges.Printer<Date> dateTimePrinter = new Ranges.Printer<>(new SimpleDateFormat("yyyy-MM-dd'T'HH:mm"));
+
     @Test
     void testBuild() {
-        Assertions.assertEquals(Range.all(), Ranges.build(null, null));
-        Assertions.assertEquals(Range.atLeast(5), Ranges.build(5, null));
-        Assertions.assertEquals(Range.atMost(10), Ranges.build(null, 10));
+        Assertions.assertEquals(Range.all(), Ranges.builder().build());
+        Assertions.assertEquals(Range.atLeast(5), Ranges.<Integer>builder().lower(5).build());
+        Assertions.assertEquals(Range.atMost(10), Ranges.<Integer>builder().upper(10).build());
         Assertions.assertEquals(Range.closed(5, 10), Ranges.build(5, 10));
     }
 
@@ -30,50 +32,40 @@ class RangesTest {
 
     @Test
     void testSplit() {
-        BinaryOperator<Long> average = (a, b) -> (a + b)/2;
-        Pair<Range<Long>, Range<Long>> ranges = Ranges.split(Range.closed(2L, 10L), average);
+        Pair<Range<Long>, Range<Long>> ranges = splitter.split(Range.closed(2L, 10L));
         Assertions.assertEquals(Range.closed(2L, 6L), ranges.getLeft());
         Assertions.assertEquals(Range.closed(6L, 10L), ranges.getRight());
     }
 
     @Test
-    void testSplitException() {
-        Range<Long> invalid = Range.closed(2L, 2L);
-        BinaryOperator<Long> average = (a, b) -> (a + b)/2;
-        Assertions.assertThrows(
-                UnsplittableRangeException.class,
-                () -> Ranges.split(invalid, average)
-        );
+    void testSplitSingleton() {
+        Range<Long> singleton = Range.closed(2L, 2L);
+        Assertions.assertThrows(UnsplittableRangeException.class, () -> splitter.split(singleton));
     }
 
     @Test
-    void testToString() {
-        Assertions.assertEquals("5..10", Ranges.toString(Range.closed(5, 10), NumberFormat.getInstance()));
-        Assertions.assertEquals("5..10", Ranges.toString(Range.closed(5L, 10L), NumberFormat.getInstance()));
-        Assertions.assertEquals("5..", Ranges.toString(Range.atLeast(5), NumberFormat.getInstance()));
-        Assertions.assertEquals("..5", Ranges.toString(Range.atMost(5), NumberFormat.getInstance()));
-        Assertions.assertEquals("", Ranges.toString(Range.all(), NumberFormat.getInstance()));
+    void testSplitUnbounded() {
+        Range<Long> empty = Range.atLeast(2L);
+        Assertions.assertThrows(UnsplittableRangeException.class, () -> splitter.split(empty));
+    }
 
+    @Test
+    void testIntegerToString() {
+        Assertions.assertEquals("5..10", integerPrinter.print(Range.closed(5, 10)));
+        Assertions.assertEquals("5..", integerPrinter.print(Range.atLeast(5)));
+        Assertions.assertEquals("..5", integerPrinter.print(Range.atMost(5)));
+        Assertions.assertEquals("", integerPrinter.print(Range.all()));
+    }
+
+    @Test
+    void testDateToString() {
         Calendar calendar = Calendar.getInstance();
         calendar.set(2022, Calendar.JANUARY, 1, 0, 0);
         Date lower = calendar.getTime();
         calendar.set(2022, Calendar.JANUARY, 2, 0, 0);
         Date upper = calendar.getTime();
-        Range<Date> dateRange = Range.closed(lower, upper);
-        Assertions.assertEquals("2022-01-01..2022-01-02", Ranges.toString(dateRange, new SimpleDateFormat("yyyy-MM-dd")));
-        Assertions.assertEquals(
-                "2022-01-01T00:00..2022-01-02T00:00",
-                Ranges.toString(dateRange, new SimpleDateFormat("yyyy-MM-dd'T'HH:mm"))
-        );
-    }
-
-    @Test
-    void testToStringException() {
-        Range<Date> invalid = Range.closed(new Date(), new Date());
-        Format format = NumberFormat.getInstance();
-        Assertions.assertThrows(
-                IllegalArgumentException.class,
-                () -> Ranges.toString(invalid, format)
-        );
+        Range<Date> range = Range.closed(lower, upper);
+        Assertions.assertEquals("2022-01-01..2022-01-02", dateprinter.print(range));
+        Assertions.assertEquals("2022-01-01T00:00..2022-01-02T00:00", dateTimePrinter.print(range));
     }
 }

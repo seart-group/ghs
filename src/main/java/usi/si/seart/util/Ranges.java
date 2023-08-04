@@ -1,8 +1,13 @@
 package usi.si.seart.util;
 
 import com.google.common.collect.Range;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+import lombok.experimental.FieldDefaults;
 import lombok.experimental.UtilityClass;
 import org.apache.commons.lang3.tuple.Pair;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import usi.si.seart.exception.IllegalBoundaryException;
 import usi.si.seart.exception.UnsplittableRangeException;
 
@@ -13,119 +18,184 @@ import java.util.function.Function;
 
 /**
  * A utility class for working with Guava's ranges.
- * Provides methods for building, splitting, and
+ * Provides utilities for building, splitting, and
  * formatting ranges as strings.
  *
  * @author Ozren Dabić
  * @see Range
  */
-@SuppressWarnings("rawtypes")
 @UtilityClass
 public class Ranges {
 
     /**
-     * Returns a Range object with lower and upper
-     * bounds set based on the provided parameters.
-     * If an endpoint parameter is null, then the
-     * returned range will be unbounded on that endpoint.
-     *
-     * @param lower
-     * The lower bound of the range.
-     * Can be null to specify no lower bound.
-     * @param upper
-     * The upper bound of the range.
-     * Can be null to specify no upper bound.
-     * @param <T> The range endpoint type.
-     * @return A Range object.
-     * @throws IllegalBoundaryException
-     * if the lower bound is greater
-     * than the upper bound.
+     * Convenience method. Equivalent to:
+     * <pre>{@code
+     *     Ranges.builder().lower(...).upper(...).build();
+     * }</pre>
      */
-    public <T extends Comparable> Range<T> build(T lower, T upper) {
-        Range<T> lowerBound = (lower != null) ? Range.atLeast(lower) : Range.all();
-        Range<T> upperBound = (upper != null) ? Range.atMost(upper) : Range.all();
-        try {
-            return lowerBound.intersection(upperBound);
-        } catch (IllegalArgumentException ignored) {
-            String format = "Can not construct range where the lower endpoint (%s) " +
-                    "is greater than the upper endpoint (%s)";
-            String message = String.format(format, lower, upper);
-            throw new IllegalBoundaryException(message);
+    public <T extends Comparable<T>> Range<T> build(@Nullable T lower, @Nullable T upper) {
+        return new Builder<T>()
+                .lower(lower)
+                .upper(upper)
+                .build();
+    }
+
+    /**
+     * @param <T> The range endpoint type.
+     * @return A {@link Range} builder.
+     */
+    public <T extends Comparable<T>> Builder<T> builder() {
+        return new Builder<>();
+    }
+
+    /**
+     * A fluent API for building ranges.
+     * All ranges returned by this builder are <em>closed</em> by default.
+     * If either endpoint is null, then the returned range will be unbounded on that endpoint.
+     *
+     * @param <T> The range endpoint type.
+     */
+    @NoArgsConstructor(access = AccessLevel.PRIVATE)
+    @FieldDefaults(level = AccessLevel.PRIVATE)
+    public static class Builder<T extends Comparable<T>> {
+
+        T lower;
+        T upper;
+
+        /**
+         * Set the lower bound of the range.
+         * {@code null} value corresponds to no bound specified.
+         *
+         * @param lower lower bound of the range.
+         */
+        public Builder<T> lower(@Nullable T lower) {
+            this.lower = lower;
+            return this;
+        }
+
+        /**
+         * Set the upper bound of the range.
+         * {@code null} value corresponds to no bound specified.
+         *
+         * @param upper upper bound of the range.
+         */
+        public Builder<T> upper(@Nullable T upper) {
+            this.upper = upper;
+            return this;
+        }
+
+        /**
+         * Finalize range object construction.
+         *
+         * @return {@link Range} object.
+         * @throws IllegalBoundaryException if the lower bound is greater than the upper bound.
+         */
+        public Range<T> build() {
+            Range<T> lowerBound = (lower != null) ? Range.atLeast(lower) : Range.all();
+            Range<T> upperBound = (upper != null) ? Range.atMost(upper) : Range.all();
+            try {
+                return lowerBound.intersection(upperBound);
+            } catch (IllegalArgumentException ignored) {
+                String format = "Can not construct range where the lower endpoint (%s) " +
+                        "is greater than the upper endpoint (%s)";
+                String message = String.format(format, lower, upper);
+                throw new IllegalBoundaryException(message);
+            }
         }
     }
 
     /**
-     * Splits a given range into two halves
-     * using the provided median function.
+     * Utility class for splitting ranges.
      *
-     * @param range
-     * The range to be split.
-     * @param medianFunction
-     * A function that returns the median
-     * value for a given pair of endpoints.
      * @param <T> The range endpoint type.
-     * @return
-     * A {@link Pair} containing the
-     * two halves of the split range.
-     * @throws IllegalArgumentException if the range has no upper and/or lower bound.
-     * @throws UnsplittableRangeException if range is empty or a singleton.
      */
-    public <T extends Comparable> Pair<Range<T>, Range<T>> split(
-            Range<T> range, BinaryOperator<T> medianFunction
-    ) {
-        Objects.requireNonNull(range, "Range must not be null!");
-        Objects.requireNonNull(medianFunction, "Median function must not be null!");
-        if (!range.hasLowerBound() || !range.hasUpperBound()) {
-            throw new IllegalArgumentException("Can split unbounded range!");
+    @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
+    public static class Splitter<T extends Comparable<T>> {
+
+        BinaryOperator<T> function;
+
+        /**
+         * @param function A bi-parameter mapping that returns the median value for a given pair of endpoints.
+         * @throws NullPointerException if the specified median function is {@code null}.
+         */
+        public Splitter(@NotNull BinaryOperator<T> function) {
+            Objects.requireNonNull(function, "Median function must not be null!");
+            this.function = function;
         }
 
-        T lower = range.lowerEndpoint();
-        T upper = range.upperEndpoint();
+        /**
+         * Splits a range into two halves using the provided median function.
+         *
+         * @param range The range to be split.
+         * @return {@link Pair} containing the two halves of the split range.
+         * @throws IllegalArgumentException if the range has no upper and/or lower bound.
+         * @throws UnsplittableRangeException if range is empty or a singleton.
+         * @throws NullPointerException if the range is {@code null}.
+         */
+        public Pair<Range<T>, Range<T>> split(@NotNull Range<T> range) {
+            Objects.requireNonNull(range, "Range must not be null!");
+            if (!range.hasLowerBound() || !range.hasUpperBound()) {
+                throw new UnsplittableRangeException("Can't split unbounded range!");
+            }
 
-        if (lower.equals(upper)) {
-            String category = (range.isEmpty()) ? "empty" : "singleton";
-            throw new UnsplittableRangeException("Can split " + category + " range!");
+            T lower = range.lowerEndpoint();
+            T upper = range.upperEndpoint();
+
+            if (lower.equals(upper)) {
+                String category = (range.isEmpty()) ? "empty" : "singleton";
+                throw new UnsplittableRangeException("Can't split " + category + " range!");
+            }
+
+            T median = function.apply(lower, upper);
+            Range<T> first = Range.closed(lower, median);
+            Range<T> second = Range.closed(median, upper);
+            return Pair.of(first, second);
+        }
+    }
+
+
+    /**
+     * Utility class for representing ranges as strings.
+     *
+     * @param <T> The range endpoint type.
+     */
+    @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
+    public static final class Printer<T extends Comparable<T>> {
+
+        Function<? super T, String> function;
+
+        /**
+         * @param function The endpoint printing function.
+         * @throws NullPointerException if the specified printing function is {@code null}.
+         */
+        public Printer(@NotNull Function<? super T, String> function) {
+            Objects.requireNonNull(function, "Printing function must not be null!");
+            this.function = function;
         }
 
-        T median = medianFunction.apply(lower, upper);
-        Range<T> first = Range.closed(lower, median);
-        Range<T> second = Range.closed(median, upper);
-        return Pair.of(first, second);
-    }
+        /**
+         * @param format The formatter specifying how endpoint data is represented in string form.
+         * @throws NullPointerException if the specified formatter is {@code null}.
+         */
+        public Printer(@NotNull Format format) {
+            Objects.requireNonNull(format, "Format must not be null!");
+            this.function = format::format;
+        }
 
-    /**
-     * Returns a string representation of
-     * a range using an endpoint formatter.
-     *
-     * @param range The range to be formatted.
-     * @param formatter The formatter to be used.
-     * @param <T> The range endpoint type.
-     * @return A string representation of the range.
-     * @throws NullPointerException if either parameter is null.
-     */
-    public <T extends Comparable> String toString(Range<T> range, Format formatter) {
-        return toString(range, formatter::format);
-    }
-
-    /**
-     * Returns a string representation of
-     * a range using an endpoint mapping function.
-     *
-     * @param range The range to be formatted.
-     * @param function The transformation function.
-     * @param <T> The range endpoint type.
-     * @return A string representation of the range.
-     * @throws NullPointerException if either parameter is null.
-     */
-    public <T extends Comparable> String toString(Range<T> range, Function<? super T, String> function) {
-        Objects.requireNonNull(range, "Range must not be null!");
-        Objects.requireNonNull(function, "Bound mapping function must not be null!");
-        StringBuilder builder = new StringBuilder();
-        boolean lowerBound = range.hasLowerBound();
-        boolean upperBound = range.hasUpperBound();
-        if (lowerBound) builder.append(function.apply(range.lowerEndpoint()));
-        if (lowerBound || upperBound) builder.append("..");
-        if (upperBound) builder.append(function.apply(range.upperEndpoint()));
-        return builder.toString();
+        /**
+         * @param range the range to be formatted as string.
+         * @return string representation of the range.
+         * @throws NullPointerException if the range is {@code null}.
+         */
+        public String print(@NotNull Range<T> range) {
+            Objects.requireNonNull(range, "Range must not be null!");
+            StringBuilder builder = new StringBuilder();
+            boolean lowerBound = range.hasLowerBound();
+            boolean upperBound = range.hasUpperBound();
+            if (lowerBound) builder.append(function.apply(range.lowerEndpoint()));
+            if (lowerBound || upperBound) builder.append("..");
+            if (upperBound) builder.append(function.apply(range.upperEndpoint()));
+            return builder.toString();
+        }
     }
 }

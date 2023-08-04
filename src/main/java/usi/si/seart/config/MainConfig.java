@@ -28,14 +28,16 @@ import usi.si.seart.converter.StringToJsonElementConverter;
 import usi.si.seart.converter.StringToJsonObjectConverter;
 import usi.si.seart.converter.StringToLicensesConverter;
 import usi.si.seart.converter.StringToNavigationLinksConverter;
+import usi.si.seart.util.Ranges;
 
 import java.nio.file.Path;
 import java.time.Instant;
+import java.time.ZoneId;
 import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.Date;
-import java.util.function.Function;
 
 @AllArgsConstructor(onConstructor_ = @Autowired)
 @Configuration
@@ -56,12 +58,27 @@ public class MainConfig {
     }
 
     @Bean
-    public Function<Date, String> dateStringMapper() {
-        return date -> {
+    public Ranges.Splitter<Date> dateRangeSplitter() {
+        return new Ranges.Splitter<>((lower, upper) -> {
+            ZoneId zoneId = ZoneId.of("UTC");
+            Instant lowerInstant = lower.toInstant();
+            Instant upperInstant = upper.toInstant();
+            ZonedDateTime lowerZoned = lowerInstant.atZone(zoneId);
+            ZonedDateTime upperZoned = upperInstant.atZone(zoneId);
+            long seconds = ChronoUnit.SECONDS.between(lowerZoned, upperZoned);
+            ZonedDateTime medianZoned = lowerZoned.plusSeconds(seconds / 2);
+            Instant medianInstant = medianZoned.toInstant();
+            return Date.from(medianInstant);
+        });
+    }
+
+    @Bean
+    public Ranges.Printer<Date> dateRangePrinter() {
+        return new Ranges.Printer<>(date -> {
             Instant instant = date.toInstant();
             Instant truncated = instant.truncatedTo(ChronoUnit.SECONDS);
             return dateTimeFormatter().format(truncated);
-        };
+        });
     }
 
     @Bean
