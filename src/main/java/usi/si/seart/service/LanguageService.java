@@ -8,7 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
-import usi.si.seart.collection.ConcurrentLockMap;
+import usi.si.seart.collection.ConcurrentReadWriteLockMap;
 import usi.si.seart.model.Language;
 import usi.si.seart.repository.LanguageProgressRepository;
 import usi.si.seart.repository.LanguageRepository;
@@ -37,21 +37,29 @@ public interface LanguageService extends NamedEntityService<Language> {
         LanguageRepository languageRepository;
         LanguageProgressRepository languageProgressRepository;
 
-        ConcurrentLockMap<String> locks = new ConcurrentLockMap<>();
+        ConcurrentReadWriteLockMap<String> locks = new ConcurrentReadWriteLockMap<>();
 
         @Override
         public Language getOrCreate(String name) {
-            return languageRepository.findByNameIgnoreCase(name)
-                    .orElseGet(() -> {
-                        Lock lock = locks.get(name);
-                        lock.lock();
-                        try {
-                            return languageRepository.findByNameIgnoreCase(name)
-                                    .orElseGet(() -> languageRepository.save(Language.builder().name(name).build()));
-                        } finally {
-                            lock.unlock();
-                        }
-                    });
+            Lock readLock = locks.getReadLock(name);
+            readLock.lock();
+            try {
+                return languageRepository.findByNameIgnoreCase(name)
+                        .orElseGet(() -> create(name));
+            } finally {
+                readLock.unlock();
+            }
+        }
+
+        private Language create(String name) {
+            Lock writeLock = locks.getWriteLock(name);
+            writeLock.lock();
+            try {
+                Language language = Language.builder().name(name).build();
+                return languageRepository.save(language);
+            } finally {
+                writeLock.unlock();
+            }
         }
 
         @Override
