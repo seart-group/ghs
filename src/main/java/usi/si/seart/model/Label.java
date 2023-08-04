@@ -36,7 +36,7 @@ public class Label {
     Long id;
 
     @NotNull
-    @Column(name = "name")
+    @Column(name = "name", unique = true)
     String name;
 
     @Builder.Default
