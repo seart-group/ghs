@@ -89,13 +89,16 @@ public class StaticCodeAnalyzer {
                         return metric;
                     })
                     .collect(Collectors.toSet());
-            if (metrics.isEmpty())
-                log.warn("No metrics were computed for: {}", name);
+            if (metrics.isEmpty()) {
+                log.debug("No metrics were computed for: {}", name);
+                log.info("Skipping:  {} [{}]", name, id);
+            }
             gitRepo.setMetrics(metrics);
             gitRepo.setLastAnalyzed();
             gitRepoService.createOrUpdate(gitRepo);
         } catch (RepositoryNotFoundException ignored) {
-            log.warn("Remote not found for {} [{}], proceeding with cleanup instead...", name, id);
+            log.debug("Remote not found {}, performing cleanup instead...", name);
+            log.info("Deleting:  {} [{}]", name, id);
             gitRepoService.deleteRepoById(id);
         } catch (InterruptedException ex) {
             log.warn("Interrupt: {} [{}]", name, id);
