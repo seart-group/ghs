@@ -100,6 +100,7 @@ public class GitRepoMetric {
     @Setter
     @AllArgsConstructor
     @NoArgsConstructor
+    @FieldDefaults(level = AccessLevel.PRIVATE)
     @Embeddable
     public static class Key implements Serializable {
 
