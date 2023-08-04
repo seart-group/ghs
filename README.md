@@ -24,19 +24,25 @@ This project is made of two components:
 
 Before choosing whether to start with a clean slate or pre-populated database, make sure the following requirements are met:
 
-1. The database timezone is set to UTC (+00:00). You can verify this via:
+1. The database timezone is set to `+00:00`. You can verify this via:
 
     ```sql
     SELECT @@global.time_zone, @@session.time_zone;
     ```
 
-2. The `gse` database exists. To create it:
+2. The event scheduler is turned `ON`. You can verify this via:
+
+   ```sql
+   SELECT @@global.event_scheduler;
+   ```
+
+3. The `gse` database exists. To create it:
 
     ```sql
     CREATE DATABASE gse CHARACTER SET utf8 COLLATE utf8_bin;
     ```
 
-3. The `gseadmin` user exists. To create one, run:
+4. The `gseadmin` user exists. To create one, run:
 
     ```sql
     CREATE USER IF NOT EXISTS 'gseadmin'@'%' IDENTIFIED BY 'Lugano2020';
