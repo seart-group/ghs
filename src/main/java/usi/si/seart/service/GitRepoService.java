@@ -9,6 +9,7 @@ import org.springframework.dao.TransientDataAccessException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.util.Pair;
 import org.springframework.retry.annotation.Backoff;
 import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
@@ -47,7 +48,7 @@ public interface GitRepoService {
     Optional<GitRepo> getNextDeletionCandidate();
     Page<GitRepo> findDynamically(GitRepoSearch parameters, Pageable pageable);
     Stream<GitRepo> streamDynamically(GitRepoSearch parameters);
-    Stream<String> streamAnalysisCandidates();
+    Stream<Pair<Long, String>> streamAnalysisCandidates();
 
     @Slf4j
     @Service
@@ -78,7 +79,7 @@ public interface GitRepoService {
 
         @Override
         public Long countAnalysisCandidates() {
-            return gitRepoRepository.countAllRepoWithOutdatedCodeMetrics();
+            return gitRepoRepository.countWithOutdatedCodeMetrics();
         }
 
         @Override
@@ -116,8 +117,12 @@ public interface GitRepoService {
         }
 
         @Override
-        public Stream<String> streamAnalysisCandidates() {
-            return gitRepoRepository.findAllRepoWithOutdatedCodeMetrics();
+        public Stream<Pair<Long, String>> streamAnalysisCandidates() {
+            return gitRepoRepository.streamIdentifiersWithOutdatedCodeMetrics()
+                    .map(tuple -> Pair.of(
+                            tuple.get("id", Long.class),
+                            tuple.get("name", String.class)
+                    ));
         }
     }
 }

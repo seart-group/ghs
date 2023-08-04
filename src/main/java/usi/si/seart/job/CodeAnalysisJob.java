@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.ApplicationContext;
 import org.springframework.core.convert.ConversionService;
+import org.springframework.data.util.Pair;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
@@ -67,27 +68,30 @@ public class CodeAnalysisJob {
     }
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public void analyze(String name) {
+    public void analyze(Pair<Long, String> identifiers) {
         /*
          * Methods annotated with @Async can only be executed outside the caller.
          * Due to this proxying limitation, we have to perform this ugly hack.
          * Why not just make it a service? I feel like the analysis operations
          * are not useful enough on their own to be generalized for other uses.
          */
-        applicationContext.getBean(getClass()).gatherCodeMetricsFor(name);
+        applicationContext.getBean(getClass()).gatherCodeMetricsFor(identifiers);
     }
 
     /**
      * Computes the set of code metrics of a given repository.
      *
-     * @param name the full name of the repository.
+     * @param identifiers the ID and full name of the repository.
      */
     @Async("AnalysisExecutor")
-    public void gatherCodeMetricsFor(@NotNull String name) {
-        Optionals.ofThrowable(() -> gitRepoService.getByName(name)).ifPresentOrElse(
-                this::gatherCodeMetricsFor,
-                () -> log.warn("Skipping non-existing repository: [{}]", name)
-        );
+    public void gatherCodeMetricsFor(Pair<Long, String> identifiers) {
+        Long id = identifiers.getFirst();
+        String name = identifiers.getSecond();
+        Optionals.ofThrowable(() -> gitRepoService.getRepoById(id))
+                .ifPresentOrElse(
+                        this::gatherCodeMetricsFor,
+                        () -> log.debug("Skipping:  {} [{}]", name, id)
+                );
     }
 
     @SneakyThrows(MalformedURLException.class)

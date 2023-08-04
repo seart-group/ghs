@@ -12,6 +12,7 @@ import usi.si.seart.repository.specification.GitRepoSearch;
 import usi.si.seart.repository.specification.GitRepoSpecification;
 import usi.si.seart.repository.specification.JpaStreamableSpecificationRepository;
 
+import javax.persistence.Tuple;
 import javax.validation.constraints.NotNull;
 import java.util.Optional;
 import java.util.stream.Stream;
@@ -33,17 +34,17 @@ public interface GitRepoRepository extends
     Page<GitRepo> findGitRepoByOrderByLastPinged(Pageable pageable);
 
     @Query(
-            "select r.name from GitRepo r " +
+            "select r.id as id, r.name as name from GitRepo r " +
             "where r.lastAnalyzed is null or r.lastAnalyzed < r.lastCommit " +
             "order by r.lastAnalyzed, RAND()"
     )
-    Stream<String> findAllRepoWithOutdatedCodeMetrics();
+    Stream<Tuple> streamIdentifiersWithOutdatedCodeMetrics();
 
     @Query(
             "select COUNT(r) from GitRepo r " +
             "where r.lastAnalyzed is null or r.lastAnalyzed < r.lastCommit"
     )
-    Long countAllRepoWithOutdatedCodeMetrics();
+    Long countWithOutdatedCodeMetrics();
 
     default Page<GitRepo> findAllDynamically(GitRepoSearch parameters, Pageable pageable) {
         GitRepoSpecification specification = new GitRepoSpecification(parameters);
