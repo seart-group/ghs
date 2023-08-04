@@ -2,7 +2,6 @@ package usi.si.seart.config;
 
 import com.google.gson.Gson;
 import lombok.AllArgsConstructor;
-import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
@@ -22,8 +21,6 @@ import usi.si.seart.converter.JsonObjectToGitRepoMetricConverter;
 import usi.si.seart.converter.SearchParameterDtoToGitRepoSearchConverter;
 import usi.si.seart.converter.StringToContactsConverter;
 import usi.si.seart.converter.StringToGitExceptionConverter;
-import usi.si.seart.converter.StringToJsonElementConverter;
-import usi.si.seart.converter.StringToJsonObjectConverter;
 import usi.si.seart.converter.StringToLicensesConverter;
 import usi.si.seart.converter.StringToNavigationLinksConverter;
 
@@ -113,8 +110,6 @@ public class MainConfig {
                 registry.addConverter(new SearchParameterDtoToGitRepoSearchConverter());
                 registry.addConverter(new StringToContactsConverter());
                 registry.addConverter(new StringToGitExceptionConverter());
-                registry.addConverter(new StringToJsonElementConverter());
-                registry.addConverter(new StringToJsonObjectConverter(gson()));
                 registry.addConverter(new StringToLicensesConverter());
                 registry.addConverter(new StringToNavigationLinksConverter());
             }

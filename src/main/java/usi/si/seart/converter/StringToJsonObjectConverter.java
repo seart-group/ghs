@@ -1,22 +1,21 @@
 package usi.si.seart.converter;
 
-import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import lombok.AllArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.lang.NonNull;
+import org.springframework.stereotype.Component;
 
-import java.util.Objects;
-
-@AllArgsConstructor
+@Component
+@AllArgsConstructor(onConstructor_ = @Autowired)
 public class StringToJsonObjectConverter implements Converter<String, JsonObject> {
 
-    Gson gson;
+    StringToJsonElementConverter jsonElementConverter;
 
     @Override
     @NonNull
     public JsonObject convert(@NonNull String source) {
-        JsonObject result = gson.fromJson(source, JsonObject.class);
-        return Objects.requireNonNullElseGet(result, JsonObject::new);
+        return jsonElementConverter.convert(source).getAsJsonObject();
     }
 }
