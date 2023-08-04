@@ -22,6 +22,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.MapsId;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.PositiveOrZero;
 import java.io.Serializable;
 import java.util.Objects;
 
@@ -69,16 +70,19 @@ public class GitRepoMetric {
     Long nonBlankLines;
 
     @NotNull
+    @PositiveOrZero
     @Column(name = "lines_blank")
     @Builder.Default
     Long blankLines = 0L;
 
     @NotNull
+    @PositiveOrZero
     @Column(name = "lines_code")
     @Builder.Default
     Long codeLines = 0L;
 
     @NotNull
+    @PositiveOrZero
     @Column(name = "lines_comment")
     @Builder.Default
     Long commentLines = 0L;
