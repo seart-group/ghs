@@ -12,7 +12,6 @@ COPY --from=build /target/ghs-application-*.jar /server.jar
 RUN apk update --quiet
 RUN apk add --no-cache \
             --quiet \
-            bash \
             git \
             cloc \
             curl
