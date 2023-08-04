@@ -11,13 +11,14 @@ This project is made of two components:
 
 ### Prerequisites
 
-- Java 11
-- Maven (3.8+)
-- MySQL (8.0.33+)
-- Flyway (9.21.1+)
-- Git
-- Bash
-- [cloc](https://github.com/AlDanial/cloc)
+| Dependency                               | Version Requirement |
+|------------------------------------------|--------------------:|
+| Java                                     |                  11 |
+| Maven                                    |               3.8.6 |
+| MySQL                                    |              8.0.33 |
+| Flyway                                   |              9.21.1 |
+| Git                                      |              2.25.2 |
+| [cloc](https://github.com/AlDanial/cloc) |                1.96 |
 
 ### Database
 
