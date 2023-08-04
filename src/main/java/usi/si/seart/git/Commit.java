@@ -1,4 +1,4 @@
-package usi.si.seart.github;
+package usi.si.seart.git;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -26,9 +26,10 @@ import java.util.Objects;
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class GitCommit {
+@SuppressWarnings("java:S6548")
+public class Commit {
 
-    public static final GitCommit NULL_COMMIT = new GitCommit();
+    public static final Commit UNKNOWN = new Commit();
 
     String sha;
     Date date;
@@ -47,9 +48,8 @@ public class GitCommit {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        GitCommit gitCommit = (GitCommit) o;
-        return Objects.equals(sha, gitCommit.sha)
-                && Objects.equals(date, gitCommit.date);
+        Commit commit = (Commit) o;
+        return Objects.equals(sha, commit.sha) && Objects.equals(date, commit.date);
     }
 
     @Override

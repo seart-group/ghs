@@ -21,7 +21,7 @@ import org.springframework.stereotype.Service;
 import usi.si.seart.collection.Ranges;
 import usi.si.seart.exception.MetadataCrawlingException;
 import usi.si.seart.exception.UnsplittableRangeException;
-import usi.si.seart.github.GitCommit;
+import usi.si.seart.git.Commit;
 import usi.si.seart.github.GitHubAPIConnector;
 import usi.si.seart.model.GitRepo;
 import usi.si.seart.model.Label;
@@ -278,9 +278,9 @@ public class CrawlProjectsJob {
                 gitRepo.setOpenIssues(0L);
             }
 
-            GitCommit gitCommit = gitHubApiConnector.fetchLastCommitInfo(name);
-            Date lastCommit = gitCommit.getDate();
-            String lastCommitSHA = gitCommit.getSha();
+            Commit commit = gitHubApiConnector.fetchLastCommitInfo(name);
+            Date lastCommit = commit.getDate();
+            String lastCommitSHA = commit.getSha();
             gitRepo.setLastCommit(lastCommit);
             gitRepo.setLastCommitSHA(lastCommitSHA);
 

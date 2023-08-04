@@ -3,21 +3,21 @@ package usi.si.seart.converter;
 import com.google.gson.JsonObject;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.lang.NonNull;
-import usi.si.seart.github.GitCommit;
+import usi.si.seart.git.Commit;
 import usi.si.seart.util.Dates;
 
 import java.util.Date;
 
-public class JsonObjectToGitCommitConverter implements Converter<JsonObject, GitCommit> {
+public class JsonObjectToGitCommitConverter implements Converter<JsonObject, Commit> {
 
     @Override
     @NonNull
-    public GitCommit convert(@NonNull JsonObject source) {
-        String sha = source.get("sha").getAsString();
-        JsonObject commit = source.get("commit").getAsJsonObject();
-        JsonObject committer = commit.get("committer").getAsJsonObject();
-        String gitDateString = committer.get("date").getAsString();
+    public Commit convert(@NonNull JsonObject source) {
+        String sha = source.getAsJsonPrimitive("sha").getAsString();
+        JsonObject commit = source.getAsJsonObject("commit");
+        JsonObject committer = commit.getAsJsonObject("committer");
+        String gitDateString = committer.getAsJsonPrimitive("date").getAsString();
         Date date = Dates.fromGitDateString(gitDateString);
-        return new GitCommit(sha, date);
+        return new Commit(sha, date);
     }
 }

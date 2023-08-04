@@ -32,6 +32,7 @@ import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
 import usi.si.seart.collection.Ranges;
 import usi.si.seart.exception.github.GitHubAPIException;
+import usi.si.seart.git.Commit;
 
 import java.net.URL;
 import java.net.URLEncoder;
@@ -92,7 +93,7 @@ public class GitHubAPIConnector {
         return result.getJsonObject();
     }
 
-    public GitCommit fetchLastCommitInfo(String name) {
+    public Commit fetchLastCommitInfo(String name) {
         URL url = HttpUrl.get(Endpoint.REPOSITORY_COMMITS.toURL(name.split("/")))
                 .newBuilder()
                 .addQueryParameter("page", "1")
@@ -103,7 +104,7 @@ public class GitHubAPIConnector {
         JsonArray commits = result.getJsonArray();
         try {
             JsonObject latest = commits.get(0).getAsJsonObject();
-            return conversionService.convert(latest, GitCommit.class);
+            return conversionService.convert(latest, Commit.class);
         } catch (IndexOutOfBoundsException ignored) {
             /*
              * It might be possible for a repository to have no commits.
@@ -111,7 +112,7 @@ public class GitHubAPIConnector {
              * because we target repositories written in a specific language!
              * Still, better safe than sorry...
             */
-            return GitCommit.NULL_COMMIT;
+            return Commit.UNKNOWN;
         }
     }
 
