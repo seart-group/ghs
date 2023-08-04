@@ -68,7 +68,7 @@ public class GitHubTokenManager {
 
     @PostConstruct
     void postConstruct() {
-        int size = tokens.getSize();
+        int size = tokens.size();
         switch (size) {
             case 0:
                 log.warn("Access tokens not specified, GitHub API mining will be performed at a much slower rate!");
