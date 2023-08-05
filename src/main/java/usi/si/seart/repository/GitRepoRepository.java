@@ -12,6 +12,7 @@ import usi.si.seart.repository.specification.GitRepoSearch;
 import usi.si.seart.repository.specification.GitRepoSpecification;
 import usi.si.seart.repository.specification.JpaStreamableSpecificationRepository;
 
+import javax.persistence.Tuple;
 import javax.validation.constraints.NotNull;
 import java.util.Optional;
 import java.util.stream.Stream;
@@ -23,27 +24,44 @@ public interface GitRepoRepository extends
 {
 
     @Modifying
-    @Query("DELETE FROM GitRepo WHERE id = :id")
+    @Query("delete from GitRepo where id = :id")
     void deleteById(@NotNull @Param("id") Long id);
+
+    @Modifying
+    @Query("update GitRepo set lastPinged = CURRENT_TIMESTAMP() where id = :id")
+    void updateLastPingedById(@NotNull @Param("id") Long id);
 
     Optional<GitRepo> findGitRepoById(Long id);
 
     Optional<GitRepo> findGitRepoByNameIgnoreCase(String name);
 
-    Page<GitRepo> findGitRepoByOrderByLastPinged(Pageable pageable);
+    @Query(
+            "select r.id as id, r.name as name from GitRepo r " +
+            "where DATEDIFF(CURRENT_TIMESTAMP(), r.lastPinged) > 35" +
+            "order by r.lastPinged, RAND()"
+    )
+    // FIXME: 04.08.23 DATEDIFF is vendor-specific
+    Stream<Tuple> streamIdentifiersWithOutdatedLastPinged();
 
     @Query(
-            "select r.name from GitRepo r " +
+            "select r.id as id, r.name as name from GitRepo r " +
             "where r.lastAnalyzed is null or r.lastAnalyzed < r.lastCommit " +
             "order by r.lastAnalyzed, RAND()"
     )
-    Stream<String> findAllRepoWithOutdatedCodeMetrics();
+    Stream<Tuple> streamIdentifiersWithOutdatedCodeMetrics();
+
+    @Query(
+            "select COUNT(r) from GitRepo r " +
+            "where DATEDIFF(CURRENT_TIMESTAMP(), r.lastPinged) > 35"
+    )
+    // FIXME: 04.08.23 DATEDIFF is vendor-specific
+    Long countWithOutdatedLastPinged();
 
     @Query(
             "select COUNT(r) from GitRepo r " +
             "where r.lastAnalyzed is null or r.lastAnalyzed < r.lastCommit"
     )
-    Long countAllRepoWithOutdatedCodeMetrics();
+    Long countWithOutdatedCodeMetrics();
 
     default Page<GitRepo> findAllDynamically(GitRepoSearch parameters, Pageable pageable) {
         GitRepoSpecification specification = new GitRepoSpecification(parameters);

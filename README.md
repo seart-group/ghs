@@ -11,31 +11,38 @@ This project is made of two components:
 
 ### Prerequisites
 
-- Java 11
-- Maven (3.8+)
-- MySQL (8.0.33+)
-- Flyway (9.21.1+)
-- Git
-- Bash
-- [cloc](https://github.com/AlDanial/cloc)
+| Dependency                               | Version Requirement |
+|------------------------------------------|--------------------:|
+| Java                                     |                  11 |
+| Maven                                    |               3.8.6 |
+| MySQL                                    |              8.0.33 |
+| Flyway                                   |              9.21.1 |
+| Git                                      |              2.25.2 |
+| [cloc](https://github.com/AlDanial/cloc) |                1.96 |
 
 ### Database
 
 Before choosing whether to start with a clean slate or pre-populated database, make sure the following requirements are met:
 
-1. The database timezone is set to UTC (+00:00). You can verify this via:
+1. The database timezone is set to `+00:00`. You can verify this via:
 
     ```sql
     SELECT @@global.time_zone, @@session.time_zone;
     ```
 
-2. The `gse` database exists. To create it:
+2. The event scheduler is turned `ON`. You can verify this via:
+
+   ```sql
+   SELECT @@global.event_scheduler;
+   ```
+
+3. The `gse` database exists. To create it:
 
     ```sql
     CREATE DATABASE gse CHARACTER SET utf8 COLLATE utf8_bin;
     ```
 
-3. The `gseadmin` user exists. To create one, run:
+4. The `gseadmin` user exists. To create one, run:
 
     ```sql
     CREATE USER IF NOT EXISTS 'gseadmin'@'%' IDENTIFIED BY 'Lugano2020';
@@ -92,7 +99,7 @@ Here's a list of project-specific arguments supported by the application that yo
 | `app.crawl.analysis.folder-prefix`    | String             | ghs-cloned-                                                             | The prefix used for the names of the folders where Git repositories are cloned                                                                                        |
 | `app.crawl.analysis.max-pool-threads` | Integer            | 3                                                                       | The maximum amount of live threads dedicated to cloning git repositories, expressed as a numeric string                                                               |
 | `app.cleanup.enabled`                 | Boolean            | true                                                                    | Specified if the job responsible for removing unavailable repositories is enabled on startup                                                                          |
-| `app.cleanup.scheduling`              | String             | P7D                                                                     | Cleanup scheduling rate, expressed as a duration string                                                                                                               |
+| `app.cleanup.cron`                    | String             | 0 0 0 * * 1                                                             | Cleanup scheduling rate, as a [Spring CRON expression](https://spring.io/blog/2020/11/10/new-in-spring-5-3-improved-cron-expressions)                                 |
 | `app.statistics.suggestion-limit`     | Integer            | 500                                                                     | The maximum number of suggestions that will be made available to the UI autocompletion fields                                                                         |
 
 ### Web UI
@@ -113,13 +120,23 @@ Regardless of which method you choose for hosting, the back-end CORS restricts y
 
 The deployment stack consists of the following containers:
 
-| Service/Container name |                                Image                                 | Purpose                           |      Enabled by Default       |   Depends on    |
-|------------------------|:--------------------------------------------------------------------:|-----------------------------------|:-----------------------------:|:---------------:|
-| `gse-database`         |           [mysql](https://registry.hub.docker.com/_/mysql)           | for the database                  |      :white_check_mark:       |                 |
-| `gse-migration`        |      [flyway](https://registry.hub.docker.com/r/flyway/flyway)       | for the schema migrations         |      :white_check_mark:       | `gse-database`  |
-| `gse-backup`           | [tiredofit/db-backup](https://hub.docker.com/r/tiredofit/db-backup/) | for the automatic backups         | :negative_squared_cross_mark: | `gse-migration` |
-| `gse-server`           |               [gse/backend](docker/server/Dockerfile)                | for the spring application itself |      :white_check_mark:       | `gse-migration` |
-| `gse-website`          |              [gse/frontend](docker/website/Dockerfile)               | for supplying the front-end files |      :white_check_mark:       |  `gse-server`   |
+| Service/Container name |                                Image                                 | Purpose                           |      Enabled by Default       |
+|------------------------|:--------------------------------------------------------------------:|-----------------------------------|:-----------------------------:|
+| `gse-database`         |           [mysql](https://registry.hub.docker.com/_/mysql)           | for the database                  |      :white_check_mark:       |
+| `gse-migration`        |      [flyway](https://registry.hub.docker.com/r/flyway/flyway)       | for the schema migrations         |      :white_check_mark:       |
+| `gse-backup`           | [tiredofit/db-backup](https://hub.docker.com/r/tiredofit/db-backup/) | for the automatic backups         | :negative_squared_cross_mark: |
+| `gse-server`           |               [gse/backend](docker/server/Dockerfile)                | for the spring application itself |      :white_check_mark:       |
+| `gse-website`          |              [gse/frontend](docker/website/Dockerfile)               | for supplying the front-end files |      :white_check_mark:       |
+
+The service dependency chain can be represented as follows:
+
+```mermaid
+graph RL
+    gse-migration --> |service_healthy| gse-database
+    gse-backup --> |service_completed_successfully| gse-migration
+    gse-server --> |service_completed_successfully| gse-migration
+    gse-website --> |service_healthy| gse-server
+```
 
 Deploying is as simple as, in the [docker-compose](docker-compose) directory, run:
 

@@ -17,10 +17,10 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.context.annotation.DependsOn;
 import org.springframework.dao.NonTransientDataAccessException;
 import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.stereotype.Service;
+import usi.si.seart.collection.Ranges;
 import usi.si.seart.exception.MetadataCrawlingException;
 import usi.si.seart.exception.UnsplittableRangeException;
-import usi.si.seart.github.GitCommit;
+import usi.si.seart.git.Commit;
 import usi.si.seart.github.GitHubAPIConnector;
 import usi.si.seart.model.GitRepo;
 import usi.si.seart.model.Label;
@@ -31,9 +31,9 @@ import usi.si.seart.service.GitRepoService;
 import usi.si.seart.service.LabelService;
 import usi.si.seart.service.LanguageService;
 import usi.si.seart.service.TopicService;
+import usi.si.seart.stereotype.Job;
 import usi.si.seart.util.Dates;
 import usi.si.seart.util.Optionals;
-import usi.si.seart.util.Ranges;
 
 import java.time.Duration;
 import java.time.Instant;
@@ -41,19 +41,19 @@ import java.util.ArrayDeque;
 import java.util.Collection;
 import java.util.Date;
 import java.util.Deque;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
+@Job
 @Slf4j
-@Service
 @DependsOn("LanguageInitializationBean")
 @ConditionalOnExpression(value = "${app.crawl.enabled:false} and not '${app.crawl.languages}'.isBlank()")
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
-public class CrawlProjectsJob {
+public class CrawlProjectsJob implements Runnable {
 
     Deque<Range<Date>> requestQueue = new ArrayDeque<>();
 
@@ -68,19 +68,23 @@ public class CrawlProjectsJob {
     @Value(value = "${app.crawl.scheduling}")
     Duration schedulingRate;
 
-    Function<Date, String> dateStringMapper;
+    Ranges.Printer<Date> rangePrinter;
+    Ranges.Splitter<Date> rangeSplitter;
 
     @Scheduled(fixedDelayString = "${app.crawl.scheduling}")
     public void run() {
         log.info("Initializing language queue...");
         Collection<Language> languages = languageService.getTargetedLanguages();
-        log.info("Language crawling order: {}", languages.stream().map(Language::getName).collect(Collectors.toList()));
+        List<String> order = languages.stream()
+                .map(Language::getName)
+                .collect(Collectors.toList());
+        log.info("Language crawling order: {}", order);
         for (Language language : languages) {
-            this.requestQueue.clear();
+            requestQueue.clear();
             Language.Progress progress = languageService.getProgress(language);
             Date lower = progress.getCheckpoint();
             Date upper = Date.from(Instant.now().minus(Duration.ofHours(1)));
-            Range<Date> dateRange = Ranges.build(lower, upper);
+            Range<Date> dateRange = Ranges.closed(lower, upper);
             crawlRepositories(dateRange, language);
         }
         log.info("Next crawl scheduled for: {}", Date.from(Instant.now().plus(schedulingRate)));
@@ -95,7 +99,7 @@ public class CrawlProjectsJob {
             log.info("Next crawl intervals:");
             requestQueue.stream()
                     .limit(limit)
-                    .map(item -> Ranges.toString(item, dateStringMapper))
+                    .map(rangePrinter::print)
                     .forEach(string -> log.info("\t[{}]", string));
             if (size > limit)
                 log.info("\t{} omitted ...", size - limit);
@@ -119,7 +123,7 @@ public class CrawlProjectsJob {
              */
             Date lower = range.lowerEndpoint();
             Date upper = Date.from(Instant.now().minus(Duration.ofHours(1)));
-            range = Ranges.build(lower, upper);
+            range = Ranges.closed(lower, upper);
         }
         String name = language.getName();
         int page = 1;
@@ -130,18 +134,11 @@ public class CrawlProjectsJob {
             if (totalResults == 0) return;
             log.info("Retrieved results: " + totalResults);
             if (totalResults > 1000) {
-                try {
-                    Pair<Range<Date>, Range<Date>> ranges = Ranges.split(range, Dates::median);
-                    requestQueue.push(ranges.getRight());
-                    requestQueue.push(ranges.getLeft());
-                    return;
-                } catch (UnsplittableRangeException ure) {
-                    log.warn(
-                            "Encountered range that could not be further split [{}]!",
-                            Ranges.toString(range, dateStringMapper)
-                    );
-                    log.info("Proceeding with mining anyway to mitigate data loss...");
-                }
+                boolean splittable = splitAndEnqueue(range);
+                if (splittable) return;
+                String value = rangePrinter.print(range);
+                log.warn("Encountered range that could not be further split [{}]!", value);
+                log.info("Proceeding with mining anyway to mitigate data loss...");
             }
             JsonArray results = json.get("items").getAsJsonArray();
             saveRetrievedRepos(results, name, 1, totalResults);
@@ -153,6 +150,17 @@ public class CrawlProjectsJob {
             throw ex;
         } catch (Exception ex) {
             log.error("Failed to retrieve repositories", ex);
+        }
+    }
+
+    private boolean splitAndEnqueue(Range<Date> range) {
+        try {
+            Pair<Range<Date>, Range<Date>> ranges = rangeSplitter.split(range);
+            requestQueue.push(ranges.getRight());
+            requestQueue.push(ranges.getLeft());
+            return true;
+        } catch (UnsplittableRangeException ure) {
+            return false;
         }
     }
 
@@ -193,21 +201,22 @@ public class CrawlProjectsJob {
         String name = result.getAsJsonPrimitive("full_name").getAsString();
         Optional<GitRepo> optional = Optionals.ofThrowable(() -> gitRepoService.getByName(name));
         GitRepo gitRepo = optional.orElseGet(() -> GitRepo.builder().name(name).build());
-        String action = (gitRepo.getId() != null)
-                ? "Updating:  "
-                : "Saving:    ";
-        log.info("{}{} [{}/{}]", action, name, lowerIndex, total);
 
         Date createdAt = Dates.fromGitDateString(result.getAsJsonPrimitive("created_at").getAsString());
         Date updatedAt = Dates.fromGitDateString(result.getAsJsonPrimitive("updated_at").getAsString());
         Date pushedAt = Dates.fromGitDateString(result.getAsJsonPrimitive("pushed_at").getAsString());
 
         if (shouldSkip(gitRepo, updatedAt, pushedAt)) {
-            log.debug("\tSKIPPED: We already have the latest info!");
-            log.trace("\t\tUpdated: {}", updatedAt);
-            log.trace("\t\tPushed:  {}", pushedAt);
+            log.info("Skipping:  {} [{}/{}]", name, lowerIndex, total);
+            log.debug("\tUpdated: {}", updatedAt);
+            log.debug("\tPushed:  {}", pushedAt);
             return;
         }
+
+        String action = (gitRepo.getId() != null)
+                ? "Updating:  "
+                : "Saving:    ";
+        log.info("{}{} [{}/{}]", action, name, lowerIndex, total);
 
         try {
             JsonObject json = gitHubApiConnector.fetchRepoInfo(name);
@@ -273,9 +282,9 @@ public class CrawlProjectsJob {
                 gitRepo.setOpenIssues(0L);
             }
 
-            GitCommit gitCommit = gitHubApiConnector.fetchLastCommitInfo(name);
-            Date lastCommit = gitCommit.getDate();
-            String lastCommitSHA = gitCommit.getSha();
+            Commit commit = gitHubApiConnector.fetchLastCommitInfo(name);
+            Date lastCommit = commit.getDate();
+            String lastCommitSHA = commit.getSha();
             gitRepo.setLastCommit(lastCommit);
             gitRepo.setLastCommitSHA(lastCommitSHA);
 

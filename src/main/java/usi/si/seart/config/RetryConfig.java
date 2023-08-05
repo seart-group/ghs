@@ -38,9 +38,12 @@ public class RetryConfig {
             public <T, E extends Throwable> void onError(
                     RetryContext context, RetryCallback<T, E> callback, Throwable throwable
             ) {
-                String template = "Operation failed, retry attempt: %d";
-                String message = String.format(template, context.getRetryCount());
-                log.warn(message, throwable);
+                log.warn(
+                        "Operation failed [{}], retry attempt: {}",
+                        throwable.getClass().getSimpleName(),
+                        context.getRetryCount()
+                );
+                log.debug("", throwable);
             }
         };
     }
@@ -52,7 +55,6 @@ public class RetryConfig {
                 .maxAttempts(5)
                 .customBackoff(backOffPolicy())
                 .retryOn(Exception.class)
-                .withListener(retryListener())
                 .build();
     }
 
@@ -62,7 +64,6 @@ public class RetryConfig {
                 .withinMillis(7_200_000)
                 .customBackoff(backOffPolicy())
                 .retryOn(Exception.class)
-                .withListener(retryListener())
                 .build();
     }
 

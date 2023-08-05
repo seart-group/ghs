@@ -11,6 +11,6 @@ import javax.validation.constraints.NotNull;
 public interface GitRepoLanguageRepository extends JpaRepository<GitRepoLanguage, GitRepoLanguage.Key> {
 
     @Modifying
-    @Query("DELETE FROM GitRepoLanguage WHERE repo.id = :id")
+    @Query("delete from GitRepoLanguage where repo.id = :id")
     void deleteByRepoId(@NotNull @Param("id") Long repoId);
 }

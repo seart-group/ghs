@@ -68,7 +68,7 @@ public class GitHubTokenManager {
 
     @PostConstruct
     void postConstruct() {
-        int size = tokens.getSize();
+        int size = tokens.size();
         switch (size) {
             case 0:
                 log.warn("Access tokens not specified, GitHub API mining will be performed at a much slower rate!");
@@ -99,8 +99,9 @@ public class GitHubTokenManager {
     public void replaceTokenIfExpired() {
         try {
             RateLimit rateLimit = retryTemplate.execute(new RateLimitPollCallback());
-            log.debug("GitHub API:   Core {}", rateLimit.getCoreResource());
-            log.debug("GitHub API: Search {}", rateLimit.getSearchResource());
+            log.debug("GitHub API:    Core {}", rateLimit.getCore());
+            log.debug("GitHub API:  Search {}", rateLimit.getSearch());
+            log.debug("GitHub API: GraphQL {}", rateLimit.getGraphql());
             if (rateLimit.anyExceeded()) {
                 replaceToken();
                 long maxWaitSeconds = rateLimit.getMaxWaitSeconds();
@@ -129,11 +130,17 @@ public class GitHubTokenManager {
                 builder.header(HttpHeaders.AUTHORIZATION, "Bearer " + currentToken);
             Request request = builder.build();
             Response response = client.newCall(request).execute();
-            HttpStatus status = HttpStatus.valueOf(response.code());
-            if (status.is4xxClientError())
+            int code = response.code();
+            HttpStatus status = HttpStatus.valueOf(code);
+            String phrase = status.getReasonPhrase();
+            if (status.is4xxClientError()) {
+                GitHubTokenManager.log.error("Client Error: {} [{}]", code, phrase);
                 throw new HttpClientErrorException(status);
-            if (status.is5xxServerError())
+            }
+            if (status.is5xxServerError()) {
+                GitHubTokenManager.log.error("Server Error: {} [{}]", code, phrase);
                 throw new HttpServerErrorException(status);
+            }
             String body = response.body().string();
             JsonObject json = conversionService.convert(body, JsonObject.class);
             return conversionService.convert(json, RateLimit.class);

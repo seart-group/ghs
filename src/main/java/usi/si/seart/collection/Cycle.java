@@ -6,7 +6,6 @@ import com.google.common.collect.Iterables;
 import com.google.common.collect.Iterators;
 import com.google.common.collect.Streams;
 import lombok.AccessLevel;
-import lombok.Getter;
 import lombok.experimental.FieldDefaults;
 
 import java.util.Arrays;
@@ -24,13 +23,13 @@ import java.util.stream.Stream;
  * an instance <em>can</em> be empty, although an empty cycle
  * is not terribly useful.
  *
+ * @see Iterables#cycle(Object[]) Iterables.cycle
  * @author Ozren Dabić
  * @param <T> the type of elements in the cycle.
  */
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class Cycle<T> implements Iterator<T> {
 
-    @Getter
     int size;
 
     Iterable<T> iterable;
@@ -47,6 +46,10 @@ public class Cycle<T> implements Iterator<T> {
     @SafeVarargs
     public Cycle(T... args) {
         this(Arrays.asList(args));
+    }
+
+    public int size() {
+        return this.size;
     }
 
     /**

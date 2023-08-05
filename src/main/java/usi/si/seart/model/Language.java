@@ -45,12 +45,14 @@ public class Language {
     Long id;
 
     @NotNull
-    @Column(name = "name")
+    @Column(name = "name", unique = true)
     String name;
 
+    @Builder.Default
     @OneToMany(mappedBy = "language")
     Set<GitRepoLanguage> repos = new HashSet<>();
 
+    @Builder.Default
     @OneToMany(mappedBy = "language")
     Set<GitRepoMetric> metrics = new HashSet<>();
 

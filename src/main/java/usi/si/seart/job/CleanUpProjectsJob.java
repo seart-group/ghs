@@ -8,46 +8,46 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import usi.si.seart.exception.ClientURLException;
 import usi.si.seart.exception.git.GitException;
 import usi.si.seart.git.GitConnector;
 import usi.si.seart.http.ClientURLConnector;
 import usi.si.seart.service.GitRepoService;
+import usi.si.seart.stereotype.Job;
 
-import javax.annotation.PostConstruct;
 import java.net.MalformedURLException;
 import java.net.URL;
 
+@Job
 @Slf4j
-@Service
 @ConditionalOnProperty(value = "app.cleanup.enabled", havingValue = "true")
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 @AllArgsConstructor(onConstructor_ = @Autowired)
-public class CleanUpProjectsJob {
+public class CleanUpProjectsJob implements Runnable {
 
     GitConnector gitConnector;
     ClientURLConnector curlConnector;
 
     GitRepoService gitRepoService;
 
-    @PostConstruct
-    void postConstruct() {
-        log.info("Started cleanup on {} repositories...", gitRepoService.count());
-    }
-
-    @Scheduled(fixedDelay = 500)
+    @Transactional(readOnly = true)
+    @Scheduled(cron = "${app.cleanup.cron}")
     public void run() {
-        gitRepoService.getNextDeletionCandidate().ifPresent(gitRepo -> {
-            Long id = gitRepo.getId();
-            String name = gitRepo.getName();
+        log.info(
+                "Started cleanup  on {}/{} repositories",
+                gitRepoService.countCleanupCandidates(),
+                gitRepoService.count()
+        );
+        gitRepoService.streamCleanupCandidates().forEach(pair -> {
+            Long id = pair.getFirst();
+            String name = pair.getSecond();
             boolean exists = checkIfRepoExists(name);
             if (!exists) {
                 log.info("Deleting:  {} [{}]", name, id);
                 gitRepoService.deleteRepoById(id);
             } else {
-                gitRepo.setLastPinged();
-                gitRepoService.createOrUpdate(gitRepo);
+                gitRepoService.pingById(id);
             }
         });
     }

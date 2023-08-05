@@ -20,6 +20,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.MapsId;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.PositiveOrZero;
 import java.io.Serializable;
 import java.util.Objects;
 
@@ -47,6 +48,7 @@ public class GitRepoLanguage {
     Language language;
 
     @NotNull
+    @PositiveOrZero
     @Column(name = "size_of_code")
     Long sizeOfCode;
 
@@ -67,6 +69,7 @@ public class GitRepoLanguage {
     @Setter
     @AllArgsConstructor
     @NoArgsConstructor
+    @FieldDefaults(level = AccessLevel.PRIVATE)
     @Embeddable
     public static class Key implements Serializable {
 

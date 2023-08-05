@@ -30,8 +30,9 @@ import org.springframework.retry.support.RetryTemplate;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
+import usi.si.seart.collection.Ranges;
 import usi.si.seart.exception.github.GitHubAPIException;
-import usi.si.seart.util.Ranges;
+import usi.si.seart.git.Commit;
 
 import java.net.URL;
 import java.net.URLEncoder;
@@ -40,7 +41,6 @@ import java.util.Date;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
-import java.util.function.Function;
 
 @SuppressWarnings("ConstantConditions")
 @Slf4j
@@ -57,16 +57,16 @@ public class GitHubAPIConnector {
 
     RetryTemplate retryTemplate;
 
-    Function<Date, String> dateStringMapper;
+    Ranges.Printer<Date> rangePrinter;
 
     GitHubTokenManager gitHubTokenManager;
 
     ConversionService conversionService;
 
-    public JsonObject searchRepositories(String language, Range<Date> dateRange, Integer page) {
+    public JsonObject searchRepositories(String language, Range<Date> range, Integer page) {
         Map<String, String> query = ImmutableMap.<String, String>builder()
                 .put("language", URLEncoder.encode(language, StandardCharsets.UTF_8))
-                .put("pushed", Ranges.toString(dateRange, dateStringMapper))
+                .put("pushed", rangePrinter.print(range))
                 .put("stars", String.format(">=%d", minimumStars))
                 .put("fork", "true")
                 .put("is", "public")
@@ -93,7 +93,7 @@ public class GitHubAPIConnector {
         return result.getJsonObject();
     }
 
-    public GitCommit fetchLastCommitInfo(String name) {
+    public Commit fetchLastCommitInfo(String name) {
         URL url = HttpUrl.get(Endpoint.REPOSITORY_COMMITS.toURL(name.split("/")))
                 .newBuilder()
                 .addQueryParameter("page", "1")
@@ -104,7 +104,7 @@ public class GitHubAPIConnector {
         JsonArray commits = result.getJsonArray();
         try {
             JsonObject latest = commits.get(0).getAsJsonObject();
-            return conversionService.convert(latest, GitCommit.class);
+            return conversionService.convert(latest, Commit.class);
         } catch (IndexOutOfBoundsException ignored) {
             /*
              * It might be possible for a repository to have no commits.
@@ -112,7 +112,7 @@ public class GitHubAPIConnector {
              * because we target repositories written in a specific language!
              * Still, better safe than sorry...
             */
-            return GitCommit.NULL_COMMIT;
+            return Commit.UNKNOWN;
         }
     }
 
@@ -293,12 +293,7 @@ public class GitHubAPIConnector {
 
     private FetchCallback.Result fetch(URL url) {
         try {
-            FetchCallback.Result result = retryTemplate.execute(new FetchCallback(url));
-            TimeUnit.MILLISECONDS.sleep(250);
-            return result;
-        } catch (InterruptedException ex) {
-            Thread.currentThread().interrupt();
-            throw new GitHubAPIException("API call has been interrupted", ex);
+            return retryTemplate.execute(new FetchCallback(url));
         } catch (Exception ex) {
             String message = String.format("Request to %s failed", url);
             throw new GitHubAPIException(message, ex);
@@ -373,6 +368,7 @@ public class GitHubAPIConnector {
         }
 
         private FetchCallback.Result handleServerError(HttpStatus status, JsonObject json) {
+            GitHubAPIConnector.log.error("Server Error: {} [{}]", status.value(), status.getReasonPhrase());
             ErrorResponse errorResponse = conversionService.convert(json, ErrorResponse.class);
             throw new HttpServerErrorException(status, errorResponse.getMessage());
         }
@@ -393,6 +389,7 @@ public class GitHubAPIConnector {
                     gitHubTokenManager.replaceToken();
                     break;
                 case TOO_MANY_REQUESTS:
+                    GitHubAPIConnector.log.warn("Too many requests, sleeping for 5 minutes...");
                     TimeUnit.MINUTES.sleep(5);
                     break;
                 case FORBIDDEN:
