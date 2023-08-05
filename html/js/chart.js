@@ -36,7 +36,10 @@
                 },
                 title: {
                     display: true,
-                    text: "Language"
+                    text: "Language",
+                    font: {
+                        size: 16,
+                    },
                 },
             },
             y: {
@@ -48,7 +51,10 @@
                 },
                 title: {
                     display: true,
-                    text: "# of projects"
+                    text: "# of projects",
+                    font: {
+                        size: 16,
+                    },
                 },
             },
         },
