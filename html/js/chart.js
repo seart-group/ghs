@@ -4,22 +4,13 @@
     const $statistics_mined = $("#statistics-mined");
     const $statistics_analyzed = $("#statistics-analyzed");
 
-    // https://github.com/nagix/chartjs-plugin-colorschemes/blob/d96a01846626881aa4bec56828c333af81050906/src/colorschemes/colorschemes.tableau.js#L39
-    const blue20 = [
-        "#2a5783", "#305d8a", "#376491", "#3d6a98",
-        "#437a9f", "#4878a6", "#4e7fac", "#5485b2",
-        "#5b8cb8", "#6394be", "#6a9bc3", "#72a3c9",
-        "#79aacf", "#80b0d5", "#89b8da", "#92c0df",
-        "#9bc7e4", "#a5cfe9", "#afd6ed", "#b9ddf1"
-    ];
-
-    // https://github.com/nagix/chartjs-plugin-colorschemes/blob/d96a01846626881aa4bec56828c333af81050906/src/colorschemes/colorschemes.tableau.js#L42
-    const red20 = [
-        "#ae123a", "#b8163a", "#c11a3b", "#ca223c",
-        "#d3293d", "#da323f", "#e13b42", "#e74545",
-        "#ec5049", "#f05c4d", "#f36754", "#f5715d",
-        "#f77b66", "#f9856e", "#fa8f79", "#fb9984",
-        "#fca290", "#fdab9b", "#feb4a6", "#ffbeb2"
+    // https://github.com/nagix/chartjs-plugin-colorschemes/blob/master/src/colorschemes/colorschemes.tableau.js#L45
+    const gray20 = [
+        "#49525e", "#4f5864", "#555f6a", "#5b6570",
+        "#616c77", "#67737c", "#6e7a81", "#758087",
+        "#7c878d", "#848e93", "#8b9598", "#939c9e",
+        "#9ca3a4", "#a4a9ab", "#acb0b1", "#b4b7b7",
+        "#bcbfbe", "#c5c7c6", "#cdcecd", "#d5d5d5"
     ];
 
     Chart.defaults.font.family = "Trebuchet MS";
@@ -73,6 +64,12 @@
                 yAlign: "bottom",
                 titleAlign: "center",
                 cornerRadius: 0,
+                callbacks: {
+                    afterLabel: function (ctx) {
+                        const { mined, analyzed } = ctx.raw;
+                        return `Analyzed: ${(analyzed / mined * 100).toFixed(2)}%`;
+                    },
+                },
             },
         }
     };
@@ -80,37 +77,30 @@
     fetch(`${base}/r/stats`)
         .then(response => response.json())
         .then(json => {
-            const languages = Object.keys(json);
-            const values = Object.values(json);
-            const [mined, analyzed] = values.reduce((acc, { mined: left, analyzed: right }) => {
-                acc[0].push(left);
-                acc[1].push(right);
+            const total = Object.values(json).reduce((acc, { mined, analyzed }) => {
+                acc.mined += mined;
+                acc.analyzed += analyzed;
                 return acc;
-            }, [[], []]);
-
-            $statistics_mined.replaceWith(`<span id="statistics-mined">${_.sum(mined).toLocaleString()}</span>`);
-            $statistics_analyzed.replaceWith(`<span id="statistics-analyzed">${_.sum(analyzed).toLocaleString()}</span>`);
-
-            return {
-                labels: languages,
-                datasets: [
-                    {
-                        label: "Mined",
-                        data: mined,
-                        borderColor: blue20,
-                        backgroundColor: blue20.map(color => `${color}bf`),
-                        barPercentage: 1
-                    },
-                    {
-                        label: "Analyzed",
-                        data: analyzed,
-                        borderColor: red20,
-                        backgroundColor: red20.map(color => `${color}bf`),
-                        barPercentage: 1
-                    }
-                ]
-            };
+            }, { mined: 0, analyzed: 0 });
+            const coverage = `${(total.analyzed / total.mined * 100).toFixed(2)}%`;
+            $statistics_mined.replaceWith(`<span id="statistics-mined">${total.mined.toLocaleString()}</span>`);
+            $statistics_analyzed.replaceWith(`<span id="statistics-analyzed">${coverage}</span>`);
+            return Object.entries(json).map(([key, value]) => ({ x: key, ...value }));
         })
+        .then(data => ({
+            datasets: [
+                {
+                    data,
+                    label: "Mined",
+                    borderColor: gray20,
+                    backgroundColor: gray20.map(color => `${color}bf`),
+                    barPercentage: 1,
+                    parsing: {
+                        yAxisKey: "mined",
+                    },
+                },
+            ]
+        }))
         .then(data => new Chart(canvas, { type: "bar", options, data }))
         .catch(() => $toast_container.twbsToast({
             id: "statistics-toast",
