@@ -76,7 +76,7 @@ public class CrawlProjectsJob {
         Collection<Language> languages = languageService.getTargetedLanguages();
         log.info("Language crawling order: {}", languages.stream().map(Language::getName).collect(Collectors.toList()));
         for (Language language : languages) {
-            this.requestQueue.clear();
+            requestQueue.clear();
             Language.Progress progress = languageService.getProgress(language);
             Date lower = progress.getCheckpoint();
             Date upper = Date.from(Instant.now().minus(Duration.ofHours(1)));
