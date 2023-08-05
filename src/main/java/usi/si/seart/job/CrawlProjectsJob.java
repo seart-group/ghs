@@ -233,7 +233,9 @@ public class CrawlProjectsJob implements Runnable {
             gitRepo.setLicense(license);
 
             String homepage = (!json.get("homepage").isJsonNull())
-                    ? json.getAsJsonPrimitive("homepage").getAsString()
+                    ? json.getAsJsonPrimitive("homepage")
+                    .getAsString()
+                    .trim()
                     : null;
             gitRepo.setHomepage(Strings.emptyToNull(homepage));
 
