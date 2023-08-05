@@ -14,7 +14,6 @@ import org.springframework.core.convert.ConversionService;
 import org.springframework.data.util.Pair;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import usi.si.seart.exception.StaticCodeAnalysisException;
@@ -28,6 +27,7 @@ import usi.si.seart.model.Language;
 import usi.si.seart.model.join.GitRepoMetric;
 import usi.si.seart.service.GitRepoService;
 import usi.si.seart.service.LanguageService;
+import usi.si.seart.stereotype.Job;
 import usi.si.seart.util.Optionals;
 
 import java.net.MalformedURLException;
@@ -38,11 +38,8 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.stream.Collectors;
 
-/**
- * Mines code metrics for every needed repository.
- */
+@Job
 @Slf4j
-@Service
 @ConditionalOnProperty(value = "app.crawl.analysis.enabled", havingValue = "true")
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)

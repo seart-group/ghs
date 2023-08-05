@@ -8,19 +8,19 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import usi.si.seart.exception.ClientURLException;
 import usi.si.seart.exception.git.GitException;
 import usi.si.seart.git.GitConnector;
 import usi.si.seart.http.ClientURLConnector;
 import usi.si.seart.service.GitRepoService;
+import usi.si.seart.stereotype.Job;
 
 import java.net.MalformedURLException;
 import java.net.URL;
 
+@Job
 @Slf4j
-@Service
 @ConditionalOnProperty(value = "app.cleanup.enabled", havingValue = "true")
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 @AllArgsConstructor(onConstructor_ = @Autowired)

@@ -17,7 +17,6 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.context.annotation.DependsOn;
 import org.springframework.dao.NonTransientDataAccessException;
 import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.stereotype.Service;
 import usi.si.seart.collection.Ranges;
 import usi.si.seart.exception.MetadataCrawlingException;
 import usi.si.seart.exception.UnsplittableRangeException;
@@ -32,6 +31,7 @@ import usi.si.seart.service.GitRepoService;
 import usi.si.seart.service.LabelService;
 import usi.si.seart.service.LanguageService;
 import usi.si.seart.service.TopicService;
+import usi.si.seart.stereotype.Job;
 import usi.si.seart.util.Dates;
 import usi.si.seart.util.Optionals;
 
@@ -47,8 +47,8 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
+@Job
 @Slf4j
-@Service
 @DependsOn("LanguageInitializationBean")
 @ConditionalOnExpression(value = "${app.crawl.enabled:false} and not '${app.crawl.languages}'.isBlank()")
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
