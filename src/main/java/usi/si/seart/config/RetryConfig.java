@@ -55,7 +55,6 @@ public class RetryConfig {
                 .maxAttempts(5)
                 .customBackoff(backOffPolicy())
                 .retryOn(Exception.class)
-                .withListener(retryListener())
                 .build();
     }
 
@@ -65,7 +64,6 @@ public class RetryConfig {
                 .withinMillis(7_200_000)
                 .customBackoff(backOffPolicy())
                 .retryOn(Exception.class)
-                .withListener(retryListener())
                 .build();
     }
 
