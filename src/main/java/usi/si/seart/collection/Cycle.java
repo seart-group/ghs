@@ -23,6 +23,7 @@ import java.util.stream.Stream;
  * an instance <em>can</em> be empty, although an empty cycle
  * is not terribly useful.
  *
+ * @see Iterables#cycle(Object[]) Iterables.cycle
  * @author Ozren Dabić
  * @param <T> the type of elements in the cycle.
  */
