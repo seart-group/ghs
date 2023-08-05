@@ -130,11 +130,17 @@ public class GitHubTokenManager {
                 builder.header(HttpHeaders.AUTHORIZATION, "Bearer " + currentToken);
             Request request = builder.build();
             Response response = client.newCall(request).execute();
-            HttpStatus status = HttpStatus.valueOf(response.code());
-            if (status.is4xxClientError())
+            int code = response.code();
+            HttpStatus status = HttpStatus.valueOf(code);
+            String phrase = status.getReasonPhrase();
+            if (status.is4xxClientError()) {
+                GitHubTokenManager.log.error("Client Error: {} [{}]", code, phrase);
                 throw new HttpClientErrorException(status);
-            if (status.is5xxServerError())
+            }
+            if (status.is5xxServerError()) {
+                GitHubTokenManager.log.error("Server Error: {} [{}]", code, phrase);
                 throw new HttpServerErrorException(status);
+            }
             String body = response.body().string();
             JsonObject json = conversionService.convert(body, JsonObject.class);
             return conversionService.convert(json, RateLimit.class);
