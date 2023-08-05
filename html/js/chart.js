@@ -30,6 +30,15 @@
         },
         responsive: true,
         scales: {
+            x: {
+                ticks: {
+                    display: false,
+                },
+                title: {
+                    display: true,
+                    text: "Language"
+                },
+            },
             y: {
                 beginAtZero: true,
                 ticks: {
@@ -40,8 +49,8 @@
                 title: {
                     display: true,
                     text: "# of projects"
-                }
-            }
+                },
+            },
         },
         elements: {
             bar: {
