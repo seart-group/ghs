@@ -41,6 +41,7 @@ import java.util.ArrayDeque;
 import java.util.Collection;
 import java.util.Date;
 import java.util.Deque;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -74,7 +75,10 @@ public class CrawlProjectsJob {
     public void run() {
         log.info("Initializing language queue...");
         Collection<Language> languages = languageService.getTargetedLanguages();
-        log.info("Language crawling order: {}", languages.stream().map(Language::getName).collect(Collectors.toList()));
+        List<String> order = languages.stream()
+                .map(Language::getName)
+                .collect(Collectors.toList());
+        log.info("Language crawling order: {}", order);
         for (Language language : languages) {
             requestQueue.clear();
             Language.Progress progress = languageService.getProgress(language);
