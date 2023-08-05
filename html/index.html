@@ -37,7 +37,7 @@
                    data-bs-target="#statistics-modal"
                    tabindex="-1"
                 >
-                  <span>Mined Projects</span>
+                  <span>Statistics</span>
                 </a>
               </li>
               <li class="nav-item">
@@ -797,19 +797,19 @@
       <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered modal-lg modal-fullscreen-sm-down">
         <div class="modal-content">
           <div class="modal-header">
-            <h1 class="modal-title fs-5" id="statistics-modal-label">Mined Projects</h1>
+            <h1 class="modal-title fs-5" id="statistics-modal-label">Mined &amp; Analyzed Projects</h1>
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
           <div class="modal-body">
             <div class="mb-3">
               <canvas id="statistics-chart" class="chart"></canvas>
             </div>
-            <div class="d-flex justify-content-between justify-content-md-around">
-              <h2 class="fs-6 placeholder-glow">
-                Total Mined: <span id="statistics-mined" class="placeholder align-baseline bg-white">Loading...</span>
+            <div class="d-flex justify-content-between justify-content-md-around text-center mb-3">
+              <h2 class="fs-6 mb-0 placeholder-glow">
+                Total Repositories: <span id="statistics-mined" class="placeholder align-baseline bg-white">Loading...</span>
               </h2>
-              <h2 class="fs-6 placeholder-glow">
-                Total Analyzed: <span id="statistics-analyzed" class="placeholder align-baseline bg-white">Loading...</span>
+              <h2 class="fs-6 mb-0 placeholder-glow">
+                Analysis Coverage: <span id="statistics-analyzed" class="placeholder align-baseline bg-white">Loading...</span>
               </h2>
             </div>
           </div>
