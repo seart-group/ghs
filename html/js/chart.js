@@ -50,10 +50,11 @@
         },
         plugins: {
             tooltip: {
+                backgroundColor: "rgba(0, 0, 0, 1)",
                 yAlign: "bottom",
                 titleAlign: "center",
-                cornerRadius: 0
-            }
+                cornerRadius: 0,
+            },
         }
     };
 
