@@ -63,6 +63,7 @@
             },
             tooltip: {
                 backgroundColor: "rgba(0, 0, 0, 1)",
+                displayColors: false,
                 yAlign: "bottom",
                 titleAlign: "center",
                 cornerRadius: 0,
