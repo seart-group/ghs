@@ -226,10 +226,6 @@ div[data-ghs-id] {
     vertical-align: middle!important;
 }
 
-.chart-container {
-    margin-bottom: 1rem!important;
-}
-
 .typeahead > li {
     overflow: hidden!important;
 }
