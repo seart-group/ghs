@@ -32,8 +32,8 @@ public class ConcurrentReadWriteLockMap<K> {
      * If a lock is not already associated with the key,
      * a new {@link ReentrantReadWriteLock} instance is created.
      *
-     * @param key the key used to identify the lock.
-     * @return the associated read-write lock.
+     * @param key the key used to identify the read-write lock.
+     * @return the associated write lock.
      */
     public Lock getWriteLock(K key) {
         return get(key).writeLock();
@@ -44,8 +44,8 @@ public class ConcurrentReadWriteLockMap<K> {
      * If a lock is not already associated with the key,
      * a new {@link ReentrantReadWriteLock} instance is created.
      *
-     * @param key the key used to identify the lock.
-     * @return the associated read-write lock.
+     * @param key the key used to identify the read-write lock.
+     * @return the associated read lock.
      */
     public Lock getReadLock(K key) {
         return get(key).readLock();
