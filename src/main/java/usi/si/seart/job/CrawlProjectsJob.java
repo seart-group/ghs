@@ -53,7 +53,7 @@ import java.util.stream.StreamSupport;
 @ConditionalOnExpression(value = "${app.crawl.enabled:false} and not '${app.crawl.languages}'.isBlank()")
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
-public class CrawlProjectsJob {
+public class CrawlProjectsJob implements Runnable {
 
     Deque<Range<Date>> requestQueue = new ArrayDeque<>();
 

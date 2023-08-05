@@ -46,7 +46,7 @@ import java.util.stream.Collectors;
 @ConditionalOnProperty(value = "app.crawl.analysis.enabled", havingValue = "true")
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
-public class CodeAnalysisJob {
+public class CodeAnalysisJob implements Runnable {
 
     ApplicationContext applicationContext;
 

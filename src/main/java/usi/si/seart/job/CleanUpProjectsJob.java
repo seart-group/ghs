@@ -24,7 +24,7 @@ import java.net.URL;
 @ConditionalOnProperty(value = "app.cleanup.enabled", havingValue = "true")
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 @AllArgsConstructor(onConstructor_ = @Autowired)
-public class CleanUpProjectsJob {
+public class CleanUpProjectsJob implements Runnable {
 
     GitConnector gitConnector;
     ClientURLConnector curlConnector;
