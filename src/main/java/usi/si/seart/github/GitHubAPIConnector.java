@@ -368,6 +368,7 @@ public class GitHubAPIConnector {
         }
 
         private FetchCallback.Result handleServerError(HttpStatus status, JsonObject json) {
+            GitHubAPIConnector.log.error("Server Error: {} [{}]", status.value(), status.getReasonPhrase());
             ErrorResponse errorResponse = conversionService.convert(json, ErrorResponse.class);
             throw new HttpServerErrorException(status, errorResponse.getMessage());
         }
@@ -388,6 +389,7 @@ public class GitHubAPIConnector {
                     gitHubTokenManager.replaceToken();
                     break;
                 case TOO_MANY_REQUESTS:
+                    GitHubAPIConnector.log.warn("Too many requests, sleeping for 5 minutes...");
                     TimeUnit.MINUTES.sleep(5);
                     break;
                 case FORBIDDEN:
