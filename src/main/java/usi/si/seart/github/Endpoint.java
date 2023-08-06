@@ -120,6 +120,13 @@ public enum Endpoint {
     public static final URL RATE_LIMIT = endpointUrl("rate_limit");
 
     /**
+     * Endpoint used for performing all GraphQL requests.
+     *
+     * @see <a href="https://docs.github.com/en/graphql/guides/forming-calls-with-graphql#the-graphql-endpoint">The GraphQL endpoint</a>
+     */
+    public static final URL GRAPH_QL = endpointUrl("graphql");
+
+    /**
      * Endpoint used for searching for repositories via various criteria.
      *
      * @see <a href="https://docs.github.com/en/rest/search#search-repositories">Search repositories</a>
