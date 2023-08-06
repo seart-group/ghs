@@ -53,7 +53,7 @@ public class GitHubAPIConnector {
     @Value("${app.crawl.minimum-stars}")
     Integer minimumStars;
 
-    OkHttpClient client;
+    OkHttpClient httpClient;
 
     RetryTemplate retryTemplate;
 
@@ -343,7 +343,7 @@ public class GitHubAPIConnector {
             if (currentToken != null)
                 builder.addHeader(HttpHeaders.AUTHORIZATION, "Bearer " + currentToken);
             Request request = builder.build();
-            Response response = client.newCall(request).execute();
+            Response response = httpClient.newCall(request).execute();
 
             HttpStatus status = HttpStatus.valueOf(response.code());
             HttpStatus.Series series = status.series();
