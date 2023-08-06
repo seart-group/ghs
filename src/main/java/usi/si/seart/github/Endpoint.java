@@ -155,6 +155,12 @@ public enum Endpoint {
      */
     @SneakyThrows(MalformedURLException.class)
     public URL toURL(String... args) {
+        int expected = template.getVariableNames().size();
+        int actual = args.length;
+        if (expected > actual) {
+            String message = String.format("Insufficient arguments: expected %d but got %d instead", expected, actual);
+            throw new IllegalArgumentException(message);
+        }
         return UriComponentsBuilder.newInstance()
                 .scheme(scheme)
                 .host(host)
