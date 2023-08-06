@@ -3,11 +3,12 @@ package usi.si.seart.github;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.SneakyThrows;
 import lombok.experimental.FieldDefaults;
-import okhttp3.HttpUrl;
 import org.springframework.hateoas.UriTemplate;
+import org.springframework.web.util.UriComponentsBuilder;
 
-import java.net.URI;
+import java.net.MalformedURLException;
 import java.net.URL;
 
 /**
@@ -133,13 +134,15 @@ public enum Endpoint {
      */
     public static final URL SEARCH_REPOSITORIES = endpointUrl("search/repositories");
 
+    @SneakyThrows(MalformedURLException.class)
     private static URL endpointUrl(String endpoint) {
-        return new HttpUrl.Builder()
+        return UriComponentsBuilder.newInstance()
                 .scheme(scheme)
                 .host(host)
-                .addPathSegments(endpoint)
+                .path(endpoint)
                 .build()
-                .url();
+                .toUri()
+                .toURL();
     }
 
     /**
@@ -150,13 +153,13 @@ public enum Endpoint {
      * @param args The replacement values for the URI template placeholders.
      * @return A URL object obtained through expanding the URI placeholders.
      */
+    @SneakyThrows(MalformedURLException.class)
     public URL toURL(String... args) {
-        URI uri = template.expand((Object[]) args);
-        return new HttpUrl.Builder()
+        return UriComponentsBuilder.newInstance()
                 .scheme(scheme)
                 .host(host)
-                .addEncodedPathSegments(uri.toString())
-                .build()
-                .url();
+                .path(template.toString())
+                .build((Object[]) args)
+                .toURL();
     }
 }
