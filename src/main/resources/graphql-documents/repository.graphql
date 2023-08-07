@@ -1,0 +1,63 @@
+query($owner:String!, $name:String!) {
+    repository(owner:$owner, name:$name) {
+        id
+        size: diskUsage
+        homepage: homepageUrl
+        is_fork: isFork
+        is_archived: isArchived
+        has_wiki: hasWikiEnabled
+        forks: forkCount
+        license: licenseInfo {
+            name
+        }
+        watchers {
+            count: totalCount
+        }
+        releases {
+            count: totalCount
+        }
+        labels {
+            count: totalCount
+        }
+        languages {
+            count: totalCount
+        }
+        topics: repositoryTopics {
+            count: totalCount
+        }
+        stars: stargazers {
+            count: totalCount
+        }
+        branches: refs(refPrefix: "refs/heads/") {
+            count: totalCount
+        }
+        total_pull_requests: pullRequests {
+            count: totalCount
+        }
+        open_pull_requests: pullRequests(states:OPEN) {
+            count: totalCount
+        }
+        total_issues: issues {
+            count: totalCount
+        }
+        open_issues: issues(states:OPEN) {
+            count: totalCount
+        }
+        default_branch: defaultBranchRef {
+            name
+            history: target {
+                ... on Commit {
+                    commits: history(first:1) {
+                        items: edges {
+                            commit: node {
+                                sha: oid
+                                date: committedDate
+                            }
+                        }
+                        count: totalCount
+                    }
+                }
+            }
+        }
+    }
+}
