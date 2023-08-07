@@ -96,8 +96,7 @@ public class GitHubAPIConnector {
     }
 
     public JsonObject fetchRepoInfo(String name) {
-        URL url = Endpoint.REPOSITORY.toURL(name.split("/"));
-        FetchCallback.Result result = fetch(url);
+        GraphQLCallback.Result result = fetch(name);
         return result.getJsonObject();
     }
 
