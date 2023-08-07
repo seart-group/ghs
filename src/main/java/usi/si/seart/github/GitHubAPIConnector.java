@@ -7,6 +7,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
+import graphql.GraphqlErrorException;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -22,6 +23,9 @@ import okhttp3.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.convert.ConversionService;
+import org.springframework.graphql.GraphQlResponse;
+import org.springframework.graphql.ResponseError;
+import org.springframework.graphql.client.GraphQlClient;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.retry.RetryCallback;
@@ -38,9 +42,12 @@ import java.net.URL;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
 
 @SuppressWarnings("ConstantConditions")
 @Slf4j
@@ -54,6 +61,8 @@ public class GitHubAPIConnector {
     Integer minimumStars;
 
     OkHttpClient httpClient;
+
+    GraphQlClient graphQlClient;
 
     RetryTemplate retryTemplate;
 
@@ -85,7 +94,6 @@ public class GitHubAPIConnector {
         FetchCallback.Result result = fetch(url);
         return result.getJsonObject();
     }
-
 
     public JsonObject fetchRepoInfo(String name) {
         URL url = Endpoint.REPOSITORY.toURL(name.split("/"));
@@ -291,12 +299,78 @@ public class GitHubAPIConnector {
         return array;
     }
 
+    private GraphQLCallback.Result fetch(String name) {
+        String[] args = name.split("/");
+        if (args.length != 2)
+            throw new IllegalArgumentException("Invalid repository name: " + name);
+        Map<String, Object> variables = Map.of("owner", args[0], "name", args[1]);
+        try {
+            return retryTemplate.execute(new GraphQLCallback(variables));
+        } catch (Exception ex) {
+            String message = String.format("GraphQL request to %s failed", name);
+            throw new GitHubAPIException(message, ex);
+        }
+    }
+
     private FetchCallback.Result fetch(URL url) {
         try {
             return retryTemplate.execute(new FetchCallback(url));
         } catch (Exception ex) {
             String message = String.format("Request to %s failed", url);
             throw new GitHubAPIException(message, ex);
+        }
+    }
+
+    @AllArgsConstructor(access = AccessLevel.PRIVATE)
+    @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
+    private class GraphQLCallback implements RetryCallback<GraphQLCallback.Result, Exception> {
+
+        Map<String, Object> variables;
+
+        @Getter
+        @AllArgsConstructor(access = AccessLevel.PRIVATE)
+        @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
+        private class Result {
+
+            JsonElement jsonElement;
+
+            public JsonObject getJsonObject() {
+                return jsonElement.getAsJsonObject();
+            }
+
+            public JsonArray getJsonArray() {
+                return jsonElement.getAsJsonArray();
+            }
+
+            public Optional<Integer> size() {
+                if (jsonElement.isJsonArray()) {
+                    return Optional.of(jsonElement.getAsJsonArray().size());
+                } else if (jsonElement.isJsonObject()) {
+                    return Optional.of(jsonElement.getAsJsonObject().size());
+                } else {
+                    return Optional.empty();
+                }
+            }
+        }
+
+        @Override
+        public GraphQLCallback.Result doWithRetry(RetryContext context) {
+            GraphQlResponse response = graphQlClient.documentName("repository")
+                    .variables(variables)
+                    .execute()
+                    .block();
+            Map<String, Object> data = response.getData();
+            List<ResponseError> errors = response.getErrors();
+            if (!errors.isEmpty()) {
+                Collector<CharSequence, ?, String> collector = Collectors.joining(",", "[", "]");
+                String messages = errors.stream().map(ResponseError::getMessage).collect(collector);
+                throw GraphqlErrorException.newErrorException()
+                        .message("Response returned the following errors: " + messages)
+                        .build();
+            }
+            JsonObject raw = conversionService.convert(data, JsonObject.class);
+            JsonObject repository = raw.getAsJsonObject("repository");
+            return new Result(repository);
         }
     }
 
