@@ -378,7 +378,7 @@ public class GitHubAPIConnector {
                             GraphQlErrorResponse.ErrorType errorType = GraphQlErrorResponse.ErrorType.valueOf(name);
                             if (GraphQlErrorResponse.ErrorType.RATE_LIMITED.equals(errorType))
                                 gitHubTokenManager.replaceTokenIfExpired();
-                        } catch (NullPointerException | IllegalArgumentException ignored) {
+                        } catch (RuntimeException ignored) {
                         }
                         throw errorResponse.asException();
                     });
