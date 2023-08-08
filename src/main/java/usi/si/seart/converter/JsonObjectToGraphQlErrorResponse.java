@@ -40,7 +40,7 @@ public class JsonObjectToGraphQlErrorResponse implements Converter<JsonObject, G
 
         if (source.has("path")) {
             JsonArray array = source.getAsJsonArray("path");
-            Type type = new TypeToken<List<Object>>(){}.getType();
+            Type type = new TypeToken<List<Object>>() { }.getType();
             List<Object> parsedPath = gson.fromJson(array, type);
             builder.parsedPath(parsedPath);
         }
@@ -56,7 +56,7 @@ public class JsonObjectToGraphQlErrorResponse implements Converter<JsonObject, G
 
         if (source.has("extensions")) {
             JsonObject object = source.getAsJsonObject("extensions");
-            Type type = new TypeToken<Map<String, Object>>(){}.getType();
+            Type type = new TypeToken<Map<String, Object>>() { }.getType();
             Map<String, Object> extensions = gson.fromJson(object, type);
             builder.extensions(extensions);
         }
