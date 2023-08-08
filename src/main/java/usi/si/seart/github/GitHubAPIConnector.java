@@ -94,7 +94,7 @@ public class GitHubAPIConnector {
     }
 
     public JsonObject fetchRepoInfo(String name) {
-        GraphQLCallback.Result result = fetch(name);
+        GraphQLCallback.Result result = fetch(name, "repository");
         return result.getJsonObject();
     }
 
@@ -296,13 +296,13 @@ public class GitHubAPIConnector {
         return array;
     }
 
-    private GraphQLCallback.Result fetch(String name) {
+    private GraphQLCallback.Result fetch(String name, String document) {
         String[] args = name.split("/");
         if (args.length != 2)
             throw new IllegalArgumentException("Invalid repository name: " + name);
         Map<String, Object> variables = Map.of("owner", args[0], "name", args[1]);
         try {
-            return retryTemplate.execute(new GraphQLCallback(variables));
+            return retryTemplate.execute(new GraphQLCallback(document, variables));
         } catch (Exception ex) {
             String message = String.format("GraphQL request to %s failed", name);
             throw new GitHubAPIException(message, ex);
@@ -348,6 +348,7 @@ public class GitHubAPIConnector {
     @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
     private class GraphQLCallback implements RetryCallback<GraphQLCallback.Result, Exception> {
 
+        String document;
         Map<String, Object> variables;
 
         @Getter
@@ -361,7 +362,7 @@ public class GitHubAPIConnector {
 
         @Override
         public GraphQLCallback.Result doWithRetry(RetryContext context) {
-            GraphQlResponse response = graphQlClient.documentName("repository")
+            GraphQlResponse response = graphQlClient.documentName(document)
                     .variables(variables)
                     .execute()
                     .block();
