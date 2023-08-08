@@ -18,7 +18,7 @@ import usi.si.seart.github.GitHubTokenManager;
 
 @Configuration
 @AllArgsConstructor(onConstructor_ = @Autowired)
-public class GraphQLConfig {
+public class GraphQlConfig {
 
     GitHubTokenManager gitHubTokenManager;
 
