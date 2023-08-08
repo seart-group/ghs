@@ -7,7 +7,6 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
-import graphql.GraphqlErrorException;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -24,7 +23,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.graphql.GraphQlResponse;
-import org.springframework.graphql.ResponseError;
 import org.springframework.graphql.client.GraphQlClient;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -44,10 +42,10 @@ import java.nio.charset.StandardCharsets;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
-import java.util.stream.Collector;
-import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 @SuppressWarnings("ConstantConditions")
 @Slf4j
@@ -367,17 +365,23 @@ public class GitHubAPIConnector {
                     .variables(variables)
                     .execute()
                     .block();
-            Map<String, Object> data = response.getData();
-            List<ResponseError> errors = response.getErrors();
-            if (!errors.isEmpty()) {
-                Collector<CharSequence, ?, String> collector = Collectors.joining(",", "[", "]");
-                String messages = errors.stream().map(ResponseError::getMessage).collect(collector);
-                throw GraphqlErrorException.newErrorException()
-                        .message("Response returned the following errors: " + messages)
-                        .build();
-            }
-            JsonObject raw = conversionService.convert(data, JsonObject.class);
-            JsonObject repository = raw.getAsJsonObject("repository");
+            Map<String, Object> map = response.toMap();
+            JsonObject data = conversionService.convert(map.getOrDefault("data", Map.of()), JsonObject.class);
+            JsonArray errors = conversionService.convert(map.getOrDefault("errors", List.of()), JsonArray.class);
+            StreamSupport.stream(errors.spliterator(), true)
+                    .map(JsonElement::getAsJsonObject)
+                    .findFirst()
+                    .map(json -> conversionService.convert(json, GraphQlErrorResponse.class))
+                    .ifPresent(errorResponse -> {
+                        String name = Objects.toString(errorResponse.getErrorType(), null);
+                        try {
+                            GraphQlErrorResponse.ErrorType errorType = GraphQlErrorResponse.ErrorType.valueOf(name);
+                            if (GraphQlErrorResponse.ErrorType.RATE_LIMITED.equals(errorType))
+                                gitHubTokenManager.replaceTokenIfExpired();
+                        } catch (NullPointerException | IllegalArgumentException ignored) {}
+                        throw errorResponse.asException();
+                    });
+            JsonObject repository = data.getAsJsonObject("repository");
             return new Result(repository);
         }
     }
