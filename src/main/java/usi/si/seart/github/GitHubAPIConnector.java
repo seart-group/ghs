@@ -441,7 +441,7 @@ public class GitHubAPIConnector {
 
         private Result handleServerError(HttpStatus status, JsonObject json) {
             GitHubAPIConnector.log.error("Server Error: {} [{}]", status.value(), status.getReasonPhrase());
-            ErrorResponse errorResponse = conversionService.convert(json, ErrorResponse.class);
+            RestErrorResponse errorResponse = conversionService.convert(json, RestErrorResponse.class);
             throw new HttpServerErrorException(status, errorResponse.getMessage());
         }
 
@@ -449,7 +449,7 @@ public class GitHubAPIConnector {
         private Result handleClientError(
                 HttpStatus status, Headers headers, JsonObject json
         ) throws InterruptedException {
-            ErrorResponse errorResponse = conversionService.convert(json, ErrorResponse.class);
+            RestErrorResponse errorResponse = conversionService.convert(json, RestErrorResponse.class);
             switch (status) {
                 case UNAUTHORIZED:
                     /*
