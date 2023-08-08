@@ -400,7 +400,7 @@ public class GitHubAPIConnector {
             HttpStatus status;
             Headers headers;
 
-            public Result(JsonElement jsonElement, HttpStatus status, Headers headers) {
+            private Result(JsonElement jsonElement, HttpStatus status, Headers headers) {
                 super(jsonElement);
                 this.status = status;
                 this.headers = headers;
