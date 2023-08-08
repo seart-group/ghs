@@ -12,13 +12,13 @@ import java.util.Map;
 
 @Component
 @AllArgsConstructor(onConstructor_ = @Autowired)
-public class MapToJsonObjectConverter implements Converter<Map<String, Object>, JsonObject> {
+public class MapToJsonObjectConverter implements Converter<Map<String, ?>, JsonObject> {
 
     private final Gson gson;
 
     @Override
     @NotNull
-    public JsonObject convert(@NotNull Map<String, Object> source) {
+    public JsonObject convert(@NotNull Map<String, ?> source) {
         String string = gson.toJson(source);
         return gson.fromJson(string, JsonObject.class);
     }
