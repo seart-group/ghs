@@ -30,7 +30,7 @@ public class LanguageInitializationBean implements InitializingBean {
     List<String> names;
 
     @NonFinal
-    @Value(value = "${app.crawl.startdate}")
+    @Value(value = "${app.crawl.start-date}")
     @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss'Z'")
     Date defaultStartDate;
 
