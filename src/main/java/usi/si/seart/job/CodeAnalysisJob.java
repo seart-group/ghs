@@ -40,7 +40,7 @@ import java.util.stream.Collectors;
 
 @Job
 @Slf4j
-@ConditionalOnProperty(value = "app.crawl.analysis.enabled", havingValue = "true")
+@ConditionalOnProperty(value = "app.analysis.enabled", havingValue = "true")
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class CodeAnalysisJob implements Runnable {
@@ -54,7 +54,7 @@ public class CodeAnalysisJob implements Runnable {
     LanguageService languageService;
 
     @Transactional(readOnly = true)
-    @Scheduled(fixedDelayString = "${app.crawl.analysis.scheduling}")
+    @Scheduled(fixedDelayString = "${app.analysis.scheduling}")
     public void run() {
         log.info(
                 "Started analysis on {}/{} repositories",

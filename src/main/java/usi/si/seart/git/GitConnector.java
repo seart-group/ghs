@@ -32,7 +32,7 @@ import java.util.concurrent.TimeoutException;
 public class GitConnector {
 
     @NonFinal
-    @Value("${app.crawl.analysis.folder-prefix}")
+    @Value("${app.analysis.folder-prefix}")
     String folderPrefix;
 
     ConversionService conversionService;

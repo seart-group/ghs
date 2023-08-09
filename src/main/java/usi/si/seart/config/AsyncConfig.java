@@ -24,7 +24,7 @@ import java.util.stream.Stream;
 public class AsyncConfig {
 
     @Bean(name = "AnalysisExecutor")
-    public Executor executor(@Value("${app.crawl.analysis.max-pool-threads}") int poolSize) {
+    public Executor executor(@Value("${app.analysis.max-pool-threads}") int poolSize) {
         ThreadPoolTaskExecutor executor = new AnalysisThreadPoolExecutor();
         executor.setCorePoolSize(0);
         executor.setMaxPoolSize(poolSize);

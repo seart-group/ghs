@@ -21,7 +21,7 @@ import java.nio.file.Path;
 public class TemporaryDirectoryCleanerBean implements InitializingBean {
 
     @NonFinal
-    @Value("${app.crawl.analysis.folder-prefix}")
+    @Value("${app.analysis.folder-prefix}")
     String folderPrefix;
 
     Path tmpDir;
