@@ -103,12 +103,12 @@ public class GitHubTokenManager {
             log.debug("GitHub API:  Search {}", rateLimit.getSearch());
             log.debug("GitHub API: GraphQL {}", rateLimit.getGraphql());
             if (rateLimit.anyExceeded()) {
-                replaceToken();
-                long maxWaitSeconds = rateLimit.getMaxWaitSeconds();
-                if (maxWaitSeconds > 0) {
-                    String maxWaitDuration = rateLimit.getMaxWaitReadable();
-                    log.info("Rate limits exhausted, sleeping for {}...", maxWaitDuration);
-                    TimeUnit.SECONDS.sleep(maxWaitSeconds + 1);
+                long waitSeconds = rateLimit.getMaxWaitSeconds();
+                if (tokens.size() > 1) {
+                    currentToken = tokens.next();
+                } else if (waitSeconds > 0) {
+                    log.info("Rate limits exhausted, sleeping for {}...", rateLimit.getMaxWaitReadable());
+                    TimeUnit.SECONDS.sleep(waitSeconds + 1);
                 }
             }
         } catch (InterruptedException ex) {
