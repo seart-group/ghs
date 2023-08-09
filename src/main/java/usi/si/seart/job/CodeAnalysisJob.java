@@ -1,5 +1,6 @@
 package usi.si.seart.job;
 
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -104,7 +105,8 @@ public class CodeAnalysisJob implements Runnable {
             if (!result.succeeded())
                 throw new StaticCodeAnalysisException(result.getStdErr());
             String output = result.getStdOut();
-            JsonObject json = conversionService.convert(output, JsonObject.class);
+            JsonElement element = conversionService.convert(output, JsonElement.class); // Issue #154
+            JsonObject json = element.isJsonNull() ? new JsonObject() : element.getAsJsonObject();
             json.remove("header");
             json.remove("SUM");
             Set<GitRepoMetric> metrics = json.entrySet().stream()
