@@ -4,19 +4,19 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.lang.NonNull;
-import usi.si.seart.github.ErrorResponse;
+import usi.si.seart.github.RestErrorResponse;
 
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Optional;
 import java.util.stream.StreamSupport;
 
-public class JsonObjectToErrorResponseConverter implements Converter<JsonObject, ErrorResponse> {
+public class JsonObjectToErrorResponseConverter implements Converter<JsonObject, RestErrorResponse> {
 
     @Override
     @NonNull
-    public ErrorResponse convert(@NonNull JsonObject source) {
-        ErrorResponse.ErrorResponseBuilder builder = ErrorResponse.builder();
+    public RestErrorResponse convert(@NonNull JsonObject source) {
+        RestErrorResponse.RestErrorResponseBuilder builder = RestErrorResponse.builder();
 
         builder.message(source.get("message").getAsString());
 
@@ -48,7 +48,7 @@ public class JsonObjectToErrorResponseConverter implements Converter<JsonObject,
                     String codeName = Optional.ofNullable(object.get("code"))
                             .map(JsonElement::getAsString)
                             .orElse(null);
-                    return new ErrorResponse.Error(resource, field, codeName, message);
+                    return new RestErrorResponse.Error(resource, field, codeName, message);
                 }).forEach(builder::error);
 
         return builder.build();

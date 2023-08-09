@@ -1,0 +1,2 @@
+schema: schema.docs.graphql
+documents: '**/*.graphql'

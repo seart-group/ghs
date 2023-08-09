@@ -71,7 +71,7 @@ public class GitHubTokenManager {
         int size = tokens.size();
         switch (size) {
             case 0:
-                log.warn("Access tokens not specified, GitHub API mining will be performed at a much slower rate!");
+                log.warn("Access tokens not specified, can not mine the GitHub API!");
                 log.info(
                         "Generate a new access token on https://github.com/settings/tokens " +
                         "and add it to the `app.crawl.tokens` property in `application.properties`!"

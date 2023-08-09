@@ -18,7 +18,7 @@ import java.util.StringJoiner;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class ErrorResponse {
+public class RestErrorResponse {
 
     String message;
 

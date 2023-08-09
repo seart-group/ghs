@@ -60,9 +60,9 @@ gzcat < gse.sql.gz | mysql -u gseadmin -pLugano2020 gse
 
 ### Server
 
-Before attempting to run the server, I advise you generate your own GitHub personal access token (PAT).
-Said token should include the `repo` scope, in order for it to effectively crawl the GitHub API.
-While the token is not mandatory, the impact its presence has on the mining speed can not be understated.
+Before attempting to run the server, you must generate your own GitHub personal access token (PAT).
+GHS relies on the GraphQL API, which is inaccessible without authentication. 
+The token must include the `repo` scope, in order for it to access the information present in the GitHub API.
 
 Once that is done, you can run the server locally using Maven:
 

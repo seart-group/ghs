@@ -22,6 +22,8 @@ import okhttp3.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.convert.ConversionService;
+import org.springframework.graphql.GraphQlResponse;
+import org.springframework.graphql.client.GraphQlClient;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.retry.RetryCallback;
@@ -38,9 +40,12 @@ import java.net.URL;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.StreamSupport;
 
 @SuppressWarnings("ConstantConditions")
 @Slf4j
@@ -53,7 +58,9 @@ public class GitHubAPIConnector {
     @Value("${app.crawl.minimum-stars}")
     Integer minimumStars;
 
-    OkHttpClient client;
+    OkHttpClient httpClient;
+
+    GraphQlClient graphQlClient;
 
     RetryTemplate retryTemplate;
 
@@ -86,10 +93,8 @@ public class GitHubAPIConnector {
         return result.getJsonObject();
     }
 
-
     public JsonObject fetchRepoInfo(String name) {
-        URL url = Endpoint.REPOSITORY.toURL(name.split("/"));
-        FetchCallback.Result result = fetch(url);
+        GraphQLCallback.Result result = fetch(name, "repository");
         return result.getJsonObject();
     }
 
@@ -291,12 +296,95 @@ public class GitHubAPIConnector {
         return array;
     }
 
+    private GraphQLCallback.Result fetch(String name, String document) {
+        String[] args = name.split("/");
+        if (args.length != 2)
+            throw new IllegalArgumentException("Invalid repository name: " + name);
+        Map<String, Object> variables = Map.of("owner", args[0], "name", args[1]);
+        try {
+            return retryTemplate.execute(new GraphQLCallback(document, variables));
+        } catch (Exception ex) {
+            String message = String.format("GraphQL request to %s failed", name);
+            throw new GitHubAPIException(message, ex);
+        }
+    }
+
     private FetchCallback.Result fetch(URL url) {
         try {
             return retryTemplate.execute(new FetchCallback(url));
         } catch (Exception ex) {
             String message = String.format("Request to %s failed", url);
             throw new GitHubAPIException(message, ex);
+        }
+    }
+
+    @Getter
+    @AllArgsConstructor(access = AccessLevel.PROTECTED)
+    @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
+    private abstract static class Result {
+
+        JsonElement jsonElement;
+
+        public JsonObject getJsonObject() {
+            return jsonElement.getAsJsonObject();
+        }
+
+        public JsonArray getJsonArray() {
+            return jsonElement.getAsJsonArray();
+        }
+
+        public Optional<Integer> size() {
+            if (jsonElement.isJsonArray()) {
+                return Optional.of(jsonElement.getAsJsonArray().size());
+            } else if (jsonElement.isJsonObject()) {
+                return Optional.of(jsonElement.getAsJsonObject().size());
+            } else {
+                return Optional.empty();
+            }
+        }
+    }
+
+    @AllArgsConstructor(access = AccessLevel.PRIVATE)
+    @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
+    private class GraphQLCallback implements RetryCallback<GraphQLCallback.Result, Exception> {
+
+        String document;
+        Map<String, Object> variables;
+
+        @Getter
+        @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
+        private class Result extends GitHubAPIConnector.Result {
+
+            private Result(JsonElement jsonElement) {
+                super(jsonElement);
+            }
+        }
+
+        @Override
+        public GraphQLCallback.Result doWithRetry(RetryContext context) {
+            GraphQlResponse response = graphQlClient.documentName(document)
+                    .variables(variables)
+                    .execute()
+                    .block();
+            Map<String, Object> map = response.toMap();
+            JsonObject data = conversionService.convert(map.getOrDefault("data", Map.of()), JsonObject.class);
+            JsonArray errors = conversionService.convert(map.getOrDefault("errors", List.of()), JsonArray.class);
+            StreamSupport.stream(errors.spliterator(), true)
+                    .map(JsonElement::getAsJsonObject)
+                    .findFirst()
+                    .map(json -> conversionService.convert(json, GraphQlErrorResponse.class))
+                    .ifPresent(errorResponse -> {
+                        String name = Objects.toString(errorResponse.getErrorType(), null);
+                        try {
+                            GraphQlErrorResponse.ErrorType errorType = GraphQlErrorResponse.ErrorType.valueOf(name);
+                            if (GraphQlErrorResponse.ErrorType.RATE_LIMITED.equals(errorType))
+                                gitHubTokenManager.replaceTokenIfExpired();
+                        } catch (RuntimeException ignored) {
+                        }
+                        throw errorResponse.asException();
+                    });
+            JsonObject repository = data.getAsJsonObject("repository");
+            return new Result(repository);
         }
     }
 
@@ -307,43 +395,29 @@ public class GitHubAPIConnector {
         URL url;
 
         @Getter
-        @AllArgsConstructor(access = AccessLevel.PRIVATE)
         @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
-        private class Result {
+        private class Result extends GitHubAPIConnector.Result {
 
             HttpStatus status;
             Headers headers;
-            JsonElement jsonElement;
 
-            public JsonObject getJsonObject() {
-                return jsonElement.getAsJsonObject();
-            }
-
-            public JsonArray getJsonArray() {
-                return jsonElement.getAsJsonArray();
-            }
-
-            public Optional<Integer> size() {
-                if (jsonElement.isJsonArray()) {
-                    return Optional.of(jsonElement.getAsJsonArray().size());
-                } else if (jsonElement.isJsonObject()) {
-                    return Optional.of(jsonElement.getAsJsonObject().size());
-                } else {
-                    return Optional.empty();
-                }
+            private Result(JsonElement jsonElement, HttpStatus status, Headers headers) {
+                super(jsonElement);
+                this.status = status;
+                this.headers = headers;
             }
         }
 
         @Override
         @SuppressWarnings("resource")
-        public FetchCallback.Result doWithRetry(RetryContext context) throws Exception {
+        public Result doWithRetry(RetryContext context) throws Exception {
             Request.Builder builder = new Request.Builder();
             builder.url(url);
             String currentToken = gitHubTokenManager.getCurrentToken();
             if (currentToken != null)
                 builder.addHeader(HttpHeaders.AUTHORIZATION, "Bearer " + currentToken);
             Request request = builder.build();
-            Response response = client.newCall(request).execute();
+            Response response = httpClient.newCall(request).execute();
 
             HttpStatus status = HttpStatus.valueOf(response.code());
             HttpStatus.Series series = status.series();
@@ -353,10 +427,10 @@ public class GitHubAPIConnector {
 
             switch (series) {
                 case SUCCESSFUL:
-                    return new Result(status, headers, element);
+                    return new Result(element, status, headers);
                 case INFORMATIONAL:
                 case REDIRECTION:
-                    return new Result(status, headers, JsonNull.INSTANCE);
+                    return new Result(JsonNull.INSTANCE, status, headers);
                 case CLIENT_ERROR:
                     return handleClientError(status, headers, element.getAsJsonObject());
                 case SERVER_ERROR:
@@ -367,17 +441,17 @@ public class GitHubAPIConnector {
             throw new IllegalStateException("This line should never be reached");
         }
 
-        private FetchCallback.Result handleServerError(HttpStatus status, JsonObject json) {
+        private Result handleServerError(HttpStatus status, JsonObject json) {
             GitHubAPIConnector.log.error("Server Error: {} [{}]", status.value(), status.getReasonPhrase());
-            ErrorResponse errorResponse = conversionService.convert(json, ErrorResponse.class);
+            RestErrorResponse errorResponse = conversionService.convert(json, RestErrorResponse.class);
             throw new HttpServerErrorException(status, errorResponse.getMessage());
         }
 
         @SuppressWarnings("java:S128")
-        private FetchCallback.Result handleClientError(
+        private Result handleClientError(
                 HttpStatus status, Headers headers, JsonObject json
         ) throws InterruptedException {
-            ErrorResponse errorResponse = conversionService.convert(json, ErrorResponse.class);
+            RestErrorResponse errorResponse = conversionService.convert(json, RestErrorResponse.class);
             switch (status) {
                 case UNAUTHORIZED:
                     /*
@@ -415,7 +489,7 @@ public class GitHubAPIConnector {
                          * Case (2) encountered, so we propagate error upwards
                          * @see fetchLastPageNumberFromHeader
                          */
-                        return new Result(status, headers, json);
+                        return new Result(json, status, headers);
                     }
                 default:
                     // TODO: 30.07.23 Add any other special logic here

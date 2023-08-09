@@ -20,7 +20,6 @@ import org.springframework.scheduling.annotation.Scheduled;
 import usi.si.seart.collection.Ranges;
 import usi.si.seart.exception.MetadataCrawlingException;
 import usi.si.seart.exception.UnsplittableRangeException;
-import usi.si.seart.git.Commit;
 import usi.si.seart.github.GitHubAPIConnector;
 import usi.si.seart.model.GitRepo;
 import usi.si.seart.model.Label;
@@ -50,7 +49,9 @@ import java.util.stream.StreamSupport;
 @Job
 @Slf4j
 @DependsOn("LanguageInitializationBean")
-@ConditionalOnExpression(value = "${app.crawl.enabled:false} and not '${app.crawl.languages}'.isBlank()")
+@ConditionalOnExpression(value =
+        "${app.crawl.enabled:false} and not '${app.crawl.languages}'.isBlank() and not '${app.crawl.tokens}'.isBlank()"
+)
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class CrawlProjectsJob implements Runnable {
@@ -218,11 +219,22 @@ public class CrawlProjectsJob implements Runnable {
                 : "Saving:    ";
         log.info("{}{} [{}/{}]", action, name, lowerIndex, total);
 
+        gitRepo.setCreatedAt(createdAt);
+        gitRepo.setPushedAt(pushedAt);
+        gitRepo.setUpdatedAt(updatedAt);
+
         try {
             JsonObject json = gitHubApiConnector.fetchRepoInfo(name);
 
-            String defaultBranch = json.get("default_branch").getAsString();
-            gitRepo.setDefaultBranch(defaultBranch);
+            Long size = json.getAsJsonPrimitive("size").getAsLong();
+            gitRepo.setSize(size);
+
+            String homepage = (!json.get("homepage").isJsonNull())
+                    ? json.getAsJsonPrimitive("homepage")
+                    .getAsString()
+                    .trim()
+                    : null;
+            gitRepo.setHomepage(Strings.emptyToNull(homepage));
 
             String license = (!json.get("license").isJsonNull())
                     ? json.getAsJsonObject("license")
@@ -232,83 +244,119 @@ public class CrawlProjectsJob implements Runnable {
                     : null;
             gitRepo.setLicense(license);
 
-            String homepage = (!json.get("homepage").isJsonNull())
-                    ? json.getAsJsonPrimitive("homepage")
-                    .getAsString()
-                    .trim()
-                    : null;
-            gitRepo.setHomepage(Strings.emptyToNull(homepage));
-
-            Long stargazers = json.getAsJsonPrimitive("stargazers_count").getAsLong();
-            gitRepo.setStargazers(stargazers);
-            Long forks = json.getAsJsonPrimitive("forks_count").getAsLong();
+            Long forks = json.getAsJsonPrimitive("forks").getAsLong();
             gitRepo.setForks(forks);
-            Long watchers = json.getAsJsonPrimitive("subscribers_count").getAsLong();
-            gitRepo.setWatchers(watchers);
-            Long size = json.getAsJsonPrimitive("size").getAsLong();
-            gitRepo.setSize(size);
 
-            gitRepo.setCreatedAt(createdAt);
-            gitRepo.setPushedAt(pushedAt);
-            gitRepo.setUpdatedAt(updatedAt);
-
-            boolean hasWiki = json.getAsJsonPrimitive("has_wiki").getAsBoolean();
+            Boolean hasWiki = json.getAsJsonPrimitive("has_wiki").getAsBoolean();
             gitRepo.setHasWiki(hasWiki);
-            Boolean isFork = json.getAsJsonPrimitive("fork").getAsBoolean();
+            Boolean isFork = json.getAsJsonPrimitive("is_fork").getAsBoolean();
             gitRepo.setIsFork(isFork);
-            Boolean isArchived = json.getAsJsonPrimitive("archived").getAsBoolean();
+            Boolean isArchived = json.getAsJsonPrimitive("is_archived").getAsBoolean();
             gitRepo.setIsArchived(isArchived);
 
-            Long commits = gitHubApiConnector.fetchNumberOfCommits(name);
-            Long branches = gitHubApiConnector.fetchNumberOfBranches(name);
-            Long releases = gitHubApiConnector.fetchNumberOfReleases(name);
-            Long contributors = gitHubApiConnector.fetchNumberOfContributors(name);
-            gitRepo.setCommits(commits);
-            gitRepo.setBranches(branches);
-            gitRepo.setReleases(releases);
-            gitRepo.setContributors(contributors);
+            Long stargazers = json.getAsJsonObject("stars")
+                    .getAsJsonPrimitive("count")
+                    .getAsLong();
+            gitRepo.setStargazers(stargazers);
 
-            Long totalPullRequests = gitHubApiConnector.fetchNumberOfAllPulls(name);
-            Long openPullRequests = gitHubApiConnector.fetchNumberOfOpenPulls(name);
+            Long branches = json.getAsJsonObject("branches")
+                    .getAsJsonPrimitive("count")
+                    .getAsLong();
+            gitRepo.setBranches(branches);
+
+            Long releases = json.getAsJsonObject("releases")
+                    .getAsJsonPrimitive("count")
+                    .getAsLong();
+            gitRepo.setReleases(releases);
+
+            Long watchers = json.getAsJsonObject("watchers")
+                    .getAsJsonPrimitive("count")
+                    .getAsLong();
+            gitRepo.setWatchers(watchers);
+
+            Long totalPullRequests = json.getAsJsonObject("total_pull_requests")
+                    .getAsJsonPrimitive("count")
+                    .getAsLong();
             gitRepo.setTotalPullRequests(totalPullRequests);
+
+            Long openPullRequests = json.getAsJsonObject("open_pull_requests")
+                    .getAsJsonPrimitive("count")
+                    .getAsLong();
             gitRepo.setOpenPullRequests(openPullRequests);
 
-            boolean hasIssues = json.getAsJsonPrimitive("has_issues").getAsBoolean();
-            if (hasIssues) {
-                Long totalIssues = gitHubApiConnector.fetchNumberOfAllIssuesAndPulls(name) - totalPullRequests;
-                Long openIssues = gitHubApiConnector.fetchNumberOfOpenIssuesAndPulls(name) - openPullRequests;
-                gitRepo.setTotalIssues(totalIssues);
-                gitRepo.setOpenIssues(openIssues);
+            Long totalIssues = json.getAsJsonObject("total_issues")
+                    .getAsJsonPrimitive("count")
+                    .getAsLong();
+            gitRepo.setTotalIssues(totalIssues);
+
+            Long openIssues = json.getAsJsonObject("open_issues")
+                    .getAsJsonPrimitive("count")
+                    .getAsLong();
+            gitRepo.setOpenIssues(openIssues);
+
+            JsonElement defaultBranch = json.get("default_branch");
+            if (!defaultBranch.isJsonNull()) {
+                /*
+                 * This can technically happen for uninitialized repositories
+                 * (e.g. https://github.com/dabico/dl4se-empty).
+                 * While these should typically never be encountered while mining,
+                 * it's better to be safe than sorry...
+                 */
+                String branchName = defaultBranch.getAsJsonObject()
+                        .getAsJsonPrimitive("name")
+                        .getAsString();
+                gitRepo.setDefaultBranch(branchName);
+                JsonObject history = defaultBranch.getAsJsonObject()
+                        .getAsJsonObject("history");
+                Long commits = history.getAsJsonObject("commits")
+                        .getAsJsonPrimitive("count")
+                        .getAsLong();
+                gitRepo.setCommits(commits);
+                JsonObject commit = history.getAsJsonObject("commits")
+                        .getAsJsonArray("items")
+                        .get(0)
+                        .getAsJsonObject()
+                        .getAsJsonObject("commit");
+                Date lastCommit = Dates.fromGitDateString(commit.getAsJsonPrimitive("date").getAsString());
+                gitRepo.setLastCommit(lastCommit);
+                String lastCommitSHA = commit.getAsJsonPrimitive("sha").getAsString();
+                gitRepo.setLastCommitSHA(lastCommitSHA);
             } else {
-                gitRepo.setTotalIssues(0L);
-                gitRepo.setOpenIssues(0L);
+                gitRepo.setCommits(0L);
             }
 
-            Commit commit = gitHubApiConnector.fetchLastCommitInfo(name);
-            Date lastCommit = commit.getDate();
-            String lastCommitSHA = commit.getSha();
-            gitRepo.setLastCommit(lastCommit);
-            gitRepo.setLastCommitSHA(lastCommitSHA);
+            // Not available on GraphQL, so we have to keep using the page hack
+            Long contributors = gitHubApiConnector.fetchNumberOfContributors(name);
+            gitRepo.setContributors(contributors);
 
             Language mainLanguage = languageService.getOrCreate(language);
             gitRepo.setMainLanguage(mainLanguage);
 
             gitRepo = gitRepoService.createOrUpdate(gitRepo);
 
-            Set<Label> labels = retrieveRepoLabels(gitRepo);
-            if (!labels.isEmpty())
-                log.debug("\tAdding: {} labels.", labels.size());
-            gitRepo.setLabels(labels);
+            long labels = json.getAsJsonObject("labels")
+                    .getAsJsonPrimitive("count")
+                    .getAsLong();
+            if (labels > 0) {
+                log.debug("Adding:    {} labels.", labels);
+                gitRepo.setLabels(retrieveRepoLabels(gitRepo));
+            }
 
-            Set<GitRepoLanguage> languages = retrieveRepoLanguages(gitRepo);
-            if (!languages.isEmpty())
-                log.debug("\tAdding: {} languages.", languages.size());
-            gitRepo.setLanguages(languages);
+            long languages = json.getAsJsonObject("languages")
+                    .getAsJsonPrimitive("count")
+                    .getAsLong();
+            if (languages > 0) {
+                log.debug("Adding:    {} languages.", languages);
+                gitRepo.setLanguages(retrieveRepoLanguages(gitRepo));
+            }
 
-            Set<Topic> topics = retrieveTopics(gitRepo);
-            if (!topics.isEmpty())
-                log.debug("\tAdding: {} topics.", topics.size());
-            gitRepo.setTopics(topics);
+            long topics = json.getAsJsonObject("topics")
+                    .getAsJsonPrimitive("count")
+                    .getAsLong();
+            if (topics > 0) {
+                log.debug("Adding:    {} topics.", topics);
+                gitRepo.setTopics(retrieveTopics(gitRepo));
+            }
 
             gitRepoService.createOrUpdate(gitRepo);
         } catch (NonTransientDataAccessException ex) {
