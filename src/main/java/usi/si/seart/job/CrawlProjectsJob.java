@@ -49,7 +49,9 @@ import java.util.stream.StreamSupport;
 @Job
 @Slf4j
 @DependsOn("LanguageInitializationBean")
-@ConditionalOnExpression(value = "${app.crawl.enabled:false} and not '${app.crawl.languages}'.isBlank()")
+@ConditionalOnExpression(value =
+        "${app.crawl.enabled:false} and not '${app.crawl.languages}'.isBlank() and not '${app.crawl.tokens}'.isBlank()"
+)
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class CrawlProjectsJob implements Runnable {
