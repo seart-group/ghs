@@ -37,6 +37,23 @@ public interface GitRepoRepository extends
 
     @Query(
             "select r.id as id, r.name as name from GitRepo r " +
+            "where (" +
+                    "r.commits is null or " +
+                    "r.branches is null or " +
+                    "r.releases is null or " +
+                    "r.contributors is null or " +
+                    "r.totalIssues is null or " +
+                    "r.openIssues is null or " +
+                    "r.totalPullRequests is null or " +
+                    "r.openPullRequests is null or " +
+                    "r.lastCommit is null or " +
+                    "r.lastCommitSHA is null" +
+            ")"
+    )
+    Stream<Tuple> streamIdentifiersHavingMissingData();
+
+    @Query(
+            "select r.id as id, r.name as name from GitRepo r " +
             "where DATEDIFF(CURRENT_TIMESTAMP(), r.lastPinged) > 35" +
             "order by r.lastPinged, RAND()"
     )
@@ -49,6 +66,23 @@ public interface GitRepoRepository extends
             "order by r.lastAnalyzed, RAND()"
     )
     Stream<Tuple> streamIdentifiersWithOutdatedCodeMetrics();
+
+    @Query(
+            "select COUNT(r) from GitRepo r " +
+            "where (" +
+                    "r.commits is null or " +
+                    "r.branches is null or " +
+                    "r.releases is null or " +
+                    "r.contributors is null or " +
+                    "r.totalIssues is null or " +
+                    "r.openIssues is null or " +
+                    "r.totalPullRequests is null or " +
+                    "r.openPullRequests is null or " +
+                    "r.lastCommit is null or " +
+                    "r.lastCommitSHA is null" +
+            ")"
+    )
+    Long countHavingMissingData();
 
     @Query(
             "select COUNT(r) from GitRepo r " +

@@ -43,6 +43,7 @@ public interface GitRepoService {
     Long count();
     Long countCleanupCandidates();
     Long countAnalysisCandidates();
+    Long countPatchCandidates();
     GitRepo getById(Long id);
     GitRepo getByName(String name);
     @Retryable(
@@ -53,6 +54,7 @@ public interface GitRepoService {
     GitRepo createOrUpdate(GitRepo repo);
     Page<GitRepo> findDynamically(GitRepoSearch parameters, Pageable pageable);
     Stream<GitRepo> streamDynamically(GitRepoSearch parameters);
+    Stream<Pair<Long, String>> streamPatchCandidates();
     Stream<Pair<Long, String>> streamCleanupCandidates();
     Stream<Pair<Long, String>> streamAnalysisCandidates();
 
@@ -100,6 +102,11 @@ public interface GitRepoService {
         }
 
         @Override
+        public Long countPatchCandidates() {
+            return gitRepoRepository.countHavingMissingData();
+        }
+
+        @Override
         public GitRepo getById(Long id) {
             return gitRepoRepository.findGitRepoById(id)
                     .orElseThrow(EntityNotFoundException::new);
@@ -124,6 +131,11 @@ public interface GitRepoService {
         @Override
         public Stream<GitRepo> streamDynamically(GitRepoSearch parameters) {
             return gitRepoRepository.streamAllDynamically(parameters);
+        }
+
+        @Override
+        public Stream<Pair<Long, String>> streamPatchCandidates() {
+            return gitRepoRepository.streamIdentifiersHavingMissingData().map(this::convert);
         }
 
         @Override

@@ -33,8 +33,9 @@ public class SchedulerConfig {
      * Since we have four scheduler jobs:
      *
      * <ul>
-     *     <li>Crawler</li>
-     *     <li>CleanUp</li>
+     *     <li>CrawlProjects</li>
+     *     <li>CleanUpProjects</li>
+     *     <li>PatchProjects</li>
      *     <li>CodeAnalysis</li>
      * </ul>
      *
@@ -44,7 +45,7 @@ public class SchedulerConfig {
     public ThreadPoolTaskScheduler threadPoolTaskScheduler() {
         ThreadPoolTaskScheduler threadPoolTaskScheduler = new ThreadPoolTaskScheduler();
         threadPoolTaskScheduler.setClock(Clock.systemUTC());
-        threadPoolTaskScheduler.setPoolSize(3);
+        threadPoolTaskScheduler.setPoolSize(4);
         threadPoolTaskScheduler.setThreadNamePrefix("GHSThread");
         threadPoolTaskScheduler.setErrorHandler(errorHandler());
         threadPoolTaskScheduler.initialize();
