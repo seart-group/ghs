@@ -3,12 +3,10 @@ package usi.si.seart.config;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.web.filter.ForwardedHeaderFilter;
 import usi.si.seart.collection.Ranges;
 
 import java.nio.file.Path;
@@ -61,12 +59,5 @@ public class MainConfig {
     @Bean
     public Pageable suggestionLimitPageable(@Value("${app.statistics.suggestion-limit}") Integer limit) {
         return PageRequest.of(0, limit);
-    }
-
-    @Bean
-    public FilterRegistrationBean<ForwardedHeaderFilter> forwardedHeaderFilter() {
-        FilterRegistrationBean<ForwardedHeaderFilter> bean = new FilterRegistrationBean<>();
-        bean.setFilter(new ForwardedHeaderFilter());
-        return bean;
     }
 }
