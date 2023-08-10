@@ -18,6 +18,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 /**
@@ -179,6 +180,30 @@ public class ExternalProcess {
 
         private String getTerminationMessage() {
             return "Process finished with exit code " + code;
+        }
+
+        /**
+         * A shorthand for throwing {@code TerminalExecutionException} in case the exit value is non-zero.
+         *
+         * @return this {@code Result}.
+         * @throws TerminalExecutionException if the command failed.
+         */
+        public Result ifFailedThrow() throws TerminalExecutionException {
+            return ifFailedThrow(() -> new TerminalExecutionException(getTerminationMessage()));
+        }
+
+        /**
+         * A shorthand for throwing exceptions in case the exit value is non-zero.
+         *
+         * @param supplier the {@link Throwable} supplier.
+         * @return this {@code Result}.
+         * @throws T if the command failed.
+         */
+        public <T extends Throwable> Result ifFailedThrow(Supplier<? extends T> supplier) throws T {
+            if (!succeeded())
+                throw supplier.get();
+            else
+                return this;
         }
     }
 }

@@ -53,11 +53,10 @@ public class GitConnector {
             ExternalProcess process = new ExternalProcess(directory, command);
             log.trace("Cloning:   {}", url);
             ExternalProcess.Result result = process.execute(5, TimeUnit.MINUTES);
-            if (!result.succeeded()) {
+            result.ifFailedThrow(() -> {
                 GitException exception = conversionService.convert(result.getStdErr(), GitException.class);
-                throw (GitException) exception.fillInStackTrace();
-            }
-
+                return (GitException) exception.fillInStackTrace();
+            });
             return new LocalRepositoryClone(directory);
         } catch (InterruptedException ex) {
             Thread.currentThread().interrupt();

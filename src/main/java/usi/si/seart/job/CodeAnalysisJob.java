@@ -102,8 +102,7 @@ public class CodeAnalysisJob implements Runnable {
             Path path = localRepository.getPath();
             ExternalProcess process = new ExternalProcess(path, "cloc", "--json", "--quiet", ".");
             ExternalProcess.Result result = process.execute(5, TimeUnit.MINUTES);
-            if (!result.succeeded())
-                throw new StaticCodeAnalysisException(result.getStdErr());
+            result.ifFailedThrow(() -> new StaticCodeAnalysisException(result.getStdErr()));
             String output = result.getStdOut();
             JsonElement element = conversionService.convert(output, JsonElement.class); // Issue #154
             JsonObject json = element.isJsonNull() ? new JsonObject() : element.getAsJsonObject();
