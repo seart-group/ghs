@@ -6,6 +6,7 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.DependsOn;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.stereotype.Component;
 import usi.si.seart.exception.StaticCodeAnalysisException;
@@ -20,6 +21,7 @@ import java.util.concurrent.TimeoutException;
  * Component responsible for performing static code analysis through CLOC.
  */
 @Component
+@DependsOn("CommandLineInterfaceDependencyBean")
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
 public class CLOCConnector {

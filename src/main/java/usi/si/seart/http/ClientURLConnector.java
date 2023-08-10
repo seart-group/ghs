@@ -1,6 +1,7 @@
 package usi.si.seart.http;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.annotation.DependsOn;
 import org.springframework.stereotype.Component;
 import usi.si.seart.exception.ClientURLException;
 import usi.si.seart.exception.TerminalExecutionException;
@@ -14,6 +15,7 @@ import java.util.concurrent.TimeoutException;
 
 @Slf4j
 @Component
+@DependsOn("CommandLineInterfaceDependencyBean")
 public class ClientURLConnector {
 
     public boolean ping(URL url) throws ClientURLException {
