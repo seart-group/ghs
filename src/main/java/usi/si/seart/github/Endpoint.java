@@ -113,6 +113,13 @@ public enum Endpoint {
     private static final String host = "api.github.com";
 
     /**
+     * GitHub API Root endpoint. Provides hypermedia links to resources accessible in GitHub's REST API.
+     *
+     * @see <a href="https://docs.github.com/en/rest/meta/meta#github-api-root">GitHub API Root</a>
+     */
+    public static final URL ROOT = endpointUrl();
+
+    /**
      * Endpoint used for getting the rate limit status for the authenticated user.
      * Accessing this endpoint does not count against your REST API rate limit.
      *
@@ -133,6 +140,16 @@ public enum Endpoint {
      * @see <a href="https://docs.github.com/en/rest/search#search-repositories">Search repositories</a>
      */
     public static final URL SEARCH_REPOSITORIES = endpointUrl("search/repositories");
+
+    @SneakyThrows(MalformedURLException.class)
+    private static URL endpointUrl() {
+        return UriComponentsBuilder.newInstance()
+                .scheme(scheme)
+                .host(host)
+                .build()
+                .toUri()
+                .toURL();
+    }
 
     @SneakyThrows(MalformedURLException.class)
     private static URL endpointUrl(String endpoint) {

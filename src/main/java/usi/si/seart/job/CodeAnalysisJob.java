@@ -1,6 +1,5 @@
 package usi.si.seart.job;
 
-import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -17,12 +16,12 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
+import usi.si.seart.analysis.CLOCConnector;
 import usi.si.seart.exception.StaticCodeAnalysisException;
 import usi.si.seart.exception.git.GitException;
 import usi.si.seart.exception.git.RepositoryNotFoundException;
 import usi.si.seart.git.GitConnector;
 import usi.si.seart.git.LocalRepositoryClone;
-import usi.si.seart.io.ExternalProcess;
 import usi.si.seart.model.GitRepo;
 import usi.si.seart.model.Language;
 import usi.si.seart.model.join.GitRepoMetric;
@@ -35,8 +34,6 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.file.Path;
 import java.util.Set;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 import java.util.stream.Collectors;
 
 @Job
@@ -49,6 +46,7 @@ public class CodeAnalysisJob implements Runnable {
     ApplicationContext applicationContext;
 
     GitConnector gitConnector;
+    CLOCConnector clocConnector;
 
     ConversionService conversionService;
     GitRepoService gitRepoService;
@@ -100,13 +98,7 @@ public class CodeAnalysisJob implements Runnable {
         try (LocalRepositoryClone localRepository = gitConnector.clone(url)) {
             log.debug("Analyzing: {} [{}]", name, id);
             Path path = localRepository.getPath();
-            ExternalProcess process = new ExternalProcess(path, "cloc", "--json", "--quiet", ".");
-            ExternalProcess.Result result = process.execute(5, TimeUnit.MINUTES);
-            if (!result.succeeded())
-                throw new StaticCodeAnalysisException(result.getStdErr());
-            String output = result.getStdOut();
-            JsonElement element = conversionService.convert(output, JsonElement.class); // Issue #154
-            JsonObject json = element.isJsonNull() ? new JsonObject() : element.getAsJsonObject();
+            JsonObject json = clocConnector.analyze(path);
             json.remove("header");
             json.remove("SUM");
             Set<GitRepoMetric> metrics = json.entrySet().stream()
@@ -132,11 +124,6 @@ public class CodeAnalysisJob implements Runnable {
             log.debug("Remote not found {}, performing cleanup instead...", name);
             log.info("Deleting:  {} [{}]", name, id);
             gitRepoService.deleteRepoById(id);
-        } catch (InterruptedException ex) {
-            log.warn("Interrupt: {} [{}]", name, id);
-            Thread.currentThread().interrupt();
-        } catch (TimeoutException ex) {
-            log.warn("Timeout:   {} [{}]", name, id);
         } catch (StaticCodeAnalysisException | GitException ex) {
             log.error("Failed:    {} [{}] ({})", name, id, ex.getClass().getSimpleName());
             log.debug("", ex);

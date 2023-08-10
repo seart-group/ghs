@@ -8,25 +8,25 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.convert.ConversionService;
-import org.springframework.stereotype.Component;
 import usi.si.seart.exception.TerminalExecutionException;
 import usi.si.seart.exception.git.CloneException;
 import usi.si.seart.exception.git.GitException;
 import usi.si.seart.exception.git.RemoteReferenceDisplayException;
 import usi.si.seart.io.ExternalProcess;
+import usi.si.seart.stereotype.Connector;
 
 import java.io.IOException;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.concurrent.TimeUnit;
+import java.time.Duration;
 import java.util.concurrent.TimeoutException;
 
 /**
  * Component responsible for interacting with the Git version control system.
  */
 @Slf4j
-@Component
+@Connector(command = "git")
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
 public class GitConnector {
@@ -34,6 +34,10 @@ public class GitConnector {
     @NonFinal
     @Value("${app.git.folder-prefix}")
     String folderPrefix;
+
+    @NonFinal
+    @Value("${app.git.clone-timeout-duration}")
+    Duration duration;
 
     ConversionService conversionService;
 
@@ -52,12 +56,11 @@ public class GitConnector {
             String[] command = {"git", "clone", "--quiet", "--depth", "1", url.toString(), directory.toString()};
             ExternalProcess process = new ExternalProcess(directory, command);
             log.trace("Cloning:   {}", url);
-            ExternalProcess.Result result = process.execute(5, TimeUnit.MINUTES);
-            if (!result.succeeded()) {
+            ExternalProcess.Result result = process.execute(duration.toMillis());
+            result.ifFailedThrow(() -> {
                 GitException exception = conversionService.convert(result.getStdErr(), GitException.class);
-                throw (GitException) exception.fillInStackTrace();
-            }
-
+                return (GitException) exception.fillInStackTrace();
+            });
             return new LocalRepositoryClone(directory);
         } catch (InterruptedException ex) {
             Thread.currentThread().interrupt();
@@ -79,7 +82,7 @@ public class GitConnector {
             String[] command = {"git", "ls-remote", url.toString(), "--exit-code"};
             ExternalProcess process = new ExternalProcess(command);
             log.trace("Pinging:   {}", url);
-            ExternalProcess.Result result = process.execute(1, TimeUnit.MINUTES);
+            ExternalProcess.Result result = process.execute();
             return result.succeeded();
         } catch (InterruptedException ex) {
             Thread.currentThread().interrupt();

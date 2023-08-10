@@ -1,4 +1,4 @@
-package usi.si.seart.bean;
+package usi.si.seart.bean.init;
 
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -29,10 +29,10 @@ public class TemporaryDirectoryCleanerBean implements InitializingBean {
     @Override
     public void afterPropertiesSet() throws Exception {
         try {
-            new ExternalProcess(tmpDir, "rm", "-rf", folderPrefix + "*").execute();
+            new ExternalProcess(tmpDir, "rm", "-rf", folderPrefix + "*").execute().ifFailedThrow();
             log.info("Successfully cleaned up repository folder");
         } catch (TerminalExecutionException ex) {
-            log.error("Failed to clean up cloned repositories from previous runs", ex);
+            log.warn("Failed to clean up cloned repositories from previous runs", ex);
         }
     }
 }
