@@ -21,6 +21,8 @@ import java.util.concurrent.TimeoutException;
 
 /**
  * A useful wrapper for managing the lifecycle of terminal processes.
+ *
+ * @author Ozren Dabić
  */
 public class ExternalProcess {
 
@@ -38,7 +40,7 @@ public class ExternalProcess {
     /**
      * Prepares a new terminal command.
      *
-     * @param workdir The working directory in which the command will be invoked.
+     * @param workdir The working directory in which the command will be executed.
      * @param command Command and arguments.
      */
     public ExternalProcess(@NotNull Path workdir, @NotNull String... command) {
@@ -58,7 +60,7 @@ public class ExternalProcess {
     /**
      * Prepares a new terminal command.
      *
-     * @param workdir The working directory in which the command will be invoked.
+     * @param workdir The working directory in which the command will be executed.
      * @param environment Environment settings for the executing process.
      * @param command Command and arguments.
      */
@@ -78,10 +80,29 @@ public class ExternalProcess {
         processBuilder.command(command);
     }
 
+    /**
+     * Execute the prepared terminal command.
+     * Default maximum runtime is 60 seconds.
+     *
+     * @return The execution {@code Result}.
+     * @throws TimeoutException if the command times out.
+     * @throws InterruptedException if the command is interrupted.
+     */
     public Result execute() throws TimeoutException, InterruptedException {
         return execute(60, TimeUnit.SECONDS);
     }
 
+    /**
+     * Execute the prepared terminal command.
+     * This variant allows you to specify the
+     * maximum runtime.
+     *
+     * @param timeout the maximum time to wait.
+     * @param unit the time unit of the {@code timeout} argument.
+     * @return The execution {@code Result}.
+     * @throws TimeoutException if the command times out.
+     * @throws InterruptedException if the command is interrupted.
+     */
     public Result execute(long timeout, TimeUnit unit) throws TimeoutException, InterruptedException {
         try {
             Process process = processBuilder.start();
