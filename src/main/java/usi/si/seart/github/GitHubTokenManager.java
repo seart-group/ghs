@@ -90,13 +90,14 @@ public class GitHubTokenManager {
         }
     }
 
-    public void replaceToken() {
+    void replaceToken() {
         if (tokens.hasNext()) {
             currentToken = tokens.next();
         }
     }
 
-    public void replaceTokenIfExpired() {
+    // TODO: 10.08.23 improve synchronisation
+    public synchronized void replaceTokenIfExpired() {
         try {
             RateLimit rateLimit = retryTemplate.execute(new RateLimitPollCallback());
             log.debug("GitHub API:    Core {}", rateLimit.getCore());
