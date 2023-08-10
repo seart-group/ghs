@@ -7,14 +7,13 @@ import lombok.experimental.NonFinal;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.DependsOn;
 import org.springframework.core.convert.ConversionService;
-import org.springframework.stereotype.Component;
 import usi.si.seart.exception.TerminalExecutionException;
 import usi.si.seart.exception.git.CloneException;
 import usi.si.seart.exception.git.GitException;
 import usi.si.seart.exception.git.RemoteReferenceDisplayException;
 import usi.si.seart.io.ExternalProcess;
+import usi.si.seart.stereotype.Connector;
 
 import java.io.IOException;
 import java.net.URL;
@@ -27,8 +26,7 @@ import java.util.concurrent.TimeoutException;
  * Component responsible for interacting with the Git version control system.
  */
 @Slf4j
-@Component
-@DependsOn("CommandLineInterfaceDependencyBean")
+@Connector(command = "git")
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
 public class GitConnector {
