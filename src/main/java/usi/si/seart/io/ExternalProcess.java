@@ -173,11 +173,11 @@ public class ExternalProcess {
             } else if (!succeeded() && StringUtils.isNotBlank(stdErr)) {
                 builder.append(stdErr).append('\n');
             }
-            builder.append(getTerminalLine());
+            builder.append(getTerminationMessage());
             return builder.toString();
         }
 
-        private String getTerminalLine() {
+        private String getTerminationMessage() {
             return "Process finished with exit code " + code;
         }
     }
