@@ -131,6 +131,13 @@ public class ExternalProcess {
         }
     }
 
+    /**
+     * Represents the result of a command execution,
+     * this includes the exit code, as well as the
+     * two standard output streams.
+     *
+     * @author Ozren Dabić
+     */
     @Getter
     @AllArgsConstructor(access = AccessLevel.PRIVATE)
     @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
@@ -140,10 +147,24 @@ public class ExternalProcess {
         String stdOut;
         String stdErr;
 
+        /**
+         * Checks if the command execution succeeded.
+         *
+         * @return {@code true} if {@code code == 0}, {@code false} otherwise.
+         */
         public boolean succeeded() {
             return code == 0;
         }
 
+        /**
+         * Returns a string representation of the execution {@code Result}.
+         * Based on whether the execution was successful or not,
+         * this method will return the contents of the standard output and
+         * error streams respectively, followed by a termination message
+         * indicating the code.
+         *
+         * @return A string representation of this {@code Result}.
+         */
         @Override
         public String toString() {
             StringBuilder builder = new StringBuilder();
