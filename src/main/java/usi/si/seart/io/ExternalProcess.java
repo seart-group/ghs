@@ -117,13 +117,17 @@ public class ExternalProcess {
         @Override
         public String toString() {
             StringBuilder builder = new StringBuilder();
-            if (StringUtils.isNotBlank(stdOut))
+            if (succeeded() && StringUtils.isNotBlank(stdOut)) {
                 builder.append(stdOut).append('\n');
-            if (StringUtils.isNotBlank(stdErr))
+            } else if (!succeeded() && StringUtils.isNotBlank(stdErr)) {
                 builder.append(stdErr).append('\n');
-            builder.append("Process finished with exit code ")
-                    .append(code);
+            }
+            builder.append(getTerminalLine());
             return builder.toString();
+        }
+
+        private String getTerminalLine() {
+            return "Process finished with exit code " + code;
         }
     }
 }
