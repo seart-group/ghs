@@ -5,7 +5,9 @@ import com.google.gson.JsonObject;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import lombok.experimental.NonFinal;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.convert.ConversionService;
 import usi.si.seart.exception.StaticCodeAnalysisException;
 import usi.si.seart.exception.TerminalExecutionException;
@@ -13,7 +15,7 @@ import usi.si.seart.io.ExternalProcess;
 import usi.si.seart.stereotype.Connector;
 
 import java.nio.file.Path;
-import java.util.concurrent.TimeUnit;
+import java.time.Duration;
 import java.util.concurrent.TimeoutException;
 
 /**
@@ -26,6 +28,10 @@ public class CLOCConnector {
 
     ConversionService conversionService;
 
+    @NonFinal
+    @Value("${app.cloc.analysis-timeout-duration}")
+    Duration duration;
+
     /**
      * Performs static code analysis using CLOC.
      *
@@ -37,7 +43,7 @@ public class CLOCConnector {
     public JsonObject analyze(Path path) throws StaticCodeAnalysisException {
         try {
             ExternalProcess process = new ExternalProcess(path, "cloc", "--json", "--quiet", ".");
-            ExternalProcess.Result result = process.execute(5, TimeUnit.MINUTES);
+            ExternalProcess.Result result = process.execute(duration.toMillis());
             result.ifFailedThrow(() -> new StaticCodeAnalysisException(result.getStdErr()));
             JsonElement element = conversionService.convert(result.getStdOut(), JsonElement.class);
             return element.isJsonNull() ? new JsonObject() : element.getAsJsonObject();

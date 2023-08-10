@@ -1,6 +1,7 @@
 package usi.si.seart.http;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import usi.si.seart.exception.ClientURLException;
 import usi.si.seart.exception.TerminalExecutionException;
 import usi.si.seart.io.ExternalProcess;
@@ -9,25 +10,29 @@ import usi.si.seart.stereotype.Connector;
 import java.net.ConnectException;
 import java.net.URL;
 import java.net.UnknownHostException;
-import java.util.concurrent.TimeUnit;
+import java.time.Duration;
 import java.util.concurrent.TimeoutException;
 
 @Slf4j
 @Connector(command = "curl")
 public class ClientURLConnector {
 
+    @Value("${app.curl.connect-timeout-duration}")
+    Duration duration;
+
     public boolean ping(URL url) throws ClientURLException {
         try {
             String[] command = {
                 "curl", "-Is",
-                "--connect-timeout", "60",
+                "--connect-timeout",
+                String.valueOf(duration.toSeconds()),
                 "--fail-with-body",
                 "--show-error",
                 url.toString()
             };
             ExternalProcess process = new ExternalProcess(command);
             log.trace("Pinging:   {}", url);
-            ExternalProcess.Result result = process.execute(1, TimeUnit.MINUTES);
+            ExternalProcess.Result result = process.execute(duration.toMillis());
             int code = result.getCode();
             switch (code) {
                 case 0:
