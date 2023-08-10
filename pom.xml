@@ -5,7 +5,7 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>2.7.10</version>
+		<version>2.7.14</version>
 		<relativePath /> <!-- lookup parent from repository -->
 	</parent>
 
@@ -74,7 +74,7 @@
 		<kotlin.version>1.8.21</kotlin.version>
 		<jackson.version>2.15.2</jackson.version>
 		<okhttp.version>4.11.0</okhttp.version>
-		<springframework.version>2.7.10</springframework.version>
+		<springboot.version>2.7.14</springboot.version>
 	</properties>
 
 	<dependencyManagement>
@@ -96,7 +96,7 @@
 			<dependency>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-dependencies</artifactId>
-				<version>${springframework.version}</version>
+				<version>${springboot.version}</version>
 				<type>pom</type>
 				<scope>import</scope>
 			</dependency>
