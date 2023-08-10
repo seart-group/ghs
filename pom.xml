@@ -75,6 +75,7 @@
 		<jackson.version>2.15.2</jackson.version>
 		<okhttp.version>4.11.0</okhttp.version>
 		<springboot.version>2.7.14</springboot.version>
+		<springbootadmin.version>2.7.10</springbootadmin.version>
 	</properties>
 
 	<dependencyManagement>
@@ -103,7 +104,7 @@
 			<dependency>
 				<groupId>de.codecentric</groupId>
 				<artifactId>spring-boot-admin-dependencies</artifactId>
-				<version>${springframework.version}</version>
+				<version>${springbootadmin.version}</version>
 				<type>pom</type>
 				<scope>import</scope>
 			</dependency>
