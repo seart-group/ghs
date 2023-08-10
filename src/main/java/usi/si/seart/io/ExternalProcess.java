@@ -104,6 +104,20 @@ public class ExternalProcess {
     /**
      * Execute the prepared terminal command.
      * This variant allows you to specify the
+     * maximum runtime in milliseconds.
+     *
+     * @param timeout the maximum time to wait.
+     * @return The execution {@code Result}.
+     * @throws TimeoutException if the command times out.
+     * @throws InterruptedException if the command is interrupted.
+     */
+    public Result execute(long timeout) throws TimeoutException, InterruptedException {
+        return execute(timeout, TimeUnit.MILLISECONDS);
+    }
+
+    /**
+     * Execute the prepared terminal command.
+     * This variant allows you to specify the
      * maximum runtime.
      *
      * @param timeout the maximum time to wait.
