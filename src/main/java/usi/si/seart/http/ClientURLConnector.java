@@ -1,10 +1,6 @@
 package usi.si.seart.http;
 
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import usi.si.seart.exception.ClientURLException;
 import usi.si.seart.exception.TerminalExecutionException;
@@ -18,8 +14,6 @@ import java.util.concurrent.TimeoutException;
 
 @Slf4j
 @Component
-@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
-@AllArgsConstructor(onConstructor_ = @Autowired)
 public class ClientURLConnector {
 
     public boolean ping(URL url) throws ClientURLException {
