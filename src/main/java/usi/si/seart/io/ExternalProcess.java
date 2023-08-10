@@ -118,7 +118,7 @@ public class ExternalProcess {
     /**
      * Execute the prepared terminal command.
      * This variant allows you to specify the
-     * maximum runtime.
+     * maximum runtime in any unit of time.
      *
      * @param timeout the maximum time to wait.
      * @param unit the time unit of the {@code timeout} argument.
