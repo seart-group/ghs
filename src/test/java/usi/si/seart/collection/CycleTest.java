@@ -6,7 +6,6 @@ import org.junit.jupiter.api.Test;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 class CycleTest {
 
@@ -60,13 +59,13 @@ class CycleTest {
         // Un-queried cycle
         actual = cycle.stream()
                 .limit(expected.size())
-                .collect(Collectors.toList());
+                .toList();
         Assertions.assertEquals(expected, actual);
         // Queried cycle
         cycle.next();
         actual = cycle.stream()
                 .limit(expected.size())
-                .collect(Collectors.toList());
+                .toList();
         Assertions.assertEquals(expected, actual);
     }
 
