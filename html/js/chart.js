@@ -20,6 +20,11 @@
             duration: 0
         },
         responsive: true,
+        layout: {
+            padding: {
+                right: 10,
+            },
+        },
         scales: {
             x: {
                 ticks: {
