@@ -104,13 +104,13 @@
   <logger name="usi.si.seart.github" level="TRACE">
     <appender-ref ref="FILE-GITHUB" />
   </logger>
-  <logger name="usi.si.seart.job.CrawlProjectsJob" level="TRACE">
+  <logger name="ch.usi.si.seart.job.CrawlProjectsJob" level="TRACE">
     <appender-ref ref="FILE-CRAWLER" />
   </logger>
-  <logger name="usi.si.seart.job.CleanUpProjectsJob" level="TRACE">
+  <logger name="ch.usi.si.seart.job.CleanUpProjectsJob" level="TRACE">
     <appender-ref ref="FILE-CLEANER" />
   </logger>
-  <logger name="usi.si.seart.job.CodeAnalysisJob" level="TRACE">
+  <logger name="ch.usi.si.seart.job.CodeAnalysisJob" level="TRACE">
     <appender-ref ref="FILE-ANALYSIS" />
   </logger>
   <logger name="org.springframework.web.servlet.DispatcherServlet" level="DEBUG">
