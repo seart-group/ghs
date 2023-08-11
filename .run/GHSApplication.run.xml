@@ -21,7 +21,7 @@
     <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="true" />
     <option name="HIDE_BANNER" value="true" />
     <module name="ghs-application" />
-    <option name="SPRING_BOOT_MAIN_CLASS" value="usi.si.seart.GHSApplication" />
+    <option name="SPRING_BOOT_MAIN_CLASS" value="ch.usi.si.seart.GHSApplication" />
     <extension name="coverage">
       <pattern>
         <option name="PATTERN" value="usi.si.seart.*" />

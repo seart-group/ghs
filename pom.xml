@@ -9,7 +9,7 @@
 		<relativePath /> <!-- lookup parent from repository -->
 	</parent>
 
-	<groupId>usi.si.seart</groupId>
+	<groupId>ch.usi.si.seart</groupId>
 	<artifactId>ghs-application</artifactId>
 	<version>1.4.0</version>
 	<packaging>jar</packaging>
