@@ -961,6 +961,12 @@
         </div>
       </div>
     </script>
+    <script id="template-alert" type="text/x-handlebars-template">
+      <div id="{{ id }}" role="alert" class="alert alert-light alert-dismissible bg-light border-0 rounded-0 m-0">
+        {{ body }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+      </div>
+    </script>
     <script id="template-toast" type="text/x-handlebars-template">
       <div id="{{ id }}" role="alert" class="toast bg-light rounded-0" aria-live="assertive" aria-atomic="true">
         <div class="d-flex">
