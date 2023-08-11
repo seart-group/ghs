@@ -13,11 +13,13 @@ public interface LanguageRepository extends JpaRepository<Language, Long> {
 
     Optional<Language> findByNameIgnoreCase(@NotNull String name);
 
-    @Query("""
-    select l from Language l
-    inner join l.progress
-    where l.name in (:names)
-    order by l.progress.checkpoint
-    """)
+    @Query(
+        """
+        select l from Language l
+        inner join l.progress
+        where l.name in (:names)
+        order by l.progress.checkpoint
+        """
+    )
     List<Language> findAllByNameInOrderByProgress(Collection<@NotNull String> names);
 }
