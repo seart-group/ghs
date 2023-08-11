@@ -14,7 +14,7 @@ This project is made of two components:
 | Dependency                               | Version Requirement |
 |------------------------------------------|--------------------:|
 | Java                                     |                  17 |
-| Maven                                    |               3.9.4 |
+| Maven                                    |               3.9.3 |
 | MySQL                                    |              8.0.33 |
 | Flyway                                   |              9.21.1 |
 | Git                                      |              2.25.2 |
