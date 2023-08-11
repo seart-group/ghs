@@ -70,7 +70,8 @@
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-		<java.version>1.11</java.version>
+		<java.release>17</java.release>
+		<java.version>1.${java.release}</java.version>
 		<kotlin.version>1.8.21</kotlin.version>
 		<jackson.version>2.15.2</jackson.version>
 		<okhttp.version>4.11.0</okhttp.version>
@@ -304,10 +305,9 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <configuration>
-                    <source>11</source>
-                    <target>11</target>
-                </configuration>
+				<configuration>
+					<release>${java.release}</release>
+				</configuration>
             </plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
