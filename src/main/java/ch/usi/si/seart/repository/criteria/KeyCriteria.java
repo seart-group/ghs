@@ -1,10 +1,6 @@
 package ch.usi.si.seart.repository.criteria;
 
 import ch.usi.si.seart.repository.operation.UnaryOperation;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.experimental.FieldDefaults;
 import org.jetbrains.annotations.NotNull;
 
 import javax.persistence.criteria.CriteriaBuilder;
