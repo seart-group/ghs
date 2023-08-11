@@ -24,8 +24,6 @@ import okhttp3.Request;
 import okhttp3.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.actuate.health.Health;
-import org.springframework.boot.actuate.health.HealthIndicator;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.graphql.GraphQlResponse;
 import org.springframework.graphql.client.GraphQlClient;
@@ -38,8 +36,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
 
-import java.io.IOException;
-import java.net.Socket;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
@@ -56,7 +52,7 @@ import java.util.stream.StreamSupport;
 @Component
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
-public class GitHubAPIConnector implements HealthIndicator {
+public class GitHubAPIConnector {
 
     @NonFinal
     @Value("${app.crawl.minimum-stars}")
@@ -73,18 +69,6 @@ public class GitHubAPIConnector implements HealthIndicator {
     GitHubTokenManager gitHubTokenManager;
 
     ConversionService conversionService;
-
-    @Override
-    public Health health() {
-        try (Socket ignored = new Socket(Endpoint.ROOT.getHost(), 80)) {
-            return Health.up().build();
-        } catch (IOException ex) {
-            log.warn("Could not connect to the GitHub API", ex);
-            return Health.down()
-                    .withDetail("error", ex.getMessage())
-                    .build();
-        }
-    }
 
     public JsonObject searchRepositories(String language, Range<Date> range, Integer page) {
         Map<String, String> query = ImmutableMap.<String, String>builder()
