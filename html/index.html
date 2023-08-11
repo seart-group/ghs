@@ -801,8 +801,13 @@
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
           <div class="modal-body">
-            <div class="mb-3">
-              <canvas id="statistics-chart" class="chart"></canvas>
+            <div class="position-relative mb-3">
+              <div class="position-absolute z-1 top-0 end-0">
+                <button type="button" id="statistics-download-btn" class="btn btn-light m-4 d-none" disabled>
+                  <i class="bi bi-download"></i>
+                </button>
+              </div>
+              <canvas id="statistics-chart" class="chart position-relative"></canvas>
             </div>
             <div class="d-flex justify-content-between justify-content-md-around text-center mb-3">
               <h2 class="fs-6 mb-0 placeholder-glow">
