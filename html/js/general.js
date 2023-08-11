@@ -1,4 +1,4 @@
-(function ($, clipboard, Tooltip) {
+(function ($, storage, clipboard, Tooltip) {
     const $search_name_dropdown_toggle = $("#search-name-dropdown-toggle");
     const $search_name_dropdown_items = $("#search-name-dropdown-items > * > .dropdown-item");
     const $search_name_equals = $("#search-name-equals");
@@ -9,6 +9,18 @@
     const $citation_copy_target = $("#citation-copy-target");
 
     $(document).ready(function () {
+        const key = "alert.advertisement.last-shown";
+        const url = "https://seart-dl4se.si.usi.ch/";
+        const lastShown = new Date(storage.getItem(key));
+        const today = new Date(new Date().setUTCHours(0, 0, 0, 0));
+        const days = Math.ceil((today - lastShown) / (1000 * 60 * 60 * 24));
+        if (days > 30) {
+            $("header").twbsAlert({
+                body: `Need source code instead? Check out our <a href="${url}" target="_blank" class="alert-link">other platform</a>.`
+            });
+            storage.setItem(key, today.toISOString());
+        }
+
         $("body").tooltip({
             selector: "[data-bs-toggle='tooltip']"
         });
@@ -63,4 +75,4 @@
                 }, 2500);
             });
     });
-}(jQuery, navigator.clipboard, bootstrap.Tooltip));
+}(jQuery, localStorage, navigator.clipboard, bootstrap.Tooltip));
