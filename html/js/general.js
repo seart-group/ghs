@@ -8,11 +8,12 @@
     const $citation_copy_btn = $("#citation-copy-btn");
     const $citation_copy_target = $("#citation-copy-target");
 
+    const today = new Date(new Date().setUTCHours(0, 0, 0, 0));
+
     $(document).ready(function () {
         const key = "alert.advertisement.last-shown";
         const url = "https://seart-dl4se.si.usi.ch/";
         const lastShown = new Date(storage.getItem(key));
-        const today = new Date(new Date().setUTCHours(0, 0, 0, 0));
         const days = Math.ceil((today - lastShown) / (1000 * 60 * 60 * 24));
         if (days > 30) {
             $("header").twbsAlert({
@@ -26,10 +27,9 @@
         });
     });
 
-    const [ today ] = new Date().toISOString().split("T");
     $("#search input[type='date']").attr({
         min: "2008-01-01",
-        max: today
+        max: today.toISOString().slice(0, 10),
     });
 
     $("#search input[type='number']").attr({
