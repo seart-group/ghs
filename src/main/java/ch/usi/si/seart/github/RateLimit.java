@@ -1,9 +1,5 @@
 package ch.usi.si.seart.github;
 
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.experimental.FieldDefaults;
 import org.apache.commons.lang3.time.DurationFormatUtils;
 
 import java.time.Instant;
@@ -23,14 +19,7 @@ import java.util.stream.Stream;
  * @see <a href="https://docs.github.com/en/rest/rate-limit?apiVersion=2022-11-28">Rate limit</a>
  * @see <a href="https://docs.github.com/en/rest/overview/resources-in-the-rest-api?apiVersion=2022-11-28">Resources in the REST API</a>
  */
-@Getter
-@AllArgsConstructor
-@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
-public class RateLimit {
-
-    Resource core;
-    Resource search;
-    Resource graphql;
+public record RateLimit(Resource core, Resource search, Resource graphql) {
 
     /**
      * Calculates the maximum wait time (in seconds) between API
@@ -75,21 +64,13 @@ public class RateLimit {
      * the number of remaining API calls associated with the client,
      * and the time in Unix seconds at which the rates will reset.
      */
-    @Getter
-    @AllArgsConstructor
-    @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
-    public static class Resource {
-
-        int limit;
-        int remaining;
-        long reset;
+    public record Resource(int limit, int remaining, long reset) {
 
         /**
          * Calculates the number of seconds to wait before making another
          * API call, based on the number of remaining calls and reset time.
          *
-         * @return
-         * Number of seconds until the rate limits reset,
+         * @return Number of seconds until the rate limits reset,
          * if there are no remaining calls, 0 otherwise.
          */
         public long getWaitSeconds() {

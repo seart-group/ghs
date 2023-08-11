@@ -97,7 +97,7 @@ public class CodeAnalysisJob implements Runnable {
         URL url = new URL("https://github.com/" + name + ".git");
         try (LocalRepositoryClone localRepository = gitConnector.clone(url)) {
             log.debug("Analyzing: {} [{}]", name, id);
-            Path path = localRepository.getPath();
+            Path path = localRepository.path();
             JsonObject json = clocConnector.analyze(path);
             json.remove("header");
             json.remove("SUM");

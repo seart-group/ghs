@@ -42,7 +42,7 @@ public abstract class LinkBuilder<T> {
                 .map(entry -> {
                     List<String> encoded = Stream.of(entry.getValue())
                             .map(value -> URLEncoder.encode(value, StandardCharsets.UTF_8))
-                            .collect(Collectors.toList());
+                            .toList();
                     return Map.entry(entry.getKey(), encoded);
                 })
                 .collect(Collectors.toMap(

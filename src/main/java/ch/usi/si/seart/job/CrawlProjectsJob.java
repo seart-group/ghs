@@ -78,7 +78,7 @@ public class CrawlProjectsJob implements Runnable {
         Collection<Language> languages = languageService.getTargetedLanguages();
         List<String> order = languages.stream()
                 .map(Language::getName)
-                .collect(Collectors.toList());
+                .toList();
         log.info("Language crawling order: {}", order);
         for (Language language : languages) {
             requestQueue.clear();

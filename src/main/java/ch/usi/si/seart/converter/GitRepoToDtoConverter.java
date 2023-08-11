@@ -54,9 +54,11 @@ public class GitRepoToDtoConverter implements Converter<GitRepo, GitRepoDto> {
                 .blankLines(hasMetrics ? totalMetrics.getBlankLines() : null)
                 .commentLines(hasMetrics ? totalMetrics.getCommentLines() : null)
                 .codeLines(hasMetrics ? totalMetrics.getCodeLines() : null)
-                .metrics(source.getMetrics().stream()
-                    .map(metricConverter::convert)
-                    .collect(Collectors.toList()))
+                .metrics(
+                        source.getMetrics().stream()
+                                .map(metricConverter::convert)
+                                .toList()
+                )
                 .hasWiki(source.getHasWiki())
                 .isArchived(source.getIsArchived())
                 .languages(
@@ -75,9 +77,10 @@ public class GitRepoToDtoConverter implements Converter<GitRepo, GitRepoDto> {
                                 .map(Label::getName)
                                 .collect(Collectors.toCollection(TreeSet::new))
                 )
-                .topics(source.getTopics().stream()
-                        .map(Topic::getName)
-                        .collect(Collectors.toCollection(TreeSet::new))
+                .topics(
+                        source.getTopics().stream()
+                                .map(Topic::getName)
+                                .collect(Collectors.toCollection(TreeSet::new))
                 )
                 .build();
     }

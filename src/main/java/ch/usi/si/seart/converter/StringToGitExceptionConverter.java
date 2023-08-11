@@ -41,24 +41,20 @@ public class StringToGitExceptionConverter implements Converter<String, GitExcep
             return new InvalidProxyConfigurationException(fatal);
         if (fatal.endsWith(LONG_FILE_NAME))
             return new CheckoutException(fatal);
-        switch (fatal) {
-            case EMPTY:
-                return new GitException();
-            case EARLY_EOF:
-                return new CompressionException(fatal);
-            case PROMPTS_DISABLED:
-                return new TerminalPromptsDisabledException(fatal);
-            case AUTHENTICATION_REQUIRED:
-                return new InvalidUsernameException(fatal);
-            case CHECKOUT_FAILED:
+        return switch (fatal) {
+            case EMPTY -> new GitException();
+            case EARLY_EOF -> new CompressionException(fatal);
+            case PROMPTS_DISABLED -> new TerminalPromptsDisabledException(fatal);
+            case AUTHENTICATION_REQUIRED -> new InvalidUsernameException(fatal);
+            case CHECKOUT_FAILED -> {
                 String error = source.lines()
                         .filter(line -> line.startsWith("error:"))
                         .findAny()
                         .map(string -> string.substring(7))
                         .orElse(null);
-                return new CheckoutException(error);
-            default:
-                return new GitException(fatal);
-        }
+                yield new CheckoutException(error);
+            }
+            default -> new GitException(fatal);
+        };
     }
 }
