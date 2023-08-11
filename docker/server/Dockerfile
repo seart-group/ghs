@@ -1,11 +1,11 @@
-FROM maven:3.8.6-jdk-11-slim AS build
+FROM maven:3.9.4-eclipse-temurin-17-alpine AS build
 
 COPY ./pom.xml /pom.xml
 COPY ./src ./src
 
 RUN mvn -e --no-transfer-progress clean install -am -DskipTests
 
-FROM adoptopenjdk/openjdk11:jre-11.0.19_7-alpine
+FROM eclipse-temurin:17.0.8_7-jre-alpine
 
 COPY --from=build /target/ghs-application-*.jar /server.jar
 
