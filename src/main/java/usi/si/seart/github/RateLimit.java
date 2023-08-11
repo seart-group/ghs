@@ -55,7 +55,7 @@ public record RateLimit(Resource core, Resource search, Resource graphql) {
 
     // Convenience method for extensibility
     private Resource[] resources() {
-        return new Resource[] { core, search, graphql };
+        return new Resource[] {core, search, graphql};
     }
 
     /**
