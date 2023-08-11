@@ -1,9 +1,12 @@
-(function ($) {
+(function ($, clipboard, Tooltip) {
     const $search_name_dropdown_toggle = $("#search-name-dropdown-toggle");
     const $search_name_dropdown_items = $("#search-name-dropdown-items > * > .dropdown-item");
     const $search_name_equals = $("#search-name-equals");
     const $search_only_forks = $("#search-only-forks");
     const $search_exclude_forks = $("#search-exclude-forks");
+
+    const $citation_copy_btn = $("#citation-copy-btn");
+    const $citation_copy_target = $("#citation-copy-target");
 
     $(document).ready(function () {
         $("body").tooltip({
@@ -41,4 +44,23 @@
             $search_only_forks.prop("checked", false);
         }
     });
-}(jQuery));
+
+    $citation_copy_btn.on("click", function () {
+        const target = $(this);
+        const icon = target.html();
+        const [ element ] = target.get();
+        const data = $citation_copy_target.html();
+        clipboard.writeText(data)
+            .then(() => {
+                target.attr("data-bs-original-title", "Copied!");
+                target.html(`<i class="bi bi-check-lg"></i>`);
+                const tooltip = Tooltip.getInstance(element);
+                tooltip.show();
+                target.attr("data-bs-original-title", "Copy to clipboard...");
+                setTimeout(() => {
+                    tooltip.hide();
+                    target.html(icon);
+                }, 2500);
+            });
+    });
+}(jQuery, navigator.clipboard, bootstrap.Tooltip));

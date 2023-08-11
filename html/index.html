@@ -830,7 +830,20 @@
           </div>
           <div class="modal-body">
             <h2 class="fs-6">BibTeX Citation:</h2>
-            <pre><code class="text-muted">@inproceedings{Dabic:msr2021data,
+            <div class="position-relative">
+              <div class="position-absolute z-1 top-0 end-0">
+                <button type="button"
+                        id="citation-copy-btn"
+                        class="btn border-0 link-secondary"
+                        data-bs-original-title="Copy to clipboard..."
+                        data-bs-toggle="tooltip"
+                        data-bs-placement="top"
+                >
+                  <i class="bi bi-clipboard"></i>
+                </button>
+              </div>
+              <pre>
+<code id="citation-copy-target" class="text-muted position-relative">@inproceedings{Dabic:msr2021data,
   author    = {Ozren Dabic and Emad Aghajani and Gabriele Bavota},
   title     = {Sampling Projects in GitHub for {MSR} Studies},
   booktitle = {18th {IEEE/ACM} International Conference on Mining Software Repositories,
@@ -839,6 +852,7 @@
   publisher = {{IEEE}},
   year      = {2021}
 }</code></pre>
+            </div>
             <a href="https://arxiv.org/pdf/2103.04682.pdf" class="link-secondary" target="_blank">
               Link to the paper PDF
             </a>
