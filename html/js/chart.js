@@ -13,6 +13,8 @@
         "#bcbfbe", "#c5c7c6", "#cdcecd", "#d5d5d5"
     ];
 
+    const percentage = (numerator, denominator) => (numerator / denominator * 100).toFixed(2);
+
     Chart.defaults.font.family = "Trebuchet MS";
 
     const options = {
@@ -72,7 +74,7 @@
                 callbacks: {
                     afterLabel: function (ctx) {
                         const { mined, analyzed } = ctx.raw;
-                        return `Analyzed: ${(analyzed / mined * 100).toFixed(2)}%`;
+                        return `Analyzed: ${percentage(analyzed, mined)}%`;
                     },
                 },
             },
@@ -87,7 +89,7 @@
                 acc.analyzed += analyzed;
                 return acc;
             }, { mined: 0, analyzed: 0 });
-            const coverage = `${(total.analyzed / total.mined * 100).toFixed(2)}%`;
+            const coverage = `${percentage(total.analyzed, total.mined)}%`;
             $statistics_mined.replaceWith(`<span id="statistics-mined">${total.mined.toLocaleString()}</span>`);
             $statistics_analyzed.replaceWith(`<span id="statistics-analyzed">${coverage}</span>`);
             return Object.entries(json).map(([key, value]) => ({ x: key, ...value }));
