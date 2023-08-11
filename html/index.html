@@ -801,8 +801,13 @@
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
           <div class="modal-body">
-            <div class="mb-3">
-              <canvas id="statistics-chart" class="chart"></canvas>
+            <div class="position-relative mb-3">
+              <div class="position-absolute z-1 top-0 end-0">
+                <button type="button" id="statistics-download-btn" class="btn btn-light m-4 d-none" disabled>
+                  <i class="bi bi-download"></i>
+                </button>
+              </div>
+              <canvas id="statistics-chart" class="chart position-relative"></canvas>
             </div>
             <div class="d-flex justify-content-between justify-content-md-around text-center mb-3">
               <h2 class="fs-6 mb-0 placeholder-glow">
@@ -830,7 +835,20 @@
           </div>
           <div class="modal-body">
             <h2 class="fs-6">BibTeX Citation:</h2>
-            <pre><code class="text-muted">@inproceedings{Dabic:msr2021data,
+            <div class="position-relative">
+              <div class="position-absolute z-1 top-0 end-0">
+                <button type="button"
+                        id="citation-copy-btn"
+                        class="btn border-0 link-secondary"
+                        data-bs-original-title="Copy to clipboard..."
+                        data-bs-toggle="tooltip"
+                        data-bs-placement="top"
+                >
+                  <i class="bi bi-clipboard"></i>
+                </button>
+              </div>
+              <pre>
+<code id="citation-copy-target" class="text-muted position-relative">@inproceedings{Dabic:msr2021data,
   author    = {Ozren Dabic and Emad Aghajani and Gabriele Bavota},
   title     = {Sampling Projects in GitHub for {MSR} Studies},
   booktitle = {18th {IEEE/ACM} International Conference on Mining Software Repositories,
@@ -839,6 +857,7 @@
   publisher = {{IEEE}},
   year      = {2021}
 }</code></pre>
+            </div>
             <a href="https://arxiv.org/pdf/2103.04682.pdf" class="link-secondary" target="_blank">
               Link to the paper PDF
             </a>
@@ -942,11 +961,17 @@
         </div>
       </div>
     </script>
+    <script id="template-alert" type="text/x-handlebars-template">
+      <div id="{{ id }}" role="alert" class="alert alert-light alert-dismissible bg-light border-0 rounded-0 m-0">
+        {{{ body }}}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+      </div>
+    </script>
     <script id="template-toast" type="text/x-handlebars-template">
       <div id="{{ id }}" role="alert" class="toast bg-light rounded-0" aria-live="assertive" aria-atomic="true">
         <div class="d-flex">
           <div class="toast-body">
-            {{ body }}
+            {{{ body }}}
           </div>
           <button type="button" data-bs-dismiss="toast" class="btn-close me-2 m-auto" aria-label="Close"></button>
         </div>
