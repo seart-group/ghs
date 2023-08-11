@@ -35,32 +35,30 @@ public interface GitRepoRepository extends
 
     Optional<GitRepo> findGitRepoByNameIgnoreCase(String name);
 
-    @Query(
-            "select r.id as id, r.name as name from GitRepo r " +
-            "where DATEDIFF(CURRENT_TIMESTAMP(), r.lastPinged) > 35" +
-            "order by r.lastPinged, RAND()"
-    )
-    // FIXME: 04.08.23 DATEDIFF is vendor-specific
+    @Query("""
+    select r.id as id, r.name as name from GitRepo r
+    where DATEDIFF(CURRENT_TIMESTAMP(), r.lastPinged) > 35
+    order by r.lastPinged, RAND()
+    """) // FIXME: 04.08.23 DATEDIFF is vendor-specific
     Stream<Tuple> streamIdentifiersWithOutdatedLastPinged();
 
-    @Query(
-            "select r.id as id, r.name as name from GitRepo r " +
-            "where r.lastAnalyzed is null or r.lastAnalyzed < r.lastCommit " +
-            "order by r.lastAnalyzed, RAND()"
-    )
+    @Query("""
+    select r.id as id, r.name as name from GitRepo r
+    where r.lastAnalyzed is null or r.lastAnalyzed < r.lastCommit
+    order by r.lastAnalyzed, RAND()
+    """)
     Stream<Tuple> streamIdentifiersWithOutdatedCodeMetrics();
 
-    @Query(
-            "select COUNT(r) from GitRepo r " +
-            "where DATEDIFF(CURRENT_TIMESTAMP(), r.lastPinged) > 35"
-    )
-    // FIXME: 04.08.23 DATEDIFF is vendor-specific
+    @Query("""
+    select COUNT(r) from GitRepo r
+    where DATEDIFF(CURRENT_TIMESTAMP(), r.lastPinged) > 35
+    """) // FIXME: 04.08.23 DATEDIFF is vendor-specific
     Long countWithOutdatedLastPinged();
 
-    @Query(
-            "select COUNT(r) from GitRepo r " +
-            "where r.lastAnalyzed is null or r.lastAnalyzed < r.lastCommit"
-    )
+    @Query("""
+    select COUNT(r) from GitRepo r
+    where r.lastAnalyzed is null or r.lastAnalyzed < r.lastCommit
+    """)
     Long countWithOutdatedCodeMetrics();
 
     default Page<GitRepo> findAllDynamically(GitRepoSearch parameters, Pageable pageable) {
