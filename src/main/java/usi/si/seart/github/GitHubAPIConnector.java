@@ -369,7 +369,7 @@ public class GitHubAPIConnector implements HealthIndicator {
 
         @Getter
         @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
-        private class Result extends GitHubAPIConnector.Result {
+        private static class Result extends GitHubAPIConnector.Result {
 
             private Result(JsonElement jsonElement) {
                 super(jsonElement);
@@ -412,7 +412,7 @@ public class GitHubAPIConnector implements HealthIndicator {
 
         @Getter
         @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
-        private class Result extends GitHubAPIConnector.Result {
+        private static class Result extends GitHubAPIConnector.Result {
 
             HttpStatus status;
             Headers headers;
