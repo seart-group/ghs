@@ -459,7 +459,8 @@ public class GitHubAPIConnector implements HealthIndicator {
         private Result handleClientError(
                 HttpStatus status, Headers headers, JsonObject json
         ) throws InterruptedException {
-            RestErrorResponse errorResponse = conversionService.convert(json, RestErrorResponse.class);switch (status) {
+            RestErrorResponse errorResponse = conversionService.convert(json, RestErrorResponse.class);
+            switch (status) {
                 case UNAUTHORIZED ->
                     /*
                      * Here we should not call `replaceTokenIfExpired()`
