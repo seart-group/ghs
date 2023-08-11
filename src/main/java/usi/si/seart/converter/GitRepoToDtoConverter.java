@@ -75,9 +75,10 @@ public class GitRepoToDtoConverter implements Converter<GitRepo, GitRepoDto> {
                                 .map(Label::getName)
                                 .collect(Collectors.toCollection(TreeSet::new))
                 )
-                .topics(source.getTopics().stream()
-                        .map(Topic::getName)
-                        .collect(Collectors.toCollection(TreeSet::new))
+                .topics(
+                        source.getTopics().stream()
+                                .map(Topic::getName)
+                                .collect(Collectors.toCollection(TreeSet::new))
                 )
                 .build();
     }
