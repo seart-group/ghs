@@ -32,9 +32,9 @@
         max: today
     });
 
-    $("#search input[type='number']").each(function () {
-        $(this).attr("min", 0);
-        $(this).attr("max", Number.MAX_SAFE_INTEGER);
+    $("#search input[type='number']").attr({
+        min: 0,
+        max: Number.MAX_SAFE_INTEGER,
     });
 
     $search_name_dropdown_items.on("click", function () {
