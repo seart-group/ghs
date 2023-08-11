@@ -99,9 +99,9 @@ public class GitHubTokenManager {
     public void replaceTokenIfExpired() {
         try {
             RateLimit rateLimit = retryTemplate.execute(new RateLimitPollCallback());
-            log.debug("GitHub API:    Core {}", rateLimit.getCore());
-            log.debug("GitHub API:  Search {}", rateLimit.getSearch());
-            log.debug("GitHub API: GraphQL {}", rateLimit.getGraphql());
+            log.debug("GitHub API:    Core {}", rateLimit.core());
+            log.debug("GitHub API:  Search {}", rateLimit.search());
+            log.debug("GitHub API: GraphQL {}", rateLimit.graphql());
             if (rateLimit.anyExceeded()) {
                 replaceToken();
                 long maxWaitSeconds = rateLimit.getMaxWaitSeconds();
