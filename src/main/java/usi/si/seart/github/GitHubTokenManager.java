@@ -70,23 +70,24 @@ public class GitHubTokenManager {
     void postConstruct() {
         int size = tokens.size();
         switch (size) {
-            case 0:
+            case 0 -> {
                 log.warn("Access tokens not specified, can not mine the GitHub API!");
                 log.info(
                         "Generate a new access token on https://github.com/settings/tokens " +
-                        "and add it to the `app.crawl.tokens` property in `application.properties`!"
+                                "and add it to the `app.crawl.tokens` property in `application.properties`!"
                 );
-                break;
-            case 1:
+            }
+            case 1 -> {
                 log.info(
                         "Single token specified for GitHub API mining, " +
-                        "consider adding more tokens to increase the crawler's efficiency."
+                                "consider adding more tokens to increase the crawler's efficiency."
                 );
                 currentToken = tokens.next();
-                break;
-            default:
+            }
+            default -> {
                 log.info("Loaded {} tokens for usage in mining!", size);
                 currentToken = tokens.next();
+            }
         }
     }
 

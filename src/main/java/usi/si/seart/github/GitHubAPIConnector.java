@@ -441,20 +441,12 @@ public class GitHubAPIConnector implements HealthIndicator {
             String body = response.body().string();
             JsonElement element = conversionService.convert(body, JsonElement.class);
 
-            switch (series) {
-                case SUCCESSFUL:
-                    return new Result(element, status, headers);
-                case INFORMATIONAL:
-                case REDIRECTION:
-                    return new Result(JsonNull.INSTANCE, status, headers);
-                case CLIENT_ERROR:
-                    return handleClientError(status, headers, element.getAsJsonObject());
-                case SERVER_ERROR:
-                    return handleServerError(status, element.getAsJsonObject());
-                default:
-            }
-
-            throw new IllegalStateException("This line should never be reached");
+            return switch (series) {
+                case SUCCESSFUL -> new Result(element, status, headers);
+                case INFORMATIONAL, REDIRECTION -> new Result(JsonNull.INSTANCE, status, headers);
+                case CLIENT_ERROR -> handleClientError(status, headers, element.getAsJsonObject());
+                case SERVER_ERROR -> handleServerError(status, element.getAsJsonObject());
+            };
         }
 
         private Result handleServerError(HttpStatus status, JsonObject json) {
@@ -467,9 +459,8 @@ public class GitHubAPIConnector implements HealthIndicator {
         private Result handleClientError(
                 HttpStatus status, Headers headers, JsonObject json
         ) throws InterruptedException {
-            RestErrorResponse errorResponse = conversionService.convert(json, RestErrorResponse.class);
-            switch (status) {
-                case UNAUTHORIZED:
+            RestErrorResponse errorResponse = conversionService.convert(json, RestErrorResponse.class);switch (status) {
+                case UNAUTHORIZED ->
                     /*
                      * Here we should not call `replaceTokenIfExpired()`
                      * since it would lead to an infinite loop,
@@ -477,12 +468,11 @@ public class GitHubAPIConnector implements HealthIndicator {
                      * with the very same unauthorized token.
                      */
                     gitHubTokenManager.replaceToken();
-                    break;
-                case TOO_MANY_REQUESTS:
+                case TOO_MANY_REQUESTS -> {
                     GitHubAPIConnector.log.warn("Too many requests, sleeping for 5 minutes...");
                     TimeUnit.MINUTES.sleep(5);
-                    break;
-                case FORBIDDEN:
+                }
+                case FORBIDDEN -> {
                     /*
                      * Response status code 403, two possibilities:
                      * (1) The rate limit for the current token is exceeded
@@ -499,7 +489,6 @@ public class GitHubAPIConnector implements HealthIndicator {
                         throw new IllegalStateException(message);
                     } else if (remaining == 0) {
                         gitHubTokenManager.replaceTokenIfExpired();
-                        break;
                     } else {
                         /*
                          * Case (2) encountered, so we propagate error upwards
@@ -507,8 +496,10 @@ public class GitHubAPIConnector implements HealthIndicator {
                          */
                         return new Result(json, status, headers);
                     }
-                default:
+                }
+                default -> {
                     // TODO: 30.07.23 Add any other special logic here
+                }
             }
             throw new HttpClientErrorException(status, errorResponse.getMessage());
         }

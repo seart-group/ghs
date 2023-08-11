@@ -15,13 +15,9 @@ public record KeyCriteria<E, T>(Path<T> key, UnaryOperation operation) implement
     public Predicate toPredicate(
             @NotNull Root<E> root, @NotNull CriteriaQuery<?> query, @NotNull CriteriaBuilder criteriaBuilder
     ) {
-        switch (operation) {
-            case IS_NULL:
-                return criteriaBuilder.isNull(key);
-            case IS_NOT_NULL:
-                return criteriaBuilder.isNotNull(key);
-            default:
-                throw operation.toRuntimeException();
-        }
+        return switch (operation) {
+            case IS_NULL -> criteriaBuilder.isNull(key);
+            case IS_NOT_NULL -> criteriaBuilder.isNotNull(key);
+        };
     }
 }

@@ -184,37 +184,22 @@ public class GitRepoController {
             return;
         }
 
-        String contentType;
-        switch (format) {
-            case "json":
-                contentType = "application/" + format;
-                break;
-            case "csv":
-            case "xml":
-                contentType = "text/" + format;
-                break;
-            default:
-                throw new IllegalStateException("Default portion of this switch should not be reachable!");
-        }
+        String contentType = switch (format) {
+            case "json" -> "application/" + format;
+            case "csv", "xml" -> "text/" + format;
+            default -> throw new IllegalStateException("Default portion of this switch should not be reachable!");
+        };
 
         response.setContentType(contentType);
         response.setHeader("Content-Disposition", "attachment;filename=results." + format);
 
         PrintWriter writer = response.getWriter();
-        JsonGenerator generator;
-        switch (format) {
-            case "csv":
-                generator = new CsvFactory().createGenerator(writer);
-                break;
-            case "json":
-                generator = new JsonFactory().createGenerator(writer);
-                break;
-            case "xml":
-                generator = new XmlFactory().createGenerator(writer);
-                break;
-            default:
-                throw new IllegalStateException("Default portion of this switch should not be reachable!");
-        }
+        JsonGenerator generator = switch (format) {
+            case "csv" -> new CsvFactory().createGenerator(writer);
+            case "json" -> new JsonFactory().createGenerator(writer);
+            case "xml" -> new XmlFactory().createGenerator(writer);
+            default -> throw new IllegalStateException("Default portion of this switch should not be reachable!");
+        };
 
         GitRepoSearch search = conversionService.convert(searchParameterDto, GitRepoSearch.class);
         @Cleanup Stream<GitRepoDto> results = gitRepoService.streamDynamically(search)
@@ -226,21 +211,20 @@ public class GitRepoController {
         Iterable<GitRepoDto> dtos = results::iterator;
 
         switch (format) {
-            case "csv":
+            case "csv" -> {
                 generator.setCodec(csvMapper);
                 generator.setSchema(csvSchema);
                 writeResults((CsvGenerator) generator, dtos, searchParameterDto);
-                break;
-            case "json":
+            }
+            case "json" -> {
                 generator.setCodec(jsonMapper);
                 writeResults(generator, dtos, searchParameterDto);
-                break;
-            case "xml":
+            }
+            case "xml" -> {
                 generator.setCodec(xmlMapper);
                 writeResults((ToXmlGenerator) generator, dtos, searchParameterDto);
-                break;
-            default:
-                throw new IllegalStateException("Default portion of this switch should not be reachable!");
+            }
+            default -> throw new IllegalStateException("Default portion of this switch should not be reachable!");
         }
 
         generator.close();
