@@ -9,6 +9,7 @@ import ch.usi.si.seart.util.Optionals;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
@@ -26,6 +27,7 @@ import java.util.Date;
 @Slf4j
 @ConditionalOnExpression(value = "not '${app.crawl.tokens}'.isBlank()")
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
+@AllArgsConstructor(onConstructor_ = @Autowired)
 public class PatchProjectsJob {
 
     ApplicationContext applicationContext;
@@ -33,15 +35,6 @@ public class PatchProjectsJob {
     GitRepoService gitRepoService;
 
     GitHubAPIConnector gitHubApiConnector;
-
-    @Autowired
-    public PatchProjectsJob(
-            ApplicationContext applicationContext, GitRepoService gitRepoService, GitHubAPIConnector gitHubApiConnector
-    ) {
-        this.applicationContext = applicationContext;
-        this.gitRepoService = gitRepoService;
-        this.gitHubApiConnector = gitHubApiConnector;
-    }
 
     @Transactional(readOnly = true)
     @Scheduled(fixedDelay = Long.MAX_VALUE)
