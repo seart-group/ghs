@@ -1,5 +1,0 @@
-<component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="GET /r/stats" type="HttpClient.HttpRequestRunConfigurationType" factoryName="HTTP Request" environment="dev" path="$PROJECT_DIR$/http/GitRepoController.http" index="6" requestIdentifier="GET /r/stats" runType="Run single request">
-    <method v="2" />
-  </configuration>
-</component>
