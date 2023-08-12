@@ -1,5 +1,11 @@
-package usi.si.seart.job;
+package ch.usi.si.seart.job;
 
+import ch.usi.si.seart.github.GitHubAPIConnector;
+import ch.usi.si.seart.model.GitRepo;
+import ch.usi.si.seart.service.GitRepoService;
+import ch.usi.si.seart.stereotype.Job;
+import ch.usi.si.seart.util.Dates;
+import ch.usi.si.seart.util.Optionals;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import lombok.AccessLevel;
@@ -13,12 +19,6 @@ import org.springframework.data.util.Pair;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
-import usi.si.seart.github.GitHubAPIConnector;
-import usi.si.seart.model.GitRepo;
-import usi.si.seart.service.GitRepoService;
-import usi.si.seart.stereotype.Job;
-import usi.si.seart.util.Dates;
-import usi.si.seart.util.Optionals;
 
 import java.util.Date;
 
@@ -35,7 +35,9 @@ public class PatchProjectsJob {
     GitHubAPIConnector gitHubApiConnector;
 
     @Autowired
-    public PatchProjectsJob(ApplicationContext applicationContext, GitRepoService gitRepoService, GitHubAPIConnector gitHubApiConnector) {
+    public PatchProjectsJob(
+            ApplicationContext applicationContext, GitRepoService gitRepoService, GitHubAPIConnector gitHubApiConnector
+    ) {
         this.applicationContext = applicationContext;
         this.gitRepoService = gitRepoService;
         this.gitHubApiConnector = gitHubApiConnector;
