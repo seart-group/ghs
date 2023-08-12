@@ -121,6 +121,11 @@ public class PatchProjectsJob {
             } else {
                 gitRepo.setCommits(0L);
             }
+
+            Thread.sleep(500L);
+        } catch (InterruptedException ex) {
+            Thread.currentThread().interrupt();
+            log.warn("Interrupt: {} [{}]", name, id, ex);
         } catch (Exception ex) {
             log.error("Failed:    {} [{}]", name, id, ex);
         } finally {
