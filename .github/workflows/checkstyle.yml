@@ -15,6 +15,6 @@ jobs:
         with:
           level: error
           fail_on_error: true
-          workdir: './src/main/java'
+          workdir: './src'
           checkstyle_config: './checkstyle.xml'
           github_token: ${{ secrets.GITHUB_TOKEN }}

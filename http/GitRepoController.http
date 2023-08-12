@@ -2,7 +2,7 @@
 GET http://localhost:8080/api/r/{{repo_id}}
 
 ### GET /r/search
-GET localhost:8080/api/r/search?{{query}}sort=createdAt&sort=name
+GET http://localhost:8080/api/r/search
 
 ### GET /r/labels
 GET http://localhost:8080/api/r/labels

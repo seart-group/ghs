@@ -3,6 +3,7 @@
     const $toast_container = $(".toast-container");
     const $statistics_mined = $("#statistics-mined");
     const $statistics_analyzed = $("#statistics-analyzed");
+    const $statistics_download_btn = $("#statistics-download-btn");
 
     // https://github.com/nagix/chartjs-plugin-colorschemes/blob/master/src/colorschemes/colorschemes.tableau.js#L45
     const gray20 = [
@@ -13,6 +14,8 @@
         "#bcbfbe", "#c5c7c6", "#cdcecd", "#d5d5d5"
     ];
 
+    const percentage = (numerator, denominator) => (numerator / denominator * 100).toFixed(2);
+
     Chart.defaults.font.family = "Trebuchet MS";
 
     const options = {
@@ -20,6 +23,11 @@
             duration: 0
         },
         responsive: true,
+        layout: {
+            padding: {
+                right: 10,
+            },
+        },
         scales: {
             x: {
                 ticks: {
@@ -67,7 +75,7 @@
                 callbacks: {
                     afterLabel: function (ctx) {
                         const { mined, analyzed } = ctx.raw;
-                        return `Analyzed: ${(analyzed / mined * 100).toFixed(2)}%`;
+                        return `Analyzed: ${percentage(analyzed, mined)}%`;
                     },
                 },
             },
@@ -82,10 +90,30 @@
                 acc.analyzed += analyzed;
                 return acc;
             }, { mined: 0, analyzed: 0 });
-            const coverage = `${(total.analyzed / total.mined * 100).toFixed(2)}%`;
+            const coverage = `${percentage(total.analyzed, total.mined)}%`;
             $statistics_mined.replaceWith(`<span id="statistics-mined">${total.mined.toLocaleString()}</span>`);
             $statistics_analyzed.replaceWith(`<span id="statistics-analyzed">${coverage}</span>`);
             return Object.entries(json).map(([key, value]) => ({ x: key, ...value }));
+        })
+        .then(data => {
+            $statistics_download_btn.removeClass("d-none")
+                .prop("disabled", false)
+                .on("click", () => {
+                    const header = "\"language\",\"mined\",\"analyzed\",\"coverage\"";
+                    const body = data.map(({ x: language, mined, analyzed }) => {
+                        return `"${language}","${mined}","${analyzed}","${(analyzed / mined).toFixed(4)}"`;
+                    })
+                    .join("\n");
+                    const content = `${header}\n${body}\n`;
+                    const blob = new Blob([ content ], { type: 'text/csv;charset=utf-8,' });
+                    const url = URL.createObjectURL(blob);
+                    const anchor = document.createElement("a");
+                    anchor.setAttribute("href", url);
+                    anchor.setAttribute("download", "statistics.csv");
+                    anchor.click();
+                    anchor.remove();
+                });
+            return data;
         })
         .then(data => ({
             datasets: [

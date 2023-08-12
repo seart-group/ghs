@@ -1,0 +1,5 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="GitRepoController | GET /r/search" type="HttpClient.HttpRequestRunConfigurationType" factoryName="HTTP Request" nameIsGenerated="true" path="$PROJECT_DIR$/http/GitRepoController.http" index="2" requestIdentifier="GET /r/search" runType="Run single request">
+    <method v="2" />
+  </configuration>
+</component>
