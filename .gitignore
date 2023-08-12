@@ -65,6 +65,10 @@ buildNumber.properties
 .idea/**/dictionaries
 .idea/**/shelf
 
+# Plugins
+.idea/git_toolbox_prj.xml
+.idea/jpa-buddy.xml
+
 # AWS User-specific
 .idea/**/aws.xml
 
