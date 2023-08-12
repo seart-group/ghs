@@ -1,12 +1,10 @@
 package ch.usi.si.seart.converter;
 
 import ch.usi.si.seart.dto.GitRepoDto;
-import ch.usi.si.seart.dto.GitRepoMetricDto;
 import ch.usi.si.seart.model.GitRepo;
 import ch.usi.si.seart.model.GitRepoMetricAggregate;
 import ch.usi.si.seart.model.Label;
 import ch.usi.si.seart.model.Topic;
-import ch.usi.si.seart.model.join.GitRepoMetric;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.lang.NonNull;
 
@@ -17,8 +15,6 @@ import java.util.TreeSet;
 import java.util.stream.Collectors;
 
 public class GitRepoToDtoConverter implements Converter<GitRepo, GitRepoDto> {
-
-    Converter<GitRepoMetric, GitRepoMetricDto> metricConverter = new GitRepoMetricToDtoConverter();
 
     @Override
     @NonNull
@@ -56,7 +52,12 @@ public class GitRepoToDtoConverter implements Converter<GitRepo, GitRepoDto> {
                 .codeLines(hasMetrics ? totalMetrics.getCodeLines() : null)
                 .metrics(
                         source.getMetrics().stream()
-                                .map(metricConverter::convert)
+                                .map(metric -> Map.<String, Object>of(
+                                        "language", metric.getLanguage().getName(),
+                                        "codeLines", metric.getCodeLines(),
+                                        "blankLines", metric.getBlankLines(),
+                                        "commentLines", metric.getCommentLines()
+                                ))
                                 .toList()
                 )
                 .hasWiki(source.getHasWiki())
