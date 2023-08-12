@@ -1,4 +1,4 @@
-name: 'Check CSS files with HTMLHint'
+name: 'Check HTML files with HTMLHint'
 on:
   pull_request:
     paths:
