@@ -6,16 +6,19 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
+import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 
 class RangesTest {
 
+    private static final DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+    private static final DateFormat dateTimeFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm");
     private static final Ranges.Splitter<Long> splitter = new Ranges.Splitter<>((lower, upper) -> (lower + upper) / 2);
     private static final Ranges.Printer<Integer> integerPrinter = new Ranges.Printer<>(Object::toString);
-    private static final Ranges.Printer<Date> dateprinter = new Ranges.Printer<>(new SimpleDateFormat("yyyy-MM-dd"));
-    private static final Ranges.Printer<Date> dateTimePrinter = new Ranges.Printer<>(new SimpleDateFormat("yyyy-MM-dd'T'HH:mm"));
+    private static final Ranges.Printer<Date> dateprinter = new Ranges.Printer<>(dateFormat);
+    private static final Ranges.Printer<Date> dateTimePrinter = new Ranges.Printer<>(dateTimeFormat);
 
     @Test
     void testBuild() {
