@@ -10,7 +10,9 @@ import org.springframework.stereotype.Service;
 
 import java.util.Collection;
 
-public interface LicenseService extends EntityService<License> {
+public interface LicenseService {
+
+    Collection<License> getAll();
 
     @Service
     @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
