@@ -18,32 +18,22 @@ public record KeyValueCriteria<E, T extends Comparable<T>>(
     public Predicate toPredicate(
             @NotNull Root<E> root, @NotNull CriteriaQuery<?> query, @NotNull CriteriaBuilder criteriaBuilder
     ) {
-        switch (operation) {
-            case GREATER_THAN -> {
-                return criteriaBuilder.greaterThan(key, value);
-            }
-            case LESS_THAN -> {
-                return criteriaBuilder.lessThan(key, value);
-            }
-            case GREATER_THAN_EQUAL -> {
-                return criteriaBuilder.greaterThanOrEqualTo(key, value);
-            }
-            case LESS_THAN_EQUAL -> {
-                return criteriaBuilder.lessThanOrEqualTo(key, value);
-            }
-            case EQUAL -> {
-                return criteriaBuilder.equal(key, value);
-            }
+        return switch (operation) {
+            case GREATER_THAN -> criteriaBuilder.greaterThan(key, value);
+            case LESS_THAN -> criteriaBuilder.lessThan(key, value);
+            case GREATER_THAN_EQUAL -> criteriaBuilder.greaterThanOrEqualTo(key, value);
+            case LESS_THAN_EQUAL -> criteriaBuilder.lessThanOrEqualTo(key, value);
+            case EQUAL -> criteriaBuilder.equal(key, value);
             case LIKE -> {
                 Assert.isInstanceOf(String.class, value, "Value must be a string for it to be used with LIKE");
                 @SuppressWarnings("unchecked") Path<String> castKey = (Path<String>) key;
                 String castValue = (String) value;
-                return criteriaBuilder.like(
+                yield criteriaBuilder.like(
                         criteriaBuilder.lower(castKey),
                         "%" + castValue.toLowerCase() + "%"
                 );
             }
-            default -> throw operation.toRuntimeException();
-        }
+        };
+
     }
 }
