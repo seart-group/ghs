@@ -59,21 +59,21 @@ public class SchedulerConfig {
 
             @Override
             public void handleError(@NotNull Throwable t) {
-                if (t instanceof OutOfMemoryError) {
-                    handleError((OutOfMemoryError) t);
-                } else if (t instanceof NonTransientDataAccessException) {
-                    handleError((NonTransientDataAccessException) t);
+                if (t instanceof OutOfMemoryError ex) {
+                    handleError(ex);
+                } else if (t instanceof NonTransientDataAccessException ex) {
+                    handleError(ex);
                 } else {
                     log.error("Unhandled exception occurred while performing a scheduled job.", t);
                 }
             }
 
-            private void handleError(OutOfMemoryError e) {
-                shutdown("Application has run out of memory!", e);
+            private void handleError(OutOfMemoryError ex) {
+                shutdown("Application has run out of memory!", ex);
             }
 
-            private void handleError(NonTransientDataAccessException e) {
-                shutdown("Non-transient exception occurred!", e);
+            private void handleError(NonTransientDataAccessException ex) {
+                shutdown("Non-transient exception occurred!", ex);
             }
 
             private void shutdown(String message, Throwable cause) {
