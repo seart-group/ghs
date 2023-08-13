@@ -24,6 +24,7 @@ public record KeyValueCriteria<E, T extends Comparable<T>>(
             case GREATER_THAN_EQUAL -> criteriaBuilder.greaterThanOrEqualTo(key, value);
             case LESS_THAN_EQUAL -> criteriaBuilder.lessThanOrEqualTo(key, value);
             case EQUAL -> criteriaBuilder.equal(key, value);
+            case NOT_EQUAL -> criteriaBuilder.notEqual(key, value);
             case LIKE -> {
                 Assert.isInstanceOf(String.class, value, "Value must be a string for it to be used with LIKE");
                 @SuppressWarnings("unchecked") Path<String> castKey = (Path<String>) key;

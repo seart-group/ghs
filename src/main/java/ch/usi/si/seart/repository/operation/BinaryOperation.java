@@ -6,5 +6,6 @@ public enum BinaryOperation implements Operation {
     GREATER_THAN_EQUAL,
     LESS_THAN_EQUAL,
     EQUAL,
+    NOT_EQUAL,
     LIKE
 }
