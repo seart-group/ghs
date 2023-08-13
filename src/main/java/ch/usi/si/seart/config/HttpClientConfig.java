@@ -1,6 +1,6 @@
 package ch.usi.si.seart.config;
 
-import ch.usi.si.seart.github.GitHubAPIConnector;
+import ch.usi.si.seart.github.GitHubRestConnector;
 import ch.usi.si.seart.http.interceptor.HeaderAttachmentInterceptor;
 import ch.usi.si.seart.http.interceptor.LoggingInterceptor;
 import okhttp3.Headers;
@@ -26,7 +26,7 @@ public class HttpClientConfig {
 
     @Bean
     public LoggingInterceptor httpLoggingInterceptor() {
-        Logger logger = LoggerFactory.getLogger(GitHubAPIConnector.class);
+        Logger logger = LoggerFactory.getLogger(GitHubRestConnector.class);
         return new LoggingInterceptor(logger);
     }
 

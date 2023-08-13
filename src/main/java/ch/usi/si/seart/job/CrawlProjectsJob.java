@@ -3,7 +3,8 @@ package ch.usi.si.seart.job;
 import ch.usi.si.seart.collection.Ranges;
 import ch.usi.si.seart.exception.MetadataCrawlingException;
 import ch.usi.si.seart.exception.UnsplittableRangeException;
-import ch.usi.si.seart.github.GitHubAPIConnector;
+import ch.usi.si.seart.github.GitHubGraphQlConnector;
+import ch.usi.si.seart.github.GitHubRestConnector;
 import ch.usi.si.seart.model.GitRepo;
 import ch.usi.si.seart.model.Label;
 import ch.usi.si.seart.model.Language;
@@ -63,7 +64,8 @@ public class CrawlProjectsJob implements Runnable {
     LabelService labelService;
     LanguageService languageService;
 
-    GitHubAPIConnector gitHubApiConnector;
+    GitHubRestConnector gitHubRestConnector;
+    GitHubGraphQlConnector gitHubGraphQlConnector;
 
     @NonFinal
     @Value(value = "${app.crawl.scheduling}")
@@ -129,7 +131,7 @@ public class CrawlProjectsJob implements Runnable {
         String name = language.getName();
         int page = 1;
         try {
-            JsonObject json = gitHubApiConnector.searchRepositories(name, range, page);
+            JsonObject json = gitHubRestConnector.searchRepositories(name, range, page);
             int totalResults = json.get("total_count").getAsInt();
             int totalPages = (int) Math.ceil(totalResults / 100.0);
             if (totalResults == 0) return;
@@ -170,7 +172,7 @@ public class CrawlProjectsJob implements Runnable {
             int page = 2;
             while (page <= pages) {
                 try {
-                    JsonObject json = gitHubApiConnector.searchRepositories(language, range, page);
+                    JsonObject json = gitHubRestConnector.searchRepositories(language, range, page);
                     int totalResults = json.get("total_count").getAsInt();
                     JsonArray results = json.get("items").getAsJsonArray();
                     saveRetrievedRepos(results, language, (page - 1) * 100 + 1, totalResults);
@@ -224,7 +226,7 @@ public class CrawlProjectsJob implements Runnable {
         gitRepo.setUpdatedAt(updatedAt);
 
         try {
-            JsonObject json = gitHubApiConnector.fetchRepoInfo(name);
+            JsonObject json = gitHubGraphQlConnector.getRepository(name);
 
             Long size = json.getAsJsonPrimitive("size").getAsLong();
             gitRepo.setSize(size);
@@ -326,7 +328,7 @@ public class CrawlProjectsJob implements Runnable {
             }
 
             // Not available on GraphQL, so we have to keep using the page hack
-            Long contributors = gitHubApiConnector.fetchNumberOfContributors(name);
+            Long contributors = gitHubRestConnector.countRepositoryContributors(name);
             gitRepo.setContributors(contributors);
 
             Language mainLanguage = languageService.getOrCreate(language);
@@ -381,7 +383,7 @@ public class CrawlProjectsJob implements Runnable {
 
     private Set<Label> retrieveRepoLabels(GitRepo repo) {
         try {
-            JsonArray array = gitHubApiConnector.fetchRepoLabels(repo.getName());
+            JsonArray array = gitHubRestConnector.getRepositoryLabels(repo.getName());
             return StreamSupport.stream(array.spliterator(), true)
                     .map(element -> {
                         JsonObject object = element.getAsJsonObject();
@@ -398,7 +400,7 @@ public class CrawlProjectsJob implements Runnable {
 
     private Set<GitRepoLanguage> retrieveRepoLanguages(GitRepo repo) {
         try {
-            JsonObject object = gitHubApiConnector.fetchRepoLanguages(repo.getName());
+            JsonObject object = gitHubRestConnector.getRepositoryLanguages(repo.getName());
             return object.entrySet().stream()
                     .map(entry -> {
                         Language language = languageService.getOrCreate(entry.getKey());
@@ -420,7 +422,7 @@ public class CrawlProjectsJob implements Runnable {
 
     private Set<Topic> retrieveTopics(GitRepo repo) {
         try {
-            JsonArray array = gitHubApiConnector.fetchRepoTopics(repo.getName());
+            JsonArray array = gitHubRestConnector.getRepositoryTopics(repo.getName());
             return StreamSupport.stream(array.spliterator(), true)
                     .map(entry -> topicService.getOrCreate(entry.getAsString()))
                     .collect(Collectors.toSet());
