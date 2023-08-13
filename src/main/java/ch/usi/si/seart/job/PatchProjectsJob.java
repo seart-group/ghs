@@ -1,6 +1,8 @@
 package ch.usi.si.seart.job;
 
+import ch.usi.si.seart.exception.github.GitHubAPIException;
 import ch.usi.si.seart.github.GitHubAPIConnector;
+import ch.usi.si.seart.github.GraphQlErrorResponse;
 import ch.usi.si.seart.model.GitRepo;
 import ch.usi.si.seart.service.GitRepoService;
 import ch.usi.si.seart.stereotype.Job;
@@ -8,6 +10,7 @@ import ch.usi.si.seart.util.Dates;
 import ch.usi.si.seart.util.Optionals;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import graphql.GraphqlErrorException;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -126,6 +129,14 @@ public class PatchProjectsJob {
         } catch (InterruptedException ex) {
             Thread.currentThread().interrupt();
             log.warn("Interrupt: {} [{}]", name, id, ex);
+        } catch (GitHubAPIException ex) {
+            GraphqlErrorException cause = (GraphqlErrorException) ex.getCause();
+            GraphQlErrorResponse.ErrorType errorType = (GraphQlErrorResponse.ErrorType) cause.getErrorType();
+            if (GraphQlErrorResponse.ErrorType.NOT_FOUND.equals(errorType)) {
+                log.debug("Remote not found {}, performing cleanup instead...", name);
+                log.info("Deleting:  {} [{}]", name, id);
+                gitRepoService.deleteRepoById(id);
+            }
         } catch (Exception ex) {
             log.error("Failed:    {} [{}]", name, id, ex);
         } finally {
