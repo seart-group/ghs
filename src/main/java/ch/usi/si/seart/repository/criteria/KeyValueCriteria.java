@@ -22,6 +22,9 @@ public record KeyValueCriteria<E, T extends Comparable<T>>(
             case GREATER_THAN -> {
                 return criteriaBuilder.greaterThan(key, value);
             }
+            case LESS_THAN -> {
+                return criteriaBuilder.lessThan(key, value);
+            }
             case GREATER_THAN_EQUAL -> {
                 return criteriaBuilder.greaterThanOrEqualTo(key, value);
             }
