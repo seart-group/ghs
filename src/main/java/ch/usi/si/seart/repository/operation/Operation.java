@@ -1,6 +1,6 @@
 package ch.usi.si.seart.repository.operation;
 
-public interface Operation {
+public sealed interface Operation permits UnaryOperation, BinaryOperation {
 
     String name();
 }
