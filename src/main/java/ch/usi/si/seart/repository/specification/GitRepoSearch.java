@@ -8,9 +8,12 @@ import ch.usi.si.seart.model.Language_;
 import ch.usi.si.seart.model.Topic_;
 import ch.usi.si.seart.model.join.GitRepoMetric_;
 import ch.usi.si.seart.repository.criteria.Criteria;
+import ch.usi.si.seart.repository.criteria.EmptyCriteria;
 import ch.usi.si.seart.repository.criteria.KeyCriteria;
+import ch.usi.si.seart.repository.criteria.KeyDualValueCriteria;
 import ch.usi.si.seart.repository.criteria.KeyValueCriteria;
 import ch.usi.si.seart.repository.operation.BinaryOperation;
+import ch.usi.si.seart.repository.operation.TernaryOperation;
 import ch.usi.si.seart.repository.operation.UnaryOperation;
 import com.google.common.collect.Range;
 import lombok.Builder;
@@ -65,11 +68,8 @@ public class GitRepoSearch {
         List<Criteria<GitRepo>> criteria = new ArrayList<>();
 
         if (StringUtils.isNotBlank(name)) {
-            if (nameEquals) {
-                criteria.add(new KeyValueCriteria<>(root.get(GitRepo_.name), name, BinaryOperation.EQUAL));
-            } else {
-                criteria.add(new KeyValueCriteria<>(root.get(GitRepo_.name), name, BinaryOperation.LIKE));
-            }
+            BinaryOperation operation = (nameEquals) ? BinaryOperation.EQUAL : BinaryOperation.LIKE;
+            criteria.add(new KeyValueCriteria<>(root.get(GitRepo_.name), name, operation));
         }
 
         if (StringUtils.isNotBlank(language)) {
@@ -86,177 +86,24 @@ public class GitRepoSearch {
             criteria.add(new KeyValueCriteria<>(path, label, BinaryOperation.EQUAL));
         }
 
-        if (commits.hasLowerBound()) {
-            criteria.add(
-                    new KeyValueCriteria<>(
-                            root.get(GitRepo_.commits),
-                            commits.lowerEndpoint(),
-                            BinaryOperation.GREATER_THAN_EQUAL
-                    )
-            );
-        }
-        if (commits.hasUpperBound()) {
-            criteria.add(
-                    new KeyValueCriteria<>(
-                            root.get(GitRepo_.commits),
-                            commits.upperEndpoint(),
-                            BinaryOperation.LESS_THAN_EQUAL
-                    )
-            );
+        if (StringUtils.isNotBlank(topic)) {
+            Path<String> path = root.join(GitRepo_.topics).get(Topic_.name);
+            criteria.add(new KeyValueCriteria<>(path, topic, BinaryOperation.EQUAL));
         }
 
-        if (contributors.hasLowerBound()) {
-            criteria.add(
-                    new KeyValueCriteria<>(
-                            root.get(GitRepo_.contributors),
-                            contributors.lowerEndpoint(),
-                            BinaryOperation.GREATER_THAN_EQUAL
-                    )
-            );
-        }
-        if (contributors.hasUpperBound()) {
-            criteria.add(
-                    new KeyValueCriteria<>(
-                            root.get(GitRepo_.contributors),
-                            contributors.upperEndpoint(),
-                            BinaryOperation.LESS_THAN_EQUAL
-                    )
-            );
-        }
-
-        if (issues.hasLowerBound()) {
-            criteria.add(
-                    new KeyValueCriteria<>(
-                            root.get(GitRepo_.totalIssues),
-                            issues.lowerEndpoint(),
-                            BinaryOperation.GREATER_THAN_EQUAL
-                    )
-            );
-        }
-        if (issues.hasUpperBound()) {
-            criteria.add(
-                    new KeyValueCriteria<>(
-                            root.get(GitRepo_.totalIssues),
-                            issues.upperEndpoint(),
-                            BinaryOperation.LESS_THAN_EQUAL
-                    )
-            );
-        }
-
-        if (pulls.hasLowerBound()) {
-            criteria.add(
-                    new KeyValueCriteria<>(
-                            root.get(GitRepo_.totalPullRequests),
-                            pulls.lowerEndpoint(),
-                            BinaryOperation.GREATER_THAN_EQUAL
-                    )
-            );
-        }
-        if (pulls.hasUpperBound()) {
-            criteria.add(
-                    new KeyValueCriteria<>(
-                            root.get(GitRepo_.totalPullRequests),
-                            pulls.upperEndpoint(),
-                            BinaryOperation.LESS_THAN_EQUAL
-                    )
-            );
-        }
-
-        if (branches.hasLowerBound()) {
-            criteria.add(
-                    new KeyValueCriteria<>(
-                            root.get(GitRepo_.branches),
-                            branches.lowerEndpoint(),
-                            BinaryOperation.GREATER_THAN_EQUAL
-                    )
-            );
-        }
-        if (branches.hasUpperBound()) {
-            criteria.add(
-                    new KeyValueCriteria<>(
-                            root.get(GitRepo_.branches),
-                            branches.upperEndpoint(),
-                            BinaryOperation.LESS_THAN_EQUAL
-                    )
-            );
-        }
-
-        if (releases.hasLowerBound()) {
-            criteria.add(
-                    new KeyValueCriteria<>(
-                            root.get(GitRepo_.releases),
-                            releases.lowerEndpoint(),
-                            BinaryOperation.GREATER_THAN_EQUAL
-                    )
-            );
-        }
-        if (releases.hasUpperBound()) {
-            criteria.add(
-                    new KeyValueCriteria<>(
-                            root.get(GitRepo_.releases),
-                            releases.upperEndpoint(),
-                            BinaryOperation.LESS_THAN_EQUAL
-                    )
-            );
-        }
-
-        if (stars.hasLowerBound()) {
-            criteria.add(
-                    new KeyValueCriteria<>(
-                            root.get(GitRepo_.stargazers),
-                            stars.lowerEndpoint(),
-                            BinaryOperation.GREATER_THAN_EQUAL
-                    )
-            );
-        }
-        if (stars.hasUpperBound()) {
-            criteria.add(
-                    new KeyValueCriteria<>(
-                            root.get(GitRepo_.stargazers),
-                            stars.upperEndpoint(),
-                            BinaryOperation.LESS_THAN_EQUAL
-                    )
-            );
-        }
-
-        if (watchers.hasLowerBound()) {
-            criteria.add(
-                    new KeyValueCriteria<>(
-                            root.get(GitRepo_.watchers),
-                            watchers.lowerEndpoint(),
-                            BinaryOperation.GREATER_THAN_EQUAL
-                    )
-            );
-        }
-        if (watchers.hasUpperBound()) {
-            criteria.add(
-                    new KeyValueCriteria<>(
-                            root.get(GitRepo_.watchers),
-                            watchers.upperEndpoint(),
-                            BinaryOperation.LESS_THAN_EQUAL
-                    )
-            );
-        }
-
-        if (forks.hasLowerBound()) {
-            criteria.add(
-                    new KeyValueCriteria<>(
-                            root.get(GitRepo_.forks),
-                            forks.lowerEndpoint(),
-                            BinaryOperation.GREATER_THAN_EQUAL
-                    )
-            );
-        }
-        if (forks.hasUpperBound()) {
-            criteria.add(
-                    new KeyValueCriteria<>(
-                            root.get(GitRepo_.forks),
-                            forks.upperEndpoint(),
-                            BinaryOperation.LESS_THAN_EQUAL
-                    )
-            );
-        }
-
+        criteria.addAll(List.of(
+                toCriteria(root.get(GitRepo_.commits), commits),
+                toCriteria(root.get(GitRepo_.contributors), contributors),
+                toCriteria(root.get(GitRepo_.totalIssues), issues),
+                toCriteria(root.get(GitRepo_.totalPullRequests), pulls),
+                toCriteria(root.get(GitRepo_.branches), branches),
+                toCriteria(root.get(GitRepo_.releases), releases),
+                toCriteria(root.get(GitRepo_.stargazers), stars),
+                toCriteria(root.get(GitRepo_.watchers), watchers),
+                toCriteria(root.get(GitRepo_.forks), forks),
+                toCriteria(root.get(GitRepo_.createdAt), created),
+                toCriteria(root.get(GitRepo_.lastCommit), committed)
+        ));
 
         if (hasCodeMetricsFilters()) {
             Path<Long> nonBlankLinesPath;
@@ -277,90 +124,9 @@ public class GitRepoSearch {
                 commentLinesPath = root.join(GitRepo_.totalMetrics).get(GitRepoMetricAggregate_.commentLines);
             }
 
-            if (nonBlankLines.hasLowerBound()) {
-                criteria.add(
-                        new KeyValueCriteria<>(
-                                nonBlankLinesPath, nonBlankLines.lowerEndpoint(), BinaryOperation.GREATER_THAN_EQUAL
-                        )
-                );
-            }
-            if (nonBlankLines.hasUpperBound()) {
-                criteria.add(
-                        new KeyValueCriteria<>(
-                                nonBlankLinesPath, nonBlankLines.upperEndpoint(), BinaryOperation.LESS_THAN_EQUAL
-                        )
-                );
-            }
-
-            if (codeLines.hasLowerBound()) {
-                criteria.add(
-                        new KeyValueCriteria<>(
-                                codeLinesPath, codeLines.lowerEndpoint(), BinaryOperation.GREATER_THAN_EQUAL
-                        )
-                );
-            }
-            if (codeLines.hasUpperBound()) {
-                criteria.add(
-                        new KeyValueCriteria<>(
-                                codeLinesPath, codeLines.upperEndpoint(), BinaryOperation.LESS_THAN_EQUAL
-                        )
-                );
-            }
-
-            if (commentLines.hasLowerBound()) {
-                criteria.add(
-                        new KeyValueCriteria<>(
-                                commentLinesPath, commentLines.lowerEndpoint(), BinaryOperation.GREATER_THAN_EQUAL
-                        )
-                );
-            }
-            if (commentLines.hasUpperBound()) {
-                criteria.add(
-                        new KeyValueCriteria<>(
-                                commentLinesPath, commentLines.upperEndpoint(), BinaryOperation.LESS_THAN_EQUAL
-                        )
-                );
-            }
-        }
-
-        if (StringUtils.isNotBlank(topic)) {
-            criteria.add(
-                    new KeyValueCriteria<>(
-                            root.join(GitRepo_.topics).get(Topic_.name),
-                            topic,
-                            BinaryOperation.EQUAL
-                    )
-            );
-        }
-
-        if (created.hasLowerBound()) {
-            criteria.add(
-                    new KeyValueCriteria<>(
-                            root.get(GitRepo_.createdAt), created.lowerEndpoint(), BinaryOperation.GREATER_THAN_EQUAL
-                    )
-            );
-        }
-        if (created.hasUpperBound()) {
-            criteria.add(
-                    new KeyValueCriteria<>(
-                            root.get(GitRepo_.createdAt), created.upperEndpoint(), BinaryOperation.LESS_THAN_EQUAL
-                    )
-            );
-        }
-
-        if (committed.hasLowerBound()) {
-            criteria.add(
-                    new KeyValueCriteria<>(
-                            root.get(GitRepo_.lastCommit), committed.lowerEndpoint(), BinaryOperation.GREATER_THAN_EQUAL
-                    )
-            );
-        }
-        if (committed.hasUpperBound()) {
-            criteria.add(
-                    new KeyValueCriteria<>(
-                            root.get(GitRepo_.lastCommit), committed.upperEndpoint(), BinaryOperation.LESS_THAN_EQUAL
-                    )
-            );
+            criteria.add(toCriteria(nonBlankLinesPath, nonBlankLines));
+            criteria.add(toCriteria(codeLinesPath, codeLines));
+            criteria.add(toCriteria(commentLinesPath, commentLines));
         }
 
         if (excludeForks) {
@@ -386,5 +152,23 @@ public class GitRepoSearch {
         }
 
         return criteria;
+    }
+
+    private static <T extends Comparable<T>> Criteria<GitRepo> toCriteria(Path<T> key, Range<T> range) {
+        boolean lowerBound = range.hasLowerBound();
+        boolean upperBound = range.hasUpperBound();
+        if (lowerBound && upperBound) {
+            T lower = range.lowerEndpoint();
+            T upper = range.upperEndpoint();
+            return new KeyDualValueCriteria<>(key, lower, upper, TernaryOperation.BETWEEN);
+        } else if (lowerBound) {
+            T lower = range.lowerEndpoint();
+            return new KeyValueCriteria<>(key, lower, BinaryOperation.GREATER_THAN_EQUAL);
+        } else if (upperBound) {
+            T upper = range.upperEndpoint();
+            return new KeyValueCriteria<>(key, upper, BinaryOperation.LESS_THAN_EQUAL);
+        } else {
+            return new EmptyCriteria<>();
+        }
     }
 }
