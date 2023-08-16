@@ -7,7 +7,7 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
-public record EmptyCriteria<E>() implements Criteria<E> {
+public record AlwaysFalseCriteria<E>() implements Criteria<E> {
 
     @Override
     public Predicate toPredicate(

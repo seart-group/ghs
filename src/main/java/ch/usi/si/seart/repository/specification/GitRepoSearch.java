@@ -7,8 +7,8 @@ import ch.usi.si.seart.model.Label_;
 import ch.usi.si.seart.model.Language_;
 import ch.usi.si.seart.model.Topic_;
 import ch.usi.si.seart.model.join.GitRepoMetric_;
+import ch.usi.si.seart.repository.criteria.AlwaysTrueCriteria;
 import ch.usi.si.seart.repository.criteria.Criteria;
-import ch.usi.si.seart.repository.criteria.EmptyCriteria;
 import ch.usi.si.seart.repository.criteria.KeyCriteria;
 import ch.usi.si.seart.repository.criteria.KeyDualValueCriteria;
 import ch.usi.si.seart.repository.criteria.KeyValueCriteria;
@@ -168,7 +168,7 @@ public class GitRepoSearch {
             T upper = range.upperEndpoint();
             return new KeyValueCriteria<>(key, upper, BinaryOperation.LESS_THAN_EQUAL);
         } else {
-            return new EmptyCriteria<>();
+            return new AlwaysTrueCriteria<>();
         }
     }
 }

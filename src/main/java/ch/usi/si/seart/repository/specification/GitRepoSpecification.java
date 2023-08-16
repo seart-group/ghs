@@ -1,7 +1,6 @@
 package ch.usi.si.seart.repository.specification;
 
 import ch.usi.si.seart.model.GitRepo;
-import ch.usi.si.seart.repository.criteria.EmptyCriteria;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -24,7 +23,6 @@ public class GitRepoSpecification implements Specification<GitRepo> {
             @NotNull Root<GitRepo> root, @NotNull CriteriaQuery<?> query, @NotNull CriteriaBuilder criteriaBuilder
     ) {
         Predicate[] predicates = search.toCriteriaList(root).stream()
-                .filter(criteria -> !(criteria instanceof EmptyCriteria<?>))
                 .map(criteria -> criteria.toPredicate(root, query, criteriaBuilder))
                 .toArray(Predicate[]::new);
 
