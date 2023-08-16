@@ -36,13 +36,19 @@ Before choosing whether to start with a clean slate or pre-populated database, m
    SELECT @@global.event_scheduler;
    ```
 
-3. The `gse` database exists. To create it:
+3. The binary logging during the creation of stored functions is set to `1`. You can verify this via:
+
+    ```sql
+    SELECT @@global.log_bin_trust_function_creators;
+    ``` 
+
+4. The `gse` database exists. To create it:
 
     ```sql
     CREATE DATABASE gse CHARACTER SET utf8 COLLATE utf8_bin;
     ```
 
-4. The `gseadmin` user exists. To create one, run:
+5. The `gseadmin` user exists. To create one, run:
 
     ```sql
     CREATE USER IF NOT EXISTS 'gseadmin'@'%' IDENTIFIED BY 'Lugano2020';
