@@ -35,7 +35,7 @@ public class CleanUpProjectsJob implements Runnable {
     @Scheduled(cron = "${ghs.clean-up.cron}")
     public void run() {
         log.info(
-                "Started cleanup  on {}/{} repositories",
+                "Started cleanup on {}/{} repositories",
                 gitRepoService.countCleanupCandidates(),
                 gitRepoService.count()
         );
