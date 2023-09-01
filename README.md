@@ -1,5 +1,4 @@
-
-# GitHub Search &middot; [![Status](https://badgen.net/https/dabico.npkn.net/ghs-status)](http://seart-ghs.si.usi.ch) [![MIT license](https://img.shields.io/badge/License-MIT-blue.svg)](https://github.com/seart-group/ghs/blob/master/LICENSE) [![Latest Dump](https://img.shields.io/badge/Latest_Dump-15.08.23-blue)](https://www.dropbox.com/scl/fi/coy1iie06xzbb3isl87xg/gse.sql.gz?rlkey=1tro7u1su3xtcpn6sc6wt0dlg&dl=1) [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.4588464.svg)](https://doi.org/10.5281/zenodo.4588464)
+# GitHub Search &middot; [![Status](https://badgen.net/https/dabico.npkn.net/ghs-status)](http://seart-ghs.si.usi.ch) [![MIT license](https://img.shields.io/badge/License-MIT-blue.svg)](https://github.com/seart-group/ghs/blob/master/LICENSE) [![Latest Dump](https://img.shields.io/badge/Latest_Dump-01.09.23-blue)](https://www.dropbox.com/scl/fi/dlga9rpv4je5cyxcrzh0u/gse.sql.gz?rlkey=9lroivo683pcfpffrtprtnx1v&dl=1) [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.4588464.svg)](https://doi.org/10.5281/zenodo.4588464)
 
 This project is made of two components:
 1. A Spring Boot powered back-end, responsible for:
