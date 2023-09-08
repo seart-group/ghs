@@ -17,7 +17,7 @@
         const days = Math.ceil((today - lastShown) / (1000 * 60 * 60 * 24));
         if (days > 30) {
             $("header").twbsAlert({
-                body: `Need source code instead? Check out our <a href="${url}" target="_blank" class="alert-link">other platform</a>.`
+                body: `If you're interested not only in sampling projects, but also in downloading their code, check out our <a href="${url}" target="_blank" class="alert-link">other platform</a>.`
             });
             storage.setItem(key, today.toISOString());
         }
