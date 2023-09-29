@@ -1,18 +1,18 @@
 version: 2
 updates:
   - package-ecosystem: maven
-    directory: '/'
+    directory: /
     schedule:
       interval: daily
-    target-branch: 'develop'
+    target-branch: master
     ignore:
       - dependency-name: org.apache.maven:*
     labels:
       - dependencies
   - package-ecosystem: docker
-    directory: '/docker'
+    directory: /docker
     schedule:
       interval: weekly
-    target-branch: 'develop'
+    target-branch: master
     labels:
       - dependencies
