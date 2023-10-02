@@ -10,7 +10,28 @@ updates:
     labels:
       - dependencies
   - package-ecosystem: docker
-    directory: /docker
+    directory: /docker/backup
+    schedule:
+      interval: weekly
+    target-branch: master
+    labels:
+      - dependencies
+  - package-ecosystem: docker
+    directory: /docker/database
+    schedule:
+      interval: weekly
+    target-branch: master
+    labels:
+      - dependencies
+  - package-ecosystem: docker
+    directory: /docker/server
+    schedule:
+      interval: weekly
+    target-branch: master
+    labels:
+      - dependencies
+  - package-ecosystem: docker
+    directory: /docker/website
     schedule:
       interval: weekly
     target-branch: master
