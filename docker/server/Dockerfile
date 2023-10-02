@@ -5,7 +5,7 @@ COPY ./src ./src
 
 RUN mvn -e --no-transfer-progress clean install -am -DskipTests
 
-FROM eclipse-temurin:17.0.8_7-jre-alpine
+FROM eclipse-temurin:17.0.8.1_1-jre-alpine
 
 COPY --from=build /target/ghs-application-*.jar /server.jar
 
