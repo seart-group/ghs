@@ -165,7 +165,7 @@ name: 'gse'
 
 services:
 
-  gse-db:
+  gse-database:
     build:
       context: ../
       dockerfile: docker/database/Dockerfile
@@ -190,7 +190,7 @@ services:
 
   # other services omitted...
 
-  gse-app:
+  gse-server:
     environment:
       APP_CRAWL_ENABLED: 'true'
       APP_CRAWL_TOKENS: '<your_access_token>'
@@ -210,7 +210,7 @@ services:
 
   # other services omitted...
 
-  gse-bkp:
+  gse-backup:
     restart: always
     entrypoint: "/init"
 ```
