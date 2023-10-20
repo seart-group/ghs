@@ -75,7 +75,7 @@
 		<kotlin.version>1.9.10</kotlin.version>
 		<guava.version>32.1.3-jre</guava.version>
 		<jackson.version>2.15.3</jackson.version>
-		<okhttp.version>4.11.0</okhttp.version>
+		<okhttp.version>4.12.0</okhttp.version>
 		<springboot.version>2.7.16</springboot.version>
 		<springbootadmin.version>2.7.11</springbootadmin.version>
 	</properties>
