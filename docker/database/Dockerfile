@@ -2,6 +2,6 @@ FROM mysql:8.2.0
 
 WORKDIR /docker-entrypoint-initdb.d
 
-ADD "https://www.dropbox.com/scl/fi/mm3plact32j4pkc1t52t0/gse.sql.gz?rlkey=3ygiv38wsyxmfj3vtns37ijph&dl=1" gse.sql.gz
+ADD "https://www.dropbox.com/scl/fi/wys2yqn9pnhy78psw9eqz/gse.sql.gz?rlkey=l1gcuccebrc0q4nfg5kl0m6tl&dl=1" gse.sql.gz
 
 RUN chmod 755 gse.sql.gz
