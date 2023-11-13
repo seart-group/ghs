@@ -6,8 +6,6 @@ import ch.usi.si.seart.repository.GitRepoLanguageRepository;
 import ch.usi.si.seart.repository.GitRepoMetricRepository;
 import ch.usi.si.seart.repository.GitRepoRepository;
 import ch.usi.si.seart.repository.GitRepoTopicRepository;
-import ch.usi.si.seart.repository.specification.GitRepoSearch;
-import ch.usi.si.seart.repository.specification.GitRepoSpecification;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -16,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.TransientDataAccessException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.util.Pair;
 import org.springframework.retry.annotation.Backoff;
 import org.springframework.retry.annotation.Retryable;
@@ -52,8 +51,8 @@ public interface GitRepoService {
             maxAttempts = 5
     )
     GitRepo createOrUpdate(GitRepo repo);
-    Page<GitRepo> findDynamically(GitRepoSearch parameters, Pageable pageable);
-    Stream<GitRepo> streamDynamically(GitRepoSearch parameters);
+    Page<GitRepo> getBy(Specification<GitRepo> specification, Pageable pageable);
+    Stream<GitRepo> streamBy(Specification<GitRepo> specification);
     Stream<Pair<Long, String>> streamCleanupCandidates();
     Stream<Pair<Long, String>> streamAnalysisCandidates();
 
@@ -118,14 +117,12 @@ public interface GitRepoService {
         }
 
         @Override
-        public Page<GitRepo> findDynamically(GitRepoSearch parameters, Pageable pageable) {
-            GitRepoSpecification specification = new GitRepoSpecification(parameters);
+        public Page<GitRepo> getBy(Specification<GitRepo> specification, Pageable pageable) {
             return gitRepoRepository.findAll(specification, pageable);
         }
 
         @Override
-        public Stream<GitRepo> streamDynamically(GitRepoSearch parameters) {
-            GitRepoSpecification specification = new GitRepoSpecification(parameters);
+        public Stream<GitRepo> streamBy(Specification<GitRepo> specification) {
             return gitRepoRepository.streamAll(specification);
         }
 
