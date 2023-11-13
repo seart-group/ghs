@@ -7,6 +7,7 @@ import ch.usi.si.seart.repository.GitRepoMetricRepository;
 import ch.usi.si.seart.repository.GitRepoRepository;
 import ch.usi.si.seart.repository.GitRepoTopicRepository;
 import ch.usi.si.seart.repository.specification.GitRepoSearch;
+import ch.usi.si.seart.repository.specification.GitRepoSpecification;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -118,12 +119,14 @@ public interface GitRepoService {
 
         @Override
         public Page<GitRepo> findDynamically(GitRepoSearch parameters, Pageable pageable) {
-            return gitRepoRepository.findAllDynamically(parameters, pageable);
+            GitRepoSpecification specification = new GitRepoSpecification(parameters);
+            return gitRepoRepository.findAll(specification, pageable);
         }
 
         @Override
         public Stream<GitRepo> streamDynamically(GitRepoSearch parameters) {
-            return gitRepoRepository.streamAllDynamically(parameters);
+            GitRepoSpecification specification = new GitRepoSpecification(parameters);
+            return gitRepoRepository.streamAll(specification);
         }
 
         @Override
