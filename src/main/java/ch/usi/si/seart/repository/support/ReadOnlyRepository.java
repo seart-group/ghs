@@ -12,11 +12,11 @@ import java.util.Optional;
 /**
  * A read-only {@link Repository} interface.
  * Provides methods for retrieving entities without
- * the possibility to modify the underlying data source.
+ * the possibility of modifying the underlying data source.
  *
  * @param <T> the entity type
- * @param <ID> the type of the entity's identifier
- * @author dabico
+ * @param <ID> the entity identifier type
+ * @author Ozren Dabić
  */
 @NoRepositoryBean
 public interface ReadOnlyRepository<T, ID> extends Repository<T, ID> {
