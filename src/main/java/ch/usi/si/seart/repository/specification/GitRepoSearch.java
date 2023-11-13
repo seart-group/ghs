@@ -7,13 +7,10 @@ import ch.usi.si.seart.model.Label_;
 import ch.usi.si.seart.model.Language_;
 import ch.usi.si.seart.model.Topic_;
 import ch.usi.si.seart.model.join.GitRepoMetric_;
-import ch.usi.si.seart.repository.criteria.AlwaysTrueCriteria;
 import ch.usi.si.seart.repository.criteria.Criteria;
 import ch.usi.si.seart.repository.criteria.KeyCriteria;
-import ch.usi.si.seart.repository.criteria.KeyDualValueCriteria;
 import ch.usi.si.seart.repository.criteria.KeyValueCriteria;
 import ch.usi.si.seart.repository.operation.BinaryOperation;
-import ch.usi.si.seart.repository.operation.TernaryOperation;
 import ch.usi.si.seart.repository.operation.UnaryOperation;
 import com.google.common.collect.Range;
 import lombok.Builder;
@@ -92,17 +89,17 @@ public class GitRepoSearch {
         }
 
         criteria.addAll(List.of(
-                toCriteria(root.get(GitRepo_.commits), commits),
-                toCriteria(root.get(GitRepo_.contributors), contributors),
-                toCriteria(root.get(GitRepo_.totalIssues), issues),
-                toCriteria(root.get(GitRepo_.totalPullRequests), pulls),
-                toCriteria(root.get(GitRepo_.branches), branches),
-                toCriteria(root.get(GitRepo_.releases), releases),
-                toCriteria(root.get(GitRepo_.stargazers), stars),
-                toCriteria(root.get(GitRepo_.watchers), watchers),
-                toCriteria(root.get(GitRepo_.forks), forks),
-                toCriteria(root.get(GitRepo_.createdAt), created),
-                toCriteria(root.get(GitRepo_.lastCommit), committed)
+                Criteria.forRange(root.get(GitRepo_.commits), commits),
+                Criteria.forRange(root.get(GitRepo_.contributors), contributors),
+                Criteria.forRange(root.get(GitRepo_.totalIssues), issues),
+                Criteria.forRange(root.get(GitRepo_.totalPullRequests), pulls),
+                Criteria.forRange(root.get(GitRepo_.branches), branches),
+                Criteria.forRange(root.get(GitRepo_.releases), releases),
+                Criteria.forRange(root.get(GitRepo_.stargazers), stars),
+                Criteria.forRange(root.get(GitRepo_.watchers), watchers),
+                Criteria.forRange(root.get(GitRepo_.forks), forks),
+                Criteria.forRange(root.get(GitRepo_.createdAt), created),
+                Criteria.forRange(root.get(GitRepo_.lastCommit), committed)
         ));
 
         if (hasCodeMetricsFilters()) {
@@ -124,9 +121,9 @@ public class GitRepoSearch {
                 commentLinesPath = root.join(GitRepo_.totalMetrics).get(GitRepoMetricAggregate_.commentLines);
             }
 
-            criteria.add(toCriteria(nonBlankLinesPath, nonBlankLines));
-            criteria.add(toCriteria(codeLinesPath, codeLines));
-            criteria.add(toCriteria(commentLinesPath, commentLines));
+            criteria.add(Criteria.forRange(nonBlankLinesPath, nonBlankLines));
+            criteria.add(Criteria.forRange(codeLinesPath, codeLines));
+            criteria.add(Criteria.forRange(commentLinesPath, commentLines));
         }
 
         if (excludeForks) {
@@ -152,23 +149,5 @@ public class GitRepoSearch {
         }
 
         return criteria;
-    }
-
-    private static <T extends Comparable<T>> Criteria<GitRepo> toCriteria(Path<T> key, Range<T> range) {
-        boolean lowerBound = range.hasLowerBound();
-        boolean upperBound = range.hasUpperBound();
-        if (lowerBound && upperBound) {
-            T lower = range.lowerEndpoint();
-            T upper = range.upperEndpoint();
-            return new KeyDualValueCriteria<>(key, lower, upper, TernaryOperation.BETWEEN);
-        } else if (lowerBound) {
-            T lower = range.lowerEndpoint();
-            return new KeyValueCriteria<>(key, lower, BinaryOperation.GREATER_THAN_EQUAL);
-        } else if (upperBound) {
-            T upper = range.upperEndpoint();
-            return new KeyValueCriteria<>(key, upper, BinaryOperation.LESS_THAN_EQUAL);
-        } else {
-            return new AlwaysTrueCriteria<>();
-        }
     }
 }
