@@ -4,7 +4,11 @@ import ch.usi.si.seart.exception.ClientURLException;
 import ch.usi.si.seart.exception.TerminalExecutionException;
 import ch.usi.si.seart.io.ExternalProcess;
 import ch.usi.si.seart.stereotype.Connector;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 
 import java.net.ConnectException;
@@ -15,6 +19,8 @@ import java.util.concurrent.TimeoutException;
 
 @Slf4j
 @Connector(command = "curl")
+@AllArgsConstructor(onConstructor_ = @Autowired)
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class ClientURLConnector {
 
     @Value("${app.curl.connect-timeout-duration}")
