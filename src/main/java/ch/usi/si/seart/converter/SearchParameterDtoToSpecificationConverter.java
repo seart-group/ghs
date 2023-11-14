@@ -267,13 +267,10 @@ public class SearchParameterDtoToSpecificationConverter
         }
 
         private Criteria<GitRepo> getIsForkCriteria(@NotNull Root<GitRepo> root) {
-            if (excludeForks) {
-                return new KeyValueCriteria<>(root.get(GitRepo_.isFork), false, BinaryOperation.EQUAL);
-            } else if (onlyForks) {
-                return new KeyValueCriteria<>(root.get(GitRepo_.isFork), true, BinaryOperation.EQUAL);
-            } else {
-                return new AlwaysTrueCriteria<>();
-            }
+            if (!excludeForks && !onlyForks) return new AlwaysTrueCriteria<>();
+            Path<Boolean> path = root.get(GitRepo_.isFork);
+            UnaryOperation operation = (excludeForks) ? UnaryOperation.IS_FALSE : UnaryOperation.IS_TRUE;
+            return new KeyCriteria<>(path, operation);
         }
 
         private Criteria<GitRepo> getHasIssuesCriteria(@NotNull Root<GitRepo> root) {
@@ -291,7 +288,7 @@ public class SearchParameterDtoToSpecificationConverter
         private Criteria<GitRepo> getHasWikiCriteria(@NotNull Root<GitRepo> root) {
             if (!hasWiki) return new AlwaysTrueCriteria<>();
             Path<Boolean> path = root.get(GitRepo_.hasWiki);
-            return new KeyValueCriteria<>(path, true, BinaryOperation.EQUAL);
+            return new KeyCriteria<>(path, UnaryOperation.IS_TRUE);
         }
 
         private Criteria<GitRepo> getHasLicenseCriteria(@NotNull Root<GitRepo> root) {
