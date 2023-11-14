@@ -28,6 +28,14 @@ import java.util.function.Function;
 public class Ranges {
 
     /**
+     * @param range The input range
+     * @return Whether the input has at least one bound on any endpoint.
+     */
+    public static boolean hasAnyBound(Range<?> range) {
+        return range.hasLowerBound() || range.hasUpperBound();
+    }
+
+    /**
      * Convenience method. Equivalent to:
      * <pre>{@code
      *     Ranges.builder().lower(...).upper(...).build();
