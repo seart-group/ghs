@@ -29,6 +29,14 @@ public class Ranges {
 
     /**
      * @param range The input range
+     * @return Whether the input has bounds on both endpoints.
+     */
+    public static boolean hasAllBound(Range<?> range) {
+        return range.hasLowerBound() && range.hasUpperBound();
+    }
+
+    /**
+     * @param range The input range
      * @return Whether the input has at least one bound on any endpoint.
      */
     public static boolean hasAnyBound(Range<?> range) {
@@ -142,7 +150,7 @@ public class Ranges {
          */
         public Pair<Range<T>, Range<T>> split(@NotNull Range<T> range) {
             Objects.requireNonNull(range, "Range must not be null!");
-            if (!range.hasLowerBound() || !range.hasUpperBound()) {
+            if (!hasAllBound(range)) {
                 throw new UnsplittableRangeException("Can't split unbounded range!");
             }
 
