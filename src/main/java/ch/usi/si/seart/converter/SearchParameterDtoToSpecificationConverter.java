@@ -20,10 +20,10 @@ import ch.usi.si.seart.repository.operation.UnaryOperation;
 import com.google.common.collect.Range;
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
-import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.util.StringUtils;
 
 import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Predicate;
@@ -157,31 +157,31 @@ public class SearchParameterDtoToSpecificationConverter
         }
 
         private Criteria<GitRepo> getNameCriteria() {
-            if (StringUtils.isBlank(name)) return new AlwaysTrueCriteria<>();
+            if (!StringUtils.hasText(name)) return new AlwaysTrueCriteria<>();
             BinaryOperation operation = (nameEquals) ? BinaryOperation.EQUAL : BinaryOperation.LIKE;
             return new KeyValueCriteria<>(root.get(GitRepo_.name), name, operation);
         }
 
         private Criteria<GitRepo> getLanguageCriteria() {
-            if (StringUtils.isBlank(language)) return new AlwaysTrueCriteria<>();
+            if (!StringUtils.hasText(language)) return new AlwaysTrueCriteria<>();
             Path<String> path = root.join(GitRepo_.mainLanguage).get(Language_.name);
             return new KeyValueCriteria<>(path, language, BinaryOperation.EQUAL);
         }
 
         private Criteria<GitRepo> getLicenseCriteria() {
-            if (StringUtils.isBlank(license)) return new AlwaysTrueCriteria<>();
+            if (!StringUtils.hasText(license)) return new AlwaysTrueCriteria<>();
             Path<String> path = root.get(GitRepo_.license);
             return new KeyValueCriteria<>(path, license, BinaryOperation.EQUAL);
         }
 
         private Criteria<GitRepo> getLabelCriteria() {
-            if (StringUtils.isBlank(label)) return new AlwaysTrueCriteria<>();
+            if (!StringUtils.hasText(label)) return new AlwaysTrueCriteria<>();
             Path<String> path = root.join(GitRepo_.labels).get(Label_.name);
             return new KeyValueCriteria<>(path, label, BinaryOperation.EQUAL);
         }
 
         private Criteria<GitRepo> getTopicCriteria() {
-            if (StringUtils.isBlank(topic)) return new AlwaysTrueCriteria<>();
+            if (!StringUtils.hasText(topic)) return new AlwaysTrueCriteria<>();
             Path<String> path = root.join(GitRepo_.topics).get(Topic_.name);
             return new KeyValueCriteria<>(path, topic, BinaryOperation.EQUAL);
         }
@@ -241,7 +241,7 @@ public class SearchParameterDtoToSpecificationConverter
 
         private Criteria<GitRepo> getCodeMetricsCriteria() {
             if (!hasCodeMetricsFilters()) return new AlwaysTrueCriteria<>();
-            if (StringUtils.isBlank(language)) {
+            if (!StringUtils.hasText(language)) {
                 SingularAttribute<GitRepo, GitRepoMetricAggregate> attribute = GitRepo_.totalMetrics;
                 Path<Long> nonBlankLinesPath = root.join(attribute).get(GitRepoMetricAggregate_.nonBlankLines);
                 Path<Long> codeLinesPath = root.join(attribute).get(GitRepoMetricAggregate_.codeLines);
