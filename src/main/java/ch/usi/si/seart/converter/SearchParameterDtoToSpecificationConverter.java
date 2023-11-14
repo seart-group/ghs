@@ -9,6 +9,7 @@ import ch.usi.si.seart.model.GitRepo_;
 import ch.usi.si.seart.model.Label_;
 import ch.usi.si.seart.model.Language_;
 import ch.usi.si.seart.model.Topic_;
+import ch.usi.si.seart.model.join.GitRepoMetric;
 import ch.usi.si.seart.model.join.GitRepoMetric_;
 import ch.usi.si.seart.repository.criteria.AlwaysTrueCriteria;
 import ch.usi.si.seart.repository.criteria.Criteria;
@@ -28,10 +29,10 @@ import org.springframework.util.StringUtils;
 
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Join;
 import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
-import javax.persistence.metamodel.SingularAttribute;
 import java.util.Date;
 import java.util.stream.Stream;
 
@@ -241,22 +242,21 @@ public class SearchParameterDtoToSpecificationConverter
         private Criteria<GitRepo> getCodeMetricsCriteria(@NotNull Root<GitRepo> root) {
             if (!hasCodeMetricsFilters()) return new AlwaysTrueCriteria<>();
             if (!StringUtils.hasText(language)) {
-                SingularAttribute<GitRepo, GitRepoMetricAggregate> attribute = GitRepo_.totalMetrics;
-                Path<Long> nonBlankLinesPath = root.join(attribute).get(GitRepoMetricAggregate_.nonBlankLines);
-                Path<Long> codeLinesPath = root.join(attribute).get(GitRepoMetricAggregate_.codeLines);
-                Path<Long> commentLinesPath = root.join(attribute).get(GitRepoMetricAggregate_.commentLines);
+                Join<GitRepo, GitRepoMetricAggregate> join = root.join(GitRepo_.totalMetrics);
+                Path<Long> nonBlankLinesPath = join.get(GitRepoMetricAggregate_.nonBlankLines);
+                Path<Long> codeLinesPath = join.get(GitRepoMetricAggregate_.codeLines);
+                Path<Long> commentLinesPath = join.get(GitRepoMetricAggregate_.commentLines);
                 return new CriteriaConjunction<>(
                         Criteria.forRange(nonBlankLinesPath, nonBlankLines),
                         Criteria.forRange(codeLinesPath, codeLines),
                         Criteria.forRange(commentLinesPath, commentLines)
                 );
             } else {
-                Path<String> languagePath = root.join(GitRepo_.metrics)
-                        .join(GitRepoMetric_.language)
-                        .get(Language_.name);
-                Path<Long> nonBlankLinesPath = root.join(GitRepo_.metrics).get(GitRepoMetric_.nonBlankLines);
-                Path<Long> codeLinesPath = root.join(GitRepo_.metrics).get(GitRepoMetric_.codeLines);
-                Path<Long> commentLinesPath = root.join(GitRepo_.metrics).get(GitRepoMetric_.commentLines);
+                Join<GitRepo, GitRepoMetric> join = root.join(GitRepo_.metrics);
+                Path<Long> nonBlankLinesPath = join.get(GitRepoMetric_.nonBlankLines);
+                Path<Long> codeLinesPath = join.get(GitRepoMetric_.codeLines);
+                Path<Long> commentLinesPath = join.get(GitRepoMetric_.commentLines);
+                Path<String> languagePath = join.join(GitRepoMetric_.language).get(Language_.name);
                 return new CriteriaConjunction<>(
                         new KeyValueCriteria<>(languagePath, language, BinaryOperation.EQUAL),
                         Criteria.forRange(nonBlankLinesPath, nonBlankLines),
