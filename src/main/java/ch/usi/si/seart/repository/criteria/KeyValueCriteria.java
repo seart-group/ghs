@@ -28,6 +28,14 @@ public record KeyValueCriteria<E, T extends Comparable<T>>(
                     criteriaBuilder.lower(key.as(String.class)),
                     "%" + value.toString().toLowerCase() + "%"
             );
+            case PREFIX -> criteriaBuilder.like(
+                    criteriaBuilder.lower(key.as(String.class)),
+                    value.toString().toLowerCase() + "%"
+            );
+            case SUFFIX -> criteriaBuilder.like(
+                    criteriaBuilder.lower(key.as(String.class)),
+                    "%" + value.toString().toLowerCase()
+            );
         };
     }
 }
