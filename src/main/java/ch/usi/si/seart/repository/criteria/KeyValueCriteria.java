@@ -2,7 +2,6 @@ package ch.usi.si.seart.repository.criteria;
 
 import ch.usi.si.seart.repository.operation.BinaryOperation;
 import org.jetbrains.annotations.NotNull;
-import org.springframework.util.Assert;
 
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
@@ -25,16 +24,10 @@ public record KeyValueCriteria<E, T extends Comparable<T>>(
             case LESS_THAN_EQUAL -> criteriaBuilder.lessThanOrEqualTo(key, value);
             case EQUAL -> criteriaBuilder.equal(key, value);
             case NOT_EQUAL -> criteriaBuilder.notEqual(key, value);
-            case LIKE -> {
-                Assert.isInstanceOf(String.class, value, "Value must be a string for it to be used with LIKE");
-                @SuppressWarnings("unchecked") Path<String> castKey = (Path<String>) key;
-                String castValue = (String) value;
-                yield criteriaBuilder.like(
-                        criteriaBuilder.lower(castKey),
-                        "%" + castValue.toLowerCase() + "%"
-                );
-            }
+            case LIKE -> criteriaBuilder.like(
+                    criteriaBuilder.lower(key.as(String.class)),
+                    "%" + value.toString().toLowerCase() + "%"
+            );
         };
-
     }
 }
