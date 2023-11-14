@@ -8,6 +8,6 @@ import org.springframework.context.annotation.PropertySource;
 @Configuration
 @EnableConfigurationProperties
 @ConfigurationPropertiesScan(basePackages = "ch.usi.si.seart.config.properties")
-@PropertySource("classpath:crawler.properties")
+@PropertySource("classpath:ghs.properties")
 public class PropertiesConfig {
 }
