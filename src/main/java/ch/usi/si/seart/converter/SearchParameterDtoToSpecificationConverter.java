@@ -19,18 +19,20 @@ import ch.usi.si.seart.repository.operation.BinaryOperation;
 import ch.usi.si.seart.repository.operation.UnaryOperation;
 import com.google.common.collect.Range;
 import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.util.StringUtils;
 
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.persistence.metamodel.SingularAttribute;
 import java.util.Date;
-import java.util.List;
 import java.util.stream.Stream;
 
 public class SearchParameterDtoToSpecificationConverter
@@ -41,20 +43,16 @@ public class SearchParameterDtoToSpecificationConverter
     @NotNull
     public Specification<GitRepo> convert(@NotNull SearchParameterDto source) {
         return (root, criteriaQuery, criteriaBuilder) -> {
-            Adapter adapter = new Adapter(root, source);
-            Predicate[] predicates = adapter.getCriteria().stream()
-                    .filter(java.util.function.Predicate.not(AlwaysTrueCriteria.class::isInstance))
-                    .map(criteria -> criteria.toPredicate(root, criteriaQuery, criteriaBuilder))
-                    .toArray(Predicate[]::new);
+            SearchCriteria criteria = new SearchCriteria(source);
+            Predicate predicate = criteria.toPredicate(root, criteriaQuery, criteriaBuilder);
             criteriaQuery.distinct(true);
-            return criteriaBuilder.and(predicates);
+            return criteriaBuilder.and(predicate);
         };
     }
-    
-    @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
-    private static final class Adapter {
 
-        Root<GitRepo> root;
+    @AllArgsConstructor(access = AccessLevel.PRIVATE)
+    @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
+    private static final class SearchCriteria implements Criteria<GitRepo> {
 
         String name;
         boolean nameEquals;
@@ -88,158 +86,159 @@ public class SearchParameterDtoToSpecificationConverter
         boolean hasWiki;
         boolean hasLicense;
 
-        Adapter(Root<GitRepo> root, SearchParameterDto dto) {
-            this.root = root;
-
-            this.name = dto.getName();
-            this.nameEquals = dto.getNameEquals();
-            
-            this.language = dto.getLanguage();
-            this.license = dto.getLicense();
-            this.label = dto.getLabel();
-            this.topic = dto.getTopic();
-            
-            this.commits = dto.getCommits();
-            this.contributors = dto.getContributors();
-            this.issues = dto.getIssues();
-            this.pulls = dto.getPulls();
-            this.branches = dto.getBranches();
-            this.releases = dto.getReleases();
-            this.stars = dto.getStars();
-            this.watchers = dto.getWatchers();
-            this.forks = dto.getForks();
-
-            this.codeLines = dto.getCodeLines();
-            this.commentLines = dto.getCommentLines();
-            this.nonBlankLines = dto.getNonBlankLines();
-            
-            this.created = dto.getCreated();
-            this.committed = dto.getCommitted();
-
-            this.excludeForks = dto.getExcludeForks();
-            this.onlyForks = dto.getOnlyForks();
-            this.hasIssues = dto.getHasIssues();
-            this.hasPulls = dto.getHasPulls();
-            this.hasWiki = dto.getHasWiki();
-            this.hasLicense = dto.getHasLicense();
-        }
-
-        boolean hasCodeMetricsFilters() {
-            return Stream.of(codeLines, commentLines, nonBlankLines).anyMatch(Ranges::hasAnyBound);
-        }
-
-        public List<Criteria<GitRepo>> getCriteria() {
-            List<Criteria<GitRepo>> criteria = List.of(
-                    getNameCriteria(),
-                    getLanguageCriteria(),
-                    getLicenseCriteria(),
-                    getLabelCriteria(),
-                    getTopicCriteria(),
-                    getCommitsCriteria(),
-                    getContributorsCriteria(),
-                    getIssuesCriteria(),
-                    getPullsCriteria(),
-                    getBranchesCriteria(),
-                    getReleasesCriteria(),
-                    getStarsCriteria(),
-                    getWatchersCriteria(),
-                    getForksCriteria(),
-                    getCreatedCriteria(),
-                    getLastCommitCriteria(),
-                    getCodeMetricsCriteria(),
-                    getIsForkCriteria(),
-                    getHasIssuesCriteria(),
-                    getHasPullsCriteria(),
-                    getHasWiki(),
-                    getHasLicense()
+        SearchCriteria(SearchParameterDto dto) {
+            this(
+                    dto.getName(),
+                    dto.getNameEquals(),
+                    dto.getLanguage(),
+                    dto.getLicense(),
+                    dto.getLabel(),
+                    dto.getTopic(),
+                    dto.getCommits(),
+                    dto.getContributors(),
+                    dto.getIssues(),
+                    dto.getPulls(),
+                    dto.getBranches(),
+                    dto.getReleases(),
+                    dto.getStars(),
+                    dto.getWatchers(),
+                    dto.getForks(),
+                    dto.getCreated(),
+                    dto.getCommitted(),
+                    dto.getCodeLines(),
+                    dto.getCommentLines(),
+                    dto.getNonBlankLines(),
+                    dto.getExcludeForks(),
+                    dto.getOnlyForks(),
+                    dto.getHasIssues(),
+                    dto.getHasPulls(),
+                    dto.getHasWiki(),
+                    dto.getHasLicense()
             );
-            return criteria.stream().filter(criterion -> !(criterion instanceof AlwaysTrueCriteria<GitRepo>)).toList();
         }
 
-        private Criteria<GitRepo> getNameCriteria() {
+        @Override
+        public Predicate toPredicate(
+                @NotNull Root<GitRepo> root, @NotNull CriteriaQuery<?> query, @NotNull CriteriaBuilder criteriaBuilder
+        ) {
+            return getCriteria(root).toPredicate(root, query, criteriaBuilder);
+        }
+
+        private Criteria<GitRepo> getCriteria(@NotNull Root<GitRepo> root) {
+            return new CriteriaConjunction<>(
+                    getNameCriteria(root),
+                    getLanguageCriteria(root),
+                    getLicenseCriteria(root),
+                    getLabelCriteria(root),
+                    getTopicCriteria(root),
+                    getCommitsCriteria(root),
+                    getContributorsCriteria(root),
+                    getIssuesCriteria(root),
+                    getPullsCriteria(root),
+                    getBranchesCriteria(root),
+                    getReleasesCriteria(root),
+                    getStarsCriteria(root),
+                    getWatchersCriteria(root),
+                    getForksCriteria(root),
+                    getCreatedCriteria(root),
+                    getLastCommitCriteria(root),
+                    getCodeMetricsCriteria(root),
+                    getIsForkCriteria(root),
+                    getHasIssuesCriteria(root),
+                    getHasPullsCriteria(root),
+                    getHasWikiCriteria(root),
+                    getHasLicenseCriteria(root)
+            );
+        }
+
+        private Criteria<GitRepo> getNameCriteria(@NotNull Root<GitRepo> root) {
             if (!StringUtils.hasText(name)) return new AlwaysTrueCriteria<>();
             BinaryOperation operation = (nameEquals) ? BinaryOperation.EQUAL : BinaryOperation.LIKE;
             return new KeyValueCriteria<>(root.get(GitRepo_.name), name, operation);
         }
 
-        private Criteria<GitRepo> getLanguageCriteria() {
+        private Criteria<GitRepo> getLanguageCriteria(@NotNull Root<GitRepo> root) {
             if (!StringUtils.hasText(language)) return new AlwaysTrueCriteria<>();
             Path<String> path = root.join(GitRepo_.mainLanguage).get(Language_.name);
             return new KeyValueCriteria<>(path, language, BinaryOperation.EQUAL);
         }
 
-        private Criteria<GitRepo> getLicenseCriteria() {
+        private Criteria<GitRepo> getLicenseCriteria(@NotNull Root<GitRepo> root) {
             if (!StringUtils.hasText(license)) return new AlwaysTrueCriteria<>();
             Path<String> path = root.get(GitRepo_.license);
             return new KeyValueCriteria<>(path, license, BinaryOperation.EQUAL);
         }
 
-        private Criteria<GitRepo> getLabelCriteria() {
+        private Criteria<GitRepo> getLabelCriteria(@NotNull Root<GitRepo> root) {
             if (!StringUtils.hasText(label)) return new AlwaysTrueCriteria<>();
             Path<String> path = root.join(GitRepo_.labels).get(Label_.name);
             return new KeyValueCriteria<>(path, label, BinaryOperation.EQUAL);
         }
 
-        private Criteria<GitRepo> getTopicCriteria() {
+        private Criteria<GitRepo> getTopicCriteria(@NotNull Root<GitRepo> root) {
             if (!StringUtils.hasText(topic)) return new AlwaysTrueCriteria<>();
             Path<String> path = root.join(GitRepo_.topics).get(Topic_.name);
             return new KeyValueCriteria<>(path, topic, BinaryOperation.EQUAL);
         }
 
-        private Criteria<GitRepo> getCommitsCriteria() {
+        private Criteria<GitRepo> getCommitsCriteria(@NotNull Root<GitRepo> root) {
             return Criteria.forRange(root.get(GitRepo_.commits), commits);
         }
 
-        private Criteria<GitRepo> getContributorsCriteria() {
+        private Criteria<GitRepo> getContributorsCriteria(@NotNull Root<GitRepo> root) {
             return Criteria.forRange(root.get(GitRepo_.contributors), contributors);
         }
 
-        private Criteria<GitRepo> getIssuesCriteria() {
+        private Criteria<GitRepo> getIssuesCriteria(@NotNull Root<GitRepo> root) {
             Path<Long> path = root.get(GitRepo_.totalIssues);
             return Criteria.forRange(path, issues);
         }
 
-        private Criteria<GitRepo> getPullsCriteria() {
+        private Criteria<GitRepo> getPullsCriteria(@NotNull Root<GitRepo> root) {
             Path<Long> path = root.get(GitRepo_.totalPullRequests);
             return Criteria.forRange(path, pulls);
         }
 
-        private Criteria<GitRepo> getBranchesCriteria() {
+        private Criteria<GitRepo> getBranchesCriteria(@NotNull Root<GitRepo> root) {
             Path<Long> path = root.get(GitRepo_.branches);
             return Criteria.forRange(path, branches);
         }
 
-        private Criteria<GitRepo> getReleasesCriteria() {
+        private Criteria<GitRepo> getReleasesCriteria(@NotNull Root<GitRepo> root) {
             Path<Long> path = root.get(GitRepo_.releases);
             return Criteria.forRange(path, releases);
         }
 
-        private Criteria<GitRepo> getStarsCriteria() {
+        private Criteria<GitRepo> getStarsCriteria(@NotNull Root<GitRepo> root) {
             Path<Long> path = root.get(GitRepo_.stargazers);
             return Criteria.forRange(path, stars);
         }
 
-        private Criteria<GitRepo> getWatchersCriteria() {
+        private Criteria<GitRepo> getWatchersCriteria(@NotNull Root<GitRepo> root) {
             Path<Long> path = root.get(GitRepo_.watchers);
             return Criteria.forRange(path, watchers);
         }
 
-        private Criteria<GitRepo> getForksCriteria() {
+        private Criteria<GitRepo> getForksCriteria(@NotNull Root<GitRepo> root) {
             Path<Long> path = root.get(GitRepo_.forks);
             return Criteria.forRange(path, forks);
         }
 
-        private Criteria<GitRepo> getCreatedCriteria() {
+        private Criteria<GitRepo> getCreatedCriteria(@NotNull Root<GitRepo> root) {
             Path<Date> path = root.get(GitRepo_.createdAt);
             return Criteria.forRange(path, created);
         }
 
-        private Criteria<GitRepo> getLastCommitCriteria() {
+        private Criteria<GitRepo> getLastCommitCriteria(@NotNull Root<GitRepo> root) {
             Path<Date> path = root.get(GitRepo_.lastCommit);
             return Criteria.forRange(path, committed);
         }
 
-        private Criteria<GitRepo> getCodeMetricsCriteria() {
+        private boolean hasCodeMetricsFilters() {
+            return Stream.of(codeLines, commentLines, nonBlankLines).anyMatch(Ranges::hasAnyBound);
+        }
+
+        private Criteria<GitRepo> getCodeMetricsCriteria(@NotNull Root<GitRepo> root) {
             if (!hasCodeMetricsFilters()) return new AlwaysTrueCriteria<>();
             if (!StringUtils.hasText(language)) {
                 SingularAttribute<GitRepo, GitRepoMetricAggregate> attribute = GitRepo_.totalMetrics;
@@ -267,7 +266,7 @@ public class SearchParameterDtoToSpecificationConverter
             }
         }
 
-        private Criteria<GitRepo> getIsForkCriteria() {
+        private Criteria<GitRepo> getIsForkCriteria(@NotNull Root<GitRepo> root) {
             if (excludeForks) {
                 return new KeyValueCriteria<>(root.get(GitRepo_.isFork), false, BinaryOperation.EQUAL);
             } else if (onlyForks) {
@@ -277,25 +276,25 @@ public class SearchParameterDtoToSpecificationConverter
             }
         }
 
-        private Criteria<GitRepo> getHasIssuesCriteria() {
+        private Criteria<GitRepo> getHasIssuesCriteria(@NotNull Root<GitRepo> root) {
             if (!hasIssues) return new AlwaysTrueCriteria<>();
             Path<Long> path = root.get(GitRepo_.openIssues);
             return new KeyValueCriteria<>(path, 0L, BinaryOperation.GREATER_THAN);
         }
 
-        private Criteria<GitRepo> getHasPullsCriteria() {
+        private Criteria<GitRepo> getHasPullsCriteria(@NotNull Root<GitRepo> root) {
             if (!hasPulls) return new AlwaysTrueCriteria<>();
             Path<Long> path = root.get(GitRepo_.openPullRequests);
             return new KeyValueCriteria<>(path, 0L, BinaryOperation.GREATER_THAN);
         }
 
-        private Criteria<GitRepo> getHasWiki() {
+        private Criteria<GitRepo> getHasWikiCriteria(@NotNull Root<GitRepo> root) {
             if (!hasWiki) return new AlwaysTrueCriteria<>();
             Path<Boolean> path = root.get(GitRepo_.hasWiki);
             return new KeyValueCriteria<>(path, true, BinaryOperation.EQUAL);
         }
 
-        private Criteria<GitRepo> getHasLicense() {
+        private Criteria<GitRepo> getHasLicenseCriteria(@NotNull Root<GitRepo> root) {
             if (!hasLicense) return new AlwaysTrueCriteria<>();
             Path<String> path = root.get(GitRepo_.license);
             return new KeyCriteria<>(path, UnaryOperation.IS_NOT_NULL);
