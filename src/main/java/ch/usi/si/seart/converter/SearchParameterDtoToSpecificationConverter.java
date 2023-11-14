@@ -1,5 +1,6 @@
 package ch.usi.si.seart.converter;
 
+import ch.usi.si.seart.collection.Ranges;
 import ch.usi.si.seart.dto.SearchParameterDto;
 import ch.usi.si.seart.model.GitRepo;
 import ch.usi.si.seart.model.GitRepoMetricAggregate;
@@ -30,6 +31,7 @@ import javax.persistence.criteria.Root;
 import javax.persistence.metamodel.SingularAttribute;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Stream;
 
 public class SearchParameterDtoToSpecificationConverter
         implements Converter<SearchParameterDto, Specification<GitRepo>>
@@ -123,9 +125,7 @@ public class SearchParameterDtoToSpecificationConverter
         }
 
         boolean hasCodeMetricsFilters() {
-            return codeLines.hasLowerBound() || codeLines.hasUpperBound() ||
-                    commentLines.hasLowerBound() || commentLines.hasUpperBound() ||
-                    nonBlankLines.hasLowerBound() || nonBlankLines.hasUpperBound();
+            return Stream.of(codeLines, commentLines, nonBlankLines).anyMatch(Ranges::hasAnyBound);
         }
 
         public List<Criteria<GitRepo>> getCriteria() {
