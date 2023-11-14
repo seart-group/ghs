@@ -1,6 +1,7 @@
 package ch.usi.si.seart.github;
 
 import ch.usi.si.seart.collection.Ranges;
+import ch.usi.si.seart.config.properties.CrawlerProperties;
 import ch.usi.si.seart.exception.github.GitHubConnectorException;
 import ch.usi.si.seart.exception.github.GitHubRestException;
 import ch.usi.si.seart.git.Commit;
@@ -20,7 +21,6 @@ import okhttp3.HttpUrl;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -60,14 +60,14 @@ public class GitHubRestConnector extends GitHubConnector<RestResponse> {
             GitHubTokenManager gitHubTokenManager,
             ConversionService conversionService,
             Ranges.Printer<Date> dateRangePrinter,
-            @Value("${app.crawl.minimum-stars}") Integer minimumStars
+            CrawlerProperties properties
     ) {
         super(retryTemplate);
         this.httpClient = httpClient;
         this.gitHubTokenManager = gitHubTokenManager;
         this.conversionService = conversionService;
         this.dateRangePrinter = dateRangePrinter;
-        this.minimumStars = minimumStars;
+        this.minimumStars = properties.getMinimumStars();
     }
 
     @SuppressWarnings("ConstantConditions")

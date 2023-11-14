@@ -1,52 +1,35 @@
 package ch.usi.si.seart.bean.init;
 
+import ch.usi.si.seart.config.properties.CrawlerProperties;
 import ch.usi.si.seart.model.Language;
 import ch.usi.si.seart.repository.LanguageProgressRepository;
 import ch.usi.si.seart.repository.LanguageRepository;
 import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
-import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Component;
 
-import java.util.Date;
 import java.util.List;
 
 @Slf4j
 @Component("LanguageInitializationBean")
-@ConditionalOnExpression(value = "${app.crawl.enabled:false} and not '${app.crawl.languages}'.isBlank()")
+@ConditionalOnExpression(value = "${ghs.crawler.enabled:false} and not '${ghs.crawler.languages}'.isBlank()")
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
+@AllArgsConstructor(onConstructor_ = @Autowired)
 public class LanguageInitializationBean implements InitializingBean {
 
-    List<String> names;
-
-    Date defaultStartDate;
+    CrawlerProperties crawlerProperties;
 
     LanguageRepository languageRepository;
     LanguageProgressRepository languageProgressRepository;
 
-    @Autowired
-    public LanguageInitializationBean(
-            @Value("${app.crawl.languages}")
-            List<String> names,
-            @Value(value = "${app.crawl.start-date}")
-            @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss'Z'")
-            Date defaultStartDate,
-            LanguageRepository languageRepository,
-            LanguageProgressRepository languageProgressRepository
-    ) {
-        this.names = names;
-        this.defaultStartDate = defaultStartDate;
-        this.languageRepository = languageRepository;
-        this.languageProgressRepository = languageProgressRepository;
-    }
-
     @Override
     public void afterPropertiesSet() {
+        List<String> names = crawlerProperties.getLanguages();
         for (String name : names) {
             Language language = languageRepository.findByNameIgnoreCase(name)
                     .map(existing -> {
@@ -71,7 +54,7 @@ public class LanguageInitializationBean implements InitializingBean {
                         return languageProgressRepository.save(
                                 Language.Progress.builder()
                                         .language(language)
-                                        .checkpoint(defaultStartDate)
+                                        .checkpoint(crawlerProperties.getStartDate())
                                         .build()
                         );
                     });

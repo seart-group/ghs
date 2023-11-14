@@ -1,6 +1,7 @@
 package ch.usi.si.seart.job;
 
 import ch.usi.si.seart.collection.Ranges;
+import ch.usi.si.seart.config.properties.CrawlerProperties;
 import ch.usi.si.seart.exception.MetadataCrawlingException;
 import ch.usi.si.seart.exception.UnsplittableRangeException;
 import ch.usi.si.seart.github.GitHubGraphQlConnector;
@@ -25,11 +26,9 @@ import com.google.gson.JsonObject;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import lombok.experimental.NonFinal;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.context.annotation.DependsOn;
 import org.springframework.dao.NonTransientDataAccessException;
@@ -51,7 +50,11 @@ import java.util.stream.StreamSupport;
 @Slf4j
 @DependsOn("LanguageInitializationBean")
 @ConditionalOnExpression(value =
-        "${app.crawl.enabled:false} and not '${app.crawl.languages}'.isBlank() and not '${app.crawl.tokens}'.isBlank()"
+        """
+        ${ghs.crawler.enabled:false} and
+        not '${ghs.crawler.languages}'.isBlank() and
+        not '${ghs.github.tokens}'.isBlank()
+        """
 )
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
@@ -67,14 +70,12 @@ public class CrawlProjectsJob implements Runnable {
     GitHubRestConnector gitHubRestConnector;
     GitHubGraphQlConnector gitHubGraphQlConnector;
 
-    @NonFinal
-    @Value(value = "${app.crawl.scheduling}")
-    Duration schedulingRate;
+    CrawlerProperties crawlerProperties;
 
     Ranges.Printer<Date> rangePrinter;
     Ranges.Splitter<Date> rangeSplitter;
 
-    @Scheduled(fixedDelayString = "${app.crawl.scheduling}")
+    @Scheduled(fixedDelayString = "${ghs.crawler.delay-between-runs}")
     public void run() {
         log.info("Initializing language queue...");
         Collection<Language> languages = languageService.getTargetedLanguages();
@@ -90,7 +91,9 @@ public class CrawlProjectsJob implements Runnable {
             Range<Date> dateRange = Ranges.closed(lower, upper);
             crawlRepositories(dateRange, language);
         }
-        log.info("Next crawl scheduled for: {}", Date.from(Instant.now().plus(schedulingRate)));
+        Duration delayBetweenRuns = crawlerProperties.getDelayBetweenRuns();
+        Instant nextRun = Instant.now().plus(delayBetweenRuns);
+        log.info("Next crawl scheduled for: {}", Date.from(nextRun));
     }
 
     private void crawlRepositories(Range<Date> range, Language language) {

@@ -1,10 +1,10 @@
 package ch.usi.si.seart.config;
 
+import ch.usi.si.seart.config.properties.AnalysisProperties;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.aop.interceptor.AsyncUncaughtExceptionHandler;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.EnableAsync;
@@ -24,10 +24,10 @@ import java.util.stream.Stream;
 public class AsyncConfig {
 
     @Bean(name = "AnalysisExecutor")
-    public Executor executor(@Value("${app.analysis.max-pool-threads}") int poolSize) {
+    public Executor executor(AnalysisProperties properties) {
         ThreadPoolTaskExecutor executor = new AnalysisThreadPoolExecutor();
         executor.setCorePoolSize(0);
-        executor.setMaxPoolSize(poolSize);
+        executor.setMaxPoolSize(properties.getMaxPoolThreads());
         executor.setQueueCapacity(10);
         executor.setThreadNamePrefix("AnalysisThread");
         executor.setRejectedExecutionHandler(rejectedExecutionHandler());

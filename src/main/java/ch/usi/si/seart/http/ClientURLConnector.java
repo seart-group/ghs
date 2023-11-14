@@ -1,5 +1,6 @@
 package ch.usi.si.seart.http;
 
+import ch.usi.si.seart.config.properties.ClientURLProperties;
 import ch.usi.si.seart.exception.ClientURLException;
 import ch.usi.si.seart.exception.TerminalExecutionException;
 import ch.usi.si.seart.io.ExternalProcess;
@@ -9,7 +10,6 @@ import lombok.AllArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 
 import java.net.ConnectException;
 import java.net.URL;
@@ -23,11 +23,11 @@ import java.util.concurrent.TimeoutException;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class ClientURLConnector {
 
-    @Value("${app.curl.connect-timeout-duration}")
-    Duration duration;
+    ClientURLProperties clientURLProperties;
 
     public boolean ping(URL url) throws ClientURLException {
         try {
+            Duration duration = clientURLProperties.getConnectTimeoutDuration();
             String[] command = {
                 "curl", "-Is",
                 "--connect-timeout",

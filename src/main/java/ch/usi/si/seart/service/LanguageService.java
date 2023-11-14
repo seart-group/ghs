@@ -1,15 +1,14 @@
 package ch.usi.si.seart.service;
 
 import ch.usi.si.seart.collection.ConcurrentReadWriteLockMap;
+import ch.usi.si.seart.config.properties.CrawlerProperties;
 import ch.usi.si.seart.model.Language;
 import ch.usi.si.seart.repository.LanguageProgressRepository;
 import ch.usi.si.seart.repository.LanguageRepository;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import lombok.experimental.NonFinal;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
@@ -30,9 +29,7 @@ public interface LanguageService extends NamedEntityService<Language> {
     @RequiredArgsConstructor(onConstructor_ = @Autowired)
     class LanguageServiceImpl implements LanguageService {
 
-        @NonFinal
-        @Value("${app.crawl.languages}")
-        List<String> names;
+        CrawlerProperties crawlerProperties;
 
         LanguageRepository languageRepository;
         LanguageProgressRepository languageProgressRepository;
@@ -69,6 +66,7 @@ public interface LanguageService extends NamedEntityService<Language> {
 
         @Override
         public Collection<Language> getTargetedLanguages() {
+            List<String> names = crawlerProperties.getLanguages();
             return languageRepository.findAllByNameInOrderByProgress(names);
         }
 

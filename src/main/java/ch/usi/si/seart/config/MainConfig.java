@@ -1,6 +1,9 @@
 package ch.usi.si.seart.config;
 
+import ch.usi.si.seart.bean.init.TemporaryDirectoryCleanerBean;
 import ch.usi.si.seart.collection.Ranges;
+import ch.usi.si.seart.config.properties.GitProperties;
+import ch.usi.si.seart.config.properties.StatisticsProperties;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -24,8 +27,13 @@ import java.util.Date;
 public class MainConfig {
 
     @Bean
-    public Path tmpDir(@Value("${java.io.tmpdir}") String value) {
+    Path tmpDir(@Value("${java.io.tmpdir}") String value) {
         return Path.of(value);
+    }
+
+    @Bean
+    public TemporaryDirectoryCleanerBean temporaryDirectoryCleanerBean(GitProperties gitProperties, Path tmpDir) {
+        return new TemporaryDirectoryCleanerBean(tmpDir, gitProperties.getFolderPrefix());
     }
 
     @Bean
@@ -59,8 +67,8 @@ public class MainConfig {
     }
 
     @Bean
-    public Pageable suggestionLimitPageable(@Value("${app.statistics.suggestion-limit}") Integer limit) {
-        return PageRequest.of(0, limit);
+    public Pageable suggestionLimitPageable(StatisticsProperties properties) {
+        return PageRequest.of(0, properties.getSuggestionLimit());
     }
 
     @Bean
