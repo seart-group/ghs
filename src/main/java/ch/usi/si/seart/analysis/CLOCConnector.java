@@ -7,9 +7,8 @@ import ch.usi.si.seart.stereotype.Connector;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import lombok.AccessLevel;
-import lombok.RequiredArgsConstructor;
+import lombok.AllArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import lombok.experimental.NonFinal;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.convert.ConversionService;
@@ -22,13 +21,12 @@ import java.util.concurrent.TimeoutException;
  * Component responsible for performing static code analysis through CLOC.
  */
 @Connector(command = "cloc")
+@AllArgsConstructor(onConstructor_ = @Autowired)
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
-@RequiredArgsConstructor(onConstructor_ = @Autowired)
 public class CLOCConnector {
 
     ConversionService conversionService;
 
-    @NonFinal
     @Value("${app.cloc.analysis-timeout-duration}")
     Duration duration;
 
