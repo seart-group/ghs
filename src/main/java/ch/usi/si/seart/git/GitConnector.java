@@ -7,9 +7,8 @@ import ch.usi.si.seart.exception.git.RemoteReferenceDisplayException;
 import ch.usi.si.seart.io.ExternalProcess;
 import ch.usi.si.seart.stereotype.Connector;
 import lombok.AccessLevel;
-import lombok.RequiredArgsConstructor;
+import lombok.AllArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import lombok.experimental.NonFinal;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -27,15 +26,13 @@ import java.util.concurrent.TimeoutException;
  */
 @Slf4j
 @Connector(command = "git")
+@AllArgsConstructor(onConstructor_ = @Autowired)
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
-@RequiredArgsConstructor(onConstructor_ = @Autowired)
 public class GitConnector {
 
-    @NonFinal
     @Value("${app.git.folder-prefix}")
     String folderPrefix;
 
-    @NonFinal
     @Value("${app.git.clone-timeout-duration}")
     Duration duration;
 
