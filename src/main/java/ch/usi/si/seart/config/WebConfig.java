@@ -4,7 +4,7 @@ import ch.usi.si.seart.converter.GitRepoToDtoConverter;
 import ch.usi.si.seart.converter.JsonObjectToErrorResponseConverter;
 import ch.usi.si.seart.converter.JsonObjectToGitCommitConverter;
 import ch.usi.si.seart.converter.JsonObjectToGitRepoMetricConverter;
-import ch.usi.si.seart.converter.SearchParameterDtoToGitRepoSearchConverter;
+import ch.usi.si.seart.converter.SearchParameterDtoToSpecificationConverter;
 import ch.usi.si.seart.converter.StringToContactsConverter;
 import ch.usi.si.seart.converter.StringToGitExceptionConverter;
 import ch.usi.si.seart.converter.StringToLicensesConverter;
@@ -36,7 +36,7 @@ public class WebConfig implements WebMvcConfigurer {
         registry.addConverter(new JsonObjectToGitCommitConverter());
         registry.addConverter(new JsonObjectToErrorResponseConverter());
         registry.addConverter(new JsonObjectToGitRepoMetricConverter());
-        registry.addConverter(new SearchParameterDtoToGitRepoSearchConverter());
+        registry.addConverter(new SearchParameterDtoToSpecificationConverter());
         registry.addConverter(new StringToContactsConverter());
         registry.addConverter(new StringToGitExceptionConverter());
         registry.addConverter(new StringToLicensesConverter());

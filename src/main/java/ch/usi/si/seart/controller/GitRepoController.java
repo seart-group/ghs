@@ -9,7 +9,6 @@ import ch.usi.si.seart.model.GitRepo;
 import ch.usi.si.seart.model.GitRepo_;
 import ch.usi.si.seart.model.Language;
 import ch.usi.si.seart.model.view.License;
-import ch.usi.si.seart.repository.specification.GitRepoSearch;
 import ch.usi.si.seart.service.GitRepoService;
 import ch.usi.si.seart.service.LanguageService;
 import ch.usi.si.seart.service.LicenseService;
@@ -42,6 +41,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.web.SortDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -117,6 +117,7 @@ public class GitRepoController {
     SearchLinkBuilder searchLinkBuilder;
     DownloadLinkBuilder downloadLinkBuilder;
 
+    @SuppressWarnings("unchecked")
     @GetMapping(value = "/search", produces = MediaType.APPLICATION_JSON_VALUE)
     @Operation(summary = "Perform a search for GitHub repositories matching a set of specified criteria.")
     @ApiResponse(responseCode = "200", description = "OK")
@@ -140,8 +141,8 @@ public class GitRepoController {
         Sort sort = pageable.getSort();
         PageRequest pageRequest = PageRequest.of(page, size, sort);
 
-        GitRepoSearch search = conversionService.convert(searchParameterDto, GitRepoSearch.class);
-        Page<GitRepo> results = gitRepoService.findDynamically(search, pageRequest);
+        Specification<GitRepo> specification = conversionService.convert(searchParameterDto, Specification.class);
+        Page<GitRepo> results = gitRepoService.getBy(specification, pageRequest);
 
         List<GitRepoDto> dtos = List.of(
                 conversionService.convert(
@@ -165,7 +166,8 @@ public class GitRepoController {
         return new ResponseEntity<>(resultPage, headers, HttpStatus.OK);
     }
 
-    @SneakyThrows({ IOException.class })
+    @SuppressWarnings("unchecked")
+    @SneakyThrows(IOException.class)
     @Transactional(readOnly = true)
     @GetMapping(value = "/download/{format}")
     @Operation(summary = "Export GitHub repositories matching a set of specified criteria to a file format.")
@@ -201,8 +203,8 @@ public class GitRepoController {
             default -> throw new IllegalStateException("Default portion of this switch should not be reachable!");
         };
 
-        GitRepoSearch search = conversionService.convert(searchParameterDto, GitRepoSearch.class);
-        @Cleanup Stream<GitRepoDto> results = gitRepoService.streamDynamically(search)
+        Specification<GitRepo> specification = conversionService.convert(searchParameterDto, Specification.class);
+        @Cleanup Stream<GitRepoDto> results = gitRepoService.streamBy(specification)
                 .map(gitRepo -> {
                     GitRepoDto dto = conversionService.convert(gitRepo, GitRepoDto.class);
                     entityManager.detach(gitRepo);

@@ -28,6 +28,22 @@ import java.util.function.Function;
 public class Ranges {
 
     /**
+     * @param range The input range
+     * @return Whether the input has bounds on both endpoints.
+     */
+    public static boolean hasAllBound(Range<?> range) {
+        return range.hasLowerBound() && range.hasUpperBound();
+    }
+
+    /**
+     * @param range The input range
+     * @return Whether the input has at least one bound on any endpoint.
+     */
+    public static boolean hasAnyBound(Range<?> range) {
+        return range.hasLowerBound() || range.hasUpperBound();
+    }
+
+    /**
      * Convenience method. Equivalent to:
      * <pre>{@code
      *     Ranges.builder().lower(...).upper(...).build();
@@ -128,13 +144,12 @@ public class Ranges {
          *
          * @param range The range to be split.
          * @return {@link Pair} containing the two halves of the split range.
-         * @throws IllegalArgumentException if the range has no upper and/or lower bound.
-         * @throws UnsplittableRangeException if range is empty or a singleton.
+         * @throws UnsplittableRangeException if range is a singleton, empty, or has no upper and/or lower bound.
          * @throws NullPointerException if the range is {@code null}.
          */
         public Pair<Range<T>, Range<T>> split(@NotNull Range<T> range) {
             Objects.requireNonNull(range, "Range must not be null!");
-            if (!range.hasLowerBound() || !range.hasUpperBound()) {
+            if (!hasAllBound(range)) {
                 throw new UnsplittableRangeException("Can't split unbounded range!");
             }
 
