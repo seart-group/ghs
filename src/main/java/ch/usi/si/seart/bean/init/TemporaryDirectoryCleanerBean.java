@@ -3,9 +3,8 @@ package ch.usi.si.seart.bean.init;
 import ch.usi.si.seart.exception.TerminalExecutionException;
 import ch.usi.si.seart.io.ExternalProcess;
 import lombok.AccessLevel;
-import lombok.RequiredArgsConstructor;
+import lombok.AllArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import lombok.experimental.NonFinal;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,11 +15,10 @@ import java.nio.file.Path;
 
 @Slf4j
 @Component("TemporaryDirectoryCleanerBean")
-@RequiredArgsConstructor(onConstructor_ = @Autowired)
+@AllArgsConstructor(onConstructor_ = @Autowired)
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class TemporaryDirectoryCleanerBean implements InitializingBean {
 
-    @NonFinal
     @Value("${app.git.folder-prefix}")
     String folderPrefix;
 
