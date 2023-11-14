@@ -144,8 +144,7 @@ public class Ranges {
          *
          * @param range The range to be split.
          * @return {@link Pair} containing the two halves of the split range.
-         * @throws IllegalArgumentException if the range has no upper and/or lower bound.
-         * @throws UnsplittableRangeException if range is empty or a singleton.
+         * @throws UnsplittableRangeException if range is a singleton, empty, or has no upper and/or lower bound.
          * @throws NullPointerException if the range is {@code null}.
          */
         public Pair<Range<T>, Range<T>> split(@NotNull Range<T> range) {
