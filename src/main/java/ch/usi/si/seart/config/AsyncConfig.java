@@ -29,7 +29,7 @@ public class AsyncConfig {
         executor.setCorePoolSize(0);
         executor.setMaxPoolSize(properties.getMaxPoolThreads());
         executor.setQueueCapacity(10);
-        executor.setThreadNamePrefix("AnalysisThread");
+        executor.setThreadNamePrefix("analysis-");
         executor.setRejectedExecutionHandler(rejectedExecutionHandler);
         executor.initialize();
         return executor;

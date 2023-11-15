@@ -24,7 +24,7 @@ public class SchedulerConfig {
         ThreadPoolTaskScheduler threadPoolTaskScheduler = new ThreadPoolTaskScheduler();
         threadPoolTaskScheduler.setClock(Clock.systemUTC());
         threadPoolTaskScheduler.setPoolSize(3);
-        threadPoolTaskScheduler.setThreadNamePrefix("GHSThread");
+        threadPoolTaskScheduler.setThreadNamePrefix("task-");
         threadPoolTaskScheduler.setErrorHandler(errorHandler);
         threadPoolTaskScheduler.initialize();
         return threadPoolTaskScheduler;
