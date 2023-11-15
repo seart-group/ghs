@@ -1,13 +1,9 @@
 package ch.usi.si.seart.config;
 
 import com.zaxxer.hikari.HikariDataSource;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.experimental.FieldDefaults;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
@@ -21,41 +17,26 @@ import java.time.Clock;
 
 @Configuration
 @EnableScheduling
-@AllArgsConstructor(onConstructor_ = @Autowired)
-@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class SchedulerConfig {
 
-    HikariDataSource hikariDataSource;
-    ApplicationContext applicationContext;
-
-    /**
-     * By default, Spring Boot will use just a single thread for all scheduled tasks to run.
-     * Since we have four scheduler jobs:
-     *
-     * <ul>
-     *     <li>Crawler</li>
-     *     <li>CleanUp</li>
-     *     <li>CodeAnalysis</li>
-     * </ul>
-     *
-     * We configure the threads here.
-     */
     @Bean
-    public ThreadPoolTaskScheduler threadPoolTaskScheduler() {
+    public ThreadPoolTaskScheduler threadPoolTaskScheduler(ErrorHandler errorHandler) {
         ThreadPoolTaskScheduler threadPoolTaskScheduler = new ThreadPoolTaskScheduler();
         threadPoolTaskScheduler.setClock(Clock.systemUTC());
         threadPoolTaskScheduler.setPoolSize(3);
         threadPoolTaskScheduler.setThreadNamePrefix("GHSThread");
-        threadPoolTaskScheduler.setErrorHandler(errorHandler());
+        threadPoolTaskScheduler.setErrorHandler(errorHandler);
         threadPoolTaskScheduler.initialize();
         return threadPoolTaskScheduler;
     }
 
     @Bean
-    public ErrorHandler errorHandler() {
+    public ErrorHandler errorHandler(HikariDataSource hikariDataSource, ApplicationContext applicationContext) {
         return new ErrorHandler() {
 
-            private final Logger log = LoggerFactory.getLogger("usi.si.seart.config.SchedulerConfig$ErrorHandler");
+            private final Logger log = LoggerFactory.getLogger(
+                    SchedulerConfig.class.getCanonicalName() + "$" + ErrorHandler.class.getSimpleName()
+            );
 
             @Override
             public void handleError(@NotNull Throwable t) {
