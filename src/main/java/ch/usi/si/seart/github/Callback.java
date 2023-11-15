@@ -12,5 +12,5 @@ import org.springframework.retry.RetryCallback;
  * @since 1.6.3
  * @author Ozren Dabić
  */
-public abstract class Callback<R extends Response> implements RetryCallback<R, Exception> {
+public interface Callback<R extends Response> extends RetryCallback<R, Exception> {
 }

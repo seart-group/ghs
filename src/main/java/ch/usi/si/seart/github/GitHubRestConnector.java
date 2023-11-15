@@ -287,7 +287,7 @@ public class GitHubRestConnector extends GitHubConnector<RestResponse> {
     @SuppressWarnings("ConstantConditions")
     @AllArgsConstructor(access = AccessLevel.PRIVATE)
     @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
-    private final class RestCallback extends Callback<RestResponse> {
+    private final class RestCallback implements Callback<RestResponse> {
 
         URL url;
 

@@ -62,7 +62,7 @@ public class GitHubGraphQlConnector extends GitHubConnector<GraphQlResponse> {
 
     @AllArgsConstructor(access = AccessLevel.PRIVATE)
     @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
-    private final class GraphQLCallback extends Callback<GraphQlResponse> {
+    private final class GraphQLCallback implements Callback<GraphQlResponse> {
 
         String document;
         Map<String, Object> variables;
