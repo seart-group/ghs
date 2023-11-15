@@ -13,7 +13,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.graphql.client.GraphQlClient;
 import org.springframework.retry.RetryContext;
-import org.springframework.retry.support.RetryTemplate;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -34,12 +33,10 @@ public class GitHubGraphQlConnector extends GitHubConnector<GraphQlResponse> {
 
     @Autowired
     public GitHubGraphQlConnector(
-            RetryTemplate retryTemplate,
             GraphQlClient graphQlClient,
             GitHubTokenManager gitHubTokenManager,
             ConversionService conversionService
     ) {
-        super(retryTemplate);
         this.graphQlClient = graphQlClient;
         this.gitHubTokenManager = gitHubTokenManager;
         this.conversionService = conversionService;

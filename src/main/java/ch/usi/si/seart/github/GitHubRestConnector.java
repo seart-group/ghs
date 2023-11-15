@@ -25,7 +25,6 @@ import org.springframework.core.convert.ConversionService;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.retry.RetryContext;
-import org.springframework.retry.support.RetryTemplate;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
@@ -55,14 +54,12 @@ public class GitHubRestConnector extends GitHubConnector<RestResponse> {
 
     @Autowired
     public GitHubRestConnector(
-            RetryTemplate retryTemplate,
             OkHttpClient httpClient,
             GitHubTokenManager gitHubTokenManager,
             ConversionService conversionService,
             Ranges.Printer<Date> dateRangePrinter,
             CrawlerProperties properties
     ) {
-        super(retryTemplate);
         this.httpClient = httpClient;
         this.gitHubTokenManager = gitHubTokenManager;
         this.conversionService = conversionService;
