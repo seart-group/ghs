@@ -22,25 +22,13 @@ import java.util.stream.StreamSupport;
 
 @Slf4j
 @Component
+@AllArgsConstructor(onConstructor_ = @Autowired)
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class GitHubGraphQlConnector extends GitHubConnector<GraphQlResponse> {
 
     GraphQlClient graphQlClient;
-
     GitHubTokenManager gitHubTokenManager;
-
     ConversionService conversionService;
-
-    @Autowired
-    public GitHubGraphQlConnector(
-            GraphQlClient graphQlClient,
-            GitHubTokenManager gitHubTokenManager,
-            ConversionService conversionService
-    ) {
-        this.graphQlClient = graphQlClient;
-        this.gitHubTokenManager = gitHubTokenManager;
-        this.conversionService = conversionService;
-    }
 
     public JsonObject getRepository(String name) {
         String[] args = name.split("/");
