@@ -1,10 +1,13 @@
 package ch.usi.si.seart.config;
 
+import ch.usi.si.seart.bean.init.LanguageInitializationBean;
 import ch.usi.si.seart.bean.init.TemporaryDirectoryCleanerBean;
 import ch.usi.si.seart.collection.Ranges;
+import ch.usi.si.seart.config.properties.CrawlerProperties;
 import ch.usi.si.seart.config.properties.GitProperties;
 import ch.usi.si.seart.config.properties.StatisticsProperties;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -31,6 +34,12 @@ public class MainConfig {
     @Bean
     public TemporaryDirectoryCleanerBean temporaryDirectoryCleanerBean(GitProperties gitProperties, Path tmpDir) {
         return new TemporaryDirectoryCleanerBean(tmpDir, gitProperties.getFolderPrefix());
+    }
+
+    @Bean
+    @ConditionalOnExpression(value = "${ghs.crawler.enabled:false} and not '${ghs.crawler.languages}'.isBlank()")
+    public LanguageInitializationBean languageInitializationBean(CrawlerProperties crawlerProperties) {
+        return new LanguageInitializationBean(crawlerProperties.getLanguages(), crawlerProperties.getStartDate());
     }
 
     @Bean

@@ -1,64 +1,47 @@
 package ch.usi.si.seart.bean.init;
 
-import ch.usi.si.seart.config.properties.CrawlerProperties;
 import ch.usi.si.seart.model.Language;
-import ch.usi.si.seart.repository.LanguageProgressRepository;
-import ch.usi.si.seart.repository.LanguageRepository;
+import ch.usi.si.seart.service.LanguageService;
 import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
+import lombok.Setter;
+import lombok.experimental.Accessors;
 import lombok.experimental.FieldDefaults;
+import lombok.experimental.NonFinal;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
-import org.springframework.stereotype.Component;
 
+import javax.persistence.EntityNotFoundException;
+import java.util.Date;
 import java.util.List;
 
 @Slf4j
-@Component("LanguageInitializationBean")
-@ConditionalOnExpression(value = "${ghs.crawler.enabled:false} and not '${ghs.crawler.languages}'.isBlank()")
+@RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
-@AllArgsConstructor(onConstructor_ = @Autowired)
 public class LanguageInitializationBean implements InitializingBean {
 
-    CrawlerProperties crawlerProperties;
+    List<String> names;
 
-    LanguageRepository languageRepository;
-    LanguageProgressRepository languageProgressRepository;
+    Date startDate;
+
+    @NonFinal
+    @Accessors(makeFinal = true)
+    @Setter(onMethod_ = @Autowired)
+    LanguageService languageService;
 
     @Override
     public void afterPropertiesSet() {
-        List<String> names = crawlerProperties.getLanguages();
+        if (names.isEmpty()) return;
+        log.info("Validating mining progress for {} languages...", names.size());
         for (String name : names) {
-            Language language = languageRepository.findByNameIgnoreCase(name)
-                    .map(existing -> {
-                        log.debug("\t   Found database entry for language: \"{}\"", name);
-                        return existing;
-                    })
-                    .orElseGet(() -> {
-                        log.debug("\tCreating database entry for language: \"{}\"", name);
-                        return languageRepository.save(
-                                Language.builder()
-                                        .name(name)
-                                        .build()
-                        );
-                    });
-            languageProgressRepository.findByLanguage(language)
-                    .map(existing -> {
-                        log.debug("\tFound progress for \"{}\"", name);
-                        return existing;
-                    })
-                    .orElseGet(() -> {
-                        log.debug("\t   No progress for \"{}\", initializing to default start date", name);
-                        return languageProgressRepository.save(
-                                Language.Progress.builder()
-                                        .language(language)
-                                        .checkpoint(crawlerProperties.getStartDate())
-                                        .build()
-                        );
-                    });
+            Language language = languageService.getOrCreate(name);
+            try {
+                languageService.getProgress(language);
+            } catch (EntityNotFoundException ignored) {
+                log.debug("No progress found for \"{}\", initializing to default start date...", name);
+                languageService.updateProgress(language, startDate);
+            }
         }
-        log.info("Successfully validated progress for {} languages!", names.size());
     }
 }

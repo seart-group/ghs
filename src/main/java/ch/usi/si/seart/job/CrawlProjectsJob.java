@@ -48,7 +48,7 @@ import java.util.stream.StreamSupport;
 
 @Job
 @Slf4j
-@DependsOn("LanguageInitializationBean")
+@DependsOn("languageInitializationBean")
 @ConditionalOnExpression(value =
         """
         ${ghs.crawler.enabled:false} and
