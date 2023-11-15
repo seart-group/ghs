@@ -78,11 +78,15 @@ public interface LanguageService extends NamedEntityService<Language> {
 
         @Override
         public void updateProgress(Language language, Date checkpoint) {
-            languageProgressRepository.findByLanguage(language)
-                    .ifPresent(progress -> {
-                        progress.setCheckpoint(checkpoint);
-                        languageProgressRepository.save(progress);
-                    });
+            Language.Progress progress = languageProgressRepository.findByLanguage(language)
+                            .orElseGet(
+                                    () -> Language.Progress.builder()
+                                            .id(language.getId())
+                                            .language(language)
+                                            .build()
+                            );
+            progress.setCheckpoint(checkpoint);
+            languageProgressRepository.save(progress);
         }
     }
 }
