@@ -32,14 +32,14 @@ public class MainConfig {
     }
 
     @Bean
-    public TemporaryDirectoryCleanerBean temporaryDirectoryCleanerBean(GitProperties gitProperties, Path tmpDir) {
-        return new TemporaryDirectoryCleanerBean(tmpDir, gitProperties.getFolderPrefix());
+    public TemporaryDirectoryCleanerBean temporaryDirectoryCleanerBean(GitProperties properties, Path tmpDir) {
+        return new TemporaryDirectoryCleanerBean(tmpDir, properties.getFolderPrefix());
     }
 
     @Bean
     @ConditionalOnExpression(value = "${ghs.crawler.enabled:false} and not '${ghs.crawler.languages}'.isBlank()")
-    public LanguageInitializationBean languageInitializationBean(CrawlerProperties crawlerProperties) {
-        return new LanguageInitializationBean(crawlerProperties.getLanguages(), crawlerProperties.getStartDate());
+    public LanguageInitializationBean languageInitializationBean(CrawlerProperties properties) {
+        return new LanguageInitializationBean(properties.getLanguages(), properties.getStartDate());
     }
 
     @Bean
