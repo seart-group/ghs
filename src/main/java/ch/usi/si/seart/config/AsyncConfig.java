@@ -24,19 +24,19 @@ import java.util.stream.Stream;
 public class AsyncConfig {
 
     @Bean(name = "AnalysisExecutor")
-    public Executor executor(AnalysisProperties properties) {
+    public Executor executor(RejectedExecutionHandler rejectedExecutionHandler, AnalysisProperties properties) {
         ThreadPoolTaskExecutor executor = new AnalysisThreadPoolExecutor();
         executor.setCorePoolSize(0);
         executor.setMaxPoolSize(properties.getMaxPoolThreads());
         executor.setQueueCapacity(10);
         executor.setThreadNamePrefix("AnalysisThread");
-        executor.setRejectedExecutionHandler(rejectedExecutionHandler());
+        executor.setRejectedExecutionHandler(rejectedExecutionHandler);
         executor.initialize();
         return executor;
     }
 
     @Bean
-    public RejectedExecutionHandler rejectedExecutionHandler() {
+    RejectedExecutionHandler rejectedExecutionHandler() {
         return new ThreadPoolExecutor.CallerRunsPolicy();
     }
 
@@ -45,7 +45,7 @@ public class AsyncConfig {
         return new AsyncUncaughtExceptionHandler() {
 
             private final Logger log = LoggerFactory.getLogger(
-                    "usi.si.seart.config.AsyncConfig$AsyncUncaughtExceptionHandler"
+                    AsyncConfig.class.getCanonicalName() + "$" + AsyncUncaughtExceptionHandler.class.getSimpleName()
             );
 
             @Override
