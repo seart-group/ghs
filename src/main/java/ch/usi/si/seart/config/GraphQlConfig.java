@@ -2,9 +2,7 @@ package ch.usi.si.seart.config;
 
 import ch.usi.si.seart.github.Endpoint;
 import ch.usi.si.seart.github.GitHubTokenManager;
-import lombok.AllArgsConstructor;
 import org.jetbrains.annotations.NotNull;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.graphql.client.GraphQlClient;
@@ -17,27 +15,24 @@ import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 
 @Configuration
-@AllArgsConstructor(onConstructor_ = @Autowired)
 public class GraphQlConfig {
 
-    GitHubTokenManager gitHubTokenManager;
-
     @Bean
-    public GraphQlClient graphQlClient() {
-        return HttpGraphQlClient.create(webClient());
+    public GraphQlClient graphQlClient(WebClient webClient) {
+        return HttpGraphQlClient.create(webClient);
     }
 
     @Bean
-    public WebClient webClient() {
+    WebClient webClient(ExchangeFilterFunction exchangeFilterFunction) {
         return WebClient.builder()
                 .baseUrl(Endpoint.GRAPH_QL.toString())
                 .defaultHeader("X-GitHub-Api-Version", "2022-11-28")
-                .filter(exchangeFilterFunction())
+                .filter(exchangeFilterFunction)
                 .build();
     }
 
     @Bean
-    public ExchangeFilterFunction exchangeFilterFunction() {
+    ExchangeFilterFunction exchangeFilterFunction(GitHubTokenManager gitHubTokenManager) {
         return new ExchangeFilterFunction() {
 
             @NotNull
@@ -46,8 +41,7 @@ public class GraphQlConfig {
                 ClientRequest modified = ClientRequest.from(original)
                         .headers(headers -> {
                             String token = gitHubTokenManager.getCurrentToken();
-                            if (token != null)
-                                headers.setBearerAuth(token);
+                            if (token != null) headers.setBearerAuth(token);
                         })
                         .build();
                 return next.exchange(modified);
