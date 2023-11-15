@@ -8,6 +8,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.ConstructorBinding;
 
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Pattern;
 import java.util.List;
 
 @Getter
@@ -17,4 +18,8 @@ import java.util.List;
 public class GitHubProperties {
 
     List<@NotBlank String> tokens;
+
+    @NotBlank
+    @Pattern(regexp = "\\d{4}-\\d{2}-\\d{2}")
+    String apiVersion;
 }

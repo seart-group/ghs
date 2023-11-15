@@ -1,5 +1,6 @@
 package ch.usi.si.seart.config;
 
+import ch.usi.si.seart.config.properties.GitHubProperties;
 import ch.usi.si.seart.github.Endpoint;
 import ch.usi.si.seart.github.GitHubTokenManager;
 import org.jetbrains.annotations.NotNull;
@@ -23,10 +24,10 @@ public class GraphQlConfig {
     }
 
     @Bean
-    WebClient webClient(ExchangeFilterFunction exchangeFilterFunction) {
+    WebClient webClient(ExchangeFilterFunction exchangeFilterFunction, GitHubProperties properties) {
         return WebClient.builder()
                 .baseUrl(Endpoint.GRAPH_QL.toString())
-                .defaultHeader("X-GitHub-Api-Version", "2022-11-28")
+                .defaultHeader("X-GitHub-Api-Version", properties.getApiVersion())
                 .filter(exchangeFilterFunction)
                 .build();
     }

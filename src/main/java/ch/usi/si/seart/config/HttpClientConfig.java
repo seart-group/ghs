@@ -1,5 +1,6 @@
 package ch.usi.si.seart.config;
 
+import ch.usi.si.seart.config.properties.GitHubProperties;
 import ch.usi.si.seart.github.GitHubRestConnector;
 import ch.usi.si.seart.http.interceptor.HeaderAttachmentInterceptor;
 import ch.usi.si.seart.http.interceptor.LoggingInterceptor;
@@ -17,10 +18,10 @@ import java.util.concurrent.TimeUnit;
 public class HttpClientConfig {
 
     @Bean
-    Headers headers() {
+    Headers headers(GitHubProperties properties) {
         return Headers.of(
                 HttpHeaders.ACCEPT, "application/vnd.github+json",
-                "X-GitHub-Api-Version", "2022-11-28"
+                "X-GitHub-Api-Version", properties.getApiVersion()
         );
     }
 
