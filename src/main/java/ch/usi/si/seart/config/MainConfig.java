@@ -4,8 +4,6 @@ import ch.usi.si.seart.bean.init.TemporaryDirectoryCleanerBean;
 import ch.usi.si.seart.collection.Ranges;
 import ch.usi.si.seart.config.properties.GitProperties;
 import ch.usi.si.seart.config.properties.StatisticsProperties;
-import lombok.AllArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
@@ -22,7 +20,6 @@ import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.Date;
 
-@AllArgsConstructor(onConstructor_ = @Autowired)
 @Configuration
 public class MainConfig {
 
@@ -37,10 +34,8 @@ public class MainConfig {
     }
 
     @Bean
-    public DateTimeFormatter dateTimeFormatter() {
-        return DateTimeFormatter
-                .ofPattern("yyyy-MM-dd'T'HH:mm:ss")
-                .withZone(ZoneOffset.UTC);
+    DateTimeFormatter dateTimeFormatter() {
+        return DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss").withZone(ZoneOffset.UTC);
     }
 
     @Bean
@@ -58,11 +53,11 @@ public class MainConfig {
     }
 
     @Bean
-    public Ranges.Printer<Date> dateRangePrinter() {
+    public Ranges.Printer<Date> dateRangePrinter(DateTimeFormatter formatter) {
         return new Ranges.Printer<>(date -> {
             Instant instant = date.toInstant();
             Instant truncated = instant.truncatedTo(ChronoUnit.SECONDS);
-            return dateTimeFormatter().format(truncated);
+            return formatter.format(truncated);
         });
     }
 
