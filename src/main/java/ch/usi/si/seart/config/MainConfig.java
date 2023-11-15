@@ -63,7 +63,9 @@ public class MainConfig {
 
     @Bean
     public Pageable suggestionLimitPageable(StatisticsProperties properties) {
-        return PageRequest.of(0, properties.getSuggestionLimit());
+        int pageSize = properties.getSuggestionLimit();
+        if (pageSize == 0) return Pageable.unpaged();
+        return PageRequest.ofSize(pageSize);
     }
 
     @Bean
