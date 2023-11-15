@@ -30,42 +30,42 @@ public class ExportConfig {
     }
 
     @Bean
-    public DateFormat exportTimeFormat() {
+    DateFormat exportTimeFormat() {
         return new SimpleDateFormat("yyyy-MM-dd'T'hh:mm:ss");
     }
 
     @Bean
     @Primary
-    public ObjectMapper objectMapper() {
+    public ObjectMapper objectMapper(DateFormat exportTimeFormat) {
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.registerModule(new JavaTimeModule());
-        objectMapper.setDateFormat(exportTimeFormat());
+        objectMapper.setDateFormat(exportTimeFormat);
         return objectMapper;
     }
 
     @Bean
-    public JsonMapper jsonMapper() {
+    public JsonMapper jsonMapper(DateFormat exportTimeFormat) {
         return JsonMapper.builder()
                 .addModule(new JavaTimeModule())
-                .defaultDateFormat(exportTimeFormat())
+                .defaultDateFormat(exportTimeFormat)
                 .build();
     }
 
     @Bean
-    public CsvMapper csvMapper() {
+    public CsvMapper csvMapper(DateFormat exportTimeFormat) {
         return CsvMapper.builder()
-                .defaultDateFormat(exportTimeFormat())
                 .addModule(new JavaTimeModule())
+                .defaultDateFormat(exportTimeFormat)
                 .enable(JsonGenerator.Feature.IGNORE_UNKNOWN)
                 .enable(CsvGenerator.Feature.ALWAYS_QUOTE_STRINGS)
                 .build();
     }
 
     @Bean
-    public XmlMapper xmlMapper() {
+    public XmlMapper xmlMapper(DateFormat exportTimeFormat) {
         return XmlMapper.builder()
-                .defaultDateFormat(exportTimeFormat())
                 .addModule(new JavaTimeModule())
+                .defaultDateFormat(exportTimeFormat)
                 .enable(ToXmlGenerator.Feature.WRITE_XML_DECLARATION)
                 .enable(ToXmlGenerator.Feature.WRITE_XML_1_1)
                 .build();
