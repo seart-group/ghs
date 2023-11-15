@@ -70,11 +70,11 @@ public class GitHubGraphQlConnector extends GitHubConnector<GraphQlResponse> {
         @Override
         @SuppressWarnings("ConstantConditions")
         public GraphQlResponse doWithRetry(RetryContext context) throws RuntimeException {
-            org.springframework.graphql.GraphQlResponse response = graphQlClient.documentName(document)
+            Map<String, Object> map = graphQlClient.documentName(document)
                     .variables(variables)
                     .execute()
-                    .block();
-            Map<String, Object> map = response.toMap();
+                    .block()
+                    .toMap();
             JsonObject data = conversionService.convert(map.getOrDefault("data", Map.of()), JsonObject.class);
             JsonArray errors = conversionService.convert(map.getOrDefault("errors", List.of()), JsonArray.class);
             StreamSupport.stream(errors.spliterator(), true)
