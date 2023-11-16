@@ -1,6 +1,5 @@
 package ch.usi.si.seart.converter;
 
-import ch.usi.si.seart.collection.Ranges;
 import ch.usi.si.seart.dto.SearchParameterDto;
 import ch.usi.si.seart.model.GitRepo;
 import ch.usi.si.seart.model.GitRepoMetricAggregate;
@@ -18,6 +17,7 @@ import ch.usi.si.seart.repository.criteria.KeyCriteria;
 import ch.usi.si.seart.repository.criteria.KeyValueCriteria;
 import ch.usi.si.seart.repository.operation.BinaryOperation;
 import ch.usi.si.seart.repository.operation.UnaryOperation;
+import ch.usi.si.seart.util.Ranges;
 import com.google.common.collect.Range;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;

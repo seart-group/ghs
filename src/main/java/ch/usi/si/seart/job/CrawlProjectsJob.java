@@ -1,6 +1,5 @@
 package ch.usi.si.seart.job;
 
-import ch.usi.si.seart.collection.Ranges;
 import ch.usi.si.seart.config.properties.CrawlerProperties;
 import ch.usi.si.seart.exception.MetadataCrawlingException;
 import ch.usi.si.seart.exception.UnsplittableRangeException;
@@ -18,6 +17,7 @@ import ch.usi.si.seart.service.TopicService;
 import ch.usi.si.seart.stereotype.Job;
 import ch.usi.si.seart.util.Dates;
 import ch.usi.si.seart.util.Optionals;
+import ch.usi.si.seart.util.Ranges;
 import com.google.common.base.Strings;
 import com.google.common.collect.Range;
 import com.google.gson.JsonArray;

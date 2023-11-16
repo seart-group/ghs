@@ -2,10 +2,10 @@ package ch.usi.si.seart.config;
 
 import ch.usi.si.seart.bean.init.LanguageInitializationBean;
 import ch.usi.si.seart.bean.init.TemporaryDirectoryCleanerBean;
-import ch.usi.si.seart.collection.Ranges;
 import ch.usi.si.seart.config.properties.CrawlerProperties;
 import ch.usi.si.seart.config.properties.GitProperties;
 import ch.usi.si.seart.config.properties.StatisticsProperties;
+import ch.usi.si.seart.util.Ranges;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;

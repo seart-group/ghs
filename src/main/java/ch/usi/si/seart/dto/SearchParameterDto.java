@@ -1,6 +1,6 @@
 package ch.usi.si.seart.dto;
 
-import ch.usi.si.seart.collection.Ranges;
+import ch.usi.si.seart.util.Ranges;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;

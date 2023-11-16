@@ -1,4 +1,4 @@
-package ch.usi.si.seart.collection;
+package ch.usi.si.seart.util;
 
 import ch.usi.si.seart.exception.UnsplittableRangeException;
 import com.google.common.collect.Range;
