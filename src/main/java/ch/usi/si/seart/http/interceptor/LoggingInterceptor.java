@@ -1,6 +1,8 @@
 package ch.usi.si.seart.http.interceptor;
 
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
+import lombok.experimental.FieldDefaults;
 import okhttp3.Interceptor;
 import okhttp3.Request;
 import okhttp3.Response;
@@ -11,9 +13,10 @@ import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
 @AllArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class LoggingInterceptor implements Interceptor {
 
-    private final Logger log;
+    Logger log;
 
     @NotNull
     @Override

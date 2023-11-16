@@ -7,7 +7,9 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
+import lombok.experimental.FieldDefaults;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.convert.TypeDescriptor;
@@ -18,9 +20,10 @@ import java.util.Set;
 
 @Component
 @AllArgsConstructor(onConstructor_ = @Autowired)
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class GenericStringToJsonElementConverter implements GenericConverter {
 
-    private final Gson gson;
+    Gson gson;
 
     @Override
     public Set<ConvertiblePair> getConvertibleTypes() {
