@@ -8,6 +8,7 @@ import ch.usi.si.seart.config.properties.StatisticsProperties;
 import ch.usi.si.seart.util.Ranges;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -37,7 +38,8 @@ public class MainConfig {
     }
 
     @Bean
-    @ConditionalOnExpression(value = "${ghs.crawler.enabled:false} and not '${ghs.crawler.languages}'.isBlank()")
+    @ConditionalOnProperty(value = "ghs.crawler.enabled", havingValue = "true")
+    @ConditionalOnExpression(value = "not '${ghs.crawler.languages}'.blank")
     public LanguageInitializationBean languageInitializationBean(CrawlerProperties properties) {
         return new LanguageInitializationBean(properties.getLanguages(), properties.getStartDate());
     }
