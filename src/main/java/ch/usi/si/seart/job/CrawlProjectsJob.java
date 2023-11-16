@@ -30,6 +30,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.DependsOn;
 import org.springframework.dao.NonTransientDataAccessException;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -49,13 +50,8 @@ import java.util.stream.StreamSupport;
 @Job
 @Slf4j
 @DependsOn("languageInitializationBean")
-@ConditionalOnExpression(value =
-        """
-        ${ghs.crawler.enabled:false} and
-        not '${ghs.crawler.languages}'.isBlank() and
-        not '${ghs.github.tokens}'.isBlank()
-        """
-)
+@ConditionalOnProperty(value = "ghs.crawler.enabled", havingValue = "true")
+@ConditionalOnExpression(value = "not '${ghs.crawler.languages}'.blank and not '${ghs.github.tokens}'.blank")
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class CrawlProjectsJob implements Runnable {
