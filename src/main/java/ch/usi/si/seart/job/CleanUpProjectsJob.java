@@ -21,7 +21,7 @@ import java.net.URL;
 
 @Job
 @Slf4j
-@ConditionalOnProperty(value = "app.clean-up.enabled", havingValue = "true")
+@ConditionalOnProperty(value = "ghs.clean-up.enabled", havingValue = "true")
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 @AllArgsConstructor(onConstructor_ = @Autowired)
 public class CleanUpProjectsJob implements Runnable {
@@ -32,7 +32,7 @@ public class CleanUpProjectsJob implements Runnable {
     GitRepoService gitRepoService;
 
     @Transactional(readOnly = true)
-    @Scheduled(cron = "${app.clean-up.cron}")
+    @Scheduled(cron = "${ghs.clean-up.cron}")
     public void run() {
         log.info(
                 "Started cleanup  on {}/{} repositories",

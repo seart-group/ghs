@@ -38,7 +38,7 @@ import java.util.stream.Collectors;
 
 @Job
 @Slf4j
-@ConditionalOnProperty(value = "app.analysis.enabled", havingValue = "true")
+@ConditionalOnProperty(value = "ghs.analysis.enabled", havingValue = "true")
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class CodeAnalysisJob implements Runnable {
@@ -53,7 +53,7 @@ public class CodeAnalysisJob implements Runnable {
     LanguageService languageService;
 
     @Transactional(readOnly = true)
-    @Scheduled(fixedDelayString = "${app.analysis.scheduling}")
+    @Scheduled(fixedDelayString = "${ghs.analysis.delay-between-runs}")
     public void run() {
         log.info(
                 "Started analysis on {}/{} repositories",

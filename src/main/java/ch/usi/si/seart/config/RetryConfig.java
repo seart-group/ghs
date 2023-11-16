@@ -21,7 +21,9 @@ public class RetryConfig {
     public RetryListener retryListener() {
         return new RetryListener() {
 
-            private final Logger log = LoggerFactory.getLogger("usi.si.seart.config.RetryListener$RetryListener");
+            private final Logger log = LoggerFactory.getLogger(
+                    RetryConfig.class.getCanonicalName() + "$" + RetryListener.class.getSimpleName()
+            );
 
             @Override
             public <T, E extends Throwable> boolean open(RetryContext context, RetryCallback<T, E> callback) {
@@ -50,19 +52,19 @@ public class RetryConfig {
 
     @Bean
     @Primary
-    public RetryTemplate attemptLimitedRetryTemplate() {
+    public RetryTemplate attemptLimitedRetryTemplate(BackOffPolicy backOffPolicy) {
         return RetryTemplate.builder()
                 .maxAttempts(5)
-                .customBackoff(backOffPolicy())
+                .customBackoff(backOffPolicy)
                 .retryOn(Exception.class)
                 .build();
     }
 
     @Bean
-    public RetryTemplate timeLimitedRetryTemplate() {
+    public RetryTemplate timeLimitedRetryTemplate(BackOffPolicy backOffPolicy) {
         return RetryTemplate.builder()
                 .withinMillis(7_200_000)
-                .customBackoff(backOffPolicy())
+                .customBackoff(backOffPolicy)
                 .retryOn(Exception.class)
                 .build();
     }

@@ -1,5 +1,6 @@
 package ch.usi.si.seart.config;
 
+import ch.usi.si.seart.config.properties.GitHubProperties;
 import ch.usi.si.seart.github.GitHubRestConnector;
 import ch.usi.si.seart.http.interceptor.HeaderAttachmentInterceptor;
 import ch.usi.si.seart.http.interceptor.LoggingInterceptor;
@@ -17,29 +18,31 @@ import java.util.concurrent.TimeUnit;
 public class HttpClientConfig {
 
     @Bean
-    public Headers headers() {
+    Headers headers(GitHubProperties properties) {
         return Headers.of(
                 HttpHeaders.ACCEPT, "application/vnd.github+json",
-                "X-GitHub-Api-Version", "2022-11-28"
+                "X-GitHub-Api-Version", properties.getApiVersion()
         );
     }
 
     @Bean
-    public LoggingInterceptor httpLoggingInterceptor() {
+    LoggingInterceptor httpLoggingInterceptor() {
         Logger logger = LoggerFactory.getLogger(GitHubRestConnector.class);
         return new LoggingInterceptor(logger);
     }
 
     @Bean
-    public HeaderAttachmentInterceptor headerAttachmentInterceptor() {
-        return new HeaderAttachmentInterceptor(headers());
+    HeaderAttachmentInterceptor headerAttachmentInterceptor(Headers headers) {
+        return new HeaderAttachmentInterceptor(headers);
     }
 
     @Bean
-    public OkHttpClient httpClient() {
+    public OkHttpClient httpClient(
+            HeaderAttachmentInterceptor headerAttachmentInterceptor, LoggingInterceptor loggingInterceptor
+    ) {
         return new OkHttpClient.Builder()
-                .addInterceptor(headerAttachmentInterceptor())
-                .addNetworkInterceptor(httpLoggingInterceptor())
+                .addInterceptor(headerAttachmentInterceptor)
+                .addNetworkInterceptor(loggingInterceptor)
                 .connectTimeout(1, TimeUnit.MINUTES)
                 .writeTimeout(1, TimeUnit.MINUTES)
                 .readTimeout(1, TimeUnit.MINUTES)

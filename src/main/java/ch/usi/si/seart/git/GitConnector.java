@@ -1,5 +1,6 @@
 package ch.usi.si.seart.git;
 
+import ch.usi.si.seart.config.properties.GitProperties;
 import ch.usi.si.seart.exception.TerminalExecutionException;
 import ch.usi.si.seart.exception.git.CloneException;
 import ch.usi.si.seart.exception.git.GitException;
@@ -7,19 +8,16 @@ import ch.usi.si.seart.exception.git.RemoteReferenceDisplayException;
 import ch.usi.si.seart.io.ExternalProcess;
 import ch.usi.si.seart.stereotype.Connector;
 import lombok.AccessLevel;
-import lombok.RequiredArgsConstructor;
+import lombok.AllArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import lombok.experimental.NonFinal;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.convert.ConversionService;
 
 import java.io.IOException;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.time.Duration;
 import java.util.concurrent.TimeoutException;
 
 /**
@@ -27,17 +25,11 @@ import java.util.concurrent.TimeoutException;
  */
 @Slf4j
 @Connector(command = "git")
+@AllArgsConstructor(onConstructor_ = @Autowired)
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
-@RequiredArgsConstructor(onConstructor_ = @Autowired)
 public class GitConnector {
 
-    @NonFinal
-    @Value("${app.git.folder-prefix}")
-    String folderPrefix;
-
-    @NonFinal
-    @Value("${app.git.clone-timeout-duration}")
-    Duration duration;
+    GitProperties gitProperties;
 
     ConversionService conversionService;
 
@@ -52,11 +44,12 @@ public class GitConnector {
     @SuppressWarnings("ConstantConditions")
     public LocalRepositoryClone clone(URL url) throws GitException {
         try {
-            Path directory = Files.createTempDirectory(folderPrefix);
+            Path directory = Files.createTempDirectory(gitProperties.getFolderPrefix());
             String[] command = {"git", "clone", "--quiet", "--depth", "1", url.toString(), directory.toString()};
             ExternalProcess process = new ExternalProcess(directory, command);
             log.trace("Cloning:   {}", url);
-            ExternalProcess.Result result = process.execute(duration.toMillis());
+            long timeout = gitProperties.getCloneTimeoutDuration().toMillis();
+            ExternalProcess.Result result = process.execute(timeout);
             result.ifFailedThrow(() -> {
                 GitException exception = conversionService.convert(result.getStdErr(), GitException.class);
                 return (GitException) exception.fillInStackTrace();

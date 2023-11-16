@@ -3,17 +3,17 @@
     <additionalParameters>
       <param>
         <option name="enabled" value="true" />
-        <option name="name" value="app.crawl.enabled" />
+        <option name="name" value="ghs.crawler.enabled" />
         <option name="value" value="false" />
       </param>
       <param>
         <option name="enabled" value="true" />
-        <option name="name" value="app.analysis.enabled" />
+        <option name="name" value="ghs.analysis.enabled" />
         <option name="value" value="false" />
       </param>
       <param>
         <option name="enabled" value="true" />
-        <option name="name" value="app.clean-up.enabled" />
+        <option name="name" value="ghs.clean-up.enabled" />
         <option name="value" value="false" />
       </param>
     </additionalParameters>

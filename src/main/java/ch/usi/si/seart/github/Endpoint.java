@@ -109,8 +109,8 @@ public enum Endpoint {
 
     UriTemplate template;
 
-    private static final String scheme = "https";
-    private static final String host = "api.github.com";
+    private static final String SCHEME = "https";
+    private static final String HOST = "api.github.com";
 
     /**
      * GitHub API Root endpoint. Provides hypermedia links to resources accessible in GitHub's REST API.
@@ -144,8 +144,8 @@ public enum Endpoint {
     @SneakyThrows(MalformedURLException.class)
     private static URL endpointUrl() {
         return UriComponentsBuilder.newInstance()
-                .scheme(scheme)
-                .host(host)
+                .scheme(SCHEME)
+                .host(HOST)
                 .build()
                 .toUri()
                 .toURL();
@@ -154,8 +154,8 @@ public enum Endpoint {
     @SneakyThrows(MalformedURLException.class)
     private static URL endpointUrl(String endpoint) {
         return UriComponentsBuilder.newInstance()
-                .scheme(scheme)
-                .host(host)
+                .scheme(SCHEME)
+                .host(HOST)
                 .path(endpoint)
                 .build()
                 .toUri()
@@ -179,8 +179,8 @@ public enum Endpoint {
             throw new IllegalArgumentException(message);
         }
         return UriComponentsBuilder.newInstance()
-                .scheme(scheme)
-                .host(host)
+                .scheme(SCHEME)
+                .host(HOST)
                 .path(template.toString())
                 .build((Object[]) args)
                 .toURL();

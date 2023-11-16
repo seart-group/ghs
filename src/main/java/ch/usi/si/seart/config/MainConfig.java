@@ -1,9 +1,13 @@
 package ch.usi.si.seart.config;
 
+import ch.usi.si.seart.bean.init.LanguageInitializationBean;
+import ch.usi.si.seart.bean.init.TemporaryDirectoryCleanerBean;
 import ch.usi.si.seart.collection.Ranges;
-import lombok.AllArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
+import ch.usi.si.seart.config.properties.CrawlerProperties;
+import ch.usi.si.seart.config.properties.GitProperties;
+import ch.usi.si.seart.config.properties.StatisticsProperties;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -19,20 +23,28 @@ import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.Date;
 
-@AllArgsConstructor(onConstructor_ = @Autowired)
 @Configuration
 public class MainConfig {
 
     @Bean
-    public Path tmpDir(@Value("${java.io.tmpdir}") String value) {
+    Path tmpDir(@Value("${java.io.tmpdir}") String value) {
         return Path.of(value);
     }
 
     @Bean
-    public DateTimeFormatter dateTimeFormatter() {
-        return DateTimeFormatter
-                .ofPattern("yyyy-MM-dd'T'HH:mm:ss")
-                .withZone(ZoneOffset.UTC);
+    public TemporaryDirectoryCleanerBean temporaryDirectoryCleanerBean(GitProperties properties, Path tmpDir) {
+        return new TemporaryDirectoryCleanerBean(tmpDir, properties.getFolderPrefix());
+    }
+
+    @Bean
+    @ConditionalOnExpression(value = "${ghs.crawler.enabled:false} and not '${ghs.crawler.languages}'.isBlank()")
+    public LanguageInitializationBean languageInitializationBean(CrawlerProperties properties) {
+        return new LanguageInitializationBean(properties.getLanguages(), properties.getStartDate());
+    }
+
+    @Bean
+    DateTimeFormatter dateTimeFormatter() {
+        return DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss").withZone(ZoneOffset.UTC);
     }
 
     @Bean
@@ -50,17 +62,19 @@ public class MainConfig {
     }
 
     @Bean
-    public Ranges.Printer<Date> dateRangePrinter() {
+    public Ranges.Printer<Date> dateRangePrinter(DateTimeFormatter formatter) {
         return new Ranges.Printer<>(date -> {
             Instant instant = date.toInstant();
             Instant truncated = instant.truncatedTo(ChronoUnit.SECONDS);
-            return dateTimeFormatter().format(truncated);
+            return formatter.format(truncated);
         });
     }
 
     @Bean
-    public Pageable suggestionLimitPageable(@Value("${app.statistics.suggestion-limit}") Integer limit) {
-        return PageRequest.of(0, limit);
+    public Pageable suggestionLimitPageable(StatisticsProperties properties) {
+        int pageSize = properties.getSuggestionLimit();
+        if (pageSize == 0) return Pageable.unpaged();
+        return PageRequest.ofSize(pageSize);
     }
 
     @Bean
