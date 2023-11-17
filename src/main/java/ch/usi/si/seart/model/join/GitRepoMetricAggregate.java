@@ -1,5 +1,6 @@
-package ch.usi.si.seart.model;
+package ch.usi.si.seart.model.join;
 
+import ch.usi.si.seart.model.GitRepo;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

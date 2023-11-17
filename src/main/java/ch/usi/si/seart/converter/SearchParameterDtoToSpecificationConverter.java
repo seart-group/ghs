@@ -2,13 +2,13 @@ package ch.usi.si.seart.converter;
 
 import ch.usi.si.seart.dto.SearchParameterDto;
 import ch.usi.si.seart.model.GitRepo;
-import ch.usi.si.seart.model.GitRepoMetricAggregate;
-import ch.usi.si.seart.model.GitRepoMetricAggregate_;
 import ch.usi.si.seart.model.GitRepo_;
 import ch.usi.si.seart.model.Label_;
 import ch.usi.si.seart.model.Language_;
 import ch.usi.si.seart.model.Topic_;
 import ch.usi.si.seart.model.join.GitRepoMetric;
+import ch.usi.si.seart.model.join.GitRepoMetricAggregate;
+import ch.usi.si.seart.model.join.GitRepoMetricAggregate_;
 import ch.usi.si.seart.model.join.GitRepoMetric_;
 import ch.usi.si.seart.repository.criteria.AlwaysTrueCriteria;
 import ch.usi.si.seart.repository.criteria.Criteria;
