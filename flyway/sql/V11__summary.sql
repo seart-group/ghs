@@ -188,4 +188,15 @@ BEGIN
     END IF;
 END;
 
+CREATE OR REPLACE VIEW count_git_repo_by_language_analyzed AS
+SELECT
+    language.id AS language_id,
+    COUNT(git_repo.id) AS count
+FROM language
+INNER JOIN git_repo
+    ON git_repo.language_id = language.id
+INNER JOIN git_repo_metric_aggregate
+    ON git_repo_metric_aggregate.repo_id = git_repo.id
+GROUP BY language.id;
+
 DROP VIEW git_repo_metrics_by_id;
