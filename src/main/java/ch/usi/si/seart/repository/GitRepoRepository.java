@@ -1,11 +1,7 @@
 package ch.usi.si.seart.repository;
 
 import ch.usi.si.seart.model.GitRepo;
-import ch.usi.si.seart.repository.specification.GitRepoSearch;
-import ch.usi.si.seart.repository.specification.GitRepoSpecification;
-import ch.usi.si.seart.repository.specification.JpaStreamableSpecificationRepository;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
+import ch.usi.si.seart.repository.support.JpaStreamExecutor;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Modifying;
@@ -20,7 +16,7 @@ import java.util.stream.Stream;
 public interface GitRepoRepository extends
         JpaRepository<GitRepo, Long>,
         JpaSpecificationExecutor<GitRepo>,
-        JpaStreamableSpecificationRepository<GitRepo>
+        JpaStreamExecutor<GitRepo>
 {
 
     @Modifying
@@ -68,14 +64,4 @@ public interface GitRepoRepository extends
         """
     )
     Long countWithOutdatedCodeMetrics();
-
-    default Page<GitRepo> findAllDynamically(GitRepoSearch parameters, Pageable pageable) {
-        GitRepoSpecification specification = new GitRepoSpecification(parameters);
-        return findAll(specification, pageable);
-    }
-
-    default Stream<GitRepo> streamAllDynamically(GitRepoSearch parameters) {
-        GitRepoSpecification specification = new GitRepoSpecification(parameters);
-        return stream(specification, GitRepo.class);
-    }
 }

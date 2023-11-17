@@ -1,6 +1,7 @@
 package ch.usi.si.seart.github;
 
 import ch.usi.si.seart.collection.Cycle;
+import ch.usi.si.seart.config.properties.GitHubProperties;
 import ch.usi.si.seart.exception.github.GitHubTokenManagerException;
 import com.google.gson.JsonObject;
 import lombok.AccessLevel;
@@ -13,7 +14,6 @@ import okhttp3.Request;
 import okhttp3.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -25,7 +25,6 @@ import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
 
 import javax.annotation.PostConstruct;
-import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -57,13 +56,12 @@ public class GitHubTokenManager {
             @Qualifier("timeLimitedRetryTemplate")
             RetryTemplate retryTemplate,
             ConversionService conversionService,
-            @Value("${app.crawl.tokens}")
-            List<String> tokens
+            GitHubProperties properties
     ) {
         this.client = client;
         this.retryTemplate = retryTemplate;
         this.conversionService = conversionService;
-        this.tokens = new Cycle<>(tokens);
+        this.tokens = new Cycle<>(properties.getTokens());
     }
 
     @PostConstruct
@@ -74,7 +72,7 @@ public class GitHubTokenManager {
                 log.warn("Access tokens not specified, can not mine the GitHub API!");
                 log.info(
                         "Generate a new access token on https://github.com/settings/tokens " +
-                                "and add it to the `app.crawl.tokens` property in `application.properties`!"
+                                "and add it to the `ghs.github.tokens` property in `ghs.properties`!"
                 );
             }
             case 1 -> {

@@ -1,4 +1,4 @@
-package ch.usi.si.seart.repository;
+package ch.usi.si.seart.repository.support;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -6,21 +6,20 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.repository.NoRepositoryBean;
 import org.springframework.data.repository.Repository;
 
-import java.io.Serializable;
 import java.util.List;
 import java.util.Optional;
 
 /**
  * A read-only {@link Repository} interface.
  * Provides methods for retrieving entities without
- * the possibility to modify the underlying data source.
+ * the possibility of modifying the underlying data source.
  *
  * @param <T> the entity type
- * @param <ID> the type of the entity's identifier
- * @author dabico
+ * @param <ID> the entity identifier type
+ * @author Ozren Dabić
  */
 @NoRepositoryBean
-public interface ReadOnlyRepository<T, ID extends Serializable> extends Repository<T, ID> {
+public interface ReadOnlyRepository<T, ID> extends Repository<T, ID> {
 
     /*
      * (non-Javadoc)

@@ -1,9 +1,10 @@
 package ch.usi.si.seart.dto;
 
-import ch.usi.si.seart.collection.Ranges;
+import ch.usi.si.seart.util.Ranges;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.collect.Range;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -49,6 +50,7 @@ public class SearchParameterDto {
     Long watchersMax;
     Long forksMin;
     Long forksMax;
+
     Long codeLinesMin;
     Long codeLinesMax;
     Long commentLinesMin;
@@ -86,27 +88,83 @@ public class SearchParameterDto {
         parameters.put("license", license);
         parameters.put("label", label);
         parameters.put("topic", topic);
-        parameters.put("commits", Ranges.closed(commitsMin, commitsMax));
-        parameters.put("contributors", Ranges.closed(contributorsMin, contributorsMax));
-        parameters.put("issues", Ranges.closed(issuesMin, issuesMax));
-        parameters.put("pulls", Ranges.closed(pullsMin, pullsMax));
-        parameters.put("branches", Ranges.closed(branchesMin, branchesMax));
-        parameters.put("releases", Ranges.closed(releasesMin, releasesMax));
-        parameters.put("stars", Ranges.closed(starsMin, starsMax));
-        parameters.put("watchers", Ranges.closed(watchersMin, watchersMax));
-        parameters.put("forks", Ranges.closed(forksMin, forksMax));
-        parameters.put("created", Ranges.closed(createdMin, createdMax));
-        parameters.put("committed", Ranges.closed(committedMin, committedMax));
+        parameters.put("commits", getCommits());
+        parameters.put("contributors", getContributors());
+        parameters.put("issues", getIssues());
+        parameters.put("pulls", getPulls());
+        parameters.put("branches", getBranches());
+        parameters.put("releases", getReleases());
+        parameters.put("stars", getStars());
+        parameters.put("watchers", getWatchers());
+        parameters.put("forks", getForks());
+        parameters.put("codeLines", getCodeLines());
+        parameters.put("commentLines", getCommentLines());
+        parameters.put("nonBlankLines", getNonBlankLines());
+        parameters.put("created", getCreated());
+        parameters.put("committed", getCommitted());
         parameters.put("excludeForks", excludeForks);
         parameters.put("onlyForks", onlyForks);
         parameters.put("hasIssues", hasIssues);
         parameters.put("hasPulls", hasPulls);
         parameters.put("hasWiki", hasWiki);
         parameters.put("hasLicense", hasLicense);
-        parameters.put("codeLines", Ranges.closed(codeLinesMin, codeLinesMax));
-        parameters.put("commentLines", Ranges.closed(commentLinesMin, commentLinesMax));
-        parameters.put("nonBlankLines", Ranges.closed(nonBlankLinesMin, nonBlankLinesMax));
 
         return parameters;
+    }
+
+    public Range<Long> getCommits() {
+        return Ranges.closed(commitsMin, commitsMax);
+    }
+
+    public Range<Long> getContributors() {
+        return Ranges.closed(contributorsMin, contributorsMax);
+    }
+
+    public Range<Long> getIssues() {
+        return Ranges.closed(issuesMin, issuesMax);
+    }
+
+    public Range<Long> getPulls() {
+        return Ranges.closed(pullsMin, pullsMax);
+    }
+
+    public Range<Long> getBranches() {
+        return Ranges.closed(branchesMin, branchesMax);
+    }
+
+    public Range<Long> getReleases() {
+        return Ranges.closed(releasesMin, releasesMax);
+    }
+
+    public Range<Long> getStars() {
+        return Ranges.closed(starsMin, starsMax);
+    }
+
+    public Range<Long> getWatchers() {
+        return Ranges.closed(watchersMin, watchersMax);
+    }
+
+    public Range<Long> getForks() {
+        return Ranges.closed(forksMin, forksMax);
+    }
+
+    public Range<Date> getCreated() {
+        return Ranges.closed(createdMin, createdMax);
+    }
+
+    public Range<Date> getCommitted() {
+        return Ranges.closed(committedMin, committedMax);
+    }
+
+    public Range<Long> getCodeLines() {
+        return Ranges.closed(codeLinesMin, codeLinesMax);
+    }
+
+    public Range<Long> getCommentLines() {
+        return Ranges.closed(commentLinesMin, commentLinesMax);
+    }
+
+    public Range<Long> getNonBlankLines() {
+        return Ranges.closed(nonBlankLinesMin, nonBlankLinesMax);
     }
 }

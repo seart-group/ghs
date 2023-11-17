@@ -13,7 +13,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.graphql.client.GraphQlClient;
 import org.springframework.retry.RetryContext;
-import org.springframework.retry.support.RetryTemplate;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -23,27 +22,13 @@ import java.util.stream.StreamSupport;
 
 @Slf4j
 @Component
+@AllArgsConstructor(onConstructor_ = @Autowired)
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class GitHubGraphQlConnector extends GitHubConnector<GraphQlResponse> {
 
     GraphQlClient graphQlClient;
-
     GitHubTokenManager gitHubTokenManager;
-
     ConversionService conversionService;
-
-    @Autowired
-    public GitHubGraphQlConnector(
-            RetryTemplate retryTemplate,
-            GraphQlClient graphQlClient,
-            GitHubTokenManager gitHubTokenManager,
-            ConversionService conversionService
-    ) {
-        super(retryTemplate);
-        this.graphQlClient = graphQlClient;
-        this.gitHubTokenManager = gitHubTokenManager;
-        this.conversionService = conversionService;
-    }
 
     public JsonObject getRepository(String name) {
         String[] args = name.split("/");
@@ -65,7 +50,7 @@ public class GitHubGraphQlConnector extends GitHubConnector<GraphQlResponse> {
 
     @AllArgsConstructor(access = AccessLevel.PRIVATE)
     @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
-    private final class GraphQLCallback extends Callback<GraphQlResponse> {
+    private final class GraphQLCallback implements Callback<GraphQlResponse> {
 
         String document;
         Map<String, Object> variables;
@@ -73,11 +58,11 @@ public class GitHubGraphQlConnector extends GitHubConnector<GraphQlResponse> {
         @Override
         @SuppressWarnings("ConstantConditions")
         public GraphQlResponse doWithRetry(RetryContext context) throws RuntimeException {
-            org.springframework.graphql.GraphQlResponse response = graphQlClient.documentName(document)
+            Map<String, Object> map = graphQlClient.documentName(document)
                     .variables(variables)
                     .execute()
-                    .block();
-            Map<String, Object> map = response.toMap();
+                    .block()
+                    .toMap();
             JsonObject data = conversionService.convert(map.getOrDefault("data", Map.of()), JsonObject.class);
             JsonArray errors = conversionService.convert(map.getOrDefault("errors", List.of()), JsonArray.class);
             StreamSupport.stream(errors.spliterator(), true)

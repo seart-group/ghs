@@ -2,8 +2,10 @@ package ch.usi.si.seart.hateoas;
 
 import ch.usi.si.seart.controller.GitRepoController;
 import ch.usi.si.seart.dto.SearchParameterDto;
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.SneakyThrows;
+import lombok.experimental.FieldDefaults;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.hateoas.Link;
@@ -21,10 +23,11 @@ import java.util.stream.Collectors;
 
 @Component("downloadLinkBuilder")
 @AllArgsConstructor(onConstructor_ = @Autowired)
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class DownloadLinkBuilder extends LinkBuilder<Void> {
 
     @Qualifier("exportFormats")
-    private final Set<String> exportFormats;
+    Set<String> exportFormats;
 
     @Override
     protected Class<?> getControllerClass() {

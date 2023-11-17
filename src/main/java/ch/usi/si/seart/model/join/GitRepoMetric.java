@@ -36,7 +36,7 @@ import java.util.Objects;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "git_repo_metrics")
+@Table(name = "git_repo_metric")
 @Entity
 public class GitRepoMetric {
 

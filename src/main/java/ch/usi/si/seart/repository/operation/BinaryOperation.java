@@ -7,5 +7,7 @@ public enum BinaryOperation implements Operation {
     LESS_THAN_EQUAL,
     EQUAL,
     NOT_EQUAL,
-    LIKE
+    LIKE,
+    PREFIX,
+    SUFFIX
 }
