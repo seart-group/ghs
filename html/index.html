@@ -1159,7 +1159,10 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.3.0/dist/chart.umd.min.js" integrity="sha384-YAshAm4KKjf8V01c4sdNbPYiwU0D0Q82fjMHhKw8VvP0ecY4fxXsZAHxC4r4Ei+T" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/handlebars@4.7.7/dist/handlebars.js" integrity="sha384-hlAB2iOjy5Dl7guHcQsJ/scYffh0k+rReCOxkZnYvr7gB22xtZbth64QiI3VUkZD" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/just-handlebars-helpers@1.0.19/dist/h.min.js" integrity="sha384-RqSUk94F6/91JrGD35T27ahIFGQ+tdqaM6fwX+dYRqsRr9aL4vuhAXGfHALP7Xcn" crossorigin="anonymous"></script>
-    <script>const base = "http://localhost:8080/api";</script>
+    <script>
+      const base = "http://localhost:8080/api";
+      navigator.serviceWorker?.register("js/sw.js");
+    </script>
     <script src="js/handlebars.js"></script>
     <script src="js/jquery.js"></script>
     <script src="js/general.js"></script>
