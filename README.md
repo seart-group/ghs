@@ -198,7 +198,7 @@ services:
 ```
 
 Any of the Spring Boot properties or aforementioned application-specific properties can be overridden.
-Just keep in mind that `app.x.y` corresponds to the `APP_X_Y` service environment setting.
+Just keep in mind that `ghs.x.y` corresponds to the `GHS_X_Y` service environment setting.
 
 Another example is the automated database backup service, which is disabled by default.
 Should you chose to re-enable it, you would have to add the following to the override file:
