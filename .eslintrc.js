@@ -9,6 +9,7 @@ module.exports = {
         _: 'readonly',
         H: 'readonly',
         URL: 'readonly',
+        self: 'readonly',
         base: 'readonly',
         Blob: 'readonly',
         crypto: 'readonly',
