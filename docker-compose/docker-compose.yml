@@ -54,18 +54,17 @@ services:
     environment:
       TZ: UTC
       TIMEZONE: Etc/UTC
-      DB_TYPE: mysql
-      DB_HOST: gse-database
-      DB_NAME: gse
-      DB_USER: gseadmin
-      DB_PASS: Lugano2020
-      DB_DUMP_FREQ: "1440"
-      DB_DUMP_BEGIN: "0000"
-      DB_CLEANUP_TIME: "10080"
-      SPLIT_DB: FALSE
-      CHECKSUM: SHA1
-      COMPRESSION: GZ
-      CONTAINER_ENABLE_MONITORING: FALSE
+      DB01_TYPE: mysql
+      DB01_HOST: gse-database
+      DB01_PORT: 3306
+      DB01_NAME: gse
+      DB01_USER: gseadmin
+      DB01_PASS: Lugano2020
+      DEFAULT_BACKUP_BEGIN: "0 0 * * *"
+      DEFAULT_CLEANUP_TIME: "10080"
+      DEFAULT_CHECKSUM: SHA1
+      DEFAULT_COMPRESSION: GZ
+      DEFAULT_CREATE_LATEST_SYMLINK: FALSE
       DEBUG_MODE: FALSE
     entrypoint: "true"
     depends_on:
