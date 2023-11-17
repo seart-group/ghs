@@ -2,9 +2,9 @@ package ch.usi.si.seart.converter;
 
 import ch.usi.si.seart.dto.GitRepoDto;
 import ch.usi.si.seart.model.GitRepo;
-import ch.usi.si.seart.model.GitRepoMetricAggregate;
 import ch.usi.si.seart.model.Label;
 import ch.usi.si.seart.model.Topic;
+import ch.usi.si.seart.model.join.GitRepoMetricAggregate;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.lang.NonNull;
 

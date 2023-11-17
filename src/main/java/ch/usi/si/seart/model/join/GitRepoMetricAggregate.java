@@ -1,5 +1,6 @@
-package ch.usi.si.seart.model;
+package ch.usi.si.seart.model.join;
 
+import ch.usi.si.seart.model.GitRepo;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -18,7 +19,7 @@ import javax.persistence.Table;
 @AllArgsConstructor
 @Entity
 @Immutable
-@Table(name = "git_repo_metrics_by_id")
+@Table(name = "git_repo_metric_aggregate")
 public class GitRepoMetricAggregate {
 
     @Id

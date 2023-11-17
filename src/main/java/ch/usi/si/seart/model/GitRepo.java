@@ -2,6 +2,7 @@ package ch.usi.si.seart.model;
 
 import ch.usi.si.seart.model.join.GitRepoLanguage;
 import ch.usi.si.seart.model.join.GitRepoMetric;
+import ch.usi.si.seart.model.join.GitRepoMetricAggregate;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
