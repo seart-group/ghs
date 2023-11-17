@@ -18,7 +18,7 @@ import javax.persistence.Table;
 @AllArgsConstructor
 @Entity
 @Immutable
-@Table(name = "git_repo_metrics_by_id")
+@Table(name = "git_repo_metric_aggregate")
 public class GitRepoMetricAggregate {
 
     @Id
