@@ -50,6 +50,7 @@ services:
     volumes:
       - backup:/backup
       - ./bkpdb:/assets/scripts/post
+      - ./logs/backup:/logs
     environment:
       TZ: UTC
       TIMEZONE: Etc/UTC
