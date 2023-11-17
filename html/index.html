@@ -497,11 +497,15 @@
               <div class="col">
                 <h5 class="my-3">
                   Size of codebase
-                  <i class="bi bi-info-circle" data-bs-toggle="tooltip"
-                     data-bs-title="These are filters related to the codebase. If the target programming language is specified, the filters will only apply to that language. If no language is specified the filters will apply to the combined metrics of all languages in the repositories."
-                     data-bs-placement="right"></i>
+                  <i data-bs-toggle="tooltip"
+                     data-bs-title="
+                     These filters are codebase-specific and are language-restricted.
+                     When specifying the target programming language, they apply exclusively to that language,
+                     otherwise affecting cumulative metrics across all languages in the repository."
+                     data-bs-placement="right"
+                     class="bi bi-info-circle"
+                  ></i>
                 </h5>
-
               </div>
             </div>
             <div class="row">
