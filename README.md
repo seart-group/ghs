@@ -15,7 +15,7 @@ This project is made of two components:
 | Java                                     |                  17 |
 | Maven                                    |               3.9.3 |
 | MySQL                                    |               8.2.0 |
-| Flyway                                   |              9.22.3 |
+| Flyway                                   |              10.0.1 |
 | Git                                      |              2.25.2 |
 | [cloc](https://github.com/AlDanial/cloc) |                1.96 |
 
