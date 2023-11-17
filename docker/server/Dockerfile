@@ -16,6 +16,4 @@ RUN apk add --no-cache \
             cloc \
             curl
 
-EXPOSE 8080
-
 ENTRYPOINT java -jar server.jar
