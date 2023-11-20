@@ -49,7 +49,6 @@ services:
     restart: "no"
     volumes:
       - backup:/backup
-      - ./bkpdb:/assets/scripts/post
       - ./logs/backup:/logs
     environment:
       TZ: UTC
