@@ -44,7 +44,7 @@ services:
       - default
 
   gse-backup:
-    image: tiredofit/db-backup:3.11.1
+    image: tiredofit/db-backup:4.0.18
     container_name: gse-backup
     restart: "no"
     volumes:
