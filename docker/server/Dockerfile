@@ -9,8 +9,8 @@ FROM eclipse-temurin:17.0.9_9-jre-alpine
 
 COPY --from=build /target/ghs-application-*.jar /server.jar
 
-RUN apk update --quiet \
-    apk add --no-cache \
+RUN apk update --quiet
+RUN apk add --no-cache \
             --quiet \
             git \
             cloc \

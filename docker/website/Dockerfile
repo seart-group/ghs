@@ -1,7 +1,7 @@
 FROM node:lts-alpine AS build
 
-RUN apk update --quiet \
-    apk add --no-cache \
+RUN apk update --quiet
+RUN apk add --no-cache \
             --quiet \
             moreutils
 
