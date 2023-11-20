@@ -59,7 +59,7 @@ services:
       DB01_NAME: gse
       DB01_USER: gseadmin
       DB01_PASS: Lugano2020
-      DEFAULT_BACKUP_BEGIN: "0 0 * * *"
+      DEFAULT_BACKUP_BEGIN: "0000"
       DEFAULT_CLEANUP_TIME: "10080"
       DEFAULT_CHECKSUM: SHA1
       DEFAULT_COMPRESSION: GZ
