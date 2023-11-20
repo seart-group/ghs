@@ -66,6 +66,7 @@ services:
       DEFAULT_COMPRESSION: GZ
       DEFAULT_CREATE_LATEST_SYMLINK: FALSE
       DEBUG_MODE: TRUE
+      CONTAINER_ENABLE_MONITORING: FALSE
     entrypoint: "true"
     depends_on:
       gse-migration:
