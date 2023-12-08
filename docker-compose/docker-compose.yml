@@ -94,6 +94,17 @@ services:
     networks:
       - default
 
+  gse-watchtower:
+    image: tianon/true:latest
+    container_name: gse-watchtower
+    restart: "no"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    depends_on:
+      gse-website:
+        condition: service_started
+    networks:
+      - default
 
   gse-server:
     build:
