@@ -1,7 +1,6 @@
 name: 'Publish image builds to Docker Hub'
 on:
   push:
-    branches: [ 'master' ]
     tags: [ 'v*' ]
 jobs:
   publish:
@@ -10,13 +9,13 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - dockerfile: docker/backup/Dockerfile
+          - dockerfile: ./docker/backup/Dockerfile
             image: ghs/backup
-          - dockerfile: docker/database/Dockerfile
+          - dockerfile: ./docker/database/Dockerfile
             image: ghs/database
-          - dockerfile: docker/server/Dockerfile
+          - dockerfile: ./docker/server/Dockerfile
             image: ghs/server
-          - dockerfile: docker/website/Dockerfile
+          - dockerfile: ./docker/website/Dockerfile
             image: ghs/website
     steps:
       - name: Set up Docker Buildx
