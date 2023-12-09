@@ -10,13 +10,13 @@ jobs:
       matrix:
         include:
           - dockerfile: docker/backup/Dockerfile
-            image: ghs/backup
+            image: seart/ghs-backup
           - dockerfile: docker/database/Dockerfile
-            image: ghs/database
+            image: seart/ghs-database
           - dockerfile: docker/server/Dockerfile
-            image: ghs/server
+            image: seart/ghs-server
           - dockerfile: docker/website/Dockerfile
-            image: ghs/website
+            image: seart/ghs-website
     steps:
       - name: Checkout latest
         uses: actions/checkout@v3
