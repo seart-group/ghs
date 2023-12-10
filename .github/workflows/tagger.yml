@@ -18,7 +18,7 @@ jobs:
       - name: Setup Git
         uses: fregante/setup-git-user@v2
       - name: Update artifact version in POM
-        run: mvn versions:set -DnewVersion=v${{ github.event.inputs.version }}
+        run: mvn versions:set -DnewVersion=${{ github.event.inputs.version }}
       - name: Create and push tag
         uses: EndBug/add-and-commit@v9
         with:
