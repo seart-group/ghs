@@ -10,6 +10,8 @@ on:
 jobs:
   tag:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     steps:
       - name: Validate inputs
         run: echo "${{ github.event.inputs.version }}" | grep -E "^[0-9]+\.[0-9]+\.[0-9]+$"
