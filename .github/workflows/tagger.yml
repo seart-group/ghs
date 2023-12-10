@@ -1,0 +1,31 @@
+name: 'Prepare and create new tag'
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        type: string
+        required: true
+        description: 'Semantic version string, format: /\d+\.\d+\.\d+/'
+
+jobs:
+  tag:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Validate inputs
+        run: echo "${{ github.event.inputs.version }}" | grep -E "^[0-9]+\.[0-9]+\.[0-9]+$"
+      - name: Setup Maven
+        uses: s4u/setup-maven-action@v1
+      - name: Setup Git
+        uses: fregante/setup-git-user@v2
+      - name: Update artifact version in POM
+        run: mvn versions:set -DnewVersion=v${{ github.event.inputs.version }}
+      - name: Commit changes
+        run: |
+          git add pom.xml
+          git commit -m "Update pom.xml"
+      - name: Tag commit
+        run: git tag v${{ github.event.inputs.version }}
+      - name: Push changes
+        run: |
+          git push
+          git push origin v${{ github.event.inputs.version }}
