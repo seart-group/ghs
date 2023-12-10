@@ -17,8 +17,6 @@ jobs:
         run: echo "${{ github.event.inputs.version }}" | grep -E "^[0-9]+\.[0-9]+\.[0-9]+$"
       - name: Setup Maven
         uses: s4u/setup-maven-action@v1.11.0
-      - name: Setup Git
-        uses: fregante/setup-git-user@v2
       - name: Update artifact version in POM
         run: mvn versions:set -DnewVersion=${{ github.event.inputs.version }}
       - name: Create and push tag
