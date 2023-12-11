@@ -101,7 +101,7 @@
   <root level="INFO">
     <appender-ref ref="CONSOLE" />
   </root>
-  <logger name="usi.si.seart.github" level="TRACE">
+  <logger name="ch.usi.si.seart.github" level="TRACE">
     <appender-ref ref="FILE-GITHUB" />
   </logger>
   <logger name="ch.usi.si.seart.job.CrawlProjectsJob" level="TRACE">
