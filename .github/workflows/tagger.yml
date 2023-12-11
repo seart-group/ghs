@@ -24,6 +24,8 @@ jobs:
         with:
           add: 'pom.xml'
           default_author: user_info
+          committer_name: github-actions[bot]
+          committer_email: github-actions[bot]@users.noreply.github.com
           message: 'New release: ${{ github.event.inputs.version }}'
           tag: 'v${{ github.event.inputs.version }} --force'
           tag_push: '--force'
