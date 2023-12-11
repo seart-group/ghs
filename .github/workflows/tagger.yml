@@ -19,13 +19,22 @@ jobs:
         uses: s4u/setup-maven-action@v1.11.0
         with:
           checkout-persist-credentials: true
+      - name: Import GPG key
+        uses: crazy-max/ghaction-import-gpg@v6
+        with:
+          gpg_private_key: ${{ secrets.GPG_KEY_PRIVATE }}
+          passphrase: ${{ secrets.GPG_KEY_PASSPHRASE }}
+          git_user_signingkey: true
+          git_commit_gpgsign: true
       - name: Update artifact version in POM
         run: mvn versions:set -DnewVersion=${{ github.event.inputs.version }}
       - name: Create and push tag
         uses: EndBug/add-and-commit@v9
         with:
           add: 'pom.xml'
-          default_author: user_info
+          commit: '-S'
+          author_name: 'seart-bot'
+          author_email: 'seartusi@gmail.com'
           message: 'New release: ${{ github.event.inputs.version }}'
           tag: 'v${{ github.event.inputs.version }} --force'
           tag_push: '--force'
