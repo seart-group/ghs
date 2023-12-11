@@ -169,13 +169,12 @@ name: 'gse'
 services:
 
   gse-database:
-    build:
-      context: ../
-      dockerfile: docker/database/Dockerfile
-    image: 'gse/database:latest'
+     image: seart/ghs-database:latest
 ```
 
-When deploying, you will need to specify the override file:
+The above image will include the freshest database dump, at most 15 days behind the actual platform data.
+For a more specific database version, refer to the [Docker Hub page](https://hub.docker.com/r/seart/ghs-database/tags).
+Just remember to specify the override file during deployment:
 
 ```shell
 docker-compose -f docker-compose.yml -f docker-compose.override.yml up -d
