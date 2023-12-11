@@ -18,7 +18,7 @@ jobs:
       - name: Setup Maven
         uses: s4u/setup-maven-action@v1.11.0
         with:
-          checkout-fetch-depth: 0
+          checkout-persist-credentials: true
       - name: Update artifact version in POM
         run: mvn versions:set -DnewVersion=${{ github.event.inputs.version }}
       - name: Create and push tag
