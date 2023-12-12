@@ -22,6 +22,8 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
+    labels:
+      - "com.centurylinklabs.watchtower.scope=ghs"
 
   gse-migration:
     image: flyway/flyway:10.1.0-alpine
@@ -70,6 +72,8 @@ services:
     depends_on:
       gse-migration:
         condition: service_completed_successfully
+    labels:
+      - "com.centurylinklabs.watchtower.scope=ghs"
     links:
       - gse-database
     networks:
@@ -106,6 +110,8 @@ services:
     depends_on:
       gse-migration:
         condition: service_completed_successfully
+    labels:
+      - "com.centurylinklabs.watchtower.scope=ghs"
     networks:
       - default
 
@@ -125,6 +131,8 @@ services:
     depends_on:
       gse-server:
         condition: service_healthy
+    labels:
+      - "com.centurylinklabs.watchtower.scope=ghs"
     networks:
       - default
 
@@ -137,6 +145,8 @@ services:
     depends_on:
       gse-website:
         condition: service_started
+    labels:
+      - "com.centurylinklabs.watchtower.scope=ghs"
     networks:
       - default
 
