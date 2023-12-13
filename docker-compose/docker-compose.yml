@@ -142,6 +142,12 @@ services:
     restart: "no"
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
+    environment:
+      WATCHTOWER_SCOPE: 'ghs'
+      WATCHTOWER_TIMEOUT: '60s'
+      WATCHTOWER_SCHEDULE: '0 0 */6 * * *'
+      WATCHTOWER_LOG_LEVEL: 'debug'
+      WATCHTOWER_INCLUDE_STOPPED: true
     depends_on:
       gse-website:
         condition: service_started
