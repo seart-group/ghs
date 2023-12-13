@@ -2,6 +2,7 @@ name: 'Publish image builds to Docker Hub'
 on:
   push:
     tags: [ 'v*' ]
+
 jobs:
   publish:
     runs-on: ubuntu-latest
