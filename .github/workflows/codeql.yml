@@ -1,5 +1,4 @@
 name: 'Discover vulnerabilities with CodeQL'
-
 on:
   push:
     branches: [ 'master' ]
