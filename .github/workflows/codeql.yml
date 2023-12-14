@@ -25,13 +25,8 @@ jobs:
       matrix:
         language: [ 'java', 'javascript' ]
     steps:
-      - name: Checkout latest
-        uses: actions/checkout@v4
-      - name: Setup Java
-        uses: actions/setup-java@v4
-        with:
-          distribution: 'temurin'
-          java-version: '17'
+      - name: Setup Maven
+        uses: s4u/setup-maven-action@v1.11.0
       - name: Initialize CodeQL
         uses: github/codeql-action/init@v3
         with:
