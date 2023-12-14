@@ -8,8 +8,8 @@ jobs:
   checkstyle:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout latest
-        uses: actions/checkout@v4
+      - name: Setup Maven
+        uses: s4u/setup-maven-action@v1.11.0
       - name: Run CheckStyle
         uses: nikitasavinov/checkstyle-action@master
         with:
