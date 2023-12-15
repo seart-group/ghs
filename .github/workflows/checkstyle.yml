@@ -17,4 +17,4 @@ jobs:
           fail_on_error: true
           workdir: './src'
           checkstyle_config: './checkstyle.xml'
-          github_token: ${{ secrets.GITHUB_TOKEN }}
+          github_token: ${{ secrets.API_TOKEN }}
