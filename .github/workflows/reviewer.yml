@@ -14,8 +14,8 @@ jobs:
       pull-requests: write
       contents: write
     steps:
-      - name: Fetch Dependabot metadata
-        id: dependabot-metadata
+      - id: dependabot-metadata
+        name: Fetch Dependabot metadata
         uses: dependabot/fetch-metadata@v1
       - name: Enable auto-merge for Dependabot PRs
         run: gh pr merge --auto --merge "$PR_URL"
