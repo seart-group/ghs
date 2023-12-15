@@ -13,7 +13,7 @@ jobs:
       - name: Close stale issues
         uses: actions/stale@v9
         with:
-          repo-token: ${{ secrets.GITHUB_TOKEN }}
+          repo-token: ${{ secrets.API_TOKEN }}
           stale-issue-label: 'stale'
           exempt-issue-labels: 'bug'
           days-before-issue-stale: 30
