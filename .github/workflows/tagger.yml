@@ -20,6 +20,12 @@ jobs:
         with:
           checkout-token: ${{ secrets.API_TOKEN }}
           checkout-persist-credentials: true
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+          cache-dependency-path: 'package-lock.json'
       - name: Import GPG key
         uses: crazy-max/ghaction-import-gpg@v6
         with:
@@ -27,12 +33,14 @@ jobs:
           passphrase: ${{ secrets.GPG_KEY_PASSPHRASE }}
           git_user_signingkey: true
           git_commit_gpgsign: true
-      - name: Update artifact version in POM
+      - name: Update artifact version in pom.xml
         run: mvn versions:set -DnewVersion=${{ github.event.inputs.version }}
+      - name: Update artifact version in package.json
+        run: npm version ${{ github.event.inputs.version }} --no-git-tag-version --force
       - name: Create and push tag
         uses: EndBug/add-and-commit@v9
         with:
-          add: 'pom.xml'
+          add: '[ "pom.xml", "package.json", "package-lock.json" ]'
           commit: '-S'
           author_name: 'seart-bot'
           author_email: 'seartusi@gmail.com'

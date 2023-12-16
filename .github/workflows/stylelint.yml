@@ -15,8 +15,8 @@ jobs:
         with:
           node-version: '18'
           cache: 'npm'
-          cache-dependency-path: '**/.github/workflows/*.yml'
+          cache-dependency-path: 'package-lock.json'
       - name: Install Dependencies
-        run: npm i -g stylelint stylelint-config-standard
+        run: npm ci
       - name: Run Stylelint
-        run: stylelint html/css
+        run: npm run lint-css

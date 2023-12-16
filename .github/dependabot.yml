@@ -7,6 +7,13 @@ updates:
     target-branch: master
     labels:
       - dependencies
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: daily
+    target-branch: master
+    labels:
+      - dependencies
   - package-ecosystem: maven
     directory: /
     schedule:
