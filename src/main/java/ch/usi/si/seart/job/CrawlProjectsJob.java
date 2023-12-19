@@ -102,9 +102,8 @@ public class CrawlProjectsJob implements Runnable {
             requestQueue.stream()
                     .limit(limit)
                     .map(rangePrinter::print)
-                    .forEach(string -> log.info("\t[{}]", string));
-            if (size > limit)
-                log.info("\t{} omitted ...", size - limit);
+                    .forEach(string -> log.info("    [{}]", string));
+            if (size > limit) log.info("    {} omitted ...", size - limit);
             Range<Date> first = requestQueue.pop();
             retrieveRepositories(first, language);
         } while (!requestQueue.isEmpty());
