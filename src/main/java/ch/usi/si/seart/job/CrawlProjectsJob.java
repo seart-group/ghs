@@ -210,8 +210,8 @@ public class CrawlProjectsJob implements Runnable {
 
         if (shouldSkip(gitRepo, updatedAt, pushedAt)) {
             log.info("Skipping:  {} [{}/{}]", name, lowerIndex, total);
-            log.debug("\tUpdated: {}", updatedAt);
-            log.debug("\tPushed:  {}", pushedAt);
+            log.debug("Updated:   {}", updatedAt);
+            log.debug("Pushed:    {}", pushedAt);
             return;
         }
 
