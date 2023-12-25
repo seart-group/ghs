@@ -130,6 +130,7 @@ public class GitRepo {
     @Column(name = "open_pull_requests")
     Long openPullRequests;
 
+    @PastOrPresent
     @Column(name = "last_commit")
     Date lastCommit;
 
