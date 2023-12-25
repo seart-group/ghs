@@ -22,6 +22,7 @@ import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.PrimaryKeyJoinColumn;
 import javax.persistence.Table;
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.PastOrPresent;
 import java.util.Date;
@@ -44,7 +45,7 @@ public class Language {
     @Column(name = "id")
     Long id;
 
-    @NotNull
+    @NotBlank
     @Column(name = "name", unique = true)
     String name;
 
