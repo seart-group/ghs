@@ -71,6 +71,7 @@ public class GitRepo {
     @Column(name = "branches")
     Long branches;
 
+    @NotBlank
     @Column(name = "default_branch")
     String defaultBranch;
 
