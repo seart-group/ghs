@@ -106,6 +106,7 @@ public class GitRepo {
     @Column(name = "created_at")
     Date createdAt;
 
+    @PastOrPresent
     @Column(name = "pushed_at")
     Date pushedAt;
 
