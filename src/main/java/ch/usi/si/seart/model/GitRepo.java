@@ -3,6 +3,7 @@ package ch.usi.si.seart.model;
 import ch.usi.si.seart.model.join.GitRepoLanguage;
 import ch.usi.si.seart.model.join.GitRepoMetric;
 import ch.usi.si.seart.model.join.GitRepoMetricAggregate;
+import ch.usi.si.seart.validation.constraints.SHAHash;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -137,6 +138,7 @@ public class GitRepo {
     @Column(name = "last_commit")
     Date lastCommit;
 
+    @SHAHash
     @Column(name = "last_commit_sha")
     String lastCommitSHA;
 
