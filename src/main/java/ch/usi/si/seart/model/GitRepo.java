@@ -102,6 +102,7 @@ public class GitRepo {
     @Column(name = "size")
     Long size;
 
+    @PastOrPresent
     @Column(name = "created_at")
     Date createdAt;
 
