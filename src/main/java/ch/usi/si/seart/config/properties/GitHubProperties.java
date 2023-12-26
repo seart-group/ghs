@@ -1,5 +1,6 @@
 package ch.usi.si.seart.config.properties;
 
+import ch.usi.si.seart.validation.constraints.GitHubPAT;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -17,7 +18,7 @@ import java.util.List;
 @AllArgsConstructor(onConstructor_ = @ConstructorBinding)
 public class GitHubProperties {
 
-    List<@NotBlank String> tokens;
+    List<@GitHubPAT String> tokens;
 
     @NotBlank
     @Pattern(regexp = "\\d{4}-\\d{2}-\\d{2}")

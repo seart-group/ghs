@@ -15,7 +15,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.ManyToMany;
 import javax.persistence.Table;
-import javax.validation.constraints.NotNull;
+import javax.validation.constraints.NotBlank;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
@@ -36,7 +36,7 @@ public class Topic {
     @Column(name = "id")
     Long id;
 
-    @NotNull
+    @NotBlank
     @Column(name = "name", unique = true)
     String name;
 

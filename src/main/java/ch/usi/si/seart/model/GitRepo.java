@@ -3,6 +3,8 @@ package ch.usi.si.seart.model;
 import ch.usi.si.seart.model.join.GitRepoLanguage;
 import ch.usi.si.seart.model.join.GitRepoMetric;
 import ch.usi.si.seart.model.join.GitRepoMetricAggregate;
+import ch.usi.si.seart.validation.constraints.NullOrNotBlank;
+import ch.usi.si.seart.validation.constraints.SHAHash;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -71,6 +73,7 @@ public class GitRepo {
     @Column(name = "branches")
     Long branches;
 
+    @NotBlank
     @Column(name = "default_branch")
     String defaultBranch;
 
@@ -82,6 +85,7 @@ public class GitRepo {
     @Column(name = "contributors")
     Long contributors;
 
+    @NullOrNotBlank
     @Column(name = "license")
     String license;
 
@@ -101,15 +105,19 @@ public class GitRepo {
     @Column(name = "size")
     Long size;
 
+    @PastOrPresent
     @Column(name = "created_at")
     Date createdAt;
 
+    @PastOrPresent
     @Column(name = "pushed_at")
     Date pushedAt;
 
+    @PastOrPresent
     @Column(name = "updated_at")
     Date updatedAt;
 
+    @NullOrNotBlank
     @Column(name = "homepage")
     String homepage;
 
@@ -129,9 +137,11 @@ public class GitRepo {
     @Column(name = "open_pull_requests")
     Long openPullRequests;
 
+    @PastOrPresent
     @Column(name = "last_commit")
     Date lastCommit;
 
+    @SHAHash
     @Column(name = "last_commit_sha")
     String lastCommitSHA;
 

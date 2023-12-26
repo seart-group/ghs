@@ -1,9 +1,11 @@
 package ch.usi.si.seart.model.join;
 
 import ch.usi.si.seart.model.GitRepo;
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.experimental.FieldDefaults;
 import org.hibernate.annotations.Immutable;
 
 import javax.persistence.Column;
@@ -14,6 +16,7 @@ import javax.persistence.MapsId;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
+@FieldDefaults(level = AccessLevel.PRIVATE)
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
