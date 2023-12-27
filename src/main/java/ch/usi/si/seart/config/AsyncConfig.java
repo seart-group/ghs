@@ -11,13 +11,9 @@ import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
 import java.lang.reflect.Method;
-import java.util.Arrays;
-import java.util.Set;
 import java.util.concurrent.Executor;
 import java.util.concurrent.RejectedExecutionHandler;
 import java.util.concurrent.ThreadPoolExecutor;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 @Configuration
 @EnableAsync
@@ -25,7 +21,7 @@ public class AsyncConfig {
 
     @Bean(name = "AnalysisExecutor")
     public Executor executor(RejectedExecutionHandler rejectedExecutionHandler, AnalysisProperties properties) {
-        ThreadPoolTaskExecutor executor = new AnalysisThreadPoolExecutor();
+        ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
         executor.setMaxPoolSize(properties.getMaxPoolThreads());
         executor.setQueueCapacity(128);
         executor.setThreadNamePrefix("analysis-");
@@ -54,29 +50,5 @@ public class AsyncConfig {
                 log.error("Unhandled exception occurred while executing asynchronous method: {}", method, throwable);
             }
         };
-    }
-
-    private static class AnalysisThreadPoolExecutor extends ThreadPoolTaskExecutor {
-
-        /**
-         * Overrides the default cloning thread name generation.
-         * Allows for the reuse of thread names of dead cloning threads.
-         */
-        @NotNull
-        @Override
-        protected String nextThreadName() {
-            ThreadGroup group = Thread.currentThread().getThreadGroup();
-            Thread[] threads = new Thread[group.activeCount()];
-            group.enumerate(threads);
-            Set<String> names = Arrays.stream(threads)
-                    .map(Thread::getName)
-                    .collect(Collectors.toSet());
-
-            return Stream.iterate(1, i -> i + 1)
-                    .map(i -> getThreadNamePrefix() + i)
-                    .filter(name -> !names.contains(name))
-                    .findFirst()
-                    .orElseGet(super::nextThreadName);
-        }
     }
 }
