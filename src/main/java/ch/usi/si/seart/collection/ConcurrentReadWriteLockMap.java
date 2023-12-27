@@ -4,8 +4,8 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
 
+import java.util.Collections;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
@@ -16,13 +16,14 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
  * different locks for different keys concurrently.
  *
  * @author Ozren Dabić
- * @param <K> the type of keys stored in the map.
+ * @param <K> the type of keys maintained by this map
+ * @see LRUHashMap
  */
 @NoArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class ConcurrentReadWriteLockMap<K> {
 
-    Map<K, ReadWriteLock> delegate = new ConcurrentHashMap<>();
+    Map<K, ReadWriteLock> delegate = Collections.synchronizedMap(new LRUHashMap<>(32));
 
     private ReadWriteLock get(K key) {
         return delegate.compute(key, (k, v) -> v == null ? new ReentrantReadWriteLock() : v);
