@@ -26,9 +26,8 @@ public class AsyncConfig {
     @Bean(name = "AnalysisExecutor")
     public Executor executor(RejectedExecutionHandler rejectedExecutionHandler, AnalysisProperties properties) {
         ThreadPoolTaskExecutor executor = new AnalysisThreadPoolExecutor();
-        executor.setCorePoolSize(0);
         executor.setMaxPoolSize(properties.getMaxPoolThreads());
-        executor.setQueueCapacity(10);
+        executor.setQueueCapacity(128);
         executor.setThreadNamePrefix("analysis-");
         executor.setRejectedExecutionHandler(rejectedExecutionHandler);
         executor.initialize();
