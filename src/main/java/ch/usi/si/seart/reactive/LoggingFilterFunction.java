@@ -11,6 +11,8 @@ import org.springframework.web.reactive.function.client.ExchangeFilterFunction;
 import org.springframework.web.reactive.function.client.ExchangeFunction;
 import reactor.core.publisher.Mono;
 
+import java.util.concurrent.TimeUnit;
+
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class LoggingFilterFunction implements ExchangeFilterFunction {
@@ -21,6 +23,16 @@ public class LoggingFilterFunction implements ExchangeFilterFunction {
     @Override
     public Mono<ClientResponse> filter(@NotNull ClientRequest request, @NotNull ExchangeFunction next) {
         log.debug(">>> {} {}", request.method(), request.url());
-        return next.exchange(request);
+        long startNs = System.nanoTime();
+        return next.exchange(request)
+                .doOnSuccess(response -> {
+                    long endNs = System.nanoTime();
+                    long ms = TimeUnit.NANOSECONDS.toMillis(endNs - startNs);
+                    log.debug("<<< {} ({}ms)", response.rawStatusCode(), ms);
+                })
+                .doOnError(ex -> {
+                    if (log.isDebugEnabled())
+                        log.error("<<< HTTP FAILURE", ex);
+                });
     }
 }
