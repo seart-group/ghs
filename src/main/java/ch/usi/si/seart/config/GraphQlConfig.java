@@ -3,6 +3,7 @@ package ch.usi.si.seart.config;
 import ch.usi.si.seart.config.properties.GitHubProperties;
 import ch.usi.si.seart.github.Endpoint;
 import ch.usi.si.seart.github.GitHubTokenManager;
+import io.netty.channel.ChannelOption;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -15,6 +16,8 @@ import org.springframework.web.reactive.function.client.ExchangeFunction;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 import reactor.netty.http.client.HttpClient;
+
+import java.time.Duration;
 
 @Configuration
 public class GraphQlConfig {
@@ -35,7 +38,11 @@ public class GraphQlConfig {
 
     @Bean
     HttpClient httpClient() {
-        return HttpClient.create();
+        return HttpClient.create()
+                .disableRetry(true)
+                .responseTimeout(Duration.ofMinutes(1))
+                .option(ChannelOption.SO_KEEPALIVE, true)
+                .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, 60_000);
     }
 
     @Bean
