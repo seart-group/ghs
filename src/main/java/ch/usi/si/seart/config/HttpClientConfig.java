@@ -37,7 +37,7 @@ public class HttpClientConfig {
     }
 
     @Bean
-    public OkHttpClient httpClient(
+    public OkHttpClient okHttpClient(
             HeaderAttachmentInterceptor headerAttachmentInterceptor, LoggingInterceptor loggingInterceptor
     ) {
         return new OkHttpClient.Builder()
