@@ -9,6 +9,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.graphql.client.GraphQlClient;
 import org.springframework.graphql.client.HttpGraphQlClient;
+import org.springframework.http.client.reactive.ReactorClientHttpConnector;
 import org.springframework.web.reactive.function.client.ClientRequest;
 import org.springframework.web.reactive.function.client.ClientResponse;
 import org.springframework.web.reactive.function.client.ExchangeFilterFunction;
@@ -34,6 +35,11 @@ public class GraphQlConfig {
                 .defaultHeader("X-GitHub-Api-Version", properties.getApiVersion())
                 .filter(exchangeFilterFunction)
                 .build();
+    }
+
+    @Bean
+    ReactorClientHttpConnector reactorClientHttpConnector(HttpClient httpClient) {
+        return new ReactorClientHttpConnector(httpClient);
     }
 
     @Bean
