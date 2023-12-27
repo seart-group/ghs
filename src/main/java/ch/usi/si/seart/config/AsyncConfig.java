@@ -19,7 +19,7 @@ import java.util.concurrent.ThreadPoolExecutor;
 @EnableAsync
 public class AsyncConfig {
 
-    @Bean(name = "AnalysisExecutor")
+    @Bean(name = "analysisExecutor")
     public Executor executor(RejectedExecutionHandler rejectedExecutionHandler, AnalysisProperties properties) {
         ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
         executor.setMaxPoolSize(properties.getMaxPoolThreads());
