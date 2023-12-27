@@ -3,8 +3,9 @@ package ch.usi.si.seart.collection;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import org.springframework.util.ConcurrentReferenceHashMap;
 
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
@@ -21,10 +22,10 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class ConcurrentReadWriteLockMap<K> {
 
-    ConcurrentReferenceHashMap<K, ReadWriteLock> map = new ConcurrentReferenceHashMap<>();
+    Map<K, ReadWriteLock> delegate = new ConcurrentHashMap<>();
 
     private ReadWriteLock get(K key) {
-        return map.compute(key, (k, v) -> v == null ? new ReentrantReadWriteLock() : v);
+        return delegate.compute(key, (k, v) -> v == null ? new ReentrantReadWriteLock() : v);
     }
 
     /**
