@@ -14,6 +14,7 @@ import org.springframework.web.reactive.function.client.ExchangeFilterFunction;
 import org.springframework.web.reactive.function.client.ExchangeFunction;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
+import reactor.netty.http.client.HttpClient;
 
 @Configuration
 public class GraphQlConfig {
@@ -30,6 +31,11 @@ public class GraphQlConfig {
                 .defaultHeader("X-GitHub-Api-Version", properties.getApiVersion())
                 .filter(exchangeFilterFunction)
                 .build();
+    }
+
+    @Bean
+    HttpClient httpClient() {
+        return HttpClient.create();
     }
 
     @Bean
