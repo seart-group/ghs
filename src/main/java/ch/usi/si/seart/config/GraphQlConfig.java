@@ -29,9 +29,14 @@ public class GraphQlConfig {
     }
 
     @Bean
-    WebClient webClient(ExchangeFilterFunction exchangeFilterFunction, GitHubProperties properties) {
+    WebClient webClient(
+            ExchangeFilterFunction exchangeFilterFunction,
+            ReactorClientHttpConnector reactorClientHttpConnector,
+            GitHubProperties properties
+    ) {
         return WebClient.builder()
                 .baseUrl(Endpoint.GRAPH_QL.toString())
+                .clientConnector(reactorClientHttpConnector)
                 .defaultHeader("X-GitHub-Api-Version", properties.getApiVersion())
                 .filter(exchangeFilterFunction)
                 .build();
