@@ -79,7 +79,7 @@ public class CodeAnalysisJob implements Runnable {
      *
      * @param identifiers the ID and full name of the repository.
      */
-    @Async("AnalysisExecutor")
+    @Async("analysisExecutor")
     public void gatherCodeMetricsFor(Pair<Long, String> identifiers) {
         Long id = identifiers.getFirst();
         String name = identifiers.getSecond();
