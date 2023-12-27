@@ -28,7 +28,8 @@ public class LoggingInterceptor implements Interceptor {
         try {
             response = chain.proceed(request);
         } catch (Exception ex) {
-            log.debug("<<< HTTP FAILURE", ex);
+            if (log.isDebugEnabled())
+                log.error("<<< HTTP FAILURE", ex);
             throw ex;
         }
         long endNs = System.nanoTime();

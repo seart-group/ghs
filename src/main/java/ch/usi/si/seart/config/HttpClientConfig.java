@@ -26,7 +26,7 @@ public class HttpClientConfig {
     }
 
     @Bean
-    LoggingInterceptor httpLoggingInterceptor() {
+    LoggingInterceptor loggingInterceptor() {
         Logger logger = LoggerFactory.getLogger(GitHubRestConnector.class);
         return new LoggingInterceptor(logger);
     }
@@ -37,7 +37,7 @@ public class HttpClientConfig {
     }
 
     @Bean
-    public OkHttpClient httpClient(
+    public OkHttpClient okHttpClient(
             HeaderAttachmentInterceptor headerAttachmentInterceptor, LoggingInterceptor loggingInterceptor
     ) {
         return new OkHttpClient.Builder()
