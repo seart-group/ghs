@@ -38,7 +38,7 @@ import java.util.concurrent.TimeUnit;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class GitHubTokenManager {
 
-    OkHttpClient client;
+    OkHttpClient httpClient;
 
     RetryTemplate retryTemplate;
 
@@ -52,13 +52,13 @@ public class GitHubTokenManager {
 
     @Autowired
     public GitHubTokenManager(
-            OkHttpClient client,
+            OkHttpClient httpClient,
             @Qualifier("timeLimitedRetryTemplate")
             RetryTemplate retryTemplate,
             ConversionService conversionService,
             GitHubProperties properties
     ) {
-        this.client = client;
+        this.httpClient = httpClient;
         this.retryTemplate = retryTemplate;
         this.conversionService = conversionService;
         this.tokens = new Cycle<>(properties.getTokens());
@@ -128,7 +128,7 @@ public class GitHubTokenManager {
             if (currentToken != null)
                 builder.header(HttpHeaders.AUTHORIZATION, "Bearer " + currentToken);
             Request request = builder.build();
-            Response response = client.newCall(request).execute();
+            Response response = httpClient.newCall(request).execute();
             int code = response.code();
             HttpStatus status = HttpStatus.valueOf(code);
             String phrase = status.getReasonPhrase();
