@@ -14,6 +14,8 @@ jobs:
             image: seart/ghs-backup
           - dockerfile: docker/database/Dockerfile
             image: seart/ghs-database
+          - dockerfile: docker/migration/Dockerfile
+            image: seart/ghs-migration
           - dockerfile: docker/server/Dockerfile
             image: seart/ghs-server
           - dockerfile: docker/website/Dockerfile
