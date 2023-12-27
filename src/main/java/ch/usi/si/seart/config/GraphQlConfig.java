@@ -2,9 +2,13 @@ package ch.usi.si.seart.config;
 
 import ch.usi.si.seart.config.properties.GitHubProperties;
 import ch.usi.si.seart.github.Endpoint;
+import ch.usi.si.seart.github.GitHubGraphQlConnector;
 import ch.usi.si.seart.github.GitHubTokenManager;
+import ch.usi.si.seart.reactive.LoggingFilterFunction;
 import io.netty.channel.ChannelOption;
 import org.jetbrains.annotations.NotNull;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.graphql.client.GraphQlClient;
@@ -30,7 +34,8 @@ public class GraphQlConfig {
 
     @Bean
     WebClient webClient(
-            ExchangeFilterFunction exchangeFilterFunction,
+            LoggingFilterFunction loggingFilterFunction,
+            ExchangeFilterFunction authorizationFilterFunction,
             ReactorClientHttpConnector reactorClientHttpConnector,
             GitHubProperties properties
     ) {
@@ -38,7 +43,8 @@ public class GraphQlConfig {
                 .baseUrl(Endpoint.GRAPH_QL.toString())
                 .clientConnector(reactorClientHttpConnector)
                 .defaultHeader("X-GitHub-Api-Version", properties.getApiVersion())
-                .filter(exchangeFilterFunction)
+                .filter(loggingFilterFunction)
+                .filter(authorizationFilterFunction)
                 .build();
     }
 
@@ -57,7 +63,13 @@ public class GraphQlConfig {
     }
 
     @Bean
-    ExchangeFilterFunction exchangeFilterFunction(GitHubTokenManager gitHubTokenManager) {
+    LoggingFilterFunction loggingFilterFunction() {
+        Logger logger = LoggerFactory.getLogger(GitHubGraphQlConnector.class);
+        return new LoggingFilterFunction(logger);
+    }
+
+    @Bean
+    ExchangeFilterFunction authorizationFilterFunction(GitHubTokenManager gitHubTokenManager) {
         return new ExchangeFilterFunction() {
 
             @NotNull
