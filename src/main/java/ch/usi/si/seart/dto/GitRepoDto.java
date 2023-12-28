@@ -23,46 +23,66 @@ import java.util.TreeSet;
 @NoArgsConstructor
 @AllArgsConstructor
 public class GitRepoDto {
+
     Long id;
+
     String name;
+
     Boolean isFork;
+
     Long commits;
     Long branches;
-    String defaultBranch;
     Long releases;
-    Long contributors;
+    Long forks;
+
+    String mainLanguage;
+    String defaultBranch;
+
     String license;
+    String homepage;
+
     Long watchers;
     Long stargazers;
-    Long forks;
+    Long contributors;
+
     Long size;
+
     Date createdAt;
     Date pushedAt;
     Date updatedAt;
-    String homepage;
-    String mainLanguage;
+
     Long totalIssues;
     Long openIssues;
+
     Long totalPullRequests;
     Long openPullRequests;
+
     Long blankLines;
     Long codeLines;
     Long commentLines;
+
     @JacksonXmlElementWrapper(localName = "metrics")
     @JacksonXmlProperty(localName = "metric")
     @Builder.Default
     List<Map<String, Object>> metrics = new ArrayList<>();
+
     Date lastCommit;
     String lastCommitSHA;
+
     Boolean hasWiki;
     Boolean isArchived;
+    Boolean isDisabled;
+    Boolean isLocked;
+
     @JacksonXmlProperty(localName = "languages", isAttribute = true)
     @Builder.Default
     Map<String, Long> languages = new LinkedHashMap<>();
+
     @JacksonXmlElementWrapper(localName = "labels")
     @JacksonXmlProperty(localName = "label")
     @Builder.Default
     Set<String> labels = new TreeSet<>();
+
     @JacksonXmlElementWrapper(localName = "topics")
     @JacksonXmlProperty(localName = "topic")
     @Builder.Default

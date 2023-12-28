@@ -9,9 +9,6 @@ import org.springframework.core.convert.converter.Converter;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Component;
 
-/**
- * Convert a GitRepoDTO to it's CSV representation.
- */
 @Component
 @AllArgsConstructor(onConstructor_ = @Autowired)
 public class GitRepoDtoToCsvConverter implements Converter<GitRepoDto, GitRepoCsvDto> {
@@ -50,7 +47,10 @@ public class GitRepoDtoToCsvConverter implements Converter<GitRepoDto, GitRepoCs
                 .metrics(source.getMetrics())
                 .lastCommit(source.getLastCommit())
                 .lastCommitSHA(source.getLastCommitSHA())
-                // Convert Collection types into stringified JSON
+                .hasWiki(source.getHasWiki())
+                .isArchived(source.getIsArchived())
+                .isDisabled(source.getIsDisabled())
+                .isLocked(source.getIsLocked())
                 .metricsString(csvMapper.valueToTree(source.getMetrics()).toString())
                 .labelsString(csvMapper.valueToTree(source.getLabels()).toString())
                 .languagesString(csvMapper.valueToTree(source.getLanguages()).toString())

@@ -62,6 +62,8 @@ public class GitRepoToDtoConverter implements Converter<GitRepo, GitRepoDto> {
                 )
                 .hasWiki(source.getHasWiki())
                 .isArchived(source.getIsArchived())
+                .isDisabled(source.getIsDisabled())
+                .isLocked(source.getIsLocked())
                 .languages(
                         source.getLanguages().stream()
                                 .map(l -> Map.entry(l.getLanguage().getName(), l.getSizeOfCode()))

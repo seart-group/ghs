@@ -144,6 +144,8 @@
             mainLanguage,
             isFork,
             isArchived,
+            isDisabled,
+            isLocked,
             hasWiki,
             homepage,
             defaultBranch,
@@ -190,6 +192,8 @@
             properties: {
                 fork: isFork,
                 archived: isArchived,
+                disabled: isDisabled,
+                locked: isLocked,
                 wiki: hasWiki
             },
             statistics: {
