@@ -154,6 +154,9 @@ public class GitRepo {
     @Column(name = "disabled")
     Boolean isDisabled;
 
+    @Column(name = "locked")
+    Boolean isLocked;
+
     @PastOrPresent
     @Column(name = "last_pinged")
     Date lastPinged;
