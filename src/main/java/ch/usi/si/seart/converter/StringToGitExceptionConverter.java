@@ -42,7 +42,7 @@ public class StringToGitExceptionConverter implements Converter<String, GitExcep
                 .orElse("");
         if (fatal.endsWith(NOT_FOUND))
             return new RepositoryNotFoundException(fatal);
-        if (fatal.endsWith(FORBIDDEN) && remote.equals(DISABLED))
+        if (fatal.endsWith(FORBIDDEN) && remote.startsWith(DISABLED))
             return new RepositoryDisabledException(fatal);
         if (fatal.endsWith(FORBIDDEN) && remote.contains(LOCKED))
             return new RepositoryLockedException(fatal);
