@@ -127,7 +127,6 @@ public class CodeAnalysisJob implements Runnable {
             gitRepo.setLastAnalyzed();
             gitRepoService.createOrUpdate(gitRepo);
         } catch (RepositoryNotFoundException ignored) {
-            log.debug("Remote not found {}, performing cleanup instead...", name);
             log.info("Deleting:  {} [{}]", name, id);
             gitRepoService.deleteRepoById(id);
         } catch (StaticCodeAnalysisException | GitException ex) {
