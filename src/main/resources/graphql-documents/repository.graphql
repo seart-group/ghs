@@ -5,6 +5,7 @@ query($owner:String!, $name:String!) {
         homepage: homepageUrl
         is_fork: isFork
         is_archived: isArchived
+        is_disabled: isDisabled
         has_wiki: hasWikiEnabled
         forks: forkCount
         license: licenseInfo {
