@@ -71,6 +71,7 @@ public class GitRepoDto {
 
     Boolean hasWiki;
     Boolean isArchived;
+    Boolean isDisabled;
 
     @JacksonXmlProperty(localName = "languages", isAttribute = true)
     @Builder.Default
