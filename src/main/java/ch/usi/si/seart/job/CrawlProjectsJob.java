@@ -253,6 +253,8 @@ public class CrawlProjectsJob implements Runnable {
             gitRepo.setIsFork(isFork);
             Boolean isArchived = json.getAsJsonPrimitive("is_archived").getAsBoolean();
             gitRepo.setIsArchived(isArchived);
+            Boolean isDisabled = json.getAsJsonPrimitive("is_disabled").getAsBoolean();
+            gitRepo.setIsDisabled(isDisabled);
 
             Long stargazers = json.getAsJsonObject("stars")
                     .getAsJsonPrimitive("count")
