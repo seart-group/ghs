@@ -49,6 +49,7 @@ public class GitRepoDtoToCsvConverter implements Converter<GitRepoDto, GitRepoCs
                 .lastCommitSHA(source.getLastCommitSHA())
                 .hasWiki(source.getHasWiki())
                 .isArchived(source.getIsArchived())
+                .isDisabled(source.getIsDisabled())
                 .metricsString(csvMapper.valueToTree(source.getMetrics()).toString())
                 .labelsString(csvMapper.valueToTree(source.getLabels()).toString())
                 .languagesString(csvMapper.valueToTree(source.getLanguages()).toString())
