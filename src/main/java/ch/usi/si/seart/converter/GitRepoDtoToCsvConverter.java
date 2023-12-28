@@ -50,6 +50,7 @@ public class GitRepoDtoToCsvConverter implements Converter<GitRepoDto, GitRepoCs
                 .hasWiki(source.getHasWiki())
                 .isArchived(source.getIsArchived())
                 .isDisabled(source.getIsDisabled())
+                .isLocked(source.getIsLocked())
                 .metricsString(csvMapper.valueToTree(source.getMetrics()).toString())
                 .labelsString(csvMapper.valueToTree(source.getLabels()).toString())
                 .languagesString(csvMapper.valueToTree(source.getLanguages()).toString())
