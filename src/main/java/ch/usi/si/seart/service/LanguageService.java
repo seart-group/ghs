@@ -1,6 +1,5 @@
 package ch.usi.si.seart.service;
 
-import ch.usi.si.seart.collection.ConcurrentReadWriteLockMap;
 import ch.usi.si.seart.config.properties.CrawlerProperties;
 import ch.usi.si.seart.model.Language;
 import ch.usi.si.seart.repository.LanguageProgressRepository;
@@ -16,7 +15,9 @@ import javax.persistence.EntityNotFoundException;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
-import java.util.concurrent.locks.Lock;
+import java.util.Optional;
+import java.util.concurrent.locks.ReadWriteLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 public interface LanguageService extends NamedEntityService<Language> {
 
@@ -34,29 +35,36 @@ public interface LanguageService extends NamedEntityService<Language> {
         LanguageRepository languageRepository;
         LanguageProgressRepository languageProgressRepository;
 
-        ConcurrentReadWriteLockMap<String> locks = new ConcurrentReadWriteLockMap<>();
+        ReadWriteLock readWriteLock = new ReentrantReadWriteLock();
 
         @Override
         public Language getOrCreate(String name) {
-            Lock readLock = locks.getReadLock(name);
-            readLock.lock();
-            try {
-                return languageRepository.findByNameIgnoreCase(name)
-                        .orElseGet(() -> create(name));
-            } finally {
-                readLock.unlock();
-            }
-        }
+            Language language;
+            readWriteLock.readLock().lock();
 
-        private Language create(String name) {
-            Lock writeLock = locks.getWriteLock(name);
-            writeLock.lock();
             try {
-                Language language = Language.builder().name(name).build();
-                return languageRepository.save(language);
+                Optional<Language> optional = languageRepository.findByNameIgnoreCase(name);
+                if (optional.isEmpty()) {
+                    readWriteLock.readLock().unlock();
+                    readWriteLock.writeLock().lock();
+                    try {
+                        language = languageRepository.save(
+                                Language.builder()
+                                        .name(name)
+                                        .build()
+                        );
+                        readWriteLock.readLock().lock();
+                    } finally {
+                        readWriteLock.writeLock().unlock();
+                    }
+                } else {
+                    language = optional.get();
+                }
             } finally {
-                writeLock.unlock();
+                readWriteLock.readLock().unlock();
             }
+
+            return language;
         }
 
         @Override
