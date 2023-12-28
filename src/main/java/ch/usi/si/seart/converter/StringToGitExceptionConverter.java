@@ -51,7 +51,7 @@ public class StringToGitExceptionConverter implements Converter<String, GitExcep
         if (fatal.endsWith(LONG_FILE_NAME))
             return new CheckoutException(fatal);
         return switch (fatal) {
-            case "" -> new GitException();
+            case "" -> new GitException("\n" + source + "\n");
             case EARLY_EOF -> new CompressionException(fatal);
             case PROMPTS_DISABLED -> new TerminalPromptsDisabledException(fatal);
             case AUTHENTICATION_REQUIRED -> new InvalidUsernameException(fatal);
