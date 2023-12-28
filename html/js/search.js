@@ -144,6 +144,7 @@
             mainLanguage,
             isFork,
             isArchived,
+            isDisabled,
             hasWiki,
             homepage,
             defaultBranch,
@@ -190,6 +191,7 @@
             properties: {
                 fork: isFork,
                 archived: isArchived,
+                disabled: isDisabled,
                 wiki: hasWiki
             },
             statistics: {
