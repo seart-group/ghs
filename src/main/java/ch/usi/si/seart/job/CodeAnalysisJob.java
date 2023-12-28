@@ -118,6 +118,7 @@ public class CodeAnalysisJob implements Runnable {
                 log.debug("No metrics were computed for: {}", name);
                 log.info("Skipping:  {} [{}]", name, id);
             }
+            gitRepo.setIsDisabled(false);
             gitRepo.setMetrics(metrics);
             gitRepo.setLastAnalyzed();
             gitRepoService.createOrUpdate(gitRepo);
