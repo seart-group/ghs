@@ -4,6 +4,7 @@ import ch.usi.si.seart.analysis.CLOCConnector;
 import ch.usi.si.seart.exception.StaticCodeAnalysisException;
 import ch.usi.si.seart.exception.git.GitException;
 import ch.usi.si.seart.exception.git.RepositoryDisabledException;
+import ch.usi.si.seart.exception.git.RepositoryLockedException;
 import ch.usi.si.seart.exception.git.RepositoryNotFoundException;
 import ch.usi.si.seart.git.GitConnector;
 import ch.usi.si.seart.git.LocalRepositoryClone;
@@ -118,8 +119,14 @@ public class CodeAnalysisJob implements Runnable {
                 log.debug("No metrics were computed for: {}", name);
                 log.info("Skipping:  {} [{}]", name, id);
             }
+            gitRepo.setIsLocked(false);
             gitRepo.setIsDisabled(false);
             gitRepo.setMetrics(metrics);
+            gitRepo.setLastAnalyzed();
+            gitRepoService.createOrUpdate(gitRepo);
+        } catch (RepositoryLockedException ignored) {
+            log.info("Locking:   {} [{}]", name, id);
+            gitRepo.setIsLocked(true);
             gitRepo.setLastAnalyzed();
             gitRepoService.createOrUpdate(gitRepo);
         } catch (RepositoryDisabledException ignored) {
