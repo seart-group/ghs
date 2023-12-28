@@ -7,5 +7,6 @@ ADD COLUMN locked BIT NULL
 AFTER archived;
 
 UPDATE git_repo
-SET disabled = false
-AND locked = false;
+SET
+    disabled = false,
+    locked = false;
