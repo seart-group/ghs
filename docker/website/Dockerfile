@@ -19,11 +19,11 @@ RUN html-minifier-terser --collapse-whitespace \
     | sponge html/index.html
 
 RUN for file in html/css/*.css; \
-    do cleancss $file | sponge $file; \
+    do cleancss "$file" | sponge "$file"; \
     done
 
 RUN for file in html/js/*.js; \
-    do uglifyjs --compress --mangle --webkit -- $file | sponge $file; \
+    do uglifyjs --compress --mangle --webkit -- "$file" | sponge "$file"; \
     done
 
 FROM nginx:1.25.3-alpine-slim
