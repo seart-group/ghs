@@ -34,6 +34,7 @@ The list of checks includes:
 - [hadolint](.github/workflows/hadolint.yml)
 - [StyleLint](.github/workflows/stylelint.yml)
 - [HTMLHint](.github/workflows/htmlhint.yml)
+- [markdownlint](.github/workflows/markdownlint.yml)
 
 ## License
 
