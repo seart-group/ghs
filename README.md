@@ -1,10 +1,12 @@
-# GitHub Search &middot; [![Status](https://badgen.net/https/dabico.npkn.net/ghs-status)](http://seart-ghs.si.usi.ch) [![MIT license](https://img.shields.io/badge/License-MIT-blue.svg)](https://github.com/seart-group/ghs/blob/master/LICENSE) [![Latest Dump](https://img.shields.io/badge/Latest_Dump-16.12.23-blue)](https://www.dropbox.com/scl/fi/833d78twgzdma1hd1r19l/gse.sql.gz?rlkey=qovbf5dozvrdpt40w6gm5ezql&dl=1) [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.4588464.svg)](https://doi.org/10.5281/zenodo.4588464)
+# GitHub Search &middot; [![Status](https://badgen.net/https/dabico.npkn.net/ghs-status)](http://seart-ghs.si.usi.ch) [![MIT license](https://img.shields.io/badge/License-MIT-blue.svg)](https://github.com/seart-group/ghs/blob/master/LICENSE) [![Latest Dump](https://img.shields.io/badge/Latest_Dump-16.12.23-blue)](https://www.dropbox.com/scl/fi/833d78twgzdma1hd1r19l/gse.sql.gz?rlkey=qovbf5dozvrdpt40w6gm5ezql&dl=1) [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.4588464.svg)](https://doi.org/10.5281/zenodo.4588464) <!-- markdownlint-disable-line -->
 
 This project is made of two components:
+
 1. A Spring Boot powered back-end, responsible for:
     1. Continuously crawling GitHub API endpoints for repository information, and storing it in a central database;
     2. Acting as an API for providing access to the stored data.
-2. A Bootstrap-styled and jQuery powered web user interface, serving an accessible front for the API, available at http://seart-ghs.si.usi.ch
+2. A Bootstrap-styled and jQuery powered web user interface, serving an accessible front for the API, available at
+   [http://seart-ghs.si.usi.ch](http://seart-ghs.si.usi.ch)
 
 ## Running Locally
 
@@ -22,7 +24,8 @@ This project is made of two components:
 
 ### Database
 
-Before choosing whether to start with a clean slate or pre-populated database, make sure the following requirements are met:
+Before choosing whether to start with a clean slate or pre-populated database,
+make sure the following requirements are met:
 
 1. The database timezone is set to `+00:00`. You can verify this via:
 
@@ -40,7 +43,7 @@ Before choosing whether to start with a clean slate or pre-populated database, m
 
     ```sql
     SELECT @@global.log_bin_trust_function_creators;
-    ``` 
+    ```
 
 4. The `gse` database exists. To create it:
 
@@ -55,11 +58,12 @@ Before choosing whether to start with a clean slate or pre-populated database, m
     GRANT ALL ON gse.* TO 'gseadmin'@'%';
     ```
 
-If you want to start with a completely blank database, then no further action is required.
-The necessary tables will be created by virtue of Flyway migrations, which will run on initial server startup.
-However, if you want your local database to be pre-initialized with the data we have mined, then you can use the compressed SQL dump we provide.
-We host said dump, as well as the previous 4 iterations, on [Dropbox](https://www.dropbox.com/scl/fo/lqvp1mhsg0ezp2sgs0xdk/h?rlkey=j9joij3iqpy1zl5h061vdnlj6).
-Once you select and download a database dump, you can import the data by running:
+If you prefer to begin with an empty database, there's nothing more for you to do.
+The required tables will be generated through Flyway migrations during the initial startup of the server.
+However, if you'd like your local database to be pre-populated with the data we've collected,
+you can utilize the compressed SQL dump we offer. We host this dump, along with the four previous iterations,
+on [Dropbox](https://www.dropbox.com/scl/fo/lqvp1mhsg0ezp2sgs0xdk/h?rlkey=j9joij3iqpy1zl5h061vdnlj6).
+After choosing and downloading a database dump, you can import the data by executing:
 
 ```shell
 gzcat < gse.sql.gz | mysql -u gseadmin -pLugano2020 gse
@@ -68,7 +72,7 @@ gzcat < gse.sql.gz | mysql -u gseadmin -pLugano2020 gse
 ### Server
 
 Before attempting to run the server, you must generate your own GitHub personal access token (PAT).
-GHS relies on the GraphQL API, which is inaccessible without authentication. 
+GHS relies on the GraphQL API, which is inaccessible without authentication.
 The token must include the `repo` scope, in order for it to access the information present in the GitHub API.
 
 Once that is done, you can run the server locally using Maven:
@@ -109,7 +113,7 @@ Here's a list of project-specific arguments supported by the application that yo
 | `ghs.analysis.git.clone-timeout-duration`     | Duration           | 5m                                                                      | Maximum time allowed for cloning Git repositories.                                                                                                                                                                                                                 |
 | `ghs.analysis.cloc.analysis-timeout-duration` | Duration           | 5m                                                                      | Maximum time allowed for analyzing cloned Git repositories with `cloc`.                                                                                                                                                                                            |
 | `ghs.clean-up.enabled`                        | Boolean            | true                                                                    | Specifies if the job responsible for removing unavailable repositories (clean-up) is enabled.                                                                                                                                                                      |
-| `ghs.clean-up.cron`                           | CronTrigger        | 0 0 0 * * 1                                                             | Delay between successive repository clean-up runs, expressed as a [Spring CRON expression](https://spring.io/blog/2020/11/10/new-in-spring-5-3-improved-cron-expressions).                                                                                         |
+| `ghs.clean-up.cron`                           | CronTrigger        | 0 0 0 \* \* 1                                                           | Delay between successive repository clean-up runs, expressed as a [Spring CRON expression](https://spring.io/blog/2020/11/10/new-in-spring-5-3-improved-cron-expressions).                                                                                         |
 | `ghs.clean-up.curl.connect-timeout-duration`  | Duration           | 1m                                                                      | Maximum time allowed for establishing HTTP connections with `curl`.                                                                                                                                                                                                |
 | `ghs.statistics.suggestion-limit`             | int                | 500                                                                     | Maximum number of suggestions available in UI autocompletion. Must not be negative. To disable the limit use 0.                                                                                                                                                    |
 
@@ -157,11 +161,12 @@ Deploying is as simple as, in the [docker-compose](docker-compose) directory, ru
 docker-compose -f docker-compose.yml up -d
 ```
 
-It's worth mentioning that the database setup steps outlined in the previous section are not needed when running with docker,
-as the environment properties passed to the service will create the user and DB on first ever startup.
-However, the same does not apply to the database data, as the default deployment will create an empty database.
-If you want to use existing data from the dumps, then you have to override the compose deployment to use a custom database image that comes bundled with the dump.
-Create your `docker-compose.override.yml` file, and add to it the following contents:
+It's important to note that the database setup steps explained in the preceding section are unnecessary when running
+with Docker. This is because the environment properties passed to the service will automatically establish the MySQL
+user and database during the initial startup. However, this convenience does not extend to the database data, as the
+default deployment generates an empty database. If you wish to utilize existing data from the dumps, you'll need to
+override the compose deployment to employ a custom database image that includes the dump. To do this, create your
+`docker-compose.override.yml` file with the following contents:
 
 ```yaml
 version: '3.9'
@@ -181,9 +186,9 @@ Just remember to specify the override file during deployment:
 docker-compose -f docker-compose.yml -f docker-compose.override.yml up -d
 ```
 
-The database data itself is kept in the `gse-data` volume, while detailed back-end logs are kept in a local mount called [logs](docker-compose/logs).
-
-You can also use this override file to change the configurations of other services, for instance specifying your own PAT for the crawler:
+The database data itself is kept in the `gse-data` volume, while detailed back-end logs are kept in a local mount called
+[logs](docker-compose/logs). You can also use this override file to change the configurations of other services, for
+instance specifying your own PAT for the crawler:
 
 ```yaml
 version: '3.9'
@@ -222,9 +227,22 @@ services:
 
 ## FAQ
 
-### How can I report a bug or request a feature or ask a question?
+### How can I request a feature or ask a question?
 
-Please add a [new issue](https://github.com/seart-group/ghs/issues/), and we will get back to you very soon.
+If you have ideas for a feature you would like to see implemented or if you have any questions, we encourage you to
+create a new [discussion](https://github.com/seart-group/ghs/discussions/). By initiating a discussion, you can engage
+with the community and our team, and we'll respond promptly to address your queries or consider your feature requests.
+
+### How can I report a bug?
+
+To report any issues or bugs you encounter, please create a [new issue](https://github.com/seart-group/ghs/issues/).
+Providing detailed information about the problem you're facing will help us understand and address it more effectively.
+Rest assured, we are committed to promptly reviewing and responding to the issues you raise, working collaboratively
+to resolve any bugs and improve the overall user experience.
+
+### How do I contribute to the project?
+
+Please refer to [CONTRIBUTING.md](CONTRIBUTING.md) for more information.
 
 ### How do I extend/modify the existing database schema?
 
