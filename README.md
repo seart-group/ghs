@@ -161,11 +161,12 @@ Deploying is as simple as, in the [docker-compose](docker-compose) directory, ru
 docker-compose -f docker-compose.yml up -d
 ```
 
-It's worth mentioning that the database setup steps outlined in the previous section are not needed when running with docker,
-as the environment properties passed to the service will create the user and DB on first ever startup.
-However, the same does not apply to the database data, as the default deployment will create an empty database.
-If you want to use existing data from the dumps, then you have to override the compose deployment to use a custom database image that comes bundled with the dump.
-Create your `docker-compose.override.yml` file, and add to it the following contents:
+It's important to note that the database setup steps explained in the preceding section are unnecessary when running
+with Docker. This is because the environment properties passed to the service will automatically establish the MySQL
+user and database during the initial startup. However, this convenience does not extend to the database data, as the
+default deployment generates an empty database. If you wish to utilize existing data from the dumps, you'll need to
+override the compose deployment to employ a custom database image that includes the dump. To do this, create your
+`docker-compose.override.yml` file with the following contents:
 
 ```yaml
 version: '3.9'
