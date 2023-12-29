@@ -1,0 +1,16 @@
+name: 'Check Dockerfiles with hadolint'
+on:
+  pull_request:
+    paths:
+      - '**/Dockerfile'
+
+jobs:
+  hadolint:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout latest
+        uses: actions/checkout@v4
+      - name: Run hadolint
+        uses: hadolint/hadolint-action@v3.1.0
+        with:
+          recursive: true
