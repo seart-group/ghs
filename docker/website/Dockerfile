@@ -6,9 +6,9 @@ RUN apk update --quiet && \
             moreutils~=0.68
 
 RUN npm install -g --silent --no-progress \
-        uglify-js \
-        clean-css-cli \
-        html-minifier-terser
+        uglify-js@3.17.4 \
+        clean-css-cli@5.6.3 \
+        html-minifier-terser@7.2.0
 
 COPY html html/
 
