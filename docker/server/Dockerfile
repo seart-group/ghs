@@ -17,4 +17,4 @@ RUN apk update --quiet && \
             cloc~=1.96 \
             curl~=8.5.0
 
-ENTRYPOINT java -jar server.jar
+ENTRYPOINT ["java", "-jar", "server.jar"]
