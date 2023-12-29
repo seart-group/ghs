@@ -27,6 +27,7 @@ RUN for file in html/js/*.js; \
     done
 
 FROM nginx:1.25.3-alpine-slim
+LABEL maintainer="Ozren Dabić (dabico@usi.ch)"
 
 COPY --from=build html /usr/share/nginx/html
 
