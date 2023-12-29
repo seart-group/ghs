@@ -12,6 +12,7 @@ RUN npm install -g --silent --no-progress \
         clean-css-cli@5.6.3 \
         html-minifier-terser@7.2.0
 
+WORKDIR /
 COPY html html/
 
 RUN html-minifier-terser --collapse-whitespace \

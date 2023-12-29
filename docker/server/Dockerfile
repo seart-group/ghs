@@ -1,7 +1,8 @@
 FROM maven:3.9.3-eclipse-temurin-17-alpine AS build
 
-COPY ./pom.xml /pom.xml
-COPY ./src ./src
+WORKDIR /
+COPY src src/
+COPY pom.xml pom.xml
 
 RUN mvn -e --no-transfer-progress clean install -am -DskipTests
 
