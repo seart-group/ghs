@@ -4,5 +4,5 @@ LABEL maintainer="Ozren Dabić (dabico@usi.ch)"
 RUN apk update --quiet && \
     apk add --no-cache \
             --quiet \
-            openssh \
-            sshpass
+            openssh~=9.6 \
+            sshpass~=1.10
