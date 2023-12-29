@@ -10,8 +10,8 @@ LABEL maintainer="Ozren Dabić (dabico@usi.ch)"
 
 COPY --from=build /target/ghs-application-*.jar /server.jar
 
-RUN apk update --quiet
-RUN apk add --no-cache \
+RUN apk update --quiet && \
+    apk add --no-cache \
             --quiet \
             git \
             cloc \
