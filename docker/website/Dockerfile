@@ -1,5 +1,7 @@
 FROM node:lts-alpine AS build
 
+SHELL ["/bin/ash", "-eo", "pipefail", "-c"]
+
 RUN apk update --quiet && \
     apk add --no-cache \
             --quiet \
