@@ -41,7 +41,7 @@ Before choosing whether to start with a clean slate or pre-populated database, m
 
     ```sql
     SELECT @@global.log_bin_trust_function_creators;
-    ``` 
+    ```
 
 4. The `gse` database exists. To create it:
 
@@ -69,7 +69,7 @@ gzcat < gse.sql.gz | mysql -u gseadmin -pLugano2020 gse
 ### Server
 
 Before attempting to run the server, you must generate your own GitHub personal access token (PAT).
-GHS relies on the GraphQL API, which is inaccessible without authentication. 
+GHS relies on the GraphQL API, which is inaccessible without authentication.
 The token must include the `repo` scope, in order for it to access the information present in the GitHub API.
 
 Once that is done, you can run the server locally using Maven:
