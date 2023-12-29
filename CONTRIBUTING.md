@@ -31,6 +31,7 @@ The list of checks includes:
 
 - [CheckStyle](.github/workflows/checkstyle.yml)
 - [ESLint](.github/workflows/eslint.yml)
+- [hadolint](.github/workflows/hadolint.yml)
 - [StyleLint](.github/workflows/stylelint.yml)
 - [HTMLHint](.github/workflows/htmlhint.yml)
 
