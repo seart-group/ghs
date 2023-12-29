@@ -4,7 +4,8 @@ This project is made of two components:
 1. A Spring Boot powered back-end, responsible for:
     1. Continuously crawling GitHub API endpoints for repository information, and storing it in a central database;
     2. Acting as an API for providing access to the stored data.
-2. A Bootstrap-styled and jQuery powered web user interface, serving an accessible front for the API, available at http://seart-ghs.si.usi.ch
+2. A Bootstrap-styled and jQuery powered web user interface, serving an accessible front for the API, available at
+   [http://seart-ghs.si.usi.ch](http://seart-ghs.si.usi.ch)
 
 ## Running Locally
 
