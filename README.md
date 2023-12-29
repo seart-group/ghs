@@ -24,7 +24,8 @@ This project is made of two components:
 
 ### Database
 
-Before choosing whether to start with a clean slate or pre-populated database, make sure the following requirements are met:
+Before choosing whether to start with a clean slate or pre-populated database,
+make sure the following requirements are met:
 
 1. The database timezone is set to `+00:00`. You can verify this via:
 
@@ -57,11 +58,12 @@ Before choosing whether to start with a clean slate or pre-populated database, m
     GRANT ALL ON gse.* TO 'gseadmin'@'%';
     ```
 
-If you want to start with a completely blank database, then no further action is required.
-The necessary tables will be created by virtue of Flyway migrations, which will run on initial server startup.
-However, if you want your local database to be pre-initialized with the data we have mined, then you can use the compressed SQL dump we provide.
-We host said dump, as well as the previous 4 iterations, on [Dropbox](https://www.dropbox.com/scl/fo/lqvp1mhsg0ezp2sgs0xdk/h?rlkey=j9joij3iqpy1zl5h061vdnlj6).
-Once you select and download a database dump, you can import the data by running:
+If you prefer to begin with an empty database, there's nothing more for you to do.
+The required tables will be generated through Flyway migrations during the initial startup of the server.
+However, if you'd like your local database to be pre-populated with the data we've collected,
+you can utilize the compressed SQL dump we offer. We host this dump, along with the four previous iterations,
+on [Dropbox](https://www.dropbox.com/scl/fo/lqvp1mhsg0ezp2sgs0xdk/h?rlkey=j9joij3iqpy1zl5h061vdnlj6).
+After choosing and downloading a database dump, you can import the data by executing:
 
 ```shell
 gzcat < gse.sql.gz | mysql -u gseadmin -pLugano2020 gse
