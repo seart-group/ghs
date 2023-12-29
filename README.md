@@ -240,6 +240,10 @@ Providing detailed information about the problem you're facing will help us unde
 Rest assured, we are committed to promptly reviewing and responding to the issues you raise, working collaboratively
 to resolve any bugs and improve the overall user experience.
 
+### How do I contribute to the project?
+
+Please refer to [CONTRIBUTING.md](CONTRIBUTING.md) for more information.
+
 ### How do I extend/modify the existing database schema?
 
 In order to do that, you should be familiar with database migration tools and practices.
