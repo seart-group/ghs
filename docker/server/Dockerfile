@@ -4,7 +4,7 @@ WORKDIR /
 COPY src src/
 COPY pom.xml pom.xml
 
-RUN mvn -e --no-transfer-progress clean install -am -DskipTests
+RUN mvn -e --no-transfer-progress clean package -am -DskipTests
 
 FROM eclipse-temurin:17.0.9_9-jre-alpine
 LABEL maintainer="Ozren Dabić (dabico@usi.ch)"
