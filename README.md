@@ -227,9 +227,18 @@ services:
 
 ## FAQ
 
-### How can I report a bug or request a feature or ask a question?
+### How can I request a feature or ask a question?
 
-Please add a [new issue](https://github.com/seart-group/ghs/issues/), and we will get back to you very soon.
+If you have ideas for a feature you would like to see implemented or if you have any questions, we encourage you to
+create a new [discussion](https://github.com/seart-group/ghs/discussions/). By initiating a discussion, you can engage
+with the community and our team, and we'll respond promptly to address your queries or consider your feature requests.
+
+### How can I report a bug?
+
+To report any issues or bugs you encounter, please create a [new issue](https://github.com/seart-group/ghs/issues/).
+Providing detailed information about the problem you're facing will help us understand and address it more effectively.
+Rest assured, we are committed to promptly reviewing and responding to the issues you raise, working collaboratively
+to resolve any bugs and improve the overall user experience.
 
 ### How do I extend/modify the existing database schema?
 
