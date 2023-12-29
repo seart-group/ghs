@@ -186,9 +186,9 @@ Just remember to specify the override file during deployment:
 docker-compose -f docker-compose.yml -f docker-compose.override.yml up -d
 ```
 
-The database data itself is kept in the `gse-data` volume, while detailed back-end logs are kept in a local mount called [logs](docker-compose/logs).
-
-You can also use this override file to change the configurations of other services, for instance specifying your own PAT for the crawler:
+The database data itself is kept in the `gse-data` volume, while detailed back-end logs are kept in a local mount called
+[logs](docker-compose/logs). You can also use this override file to change the configurations of other services, for
+instance specifying your own PAT for the crawler:
 
 ```yaml
 version: '3.9'
