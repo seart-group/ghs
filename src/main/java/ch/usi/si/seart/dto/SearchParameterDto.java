@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.Range;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -112,58 +113,72 @@ public class SearchParameterDto {
         return parameters;
     }
 
+    @Schema(hidden = true)
     public Range<Long> getCommits() {
         return Ranges.closed(commitsMin, commitsMax);
     }
 
+    @Schema(hidden = true)
     public Range<Long> getContributors() {
         return Ranges.closed(contributorsMin, contributorsMax);
     }
 
+    @Schema(hidden = true)
     public Range<Long> getIssues() {
         return Ranges.closed(issuesMin, issuesMax);
     }
 
+    @Schema(hidden = true)
     public Range<Long> getPulls() {
         return Ranges.closed(pullsMin, pullsMax);
     }
 
+    @Schema(hidden = true)
     public Range<Long> getBranches() {
         return Ranges.closed(branchesMin, branchesMax);
     }
 
+    @Schema(hidden = true)
     public Range<Long> getReleases() {
         return Ranges.closed(releasesMin, releasesMax);
     }
 
+    @Schema(hidden = true)
     public Range<Long> getStars() {
         return Ranges.closed(starsMin, starsMax);
     }
 
+    @Schema(hidden = true)
     public Range<Long> getWatchers() {
         return Ranges.closed(watchersMin, watchersMax);
     }
 
+    @Schema(hidden = true)
     public Range<Long> getForks() {
         return Ranges.closed(forksMin, forksMax);
     }
 
+    @Schema(hidden = true)
     public Range<Date> getCreated() {
         return Ranges.closed(createdMin, createdMax);
     }
 
+    @Schema(hidden = true)
     public Range<Date> getCommitted() {
         return Ranges.closed(committedMin, committedMax);
     }
 
+    @Schema(hidden = true)
     public Range<Long> getCodeLines() {
         return Ranges.closed(codeLinesMin, codeLinesMax);
     }
 
+    @Schema(hidden = true)
     public Range<Long> getCommentLines() {
         return Ranges.closed(commentLinesMin, commentLinesMax);
     }
 
+    @Schema(hidden = true)
     public Range<Long> getNonBlankLines() {
         return Ranges.closed(nonBlankLinesMin, nonBlankLinesMax);
     }
