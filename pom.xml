@@ -36,6 +36,7 @@
 			<id>dabico</id>
 			<name>Ozren Dabić</name>
 			<email>ozren.dabic@usi.ch</email>
+			<url>https://dabico.github.io/</url>
 			<organization>SEART</organization>
 			<organizationUrl>https://seart.si.usi.ch/</organizationUrl>
 		</developer>
@@ -45,18 +46,21 @@
 		<contributor>
 			<name>Emad Aghajani</name>
 			<email>emad.aghajani@usi.ch</email>
+			<url>https://emadpres.github.io/</url>
 			<organization>SEART</organization>
 			<organizationUrl>https://seart.si.usi.ch/</organizationUrl>
 		</contributor>
 		<contributor>
 			<name>Gabriele Bavota</name>
 			<email>gabriele.bavota@usi.ch</email>
+			<url>https://www.inf.usi.ch/faculty/bavota/</url>
 			<organization>SEART</organization>
 			<organizationUrl>https://seart.si.usi.ch/</organizationUrl>
 		</contributor>
 		<contributor>
 			<name>Csaba Nagy</name>
 			<email>csaba.nagy@usi.ch</email>
+			<url>https://csnagy.github.io/</url>
 			<organization>REVEAL</organization>
 			<organizationUrl>https://reveal.si.usi.ch/</organizationUrl>
 		</contributor>
