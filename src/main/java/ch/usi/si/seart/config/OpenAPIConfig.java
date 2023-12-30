@@ -4,45 +4,49 @@ import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.info.Contact;
 import io.swagger.v3.oas.models.info.Info;
 import io.swagger.v3.oas.models.info.License;
-import lombok.AccessLevel;
-import lombok.experimental.FieldDefaults;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.info.BuildProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.convert.ConversionService;
 
+import java.util.Arrays;
+
 @Configuration
-@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class OpenAPIConfig {
 
-    String title;
-    String description;
-    String version;
-    License license;
-    Contact contact;
-
-    // TODO: 10.04.23 Update this once they enable support for multiple licenses and/or contacts
-    @SuppressWarnings("ConstantConditions")
-    @Autowired
-    public OpenAPIConfig(BuildProperties buildProperties, ConversionService conversionService) {
-        this.title = buildProperties.get("name");
-        this.description = buildProperties.get("description");
-        this.version = buildProperties.get("version");
-        License[] licenses = conversionService.convert(buildProperties.get("licenses"), License[].class);
-        Contact[] contacts = conversionService.convert(buildProperties.get("developers"), Contact[].class);
-        this.license = (licenses.length > 0) ? licenses[0] : null;
-        this.contact = (contacts.length > 0) ? contacts[0] : null;
+    @Bean
+    public OpenAPI openAPI(Info info) {
+        return new OpenAPI().info(info);
     }
 
     @Bean
-    public OpenAPI openAPI() {
-        Info info = new Info()
+    Info info(BuildProperties buildProperties, Contact contact, License license) {
+        String title = buildProperties.get("name");
+        String description = buildProperties.get("description");
+        String version = buildProperties.get("version");
+        return new Info()
                 .title(title)
                 .description(description)
                 .version(version)
                 .contact(contact)
                 .license(license);
-        return new OpenAPI().info(info);
+    }
+
+    @Bean
+    @SuppressWarnings("ConstantConditions")
+    Contact contact(BuildProperties buildProperties, ConversionService conversionService) {
+        Contact[] contacts = conversionService.convert(buildProperties.get("developers"), Contact[].class);
+        return Arrays.stream(contacts)
+                .findFirst()
+                .orElse(new Contact());
+    }
+
+    @Bean
+    @SuppressWarnings("ConstantConditions")
+    License license(BuildProperties buildProperties, ConversionService conversionService) {
+        License[] licenses = conversionService.convert(buildProperties.get("licenses"), License[].class);
+        return Arrays.stream(licenses)
+                .findFirst()
+                .orElse(new License());
     }
 }
