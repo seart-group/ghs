@@ -1,6 +1,7 @@
 package ch.usi.si.seart.job;
 
 import ch.usi.si.seart.analysis.CLOCConnector;
+import ch.usi.si.seart.config.properties.AnalysisProperties;
 import ch.usi.si.seart.exception.StaticCodeAnalysisException;
 import ch.usi.si.seart.exception.git.GitException;
 import ch.usi.si.seart.exception.git.RepositoryDisabledException;
@@ -35,6 +36,9 @@ import org.springframework.transaction.annotation.Transactional;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.file.Path;
+import java.time.Duration;
+import java.time.Instant;
+import java.util.Date;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -46,6 +50,8 @@ import java.util.stream.Collectors;
 public class CodeAnalysisJob implements Runnable {
 
     ApplicationContext applicationContext;
+
+    AnalysisProperties analysisProperties;
 
     GitConnector gitConnector;
     CLOCConnector clocConnector;
@@ -63,6 +69,9 @@ public class CodeAnalysisJob implements Runnable {
                 gitRepoService.count()
         );
         gitRepoService.streamAnalysisCandidates().forEach(this::analyze);
+        Duration delay = analysisProperties.getDelayBetweenRuns();
+        Instant instant = Instant.now().plus(delay);
+        log.info("Next analysis scheduled for: {}", Date.from(instant));
     }
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
