@@ -19,7 +19,6 @@ import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.function.Supplier;
-import java.util.stream.Collectors;
 
 /**
  * A useful wrapper for managing the lifecycle of terminal processes.
@@ -86,7 +85,7 @@ public class ExternalProcess {
      * @return the terminal command.
      */
     public String getCommand() {
-        return processBuilder.command().stream().collect(Collectors.joining(" "));
+        return String.join(" ", processBuilder.command());
     }
 
     /**
