@@ -19,7 +19,7 @@ This project is made of two components:
 | MySQL                                    |               8.2.0 |
 | Flyway                                   |              10.4.1 |
 | Git                                      |              2.40.1 |
-| [curl](https://curl.se)                  |               8.5.0 |
+| [curl](https://github.com/curl/curl)     |               8.5.0 |
 | [cloc](https://github.com/AlDanial/cloc) |                1.96 |
 
 ### Database
