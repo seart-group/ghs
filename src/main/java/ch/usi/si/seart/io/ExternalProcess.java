@@ -8,6 +8,7 @@ import lombok.experimental.FieldDefaults;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
+import org.springframework.util.Assert;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -70,11 +71,9 @@ public class ExternalProcess {
             @NotNull Map<String, String> environment,
             @NotNull String... command
     ) {
-        if (!Files.isDirectory(workdir))
-            throw new IllegalArgumentException("Specified path is not a directory!");
+        Assert.isTrue(Files.isDirectory(workdir), "Specified path is not a directory!");
         Objects.requireNonNull(environment, "Environment settings must not be null!");
         Objects.requireNonNull(command, "Command and arguments must not be null!");
-
         processBuilder = new ProcessBuilder();
         processBuilder.environment().putAll(environment);
         processBuilder.directory(workdir.toFile());
