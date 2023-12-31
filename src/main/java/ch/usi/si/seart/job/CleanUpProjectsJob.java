@@ -1,5 +1,6 @@
 package ch.usi.si.seart.job;
 
+import ch.usi.si.seart.config.properties.CleanUpProperties;
 import ch.usi.si.seart.exception.ClientURLException;
 import ch.usi.si.seart.exception.git.GitException;
 import ch.usi.si.seart.git.GitConnector;
@@ -13,11 +14,15 @@ import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.scheduling.TriggerContext;
 import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.scheduling.support.CronTrigger;
+import org.springframework.scheduling.support.SimpleTriggerContext;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.Date;
 
 @Job
 @Slf4j
@@ -25,6 +30,8 @@ import java.net.URL;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 @AllArgsConstructor(onConstructor_ = @Autowired)
 public class CleanUpProjectsJob implements Runnable {
+
+    CleanUpProperties cleanUpProperties;
 
     GitConnector gitConnector;
     ClientURLConnector curlConnector;
@@ -35,7 +42,7 @@ public class CleanUpProjectsJob implements Runnable {
     @Scheduled(cron = "${ghs.clean-up.cron}")
     public void run() {
         log.info(
-                "Started cleanup  on {}/{} repositories",
+                "Started cleanup on {}/{} repositories",
                 gitRepoService.countCleanupCandidates(),
                 gitRepoService.count()
         );
@@ -50,6 +57,10 @@ public class CleanUpProjectsJob implements Runnable {
                 gitRepoService.pingById(id);
             }
         });
+        CronTrigger trigger = cleanUpProperties.getCron();
+        TriggerContext context = new SimpleTriggerContext();
+        Date date = trigger.nextExecutionTime(context);
+        log.info("Next cleanup scheduled for: {}", date);
     }
 
     /*

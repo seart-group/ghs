@@ -87,9 +87,9 @@ public class CrawlProjectsJob implements Runnable {
             Range<Date> dateRange = Ranges.closed(lower, upper);
             crawlRepositories(dateRange, language);
         }
-        Duration delayBetweenRuns = crawlerProperties.getDelayBetweenRuns();
-        Instant nextRun = Instant.now().plus(delayBetweenRuns);
-        log.info("Next crawl scheduled for: {}", Date.from(nextRun));
+        Duration delay = crawlerProperties.getDelayBetweenRuns();
+        Instant instant = Instant.now().plus(delay);
+        log.info("Next crawl scheduled for: {}", Date.from(instant));
     }
 
     private void crawlRepositories(Range<Date> range, Language language) {
