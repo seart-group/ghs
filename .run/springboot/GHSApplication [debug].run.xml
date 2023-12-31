@@ -17,6 +17,10 @@
         <option name="value" value="false" />
       </param>
       <param>
+        <option name="name" value="spring.flyway.enabled" />
+        <option name="value" value="false" />
+      </param>
+      <param>
         <option name="name" value="spring.jpa.show-sql" />
         <option name="value" value="true" />
       </param>

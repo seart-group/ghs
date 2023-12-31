@@ -16,6 +16,10 @@
         <option name="name" value="ghs.clean-up.enabled" />
         <option name="value" value="false" />
       </param>
+      <param>
+        <option name="name" value="spring.flyway.enabled" />
+        <option name="value" value="false" />
+      </param>
     </additionalParameters>
     <option name="ALTERNATIVE_JRE_PATH" value="17" />
     <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="true" />
