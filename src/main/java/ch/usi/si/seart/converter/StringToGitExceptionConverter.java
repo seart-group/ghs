@@ -42,7 +42,7 @@ public class StringToGitExceptionConverter implements Converter<String, GitExcep
                 .orElse("");
         String error = source.lines()
                 .filter(line -> line.startsWith("error:"))
-                .findAny()
+                .findFirst()
                 .map(string -> string.substring(7))
                 .orElse("");
         if (fatal.endsWith(NOT_FOUND))
