@@ -19,6 +19,7 @@ public class StringToGitExceptionConverter implements Converter<String, GitExcep
     private static final String EARLY_EOF = "early EOF";
     private static final String LONG_FILE_NAME = "Filename too long";
     private static final String FORBIDDEN = "The requested URL returned error: 403";
+    private static final String DMCA = "Repository unavailable due to DMCA takedown";
     private static final String DISABLED = "Access to this repository has been disabled by GitHub staff";
     private static final String UNRESOLVABLE_HOST = "Could not resolve host: github.com";
     private static final String CHECKOUT_FAILED = "unable to checkout working tree";
@@ -47,6 +48,8 @@ public class StringToGitExceptionConverter implements Converter<String, GitExcep
                 .orElse("");
         if (fatal.endsWith(NOT_FOUND))
             return new RepositoryNotFoundException(fatal);
+        if (fatal.endsWith(FORBIDDEN) && remote.startsWith(DMCA))
+            return new RepositoryDisabledException(fatal);
         if (fatal.endsWith(FORBIDDEN) && remote.startsWith(DISABLED))
             return new RepositoryDisabledException(fatal);
         if (fatal.endsWith(FORBIDDEN) && remote.contains(LOCKED))
