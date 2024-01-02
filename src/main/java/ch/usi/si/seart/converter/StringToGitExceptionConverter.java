@@ -14,6 +14,10 @@ import org.springframework.lang.NonNull;
 
 public class StringToGitExceptionConverter implements Converter<String, GitException> {
 
+    private static final BlockExtractor REMOTE = new BlockExtractor("remote");
+    private static final BlockExtractor FATAL = new BlockExtractor("fatal");
+    private static final BlockExtractor ERROR = new BlockExtractor("error");
+
     private static final String LOCKED = "is disabled";
     private static final String NOT_FOUND = "not found";
     private static final String EARLY_EOF = "early EOF";
@@ -31,21 +35,9 @@ public class StringToGitExceptionConverter implements Converter<String, GitExcep
     @Override
     @NonNull
     public GitException convert(@NonNull String source) {
-        String remote = source.lines()
-                .filter(line -> line.startsWith("remote:"))
-                .findFirst()
-                .map(string -> string.substring(8))
-                .orElse("");
-        String fatal = source.lines()
-                .filter(line -> line.startsWith("fatal:"))
-                .findFirst()
-                .map(string -> string.substring(7))
-                .orElse("");
-        String error = source.lines()
-                .filter(line -> line.startsWith("error:"))
-                .findFirst()
-                .map(string -> string.substring(7))
-                .orElse("");
+        String remote = REMOTE.extract(source);
+        String fatal = FATAL.extract(source);
+        String error = ERROR.extract(source);
         if (fatal.endsWith(NOT_FOUND))
             return new RepositoryNotFoundException(fatal);
         if (fatal.endsWith(FORBIDDEN) && remote.startsWith(DMCA))
@@ -66,5 +58,24 @@ public class StringToGitExceptionConverter implements Converter<String, GitExcep
             case CHECKOUT_FAILED -> new CheckoutException(error);
             default -> new GitException(fatal);
         };
+    }
+
+    private record BlockExtractor(String prefix) {
+
+        public String extract(String source) {
+            return source.lines()
+                    .filter(this::filter)
+                    .findFirst()
+                    .map(this::map)
+                    .orElse("");
+        }
+
+        private boolean filter(String line) {
+            return line.startsWith(prefix + ":");
+        }
+
+        private String map(String string) {
+            return string.substring(prefix.length() + 2);
+        }
     }
 }
