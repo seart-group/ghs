@@ -40,6 +40,11 @@ public class StringToGitExceptionConverter implements Converter<String, GitExcep
                 .findFirst()
                 .map(string -> string.substring(7))
                 .orElse("");
+        String error = source.lines()
+                .filter(line -> line.startsWith("error:"))
+                .findAny()
+                .map(string -> string.substring(7))
+                .orElse("");
         if (fatal.endsWith(NOT_FOUND))
             return new RepositoryNotFoundException(fatal);
         if (fatal.endsWith(FORBIDDEN) && remote.startsWith(DISABLED))
@@ -55,14 +60,7 @@ public class StringToGitExceptionConverter implements Converter<String, GitExcep
             case EARLY_EOF -> new CompressionException(fatal);
             case PROMPTS_DISABLED -> new TerminalPromptsDisabledException(fatal);
             case AUTHENTICATION_REQUIRED -> new InvalidUsernameException(fatal);
-            case CHECKOUT_FAILED -> {
-                String error = source.lines()
-                        .filter(line -> line.startsWith("error:"))
-                        .findAny()
-                        .map(string -> string.substring(7))
-                        .orElse(null);
-                yield new CheckoutException(error);
-            }
+            case CHECKOUT_FAILED -> new CheckoutException(error);
             default -> new GitException(fatal);
         };
     }
