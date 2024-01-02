@@ -139,7 +139,7 @@ The deployment stack consists of the following containers:
 |------------------------|:-----------------------------------------------------------------------:|------------------------------------------|:-----------------------------:|
 | `gse-database`         |            [mysql](https://registry.hub.docker.com/_/mysql)             | Platform database                        |      :white_check_mark:       |
 | `gse-migration`        |        [flyway](https://registry.hub.docker.com/r/flyway/flyway)        | Database schema migration executions     |      :white_check_mark:       |
-| `gse-backup`           |  [tiredofit/db-backup](https://hub.docker.com/r/tiredofit/db-backup/)   | Automated database backups               | :negative_squared_cross_mark: |
+| `gse-backup`           | [databack/mysql-backup](https://hub.docker.com/r/databack/mysql-backup) | Automatic database backups               | :negative_squared_cross_mark: |
 | `gse-server`           |              [seart/ghs-server](docker/server/Dockerfile)               | Spring Boot server application           |      :white_check_mark:       |
 | `gse-website`          |             [seart/ghs-website](docker/website/Dockerfile)              | NGINX web server acting as HTML supplier |      :white_check_mark:       |
 | `gse-watchtower`       | [containrrr/watchtower](https://hub.docker.com/r/containrrr/watchtower) | Automatic Docker image updates           | :negative_squared_cross_mark: |
@@ -220,7 +220,7 @@ services:
 
   gse-backup:
     restart: always
-    entrypoint: "/init"
+    entrypoint: "/entrypoint"
 ```
 
 ---
