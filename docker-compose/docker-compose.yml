@@ -51,6 +51,8 @@ services:
     restart: "no"
     volumes:
       - backup:/backup
+      - ./bkpdb/clean_pre.sh:/scripts.d/pre-backup/00_clean_flyway_history.sh
+      - ./bkpdb/clean_post.sh:/scripts.d/post-backup/00_clean_old_dumps.sh
     environment:
       TZ: UTC
       DB_NAMES: gse
