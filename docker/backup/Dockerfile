@@ -1,8 +1,13 @@
-FROM tiredofit/db-backup:4.0.33
+FROM databack/mysql-backup:latest
 LABEL maintainer="Ozren Dabić (dabico@usi.ch)"
+
+USER root
 
 RUN apk update --quiet && \
     apk add --no-cache \
             --quiet \
-            openssh~=9.6 \
-            sshpass~=1.10
+            openssh~=9.1 \
+            sshpass~=1.09 \
+            tzdata~=2023d
+
+USER appuser
