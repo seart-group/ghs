@@ -124,10 +124,8 @@ public class CodeAnalysisJob implements Runnable {
                         return metric;
                     })
                     .collect(Collectors.toSet());
-            if (metrics.isEmpty()) {
-                log.debug("No metrics were computed for: {}", name);
+            if (metrics.isEmpty())
                 log.info("Skipping:  {} [{}]", name, id);
-            }
             gitRepo.setIsLocked(false);
             gitRepo.setIsDisabled(false);
             gitRepo.setMetrics(metrics);
