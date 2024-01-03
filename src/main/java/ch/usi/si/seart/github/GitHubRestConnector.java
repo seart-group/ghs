@@ -326,7 +326,6 @@ public class GitHubRestConnector extends GitHubConnector<RestResponse> {
         private RestResponse handleClientError(
                 HttpStatus status, Headers headers, JsonObject json
         ) throws InterruptedException {
-            RestErrorResponse errorResponse = conversionService.convert(json, RestErrorResponse.class);
             switch (status) {
                 case UNAUTHORIZED ->
                     /*
@@ -369,6 +368,7 @@ public class GitHubRestConnector extends GitHubConnector<RestResponse> {
                     // TODO: 30.07.23 Add any other special logic here
                 }
             }
+            RestErrorResponse errorResponse = conversionService.convert(json, RestErrorResponse.class);
             throw new HttpClientErrorException(status, errorResponse.getMessage());
         }
     }
