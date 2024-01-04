@@ -16,6 +16,7 @@ RUN apk update --quiet && \
             --quiet \
             git~=2.40.1 \
             cloc~=1.96 \
-            curl~=8.5.0
+            curl~=8.5.0 \
+            jq~=1.6
 
 ENTRYPOINT ["java", "-jar", "server.jar"]
