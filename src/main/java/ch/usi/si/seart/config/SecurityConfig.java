@@ -18,6 +18,8 @@ public class SecurityConfig {
         return httpSecurity
                 .csrf().csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
                 .and()
+                .authorizeRequests().antMatchers("/actuator/health").permitAll()
+                .and()
                 .authorizeRequests().antMatchers("/actuator/**").authenticated().anyRequest().permitAll()
                 .and()
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
