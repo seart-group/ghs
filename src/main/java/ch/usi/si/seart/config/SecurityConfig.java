@@ -16,11 +16,18 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
         return httpSecurity
-                .csrf().csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
+                .csrf()
+                .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
                 .and()
-                .authorizeRequests().antMatchers("/actuator/health").permitAll()
+                .authorizeRequests()
+                .antMatchers("/actuator/health")
+                .permitAll()
                 .and()
-                .authorizeRequests().antMatchers("/actuator/**").authenticated().anyRequest().permitAll()
+                .authorizeRequests()
+                .antMatchers("/actuator/**")
+                .authenticated()
+                .anyRequest()
+                .permitAll()
                 .and()
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .httpBasic(Customizer.withDefaults())
