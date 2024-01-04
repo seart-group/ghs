@@ -102,9 +102,9 @@ services:
         condition: on-failure
         max_attempts: 5
     healthcheck:
-      test: curl --fail --silent localhost:8080/api || exit 1
       start_period: 20s
       interval: 10s
+      test: curl --silent --fail --request GET http://localhost:8080/api/actuator/health | jq --exit-status -n 'inputs | if has("status") then .status=="UP" else false end' > /dev/null || exit 1
       timeout: 5s
       retries: 5
     depends_on:
