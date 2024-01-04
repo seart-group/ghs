@@ -152,7 +152,7 @@ graph RL
     gse-backup --> |service_completed_successfully| gse-migration
     gse-server --> |service_completed_successfully| gse-migration
     gse-website --> |service_healthy| gse-server
-    gse-watchtower --> |service_started| gse-website
+    gse-watchtower --> |service_healthy| gse-website
 ```
 
 Deploying is as simple as, in the [docker-compose](docker-compose) directory, run:

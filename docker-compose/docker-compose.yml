@@ -156,7 +156,7 @@ services:
       WATCHTOWER_INCLUDE_STOPPED: true
     depends_on:
       gse-website:
-        condition: service_started
+        condition: service_healthy
     labels:
       - "com.centurylinklabs.watchtower.scope=ghs"
     networks:
