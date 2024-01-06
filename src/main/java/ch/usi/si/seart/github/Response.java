@@ -21,7 +21,7 @@ import java.util.Optional;
 @Getter
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
-public abstract class Response {
+abstract class Response {
 
     JsonElement jsonElement;
 
