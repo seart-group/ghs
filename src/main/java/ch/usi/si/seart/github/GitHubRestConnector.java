@@ -335,7 +335,7 @@ public class GitHubRestConnector extends GitHubConnector<RestResponse> {
                      * because we are checking the Rate Limit API
                      * with the very same unauthorized token.
                      */
-                        gitHubTokenManager.replaceToken();
+                    gitHubTokenManager.replaceToken();
                 case TOO_MANY_REQUESTS -> {
                     log.warn("Too many requests, sleeping for 5 minutes...");
                     TimeUnit.MINUTES.sleep(5);
