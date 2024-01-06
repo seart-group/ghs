@@ -8,7 +8,6 @@ import ch.usi.si.seart.converter.SearchParameterDtoToSpecificationConverter;
 import ch.usi.si.seart.converter.StringToContactsConverter;
 import ch.usi.si.seart.converter.StringToGitExceptionConverter;
 import ch.usi.si.seart.converter.StringToLicensesConverter;
-import ch.usi.si.seart.converter.StringToNavigationLinksConverter;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.format.FormatterRegistry;
@@ -40,6 +39,5 @@ public class WebConfig implements WebMvcConfigurer {
         registry.addConverter(new StringToContactsConverter());
         registry.addConverter(new StringToGitExceptionConverter());
         registry.addConverter(new StringToLicensesConverter());
-        registry.addConverter(new StringToNavigationLinksConverter());
     }
 }
