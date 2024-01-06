@@ -12,7 +12,6 @@ import org.springframework.http.HttpStatus;
  * Apart from the JSON representation of the response body,
  * this class also contains information on the returned HTTP status and headers.
  *
- * @since 1.6.3
  * @author Ozren Dabić
  */
 @Getter

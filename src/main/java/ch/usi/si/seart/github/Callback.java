@@ -9,7 +9,6 @@ import org.springframework.retry.RetryCallback;
  * that yield instances of {@link Response} subclasses.
  *
  * @param <R> The type of response that this callback operates on.
- * @since 1.6.3
  * @author Ozren Dabić
  */
 public interface Callback<R extends Response> extends RetryCallback<R, Exception> {

@@ -15,7 +15,6 @@ import java.util.Optional;
  * Regardless of API connector, each response is expected to contain JSON data.
  * This class provides methods to access and manipulate this data in various ways.
  *
- * @since 1.6.3
  * @author Ozren Dabić
  */
 @Getter
