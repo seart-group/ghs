@@ -28,7 +28,7 @@ import java.util.stream.Stream;
 @Getter(onMethod_ = @Override)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
-public class GraphQlErrorResponse implements ResponseError {
+public class GraphQlErrorResponse implements ResponseError, ErrorResponse {
 
     String message;
     ErrorClassification errorType;

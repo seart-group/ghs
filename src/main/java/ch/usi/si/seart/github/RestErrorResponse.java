@@ -13,12 +13,12 @@ import java.net.URL;
 import java.util.List;
 import java.util.StringJoiner;
 
-@Getter
+@Getter(onMethod_ = @Override)
 @Builder
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class RestErrorResponse {
+public class RestErrorResponse implements ErrorResponse {
 
     String message;
 
