@@ -11,7 +11,7 @@ import javax.validation.constraints.NotNull;
 import java.time.Duration;
 
 @Getter
-@ConfigurationProperties(prefix = "ghs.clean-up.curl", ignoreUnknownFields = false)
+@ConfigurationProperties(prefix = "ghs.curl", ignoreUnknownFields = false)
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 @AllArgsConstructor(onConstructor_ = @ConstructorBinding)
 public class ClientURLProperties {

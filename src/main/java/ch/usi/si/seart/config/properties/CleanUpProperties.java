@@ -6,7 +6,6 @@ import lombok.Getter;
 import lombok.experimental.FieldDefaults;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.ConstructorBinding;
-import org.springframework.boot.context.properties.NestedConfigurationProperty;
 import org.springframework.scheduling.support.CronTrigger;
 
 import javax.validation.constraints.NotNull;
@@ -21,12 +20,4 @@ public class CleanUpProperties {
 
     @NotNull
     CronTrigger cron;
-
-    @Getter(AccessLevel.NONE)
-    @NestedConfigurationProperty
-    ClientURLProperties curl;
-
-    public ClientURLProperties getClientURLProperties() {
-        return curl;
-    }
 }
