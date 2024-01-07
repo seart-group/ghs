@@ -21,7 +21,7 @@ import java.lang.annotation.Target;
  * allowing for implementation classes to be autodetected through classpath scanning.
  *
  * @author Ozren Dabić
- * @see ch.usi.si.seart.bean.processor.ConnectorAnnotationProcessor ConnectorAnnotationProcessor
+ * @see ch.usi.si.seart.processor.ConnectorAnnotationProcessor ConnectorAnnotationProcessor
  * @see org.springframework.stereotype.Component Component
  * @see org.springframework.stereotype.Service Service
  */
