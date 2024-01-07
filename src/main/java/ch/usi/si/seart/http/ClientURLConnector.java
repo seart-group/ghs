@@ -1,6 +1,5 @@
 package ch.usi.si.seart.http;
 
-import ch.usi.si.seart.config.properties.ClientURLProperties;
 import ch.usi.si.seart.exception.ClientURLException;
 import ch.usi.si.seart.exception.TerminalExecutionException;
 import ch.usi.si.seart.io.ExternalProcess;
@@ -10,6 +9,7 @@ import lombok.AllArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 
 import java.net.ConnectException;
 import java.net.URL;
@@ -23,22 +23,22 @@ import java.util.concurrent.TimeoutException;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class ClientURLConnector {
 
-    ClientURLProperties clientURLProperties;
+    @Value("${ghs.curl.connect-timeout-duration}")
+    Duration connectTimeout;
 
     public boolean ping(URL url) throws ClientURLException {
         try {
-            Duration duration = clientURLProperties.getConnectTimeoutDuration();
             String[] command = {
                 "curl", "-Is",
                 "--connect-timeout",
-                String.valueOf(duration.toSeconds()),
+                String.valueOf(connectTimeout.toSeconds()),
                 "--fail-with-body",
                 "--show-error",
                 url.toString()
             };
             ExternalProcess process = new ExternalProcess(command);
             log.trace("Pinging:   {}", url);
-            ExternalProcess.Result result = process.execute(duration.toMillis());
+            ExternalProcess.Result result = process.execute(connectTimeout.toMillis());
             int code = result.getCode();
             return switch (code) {
                 case 0 -> true;
@@ -48,8 +48,10 @@ public class ClientURLConnector {
             };
         } catch (InterruptedException ex) {
             Thread.currentThread().interrupt();
-            throw new ClientURLException("Timed out for: " + url, ex);
-        } catch (TerminalExecutionException | TimeoutException ex) {
+            throw new ClientURLException("Cancelled for: " + url, ex);
+        } catch (TimeoutException ex) {
+            throw new ClientURLException("Timeout out for: " + url, ex);
+        } catch (TerminalExecutionException ex) {
             throw new ClientURLException("Failed for: " + url, ex);
         } catch (UnknownHostException | ConnectException ex) {
             throw new ClientURLException(ex);

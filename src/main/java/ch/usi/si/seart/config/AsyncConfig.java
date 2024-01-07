@@ -12,7 +12,6 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
 import java.lang.reflect.Method;
 import java.util.concurrent.Executor;
-import java.util.concurrent.RejectedExecutionHandler;
 import java.util.concurrent.ThreadPoolExecutor;
 
 @Configuration
@@ -20,19 +19,14 @@ import java.util.concurrent.ThreadPoolExecutor;
 public class AsyncConfig {
 
     @Bean(name = "analysisExecutor")
-    public Executor executor(RejectedExecutionHandler rejectedExecutionHandler, AnalysisProperties properties) {
+    public Executor executor(AnalysisProperties properties) {
         ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
+        executor.setRejectedExecutionHandler(new ThreadPoolExecutor.CallerRunsPolicy());
         executor.setMaxPoolSize(properties.getMaxPoolThreads());
-        executor.setQueueCapacity(128);
         executor.setThreadNamePrefix("analysis-");
-        executor.setRejectedExecutionHandler(rejectedExecutionHandler);
+        executor.setQueueCapacity(128);
         executor.initialize();
         return executor;
-    }
-
-    @Bean
-    RejectedExecutionHandler rejectedExecutionHandler() {
-        return new ThreadPoolExecutor.CallerRunsPolicy();
     }
 
     @Bean

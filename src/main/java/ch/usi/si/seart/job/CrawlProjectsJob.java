@@ -31,7 +31,6 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.context.annotation.DependsOn;
 import org.springframework.dao.NonTransientDataAccessException;
 import org.springframework.scheduling.annotation.Scheduled;
 
@@ -49,7 +48,6 @@ import java.util.stream.StreamSupport;
 
 @Job
 @Slf4j
-@DependsOn("languageInitializationBean")
 @ConditionalOnProperty(value = "ghs.crawler.enabled", havingValue = "true")
 @ConditionalOnExpression(value = "not '${ghs.crawler.languages}'.blank and not '${ghs.github.tokens}'.blank")
 @RequiredArgsConstructor(onConstructor_ = @Autowired)

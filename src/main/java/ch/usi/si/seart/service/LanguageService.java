@@ -7,6 +7,8 @@ import ch.usi.si.seart.repository.LanguageRepository;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
@@ -25,10 +27,11 @@ public interface LanguageService extends NamedEntityService<Language> {
     Language.Progress getProgress(Language language);
     void updateProgress(Language language, Date checkpoint);
 
+    @Slf4j
     @Service
     @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
     @RequiredArgsConstructor(onConstructor_ = @Autowired)
-    class LanguageServiceImpl implements LanguageService {
+    class LanguageServiceImpl implements LanguageService, InitializingBean {
 
         CrawlerProperties crawlerProperties;
 
@@ -95,6 +98,41 @@ public interface LanguageService extends NamedEntityService<Language> {
                             );
             progress.setCheckpoint(checkpoint);
             languageProgressRepository.save(progress);
+        }
+
+        @Override
+        public void afterPropertiesSet() {
+            Date defaultCheckpoint = crawlerProperties.getStartDate();
+            boolean enabled = Boolean.TRUE.equals(crawlerProperties.getEnabled());
+            List<String> names = crawlerProperties.getLanguages();
+            if (!enabled || names.isEmpty()) return;
+            log.info("Validating mining progress for {} languages...", names.size());
+            for (String name : names) {
+                Language language = languageRepository.findByNameIgnoreCase(name)
+                        .orElseGet(() ->
+                                languageRepository.save(
+                                        Language.builder()
+                                                .name(name)
+                                                .build()
+                                )
+                        );
+                languageProgressRepository.findByLanguage(language)
+                        .ifPresentOrElse(
+                                progress -> log.debug(
+                                        "{} repositories crawled up to: {}",
+                                        name, progress.getCheckpoint()
+                                ),
+                                () -> {
+                                    log.debug("Initializing progress for {} to default start date...", name);
+                                    languageProgressRepository.save(
+                                            Language.Progress.builder()
+                                                    .id(language.getId())
+                                                    .language(language)
+                                                    .checkpoint(defaultCheckpoint)
+                                                    .build()
+                                    );
+                                });
+            }
         }
     }
 }
