@@ -21,6 +21,9 @@ public class GHSProperties {
     GitProperties git;
 
     @NestedConfigurationProperty
+    CLOCProperties cloc;
+
+    @NestedConfigurationProperty
     CrawlerProperties crawler;
 
     @NestedConfigurationProperty
@@ -38,6 +41,10 @@ public class GHSProperties {
 
     public GitProperties getGitProperties() {
         return git;
+    }
+
+    public CLOCProperties getCLOCProperties() {
+        return cloc;
     }
 
     public CrawlerProperties getCrawlerProperties() {
