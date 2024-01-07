@@ -318,7 +318,7 @@ public class GitHubRestConnector extends GitHubConnector<RestResponse> {
 
         private RestResponse handleServerError(HttpStatus status, JsonObject json) {
             log.error("Server Error: {} [{}]", status.value(), status.getReasonPhrase());
-            RestErrorResponse errorResponse = conversionService.convert(json, RestErrorResponse.class);
+            ErrorResponse errorResponse = conversionService.convert(json, ErrorResponse.class);
             throw new HttpServerErrorException(status, errorResponse.getMessage());
         }
 
@@ -326,7 +326,7 @@ public class GitHubRestConnector extends GitHubConnector<RestResponse> {
         private RestResponse handleClientError(
                 HttpStatus status, Headers headers, JsonObject json
         ) throws InterruptedException {
-            RestErrorResponse errorResponse = conversionService.convert(json, RestErrorResponse.class);
+            ErrorResponse errorResponse = conversionService.convert(json, ErrorResponse.class);
             switch (status) {
                 case UNAUTHORIZED ->
                     /*
