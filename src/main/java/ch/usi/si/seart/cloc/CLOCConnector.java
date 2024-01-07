@@ -1,6 +1,5 @@
-package ch.usi.si.seart.analysis;
+package ch.usi.si.seart.cloc;
 
-import ch.usi.si.seart.config.properties.CLOCProperties;
 import ch.usi.si.seart.exception.StaticCodeAnalysisException;
 import ch.usi.si.seart.exception.TerminalExecutionException;
 import ch.usi.si.seart.io.ExternalProcess;
@@ -11,6 +10,7 @@ import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.convert.ConversionService;
 
 import java.nio.file.Path;
@@ -25,7 +25,8 @@ import java.util.concurrent.TimeoutException;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class CLOCConnector {
 
-    CLOCProperties clocProperties;
+    @Value("${ghs.cloc.analysis-timeout-duration}")
+    Duration analysisTimeout;
 
     ConversionService conversionService;
 
@@ -40,8 +41,7 @@ public class CLOCConnector {
     public JsonObject analyze(Path path) throws StaticCodeAnalysisException {
         try {
             ExternalProcess process = new ExternalProcess(path, "cloc", "--json", "--quiet", ".");
-            Duration duration = clocProperties.getAnalysisTimeoutDuration();
-            ExternalProcess.Result result = process.execute(duration.toMillis());
+            ExternalProcess.Result result = process.execute(analysisTimeout.toMillis());
             result.ifFailedThrow(() -> new StaticCodeAnalysisException(result.getStdErr()));
             JsonElement element = conversionService.convert(result.getStdOut(), JsonElement.class);
             return element.isJsonNull() ? new JsonObject() : element.getAsJsonObject();

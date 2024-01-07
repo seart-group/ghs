@@ -6,7 +6,6 @@ import lombok.Getter;
 import lombok.experimental.FieldDefaults;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.ConstructorBinding;
-import org.springframework.boot.context.properties.NestedConfigurationProperty;
 
 import javax.validation.constraints.Positive;
 import java.time.Duration;
@@ -23,20 +22,4 @@ public class AnalysisProperties {
 
     @Positive
     int maxPoolThreads;
-
-    @Getter(AccessLevel.NONE)
-    @NestedConfigurationProperty
-    GitProperties git;
-
-    @Getter(AccessLevel.NONE)
-    @NestedConfigurationProperty
-    CLOCProperties cloc;
-
-    public GitProperties getGitProperties() {
-        return git;
-    }
-
-    public CLOCProperties getCLOCProperties() {
-        return cloc;
-    }
 }

@@ -1,4 +1,4 @@
-package ch.usi.si.seart.bean.processor;
+package ch.usi.si.seart.processor;
 
 import ch.usi.si.seart.io.ExternalProcess;
 import ch.usi.si.seart.stereotype.Connector;

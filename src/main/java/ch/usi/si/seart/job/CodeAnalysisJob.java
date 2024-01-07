@@ -1,6 +1,6 @@
 package ch.usi.si.seart.job;
 
-import ch.usi.si.seart.analysis.CLOCConnector;
+import ch.usi.si.seart.cloc.CLOCConnector;
 import ch.usi.si.seart.config.properties.AnalysisProperties;
 import ch.usi.si.seart.exception.StaticCodeAnalysisException;
 import ch.usi.si.seart.exception.git.GitException;
