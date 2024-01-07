@@ -31,11 +31,6 @@ public class MainConfig {
     }
 
     @Bean
-    DateTimeFormatter dateTimeFormatter() {
-        return DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss").withZone(ZoneOffset.UTC);
-    }
-
-    @Bean
     public Ranges.Splitter<Date> dateRangeSplitter() {
         return new Ranges.Splitter<>((lower, upper) -> {
             Instant lowerInstant = lower.toInstant();
@@ -50,7 +45,8 @@ public class MainConfig {
     }
 
     @Bean
-    public Ranges.Printer<Date> dateRangePrinter(DateTimeFormatter formatter) {
+    public Ranges.Printer<Date> dateRangePrinter() {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss").withZone(ZoneOffset.UTC);
         return new Ranges.Printer<>(date -> {
             Instant instant = date.toInstant();
             Instant truncated = instant.truncatedTo(ChronoUnit.SECONDS);
