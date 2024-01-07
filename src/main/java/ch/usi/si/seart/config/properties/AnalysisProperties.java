@@ -26,15 +26,7 @@ public class AnalysisProperties {
 
     @Getter(AccessLevel.NONE)
     @NestedConfigurationProperty
-    GitProperties git;
-
-    @Getter(AccessLevel.NONE)
-    @NestedConfigurationProperty
     CLOCProperties cloc;
-
-    public GitProperties getGitProperties() {
-        return git;
-    }
 
     public CLOCProperties getCLOCProperties() {
         return cloc;
