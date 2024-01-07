@@ -1,11 +1,7 @@
 package ch.usi.si.seart.config;
 
-import ch.usi.si.seart.bean.init.LanguageInitializationBean;
-import ch.usi.si.seart.config.properties.CrawlerProperties;
 import ch.usi.si.seart.config.properties.StatisticsProperties;
 import ch.usi.si.seart.util.Ranges;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -22,13 +18,6 @@ import java.util.Date;
 
 @Configuration
 public class MainConfig {
-
-    @Bean
-    @ConditionalOnProperty(value = "ghs.crawler.enabled", havingValue = "true")
-    @ConditionalOnExpression(value = "not '${ghs.crawler.languages}'.blank")
-    public LanguageInitializationBean languageInitializationBean(CrawlerProperties properties) {
-        return new LanguageInitializationBean(properties.getLanguages(), properties.getStartDate());
-    }
 
     @Bean
     public Ranges.Splitter<Date> dateRangeSplitter() {
