@@ -35,7 +35,8 @@ public class GitHubGraphQlConnector extends GitHubConnector<GraphQlResponse> {
         if (args.length != 2)
             throw new IllegalArgumentException("Invalid repository name: " + name);
         Map<String, Object> variables = Map.of("owner", args[0], "name", args[1]);
-        Response response = execute(new GraphQLCallback("repository", variables));
+        GraphQLCallback callback = new GraphQLCallback("repository", variables);
+        GraphQlResponse response = execute(callback);
         return response.getJsonObject();
     }
 
