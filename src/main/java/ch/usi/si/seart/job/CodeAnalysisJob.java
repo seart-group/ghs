@@ -7,8 +7,10 @@ import ch.usi.si.seart.exception.git.GitException;
 import ch.usi.si.seart.exception.git.RepositoryDisabledException;
 import ch.usi.si.seart.exception.git.RepositoryLockedException;
 import ch.usi.si.seart.exception.git.RepositoryNotFoundException;
+import ch.usi.si.seart.exception.git.config.InvalidUsernameException;
 import ch.usi.si.seart.git.GitConnector;
 import ch.usi.si.seart.git.LocalRepositoryClone;
+import ch.usi.si.seart.github.GitHubRestConnector;
 import ch.usi.si.seart.model.GitRepo;
 import ch.usi.si.seart.model.Language;
 import ch.usi.si.seart.model.join.GitRepoMetric;
@@ -54,6 +56,7 @@ public class CodeAnalysisJob implements Runnable {
     AnalysisProperties analysisProperties;
 
     GitConnector gitConnector;
+    GitHubRestConnector gitHubRestConnector;
     CLOCConnector clocConnector;
 
     ConversionService conversionService;
@@ -144,6 +147,22 @@ public class CodeAnalysisJob implements Runnable {
         } catch (RepositoryNotFoundException ignored) {
             log.info("Deleting:  {} [{}]", name, id);
             gitRepoService.deleteRepoById(id);
+        } catch (InvalidUsernameException ex) {
+            switch (gitHubRestConnector.pingRepository(name)) {
+                case NOT_FOUND:
+                    log.info("Deleting:  {} [{}]", name, id);
+                    gitRepoService.deleteRepoById(id);
+                    return;
+                case FORBIDDEN, UNAVAILABLE_FOR_LEGAL_REASONS:
+                    log.info("Disabling: {} [{}]", name, id);
+                    gitRepo.setIsDisabled(true);
+                    gitRepo.setLastAnalyzed();
+                    gitRepoService.createOrUpdate(gitRepo);
+                    return;
+                default:
+                    log.error("Failed:    {} [{}] ({})", name, id, ex.getClass().getSimpleName());
+                    log.debug("", ex);
+            }
         } catch (StaticCodeAnalysisException | GitException ex) {
             log.error("Failed:    {} [{}] ({})", name, id, ex.getClass().getSimpleName());
             log.debug("", ex);
