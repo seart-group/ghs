@@ -92,6 +92,13 @@ public class GitHubRestConnector extends GitHubConnector<RestResponse> {
         return execute(new RestCallback(url)).getJsonObject();
     }
 
+    public HttpStatus pingRepository(String name) {
+        URL url = Endpoint.REPOSITORY.toURL(name.split("/"));
+        RestCallback callback = new RestCallback(url);
+        RestResponse response = execute(callback);
+        return response.getStatus();
+    }
+
     @SuppressWarnings("ConstantConditions")
     public JsonArray getRepositoryLabels(String name) {
         JsonArray array = new JsonArray();
