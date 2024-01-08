@@ -135,37 +135,43 @@ public class CodeAnalysisJob implements Runnable {
             gitRepo.setLastAnalyzed();
             gitRepoService.createOrUpdate(gitRepo);
         } catch (RepositoryLockedException ignored) {
-            log.info("Locking:   {} [{}]", name, id);
-            gitRepo.setIsLocked(true);
-            gitRepo.setLastAnalyzed();
-            gitRepoService.createOrUpdate(gitRepo);
+            lock(gitRepo);
         } catch (RepositoryDisabledException ignored) {
-            log.info("Disabling: {} [{}]", name, id);
-            gitRepo.setIsDisabled(true);
-            gitRepo.setLastAnalyzed();
-            gitRepoService.createOrUpdate(gitRepo);
+            disable(gitRepo);
         } catch (RepositoryNotFoundException ignored) {
-            log.info("Deleting:  {} [{}]", name, id);
-            gitRepoService.deleteRepoById(id);
+            delete(gitRepo);
         } catch (InvalidUsernameException ex) {
             switch (gitHubRestConnector.pingRepository(name)) {
-                case NOT_FOUND:
-                    log.info("Deleting:  {} [{}]", name, id);
-                    gitRepoService.deleteRepoById(id);
-                    return;
-                case FORBIDDEN, UNAVAILABLE_FOR_LEGAL_REASONS:
-                    log.info("Disabling: {} [{}]", name, id);
-                    gitRepo.setIsDisabled(true);
-                    gitRepo.setLastAnalyzed();
-                    gitRepoService.createOrUpdate(gitRepo);
-                    return;
-                default:
-                    log.error("Failed:    {} [{}] ({})", name, id, ex.getClass().getSimpleName());
-                    log.debug("", ex);
+                case NOT_FOUND -> delete(gitRepo);
+                case FORBIDDEN, UNAVAILABLE_FOR_LEGAL_REASONS -> disable(gitRepo);
+                default -> noop(gitRepo, ex);
             }
         } catch (StaticCodeAnalysisException | GitException ex) {
-            log.error("Failed:    {} [{}] ({})", name, id, ex.getClass().getSimpleName());
-            log.debug("", ex);
+            noop(gitRepo, ex);
         }
+    }
+
+    private void delete(GitRepo gitRepo) {
+        log.info("Deleting:  {} [{}]", gitRepo.getName(), gitRepo.getId());
+        gitRepoService.deleteRepoById(gitRepo.getId());
+    }
+
+    private void lock(GitRepo gitRepo) {
+        log.info("Locking:   {} [{}]", gitRepo.getName(), gitRepo.getId());
+        gitRepo.setIsLocked(true);
+        gitRepo.setLastAnalyzed();
+        gitRepoService.createOrUpdate(gitRepo);
+    }
+
+    private void disable(GitRepo gitRepo) {
+        log.info("Disabling: {} [{}]", gitRepo.getName(), gitRepo.getId());
+        gitRepo.setIsDisabled(true);
+        gitRepo.setLastAnalyzed();
+        gitRepoService.createOrUpdate(gitRepo);
+    }
+
+    private void noop(GitRepo gitRepo, Exception ex) {
+        log.error("Failed:    {} [{}] ({})", gitRepo.getName(), gitRepo.getId(), ex.getClass().getSimpleName());
+        log.debug("", ex);
     }
 }
