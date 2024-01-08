@@ -1,5 +1,6 @@
 package ch.usi.si.seart.github;
 
+import ch.usi.si.seart.github.response.Response;
 import org.springframework.retry.RetryCallback;
 
 /**

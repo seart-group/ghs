@@ -1,4 +1,4 @@
-package ch.usi.si.seart.github;
+package ch.usi.si.seart.github.response;
 
 /**
  * Marker interface for all GitHub API responses.

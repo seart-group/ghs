@@ -1,9 +1,9 @@
 package ch.usi.si.seart.converter;
 
-import ch.usi.si.seart.github.BlockedRestErrorResponse;
-import ch.usi.si.seart.github.DetailedRestErrorResponse;
-import ch.usi.si.seart.github.ErrorResponse;
-import ch.usi.si.seart.github.RestErrorResponse;
+import ch.usi.si.seart.github.response.BlockedRestErrorResponse;
+import ch.usi.si.seart.github.response.DetailedRestErrorResponse;
+import ch.usi.si.seart.github.response.ErrorResponse;
+import ch.usi.si.seart.github.response.RestErrorResponse;
 import ch.usi.si.seart.util.Dates;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;

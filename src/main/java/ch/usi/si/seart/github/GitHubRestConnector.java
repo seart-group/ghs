@@ -4,6 +4,8 @@ import ch.usi.si.seart.config.properties.CrawlerProperties;
 import ch.usi.si.seart.exception.github.GitHubConnectorException;
 import ch.usi.si.seart.exception.github.GitHubRestException;
 import ch.usi.si.seart.git.Commit;
+import ch.usi.si.seart.github.response.ErrorResponse;
+import ch.usi.si.seart.github.response.RestResponse;
 import ch.usi.si.seart.util.Ranges;
 import com.google.common.base.Joiner;
 import com.google.common.collect.ImmutableMap;

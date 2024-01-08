@@ -1,6 +1,7 @@
 package ch.usi.si.seart.github;
 
 import ch.usi.si.seart.exception.github.GitHubConnectorException;
+import ch.usi.si.seart.github.response.Response;
 import lombok.AccessLevel;
 import lombok.Setter;
 import lombok.experimental.Accessors;

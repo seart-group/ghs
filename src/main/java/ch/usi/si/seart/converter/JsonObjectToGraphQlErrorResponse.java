@@ -1,6 +1,6 @@
 package ch.usi.si.seart.converter;
 
-import ch.usi.si.seart.github.GraphQlErrorResponse;
+import ch.usi.si.seart.github.response.GraphQlErrorResponse;
 import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;

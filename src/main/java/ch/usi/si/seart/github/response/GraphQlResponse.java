@@ -1,4 +1,4 @@
-package ch.usi.si.seart.github;
+package ch.usi.si.seart.github.response;
 
 import com.google.gson.JsonElement;
 
@@ -11,7 +11,7 @@ import com.google.gson.JsonElement;
  */
 public class GraphQlResponse extends JsonResponse {
 
-    GraphQlResponse(JsonElement jsonElement) {
+    public GraphQlResponse(JsonElement jsonElement) {
         super(jsonElement);
     }
 }

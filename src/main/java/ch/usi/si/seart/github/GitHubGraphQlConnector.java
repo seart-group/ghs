@@ -2,6 +2,8 @@ package ch.usi.si.seart.github;
 
 import ch.usi.si.seart.exception.github.GitHubConnectorException;
 import ch.usi.si.seart.exception.github.GitHubGraphQlException;
+import ch.usi.si.seart.github.response.GraphQlErrorResponse;
+import ch.usi.si.seart.github.response.GraphQlResponse;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
