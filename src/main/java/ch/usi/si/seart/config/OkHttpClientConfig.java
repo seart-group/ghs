@@ -15,7 +15,7 @@ import org.springframework.http.HttpHeaders;
 import java.util.concurrent.TimeUnit;
 
 @Configuration
-public class HttpClientConfig {
+public class OkHttpClientConfig {
 
     @Bean
     Headers headers(GitHubProperties properties) {
