@@ -252,29 +252,25 @@ public class GitHubRestConnector extends GitHubConnector<RestResponse> {
 
     @SuppressWarnings("ConstantConditions")
     private Long getLastPageNumberFromHeader(URL url) {
-        RestResponse response = execute(new RestCallback(url));
-        if (response.getStatus() == HttpStatus.FORBIDDEN) {
+        RestCallback callback = new RestCallback(url);
+        RestResponse response = execute(callback);
+        return switch (response.getStatus()) {
             /*
-             * Response status code 403, two possibilities:
-             * (1) The rate limit for the current token is exceeded
-             * (2) The request is too expensive for GitHub to compute
-             * (e.g. https://api.github.com/repos/torvalds/linux/contributors)
-             *
-             * Since we make use of guards for the former case,
-             * then the latter is always the response cause.
-             * As a result we return null value to denote the metric as unobtainable.
+             * Error status codes 403, 404, and 451 are non-retryable,
+             * as a result we return null to denote the metric as unobtainable.
              */
-            return null;
-        } else {
-            Headers headers = response.getHeaders();
-            String link = headers.get("link");
-            if (link != null) {
-                NavigationLinks links = conversionService.convert(link, NavigationLinks.class);
-                return links.getLastPage();
-            } else {
-                return response.size().map(Integer::longValue).orElse(1L);
+            case FORBIDDEN, NOT_FOUND, UNAVAILABLE_FOR_LEGAL_REASONS -> null;
+            default -> {
+                Headers headers = response.getHeaders();
+                String link = headers.get("link");
+                if (link != null) {
+                    NavigationLinks links = conversionService.convert(link, NavigationLinks.class);
+                    yield links.getLastPage();
+                } else {
+                    yield response.size().map(Integer::longValue).orElse(1L);
+                }
             }
-        }
+        };
     }
 
     @Override
@@ -344,13 +340,16 @@ public class GitHubRestConnector extends GitHubConnector<RestResponse> {
                 }
                 case FORBIDDEN -> {
                     /*
-                     * Response status code 403, two possibilities:
+                     * Response status code 403, three possibilities:
                      * (1) The rate limit for the current token is exceeded
                      * (2) The request is too expensive for GitHub to compute
                      * (e.g. https://api.github.com/repos/torvalds/linux/contributors)
+                     * (3) The repository is taken down due to a DMCA violation
+                     * (e.g. https://api.github.com/repos/mlwrx1978/freenode/releases)
                      */
                     String header = "X-RateLimit-Remaining";
-                    int remaining = Optional.ofNullable(headers.get(header))
+                    String value = headers.get(header);
+                    int remaining = Optional.ofNullable(value)
                             .map(Integer::parseInt)
                             .orElse(-1);
                     if (remaining == -1) {
@@ -361,11 +360,29 @@ public class GitHubRestConnector extends GitHubConnector<RestResponse> {
                         gitHubTokenManager.replaceTokenIfExpired();
                     } else {
                         /*
-                         * Case (2) encountered, so we propagate error upwards
+                         * Case (2) or (3) encountered,
+                         * so we propagate error upwards.
+                         *
                          * @see fetchLastPageNumberFromHeader
                          */
                         return new RestResponse(json, status, headers);
                     }
+                }
+                case NOT_FOUND, UNAVAILABLE_FOR_LEGAL_REASONS -> {
+                    /*
+                     * These are non-retryable errors,
+                     * and as such we propagate them upwards.
+                     *
+                     * In case of 404, there are two possibilities:
+                     * (1) The repository does not exist
+                     * (2) The repository is private
+                     *
+                     * In case of 451, the repository was
+                     * taken down due to a DMCA violation.
+                     *
+                     * @see fetchLastPageNumberFromHeader
+                     */
+                    return new RestResponse(json, status, headers);
                 }
                 default -> {
                     // TODO: 30.07.23 Add any other special logic here
