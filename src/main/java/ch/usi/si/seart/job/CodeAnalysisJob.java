@@ -7,8 +7,10 @@ import ch.usi.si.seart.exception.git.GitException;
 import ch.usi.si.seart.exception.git.RepositoryDisabledException;
 import ch.usi.si.seart.exception.git.RepositoryLockedException;
 import ch.usi.si.seart.exception.git.RepositoryNotFoundException;
+import ch.usi.si.seart.exception.git.config.InvalidUsernameException;
 import ch.usi.si.seart.git.GitConnector;
 import ch.usi.si.seart.git.LocalRepositoryClone;
+import ch.usi.si.seart.github.GitHubRestConnector;
 import ch.usi.si.seart.model.GitRepo;
 import ch.usi.si.seart.model.Language;
 import ch.usi.si.seart.model.join.GitRepoMetric;
@@ -54,6 +56,7 @@ public class CodeAnalysisJob implements Runnable {
     AnalysisProperties analysisProperties;
 
     GitConnector gitConnector;
+    GitHubRestConnector gitHubRestConnector;
     CLOCConnector clocConnector;
 
     ConversionService conversionService;
@@ -124,31 +127,51 @@ public class CodeAnalysisJob implements Runnable {
                         return metric;
                     })
                     .collect(Collectors.toSet());
-            if (metrics.isEmpty()) {
-                log.debug("No metrics were computed for: {}", name);
+            if (metrics.isEmpty())
                 log.info("Skipping:  {} [{}]", name, id);
-            }
             gitRepo.setIsLocked(false);
             gitRepo.setIsDisabled(false);
             gitRepo.setMetrics(metrics);
             gitRepo.setLastAnalyzed();
             gitRepoService.createOrUpdate(gitRepo);
         } catch (RepositoryLockedException ignored) {
-            log.info("Locking:   {} [{}]", name, id);
-            gitRepo.setIsLocked(true);
-            gitRepo.setLastAnalyzed();
-            gitRepoService.createOrUpdate(gitRepo);
+            lock(gitRepo);
         } catch (RepositoryDisabledException ignored) {
-            log.info("Disabling: {} [{}]", name, id);
-            gitRepo.setIsDisabled(true);
-            gitRepo.setLastAnalyzed();
-            gitRepoService.createOrUpdate(gitRepo);
+            disable(gitRepo);
         } catch (RepositoryNotFoundException ignored) {
-            log.info("Deleting:  {} [{}]", name, id);
-            gitRepoService.deleteRepoById(id);
+            delete(gitRepo);
+        } catch (InvalidUsernameException ex) {
+            switch (gitHubRestConnector.pingRepository(name)) {
+                case NOT_FOUND -> delete(gitRepo);
+                case FORBIDDEN, UNAVAILABLE_FOR_LEGAL_REASONS -> disable(gitRepo);
+                default -> noop(gitRepo, ex);
+            }
         } catch (StaticCodeAnalysisException | GitException ex) {
-            log.error("Failed:    {} [{}] ({})", name, id, ex.getClass().getSimpleName());
-            log.debug("", ex);
+            noop(gitRepo, ex);
         }
+    }
+
+    private void delete(GitRepo gitRepo) {
+        log.info("Deleting:  {} [{}]", gitRepo.getName(), gitRepo.getId());
+        gitRepoService.deleteRepoById(gitRepo.getId());
+    }
+
+    private void lock(GitRepo gitRepo) {
+        log.info("Locking:   {} [{}]", gitRepo.getName(), gitRepo.getId());
+        gitRepo.setIsLocked(true);
+        gitRepo.setLastAnalyzed();
+        gitRepoService.createOrUpdate(gitRepo);
+    }
+
+    private void disable(GitRepo gitRepo) {
+        log.info("Disabling: {} [{}]", gitRepo.getName(), gitRepo.getId());
+        gitRepo.setIsDisabled(true);
+        gitRepo.setLastAnalyzed();
+        gitRepoService.createOrUpdate(gitRepo);
+    }
+
+    private void noop(GitRepo gitRepo, Exception ex) {
+        log.error("Failed:    {} [{}] ({})", gitRepo.getName(), gitRepo.getId(), ex.getClass().getSimpleName());
+        log.debug("", ex);
     }
 }

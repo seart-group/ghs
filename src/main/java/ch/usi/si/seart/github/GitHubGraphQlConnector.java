@@ -2,6 +2,8 @@ package ch.usi.si.seart.github;
 
 import ch.usi.si.seart.exception.github.GitHubConnectorException;
 import ch.usi.si.seart.exception.github.GitHubGraphQlException;
+import ch.usi.si.seart.github.response.GraphQlErrorResponse;
+import ch.usi.si.seart.github.response.GraphQlResponse;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -35,7 +37,8 @@ public class GitHubGraphQlConnector extends GitHubConnector<GraphQlResponse> {
         if (args.length != 2)
             throw new IllegalArgumentException("Invalid repository name: " + name);
         Map<String, Object> variables = Map.of("owner", args[0], "name", args[1]);
-        Response response = execute(new GraphQLCallback("repository", variables));
+        GraphQLCallback callback = new GraphQLCallback("repository", variables);
+        GraphQlResponse response = execute(callback);
         return response.getJsonObject();
     }
 

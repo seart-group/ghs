@@ -1,14 +1,12 @@
 package ch.usi.si.seart.config;
 
 import ch.usi.si.seart.converter.GitRepoToDtoConverter;
-import ch.usi.si.seart.converter.JsonObjectToErrorResponseConverter;
 import ch.usi.si.seart.converter.JsonObjectToGitCommitConverter;
 import ch.usi.si.seart.converter.JsonObjectToGitRepoMetricConverter;
 import ch.usi.si.seart.converter.SearchParameterDtoToSpecificationConverter;
 import ch.usi.si.seart.converter.StringToContactsConverter;
 import ch.usi.si.seart.converter.StringToGitExceptionConverter;
 import ch.usi.si.seart.converter.StringToLicensesConverter;
-import ch.usi.si.seart.converter.StringToNavigationLinksConverter;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.format.FormatterRegistry;
@@ -34,12 +32,10 @@ public class WebConfig implements WebMvcConfigurer {
     public void addFormatters(@NotNull final FormatterRegistry registry) {
         registry.addConverter(new GitRepoToDtoConverter());
         registry.addConverter(new JsonObjectToGitCommitConverter());
-        registry.addConverter(new JsonObjectToErrorResponseConverter());
         registry.addConverter(new JsonObjectToGitRepoMetricConverter());
         registry.addConverter(new SearchParameterDtoToSpecificationConverter());
         registry.addConverter(new StringToContactsConverter());
         registry.addConverter(new StringToGitExceptionConverter());
         registry.addConverter(new StringToLicensesConverter());
-        registry.addConverter(new StringToNavigationLinksConverter());
     }
 }

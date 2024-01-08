@@ -1,4 +1,4 @@
-package ch.usi.si.seart.github;
+package ch.usi.si.seart.github.response;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
@@ -15,13 +15,12 @@ import java.util.Optional;
  * Regardless of API connector, each response is expected to contain JSON data.
  * This class provides methods to access and manipulate this data in various ways.
  *
- * @since 1.6.3
  * @author Ozren Dabić
  */
 @Getter
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
-public abstract class Response {
+abstract class JsonResponse implements Response {
 
     JsonElement jsonElement;
 

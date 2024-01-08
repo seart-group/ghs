@@ -1,32 +1,27 @@
-package ch.usi.si.seart.github;
+package ch.usi.si.seart.github.response;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Singular;
 import lombok.experimental.FieldDefaults;
+import lombok.experimental.SuperBuilder;
 import org.apache.commons.lang3.StringUtils;
 
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.StringJoiner;
 
-@Getter
-@Builder
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-@AllArgsConstructor(access = AccessLevel.PRIVATE)
+@SuperBuilder
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class RestErrorResponse {
-
-    String message;
+public class DetailedRestErrorResponse extends RestErrorResponse {
 
     @Builder.Default
     URL documentationUrl = null;
 
-    @Singular
-    List<Error> errors;
+    @Builder.Default
+    List<Error> errors = new ArrayList<>();
 
     @Override
     public String toString() {

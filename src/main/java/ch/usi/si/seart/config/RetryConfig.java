@@ -70,6 +70,14 @@ public class RetryConfig {
     }
 
     @Bean
+    public RetryTemplate noRetryTemplate() {
+        return RetryTemplate.builder()
+                .maxAttempts(1)
+                .noBackoff()
+                .build();
+    }
+
+    @Bean
     public BackOffPolicy backOffPolicy() {
         ExponentialBackOffPolicy backOffPolicy = new ExponentialBackOffPolicy();
         backOffPolicy.setInitialInterval(1_250);

@@ -1,11 +1,6 @@
-[user]
-	name = John Smith
-	username = john.smith
-    email = john.smith@example.com
-[github]
-    user =
-    token =
-[core]
+[core] ; - https://stackoverflow.com/a/26558656/17173324
+    compression = 0
+    symlink = false
     longpaths = true
     packedGitLimit = 512m
     packedGitWindowSize = 512m

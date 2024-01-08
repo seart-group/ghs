@@ -310,3 +310,6 @@ Temporary Items
 *.log
 *.log.gz
 *.log.*.gz
+
+### Git
+.*.gitconfig
