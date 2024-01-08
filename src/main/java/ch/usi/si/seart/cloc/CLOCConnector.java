@@ -1,5 +1,6 @@
 package ch.usi.si.seart.cloc;
 
+import ch.usi.si.seart.config.properties.CLOCProperties;
 import ch.usi.si.seart.exception.StaticCodeAnalysisException;
 import ch.usi.si.seart.exception.TerminalExecutionException;
 import ch.usi.si.seart.io.ExternalProcess;
@@ -7,10 +8,8 @@ import ch.usi.si.seart.stereotype.Connector;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.convert.ConversionService;
 
 import java.nio.file.Path;
@@ -21,14 +20,18 @@ import java.util.concurrent.TimeoutException;
  * Component responsible for performing static code analysis through CLOC.
  */
 @Connector(command = "cloc")
-@AllArgsConstructor(onConstructor_ = @Autowired)
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class CLOCConnector {
 
-    @Value("${ghs.cloc.analysis-timeout-duration}")
     Duration analysisTimeout;
 
     ConversionService conversionService;
+
+    @Autowired
+    public CLOCConnector(CLOCProperties properties, ConversionService conversionService) {
+        this.analysisTimeout = properties.getAnalysisTimeoutDuration();
+        this.conversionService = conversionService;
+    }
 
     /**
      * Performs static code analysis using CLOC.
