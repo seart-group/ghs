@@ -309,3 +309,4 @@ Temporary Items
 # General
 *.log
 *.log.gz
+*.log.*.gz
