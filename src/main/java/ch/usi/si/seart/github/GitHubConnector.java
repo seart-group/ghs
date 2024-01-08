@@ -11,7 +11,7 @@ import org.springframework.retry.support.RetryTemplate;
 @Accessors(makeFinal = true)
 @Setter(onMethod_ = @Autowired)
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public abstract class GitHubConnector<R extends JsonResponse> {
+public abstract class GitHubConnector<R extends Response> {
 
     RetryTemplate retryTemplate;
 
