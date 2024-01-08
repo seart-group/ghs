@@ -1,18 +1,17 @@
 package ch.usi.si.seart.git;
 
+import ch.usi.si.seart.config.properties.GitProperties;
 import ch.usi.si.seart.exception.TerminalExecutionException;
 import ch.usi.si.seart.exception.git.GitException;
 import ch.usi.si.seart.exception.git.RemoteReferenceDisplayException;
 import ch.usi.si.seart.io.ExternalProcess;
 import ch.usi.si.seart.stereotype.Connector;
 import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.SystemUtils;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.convert.ConversionService;
 
 import java.io.IOException;
@@ -27,17 +26,21 @@ import java.util.concurrent.TimeoutException;
  */
 @Slf4j
 @Connector(command = "git")
-@AllArgsConstructor(onConstructor_ = @Autowired)
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class GitConnector implements InitializingBean {
 
-    @Value("${ghs.git.folder-prefix}")
     String folderPrefix;
 
-    @Value("${ghs.git.clone-timeout-duration}")
     Duration cloneTimeout;
 
     ConversionService conversionService;
+
+    @Autowired
+    public GitConnector(GitProperties properties, ConversionService conversionService) {
+        this.folderPrefix = properties.getFolderPrefix();
+        this.cloneTimeout = properties.getCloneTimeoutDuration();
+        this.conversionService = conversionService;
+    }
 
     /**
      * Clones a git repository into a temporary folder
