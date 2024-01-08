@@ -256,8 +256,13 @@ public class GitHubRestConnector extends GitHubConnector<RestResponse> {
         RestResponse response = execute(callback);
         return switch (response.getStatus()) {
             /*
-             * Error status codes 403, 404, and 451 are non-retryable,
-             * as a result we return null to denote the metric as unobtainable.
+             * Error status codes 403, 404, and 451 are non-retryable, causes include:
+             *
+             * (1) Repository is too large to obtain the metric through the API
+             * (2) Repository is private or does not exist
+             * (3) Repository is unavailable for legal reasons
+             *
+             * As a result we return null to denote the metric as unobtainable.
              */
             case FORBIDDEN, NOT_FOUND, UNAVAILABLE_FOR_LEGAL_REASONS -> null;
             default -> {
@@ -344,7 +349,7 @@ public class GitHubRestConnector extends GitHubConnector<RestResponse> {
                      * (1) The rate limit for the current token is exceeded
                      * (2) The request is too expensive for GitHub to compute
                      * (e.g. https://api.github.com/repos/torvalds/linux/contributors)
-                     * (3) The repository is taken down due to a DMCA violation
+                     * (3) The repository is taken down due to a TOS violation
                      * (e.g. https://api.github.com/repos/mlwrx1978/freenode/releases)
                      */
                     String header = "X-RateLimit-Remaining";
