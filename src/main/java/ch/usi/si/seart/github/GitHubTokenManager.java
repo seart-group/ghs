@@ -12,19 +12,31 @@ import lombok.extern.slf4j.Slf4j;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.core.convert.ConversionService;
+import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.retry.RetryCallback;
 import org.springframework.retry.RetryContext;
 import org.springframework.retry.support.RetryTemplate;
 import org.springframework.stereotype.Component;
+import org.springframework.util.Assert;
+import org.springframework.web.client.DefaultResponseErrorHandler;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
+import org.springframework.web.client.ResponseErrorHandler;
+import org.springframework.web.client.RestClientException;
+import org.springframework.web.client.RestTemplate;
+import org.springframework.web.util.DefaultUriBuilderFactory;
+import org.springframework.web.util.UriTemplateHandler;
 
-import javax.annotation.PostConstruct;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -36,7 +48,7 @@ import java.util.concurrent.TimeUnit;
 @Slf4j
 @Component
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
-public class GitHubTokenManager {
+public class GitHubTokenManager implements InitializingBean {
 
     OkHttpClient httpClient;
 
@@ -62,31 +74,6 @@ public class GitHubTokenManager {
         this.retryTemplate = retryTemplate;
         this.conversionService = conversionService;
         this.tokens = new Cycle<>(properties.getTokens());
-    }
-
-    @PostConstruct
-    void postConstruct() {
-        int size = tokens.size();
-        switch (size) {
-            case 0 -> {
-                log.warn("Access tokens not specified, can not mine the GitHub API!");
-                log.info(
-                        "Generate a new access token on https://github.com/settings/tokens " +
-                                "and add it to the `ghs.github.tokens` property in `ghs.properties`!"
-                );
-            }
-            case 1 -> {
-                log.info(
-                        "Single token specified for GitHub API mining, " +
-                                "consider adding more tokens to increase the crawler's efficiency."
-                );
-                currentToken = tokens.next();
-            }
-            default -> {
-                log.info("Loaded {} tokens for usage in mining!", size);
-                currentToken = tokens.next();
-            }
-        }
     }
 
     public void replaceToken() {
@@ -115,6 +102,64 @@ public class GitHubTokenManager {
             throw new GitHubTokenManagerException("Interrupted while waiting for token to replenish", ex);
         } catch (Exception ex) {
             throw new GitHubTokenManagerException("Token replacement failed", ex);
+        }
+    }
+
+    @Override
+    public void afterPropertiesSet() {
+        GitHubTokenValidator validator = new GitHubTokenValidator();
+        tokens.toSet().forEach(validator::validate);
+        int size = tokens.size();
+        switch (size) {
+            case 0 -> {
+                log.warn("Access tokens not specified, can not mine the GitHub API!");
+                log.info(
+                        "Generate a new access token on https://github.com/settings/tokens " +
+                                "and add it to the `ghs.github.tokens` property in `ghs.properties`!"
+                );
+            }
+            case 1 -> {
+                log.info(
+                        "Single token specified for GitHub API mining, " +
+                                "consider adding more tokens to increase the crawler's efficiency."
+                );
+                currentToken = tokens.next();
+            }
+            default -> {
+                log.info("Loaded {} tokens for usage in mining!", size);
+                currentToken = tokens.next();
+            }
+        }
+    }
+
+    @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
+    private static final class GitHubTokenValidator {
+
+        RestTemplate template;
+
+        GitHubTokenValidator() {
+            UriTemplateHandler templateHandler = new DefaultUriBuilderFactory(Endpoint.RATE_LIMIT.toString());
+            ResponseErrorHandler errorHandler = new DefaultResponseErrorHandler();
+            this.template = new RestTemplateBuilder()
+                    .uriTemplateHandler(templateHandler)
+                    .errorHandler(errorHandler)
+                    .build();
+        }
+
+        public void validate(String token) {
+            try {
+                HttpHeaders headers = new HttpHeaders();
+                headers.setBearerAuth(token);
+                HttpEntity<?> entity = new HttpEntity<>(headers);
+                ResponseEntity<String> response = template.exchange("", HttpMethod.GET, entity, String.class);
+                headers = response.getHeaders();
+                String value = headers.getFirst(GitHubHttpHeaders.X_OAUTH_SCOPES);
+                Assert.notNull(value, "Token does not have any scopes!");
+                Set<String> scopes = Set.of(value.split(","));
+                Assert.isTrue(scopes.contains("repo"), "Token does not have the `repo` scope!");
+            } catch (RestClientException ex) {
+                throw new IllegalArgumentException(ex);
+            }
         }
     }
 

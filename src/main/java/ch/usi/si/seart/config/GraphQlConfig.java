@@ -3,6 +3,7 @@ package ch.usi.si.seart.config;
 import ch.usi.si.seart.config.properties.GitHubProperties;
 import ch.usi.si.seart.github.Endpoint;
 import ch.usi.si.seart.github.GitHubGraphQlConnector;
+import ch.usi.si.seart.github.GitHubHttpHeaders;
 import ch.usi.si.seart.github.GitHubTokenManager;
 import ch.usi.si.seart.reactive.LoggingFilterFunction;
 import io.netty.channel.ChannelOption;
@@ -42,7 +43,7 @@ public class GraphQlConfig {
         return WebClient.builder()
                 .baseUrl(Endpoint.GRAPH_QL.toString())
                 .clientConnector(reactorClientHttpConnector)
-                .defaultHeader("X-GitHub-Api-Version", properties.getApiVersion())
+                .defaultHeader(GitHubHttpHeaders.X_GITHUB_API_VERSION, properties.getApiVersion())
                 .filter(loggingFilterFunction)
                 .filter(authorizationFilterFunction)
                 .build();
