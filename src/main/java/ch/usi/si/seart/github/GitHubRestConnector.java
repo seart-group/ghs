@@ -359,7 +359,7 @@ public class GitHubRestConnector extends GitHubConnector<RestResponse> {
                      * (3) The repository is taken down due to a TOS violation
                      * (e.g. https://api.github.com/repos/mlwrx1978/freenode/releases)
                      */
-                    String header = "X-RateLimit-Remaining";
+                    String header = GitHubHttpHeaders.X_RATELIMIT_REMAINING;
                     String value = headers.get(header);
                     int remaining = Optional.ofNullable(value)
                             .map(Integer::parseInt)
