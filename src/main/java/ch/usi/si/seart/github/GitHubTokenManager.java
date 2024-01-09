@@ -31,6 +31,7 @@ import org.springframework.web.client.DefaultResponseErrorHandler;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.ResponseErrorHandler;
+import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.DefaultUriBuilderFactory;
 import org.springframework.web.util.UriTemplateHandler;
@@ -146,15 +147,19 @@ public class GitHubTokenManager implements InitializingBean {
         }
 
         public void validate(String token) {
-            HttpHeaders headers = new HttpHeaders();
-            headers.setBearerAuth(token);
-            HttpEntity<?> entity = new HttpEntity<>(headers);
-            ResponseEntity<String> response = template.exchange("", HttpMethod.GET, entity, String.class);
-            headers = response.getHeaders();
-            String value = headers.getFirst(GitHubHttpHeaders.X_OAUTH_SCOPES);
-            Assert.notNull(value, "Token does not have any scopes!");
-            Set<String> scopes = Set.of(value.split(","));
-            Assert.isTrue(scopes.contains("repo"), "Token does not have the `repo` scope!");
+            try {
+                HttpHeaders headers = new HttpHeaders();
+                headers.setBearerAuth(token);
+                HttpEntity<?> entity = new HttpEntity<>(headers);
+                ResponseEntity<String> response = template.exchange("", HttpMethod.GET, entity, String.class);
+                headers = response.getHeaders();
+                String value = headers.getFirst(GitHubHttpHeaders.X_OAUTH_SCOPES);
+                Assert.notNull(value, "Token does not have any scopes!");
+                Set<String> scopes = Set.of(value.split(","));
+                Assert.isTrue(scopes.contains("repo"), "Token does not have the `repo` scope!");
+            } catch (RestClientException ex) {
+                throw new IllegalArgumentException(ex);
+            }
         }
     }
 
