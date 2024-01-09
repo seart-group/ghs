@@ -15,16 +15,27 @@ import okhttp3.Response;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.core.convert.ConversionService;
+import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.retry.RetryCallback;
 import org.springframework.retry.RetryContext;
 import org.springframework.retry.support.RetryTemplate;
 import org.springframework.stereotype.Component;
+import org.springframework.util.Assert;
+import org.springframework.web.client.DefaultResponseErrorHandler;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
+import org.springframework.web.client.ResponseErrorHandler;
+import org.springframework.web.client.RestTemplate;
+import org.springframework.web.util.DefaultUriBuilderFactory;
+import org.springframework.web.util.UriTemplateHandler;
 
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -95,6 +106,8 @@ public class GitHubTokenManager implements InitializingBean {
 
     @Override
     public void afterPropertiesSet() {
+        GitHubTokenValidator validator = new GitHubTokenValidator();
+        tokens.toSet().forEach(validator::validate);
         int size = tokens.size();
         switch (size) {
             case 0 -> {
@@ -115,6 +128,33 @@ public class GitHubTokenManager implements InitializingBean {
                 log.info("Loaded {} tokens for usage in mining!", size);
                 currentToken = tokens.next();
             }
+        }
+    }
+
+    @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
+    private static final class GitHubTokenValidator {
+
+        RestTemplate template;
+
+        GitHubTokenValidator() {
+            UriTemplateHandler templateHandler = new DefaultUriBuilderFactory(Endpoint.RATE_LIMIT.toString());
+            ResponseErrorHandler errorHandler = new DefaultResponseErrorHandler();
+            this.template = new RestTemplateBuilder()
+                    .uriTemplateHandler(templateHandler)
+                    .errorHandler(errorHandler)
+                    .build();
+        }
+
+        public void validate(String token) {
+            HttpHeaders headers = new HttpHeaders();
+            headers.setBearerAuth(token);
+            HttpEntity<?> entity = new HttpEntity<>(headers);
+            ResponseEntity<String> response = template.exchange("", HttpMethod.GET, entity, String.class);
+            headers = response.getHeaders();
+            String value = headers.getFirst(GitHubHttpHeaders.X_OAUTH_SCOPES);
+            Assert.notNull(value, "Token does not have any scopes!");
+            Set<String> scopes = Set.of(value.split(","));
+            Assert.isTrue(scopes.contains("repo"), "Token does not have the `repo` scope!");
         }
     }
 

@@ -9,6 +9,10 @@ public final class GitHubHttpHeaders {
 
     public static final String X_GITHUB_API_VERSION = "X-GitHub-Api-Version";
 
+    public static final String X_OAUTH_SCOPES = "X-OAuth-Scopes";
+
+    public static final String X_ACCEPTED_OAUTH_SCOPES = "X-Accepted-OAuth-Scopes";
+
     public static final String X_RATELIMIT_LIMIT = "X-RateLimit-Limit";
 
     public static final String X_RATELIMIT_REMAINING = "X-RateLimit-Remaining";
