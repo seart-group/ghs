@@ -1,6 +1,8 @@
 package ch.usi.si.seart.config;
 
 import ch.usi.si.seart.config.properties.GitHubProperties;
+import ch.usi.si.seart.github.GitHubHttpHeaders;
+import ch.usi.si.seart.github.GitHubMediaTypes;
 import ch.usi.si.seart.github.GitHubRestConnector;
 import ch.usi.si.seart.http.interceptor.HeaderAttachmentInterceptor;
 import ch.usi.si.seart.http.interceptor.LoggingInterceptor;
@@ -21,7 +23,7 @@ public class OkHttpClientConfig {
     Headers headers(GitHubProperties properties) {
         return Headers.of(
                 HttpHeaders.ACCEPT, "application/vnd.github+json",
-                "X-GitHub-Api-Version", properties.getApiVersion()
+                GitHubHttpHeaders.X_GITHUB_API_VERSION, properties.getApiVersion()
         );
     }
 
