@@ -22,7 +22,7 @@ public class OkHttpClientConfig {
     @Bean
     Headers headers(GitHubProperties properties) {
         return Headers.of(
-                HttpHeaders.ACCEPT, "application/vnd.github+json",
+                HttpHeaders.ACCEPT, GitHubMediaTypes.APPLICATION_VND_GITHUB_V3_JSON_VALUE,
                 GitHubHttpHeaders.X_GITHUB_API_VERSION, properties.getApiVersion()
         );
     }
