@@ -12,6 +12,7 @@ import lombok.extern.slf4j.Slf4j;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.core.convert.ConversionService;
@@ -24,7 +25,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
 
-import javax.annotation.PostConstruct;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -36,7 +36,7 @@ import java.util.concurrent.TimeUnit;
 @Slf4j
 @Component
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
-public class GitHubTokenManager {
+public class GitHubTokenManager implements InitializingBean {
 
     OkHttpClient httpClient;
 
@@ -62,31 +62,6 @@ public class GitHubTokenManager {
         this.retryTemplate = retryTemplate;
         this.conversionService = conversionService;
         this.tokens = new Cycle<>(properties.getTokens());
-    }
-
-    @PostConstruct
-    void postConstruct() {
-        int size = tokens.size();
-        switch (size) {
-            case 0 -> {
-                log.warn("Access tokens not specified, can not mine the GitHub API!");
-                log.info(
-                        "Generate a new access token on https://github.com/settings/tokens " +
-                                "and add it to the `ghs.github.tokens` property in `ghs.properties`!"
-                );
-            }
-            case 1 -> {
-                log.info(
-                        "Single token specified for GitHub API mining, " +
-                                "consider adding more tokens to increase the crawler's efficiency."
-                );
-                currentToken = tokens.next();
-            }
-            default -> {
-                log.info("Loaded {} tokens for usage in mining!", size);
-                currentToken = tokens.next();
-            }
-        }
     }
 
     public void replaceToken() {
@@ -115,6 +90,31 @@ public class GitHubTokenManager {
             throw new GitHubTokenManagerException("Interrupted while waiting for token to replenish", ex);
         } catch (Exception ex) {
             throw new GitHubTokenManagerException("Token replacement failed", ex);
+        }
+    }
+
+    @Override
+    public void afterPropertiesSet() {
+        int size = tokens.size();
+        switch (size) {
+            case 0 -> {
+                log.warn("Access tokens not specified, can not mine the GitHub API!");
+                log.info(
+                        "Generate a new access token on https://github.com/settings/tokens " +
+                                "and add it to the `ghs.github.tokens` property in `ghs.properties`!"
+                );
+            }
+            case 1 -> {
+                log.info(
+                        "Single token specified for GitHub API mining, " +
+                                "consider adding more tokens to increase the crawler's efficiency."
+                );
+                currentToken = tokens.next();
+            }
+            default -> {
+                log.info("Loaded {} tokens for usage in mining!", size);
+                currentToken = tokens.next();
+            }
         }
     }
 
