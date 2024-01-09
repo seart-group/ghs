@@ -1,10 +1,12 @@
 package ch.usi.si.seart.reactive;
 
+import ch.usi.si.seart.github.GitHubHttpHeaders;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
+import org.springframework.http.HttpHeaders;
 import org.springframework.web.reactive.function.client.ClientRequest;
 import org.springframework.web.reactive.function.client.ClientResponse;
 import org.springframework.web.reactive.function.client.ExchangeFilterFunction;
@@ -29,6 +31,9 @@ public class LoggingFilterFunction implements ExchangeFilterFunction {
                     long endNs = System.nanoTime();
                     long ms = TimeUnit.NANOSECONDS.toMillis(endNs - startNs);
                     log.debug("<<< {} ({}ms)", response.rawStatusCode(), ms);
+                    HttpHeaders headers = response.headers().asHttpHeaders();
+                    String id = headers.getFirst(GitHubHttpHeaders.X_GITHUB_REQUEST_ID);
+                    log.trace("[[[ {} ]]]", id);
                 })
                 .doOnError(ex -> {
                     if (log.isDebugEnabled())
