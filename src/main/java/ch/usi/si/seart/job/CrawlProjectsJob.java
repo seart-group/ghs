@@ -212,7 +212,7 @@ public class CrawlProjectsJob implements Runnable {
             return;
         }
 
-        String action = (gitRepo.getId() != null)
+        String action = gitRepo.getId() != null
                 ? "Updating:  "
                 : "Saving:    ";
         log.info("{}{} [{}/{}]", action, name, lowerIndex, total);
@@ -227,14 +227,14 @@ public class CrawlProjectsJob implements Runnable {
             Long size = json.getAsJsonPrimitive("size").getAsLong();
             gitRepo.setSize(size);
 
-            String homepage = (!json.get("homepage").isJsonNull())
+            String homepage = !json.get("homepage").isJsonNull()
                     ? json.getAsJsonPrimitive("homepage")
                     .getAsString()
                     .trim()
                     : null;
             gitRepo.setHomepage(Strings.emptyToNull(homepage));
 
-            String license = (!json.get("license").isJsonNull())
+            String license = !json.get("license").isJsonNull()
                     ? json.getAsJsonObject("license")
                     .getAsJsonPrimitive("name")
                     .getAsString()
