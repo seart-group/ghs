@@ -30,7 +30,7 @@ public class ConnectorAnnotationProcessor implements BeanPostProcessor {
                             String message = String.format(template, command);
                             return new BeanInitializationException(message);
                         });
-                result.getStdOut().trim().lines().forEach(log::debug);
+                result.stdOut().trim().lines().forEach(log::debug);
             } catch (TimeoutException ex) {
                 String template = "Timed out checking '%s'";
                 String message = String.format(template, command);

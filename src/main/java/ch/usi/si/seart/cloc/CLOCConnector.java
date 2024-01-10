@@ -45,8 +45,8 @@ public class CLOCConnector {
         try {
             ExternalProcess process = new ExternalProcess(path, "cloc", "--json", "--quiet", ".");
             ExternalProcess.Result result = process.execute(analysisTimeout.toMillis());
-            result.ifFailedThrow(() -> new StaticCodeAnalysisException(result.getStdErr()));
-            JsonElement element = conversionService.convert(result.getStdOut(), JsonElement.class);
+            result.ifFailedThrow(() -> new StaticCodeAnalysisException(result.stdErr()));
+            JsonElement element = conversionService.convert(result.stdOut(), JsonElement.class);
             return element.isJsonNull() ? new JsonObject() : element.getAsJsonObject();
         } catch (InterruptedException ex) {
             Thread.currentThread().interrupt();
