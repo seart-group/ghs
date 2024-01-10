@@ -68,7 +68,7 @@ public class GitHubGraphQlConnector extends GitHubConnector<GraphQlResponse> {
                     .toMap();
             JsonObject data = conversionService.convert(map.getOrDefault("data", Map.of()), JsonObject.class);
             JsonArray errors = conversionService.convert(map.getOrDefault("errors", List.of()), JsonArray.class);
-            StreamSupport.stream(errors.spliterator(), true)
+            StreamSupport.stream(errors.spliterator(), false)
                     .map(JsonElement::getAsJsonObject)
                     .findFirst()
                     .map(json -> conversionService.convert(json, GraphQlErrorResponse.class))

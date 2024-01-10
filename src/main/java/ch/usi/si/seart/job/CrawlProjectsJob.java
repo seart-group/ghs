@@ -384,7 +384,7 @@ public class CrawlProjectsJob implements Runnable {
     private Set<Label> retrieveRepoLabels(GitRepo repo) {
         try {
             JsonArray array = gitHubRestConnector.getRepositoryLabels(repo.getName());
-            return StreamSupport.stream(array.spliterator(), true)
+            return StreamSupport.stream(array.spliterator(), false)
                     .map(element -> {
                         JsonObject object = element.getAsJsonObject();
                         String name = object.get("name").getAsString();
@@ -423,7 +423,7 @@ public class CrawlProjectsJob implements Runnable {
     private Set<Topic> retrieveTopics(GitRepo repo) {
         try {
             JsonArray array = gitHubRestConnector.getRepositoryTopics(repo.getName());
-            return StreamSupport.stream(array.spliterator(), true)
+            return StreamSupport.stream(array.spliterator(), false)
                     .map(entry -> topicService.getOrCreate(entry.getAsString()))
                     .collect(Collectors.toSet());
         } catch (NonTransientDataAccessException ex) {
