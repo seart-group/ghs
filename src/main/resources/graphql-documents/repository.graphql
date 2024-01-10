@@ -18,14 +18,31 @@ query($owner:String!, $name:String!) {
         releases {
             count: totalCount
         }
-        labels {
+        labels(first:100) {
             count: totalCount
+            items: nodes {
+                id
+                name
+            }
         }
-        languages {
+        languages(first:100) {
             count: totalCount
+            items: edges {
+                node {
+                    id
+                    name
+                }
+                size
+            }
         }
-        topics: repositoryTopics {
+        topics: repositoryTopics(first:100) {
             count: totalCount
+            items: nodes {
+                topic {
+                    id
+                    name
+                }
+            }
         }
         stars: stargazers {
             count: totalCount
