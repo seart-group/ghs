@@ -41,8 +41,7 @@ public class ClientURLConnector {
             ExternalProcess process = new ExternalProcess(command);
             log.trace("Pinging:   {}", url);
             ExternalProcess.Result result = process.execute(connectTimeout.toMillis());
-            int code = result.getCode();
-            return switch (code) {
+            return switch (result.code()) {
                 case 0 -> true;
                 case 6 -> throw new UnknownHostException("Could not resolve host address!");
                 case 7 -> throw new ConnectException("Connection to host failed!");

@@ -59,7 +59,7 @@ public class GitConnector implements InitializingBean {
             ExternalProcess process = new ExternalProcess(directory, command);
             ExternalProcess.Result result = process.execute(cloneTimeout.toMillis());
             result.ifFailedThrow(() -> {
-                GitException exception = conversionService.convert(result.getStdErr(), GitException.class);
+                GitException exception = conversionService.convert(result.stdErr(), GitException.class);
                 return (GitException) exception.fillInStackTrace();
             });
             return new LocalRepositoryClone(directory);

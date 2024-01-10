@@ -1,10 +1,6 @@
 package ch.usi.si.seart.io;
 
 import ch.usi.si.seart.exception.TerminalExecutionException;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.experimental.FieldDefaults;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
@@ -151,14 +147,7 @@ public class ExternalProcess {
      *
      * @author Ozren Dabić
      */
-    @Getter
-    @AllArgsConstructor(access = AccessLevel.PRIVATE)
-    @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
-    public static final class Result {
-
-        int code;
-        String stdOut;
-        String stdErr;
+    public record Result(int code, String stdOut, String stdErr) {
 
         /**
          * Checks if the command execution succeeded.
