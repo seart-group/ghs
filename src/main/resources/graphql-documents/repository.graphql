@@ -1,5 +1,5 @@
-query($owner:String!, $name:String!) {
-    repository(owner:$owner, name:$name) {
+query ($owner: String!, $name: String!) {
+    repository(owner: $owner, name: $name) {
         id
         size: diskUsage
         homepage: homepageUrl
@@ -18,14 +18,14 @@ query($owner:String!, $name:String!) {
         releases {
             count: totalCount
         }
-        labels(first:100) {
+        labels(first: 100) {
             count: totalCount
             items: nodes {
                 id
                 name
             }
         }
-        languages(first:100) {
+        languages(first: 100) {
             count: totalCount
             items: edges {
                 node {
@@ -35,7 +35,7 @@ query($owner:String!, $name:String!) {
                 size
             }
         }
-        topics: repositoryTopics(first:100) {
+        topics: repositoryTopics(first: 100) {
             count: totalCount
             items: nodes {
                 topic {
@@ -53,20 +53,20 @@ query($owner:String!, $name:String!) {
         total_pull_requests: pullRequests {
             count: totalCount
         }
-        open_pull_requests: pullRequests(states:OPEN) {
+        open_pull_requests: pullRequests(states: OPEN) {
             count: totalCount
         }
         total_issues: issues {
             count: totalCount
         }
-        open_issues: issues(states:OPEN) {
+        open_issues: issues(states: OPEN) {
             count: totalCount
         }
         default_branch: defaultBranchRef {
             name
             history: target {
                 ... on Commit {
-                    commits: history(first:1) {
+                    commits: history(first: 1) {
                         items: edges {
                             commit: node {
                                 sha: oid
