@@ -358,28 +358,68 @@ public class CrawlProjectsJob implements Runnable {
 
                 gitRepo = gitRepoService.createOrUpdate(gitRepo);
 
-                long labels = json.getAsJsonObject("labels")
-                        .getAsJsonPrimitive("count")
-                        .getAsLong();
-                if (labels > 0) {
-                    log.debug("Adding:    {} labels.", labels);
-                    gitRepo.setLabels(retrieveRepoLabels(gitRepo));
+                long count;
+
+                JsonObject labels = json.getAsJsonObject("labels");
+                count = labels.getAsJsonPrimitive("count").getAsLong();
+                if (count > 0) {
+                    log.debug("Adding:    {} labels.", count);
+                    gitRepo.setLabels(
+                            count <= 100
+                                    ? StreamSupport.stream(labels.getAsJsonArray("items").spliterator(), false)
+                                    .map(JsonElement::getAsJsonObject)
+                                    .map(label -> label.getAsJsonPrimitive("name").getAsString())
+                                    .map(labelService::getOrCreate)
+                                    .collect(Collectors.toSet())
+                                    : retrieveRepoLabels(gitRepo)
+                    );
                 }
 
-                long languages = json.getAsJsonObject("languages")
-                        .getAsJsonPrimitive("count")
-                        .getAsLong();
-                if (languages > 0) {
-                    log.debug("Adding:    {} languages.", languages);
-                    gitRepo.setLanguages(retrieveRepoLanguages(gitRepo));
+                JsonObject languages = json.getAsJsonObject("languages");
+                count = languages.getAsJsonPrimitive("count").getAsLong();
+                if (count > 0) {
+                    log.debug("Adding:    {} languages.", count);
+                    final GitRepo repo = gitRepo;
+                    gitRepo.setLanguages(
+                            count <= 100
+                                    ? StreamSupport.stream(languages.getAsJsonArray("items").spliterator(), false)
+                                    .map(JsonElement::getAsJsonObject)
+                                    .map(item -> {
+                                        long sizeOfCode = item.getAsJsonPrimitive("size").getAsLong();
+                                        Language language = languageService.getOrCreate(
+                                                item.getAsJsonObject("node")
+                                                        .getAsJsonPrimitive("name")
+                                                        .getAsString()
+                                        );
+                                        GitRepoLanguage.Key key = new GitRepoLanguage.Key(
+                                                repo.getId(), language.getId()
+                                        );
+                                        return GitRepoLanguage.builder()
+                                                .key(key)
+                                                .repo(repo)
+                                                .language(language)
+                                                .sizeOfCode(sizeOfCode)
+                                                .build();
+                                    })
+                                    .collect(Collectors.toSet())
+                                    : retrieveRepoLanguages(gitRepo)
+                    );
                 }
 
-                long topics = json.getAsJsonObject("topics")
-                        .getAsJsonPrimitive("count")
-                        .getAsLong();
-                if (topics > 0) {
-                    log.debug("Adding:    {} topics.", topics);
-                    gitRepo.setTopics(retrieveTopics(gitRepo));
+                JsonObject topics = json.getAsJsonObject("topics");
+                count = topics.getAsJsonPrimitive("count").getAsLong();
+                if (count > 0) {
+                    log.debug("Adding:    {} topics.", count);
+                    gitRepo.setTopics(
+                            count <= 100
+                                    ? StreamSupport.stream(topics.getAsJsonArray("items").spliterator(), false)
+                                    .map(JsonElement::getAsJsonObject)
+                                    .map(item -> item.getAsJsonObject("topic"))
+                                    .map(topic -> topic.getAsJsonPrimitive("name").getAsString())
+                                    .map(topicService::getOrCreate)
+                                    .collect(Collectors.toSet())
+                                    : retrieveTopics(gitRepo)
+                    );
                 }
 
                 gitRepoService.createOrUpdate(gitRepo);
