@@ -358,69 +358,20 @@ public class CrawlProjectsJob implements Runnable {
 
                 gitRepo = gitRepoService.createOrUpdate(gitRepo);
 
-                long count;
+                Set<Label> labels = extractLabels(gitRepo, json);
+                if (!labels.isEmpty())
+                    log.debug("Adding:    {} labels.", labels.size());
+                gitRepo.setLabels(labels);
 
-                JsonObject labels = json.getAsJsonObject("labels");
-                count = labels.getAsJsonPrimitive("count").getAsLong();
-                if (count > 0) {
-                    log.debug("Adding:    {} labels.", count);
-                    gitRepo.setLabels(
-                            count <= 100
-                                    ? StreamSupport.stream(labels.getAsJsonArray("items").spliterator(), false)
-                                    .map(JsonElement::getAsJsonObject)
-                                    .map(label -> label.getAsJsonPrimitive("name").getAsString())
-                                    .map(labelService::getOrCreate)
-                                    .collect(Collectors.toSet())
-                                    : retrieveRepoLabels(gitRepo)
-                    );
-                }
+                Set<GitRepoLanguage> languages = extractLanguages(gitRepo, json);
+                if (!languages.isEmpty())
+                    log.debug("Adding:    {} languages.", languages.size());
+                gitRepo.setLanguages(languages);
 
-                JsonObject languages = json.getAsJsonObject("languages");
-                count = languages.getAsJsonPrimitive("count").getAsLong();
-                if (count > 0) {
-                    log.debug("Adding:    {} languages.", count);
-                    final GitRepo repo = gitRepo;
-                    gitRepo.setLanguages(
-                            count <= 100
-                                    ? StreamSupport.stream(languages.getAsJsonArray("items").spliterator(), false)
-                                    .map(JsonElement::getAsJsonObject)
-                                    .map(item -> {
-                                        long sizeOfCode = item.getAsJsonPrimitive("size").getAsLong();
-                                        Language language = languageService.getOrCreate(
-                                                item.getAsJsonObject("node")
-                                                        .getAsJsonPrimitive("name")
-                                                        .getAsString()
-                                        );
-                                        GitRepoLanguage.Key key = new GitRepoLanguage.Key(
-                                                repo.getId(), language.getId()
-                                        );
-                                        return GitRepoLanguage.builder()
-                                                .key(key)
-                                                .repo(repo)
-                                                .language(language)
-                                                .sizeOfCode(sizeOfCode)
-                                                .build();
-                                    })
-                                    .collect(Collectors.toSet())
-                                    : retrieveRepoLanguages(gitRepo)
-                    );
-                }
-
-                JsonObject topics = json.getAsJsonObject("topics");
-                count = topics.getAsJsonPrimitive("count").getAsLong();
-                if (count > 0) {
-                    log.debug("Adding:    {} topics.", count);
-                    gitRepo.setTopics(
-                            count <= 100
-                                    ? StreamSupport.stream(topics.getAsJsonArray("items").spliterator(), false)
-                                    .map(JsonElement::getAsJsonObject)
-                                    .map(item -> item.getAsJsonObject("topic"))
-                                    .map(topic -> topic.getAsJsonPrimitive("name").getAsString())
-                                    .map(topicService::getOrCreate)
-                                    .collect(Collectors.toSet())
-                                    : retrieveTopics(gitRepo)
-                    );
-                }
+                Set<Topic> topics = extractTopics(gitRepo, json);
+                if (!topics.isEmpty())
+                    log.debug("Adding:    {} topics.", topics.size());
+                gitRepo.setTopics(topics);
 
                 gitRepoService.createOrUpdate(gitRepo);
             } catch (NonTransientDataAccessException ex) {
@@ -443,9 +394,20 @@ public class CrawlProjectsJob implements Runnable {
                     && dbPushedAt.compareTo(apiPushedAt) == 0;
         }
 
-        private Set<Label> retrieveRepoLabels(GitRepo repo) {
+        private Set<Label> extractLabels(GitRepo gitRepo, JsonObject json) {
+            JsonObject labels = json.getAsJsonObject("labels");
+            long count = labels.getAsJsonPrimitive("count").getAsLong();
+            if (count > 100) return retrieveLabels(gitRepo);
+            return StreamSupport.stream(labels.getAsJsonArray("items").spliterator(), false)
+                    .map(JsonElement::getAsJsonObject)
+                    .map(label -> label.getAsJsonPrimitive("name").getAsString())
+                    .map(labelService::getOrCreate)
+                    .collect(Collectors.toSet());
+        }
+
+        private Set<Label> retrieveLabels(GitRepo gitRepo) {
             try {
-                JsonArray array = gitHubRestConnector.getRepositoryLabels(repo.getName());
+                JsonArray array = gitHubRestConnector.getRepositoryLabels(gitRepo.getName());
                 return StreamSupport.stream(array.spliterator(), false)
                         .map(element -> {
                             JsonObject object = element.getAsJsonObject();
@@ -460,16 +422,39 @@ public class CrawlProjectsJob implements Runnable {
             }
         }
 
-        private Set<GitRepoLanguage> retrieveRepoLanguages(GitRepo repo) {
+        private Set<GitRepoLanguage> extractLanguages(GitRepo gitRepo, JsonObject json) {
+            JsonObject languages = json.getAsJsonObject("languages");
+            long count = languages.getAsJsonPrimitive("count").getAsLong();
+            if (count > 100) return retrieveLanguages(gitRepo);
+            return StreamSupport.stream(languages.getAsJsonArray("items").spliterator(), false)
+                    .map(JsonElement::getAsJsonObject)
+                    .map(item -> {
+                        long sizeOfCode = item.getAsJsonPrimitive("size").getAsLong();
+                        String name = item.getAsJsonObject("node")
+                                .getAsJsonPrimitive("name")
+                                .getAsString();
+                        Language language = languageService.getOrCreate(name);
+                        GitRepoLanguage.Key key = new GitRepoLanguage.Key(gitRepo.getId(), language.getId());
+                        return GitRepoLanguage.builder()
+                                .key(key)
+                                .repo(gitRepo)
+                                .language(language)
+                                .sizeOfCode(sizeOfCode)
+                                .build();
+                    })
+                    .collect(Collectors.toSet());
+        }
+
+        private Set<GitRepoLanguage> retrieveLanguages(GitRepo gitRepo) {
             try {
-                JsonObject object = gitHubRestConnector.getRepositoryLanguages(repo.getName());
+                JsonObject object = gitHubRestConnector.getRepositoryLanguages(gitRepo.getName());
                 return object.entrySet().stream()
                         .map(entry -> {
                             Language language = languageService.getOrCreate(entry.getKey());
-                            GitRepoLanguage.Key key = new GitRepoLanguage.Key(repo.getId(), language.getId());
+                            GitRepoLanguage.Key key = new GitRepoLanguage.Key(gitRepo.getId(), language.getId());
                             return GitRepoLanguage.builder()
                                     .key(key)
-                                    .repo(repo)
+                                    .repo(gitRepo)
                                     .language(language)
                                     .sizeOfCode(entry.getValue().getAsLong())
                                     .build();
@@ -482,9 +467,21 @@ public class CrawlProjectsJob implements Runnable {
             }
         }
 
-        private Set<Topic> retrieveTopics(GitRepo repo) {
+        private Set<Topic> extractTopics(GitRepo gitRepo, JsonObject json) {
+            JsonObject topics = json.getAsJsonObject("topics");
+            long count = topics.getAsJsonPrimitive("count").getAsLong();
+            if (count > 100) return retrieveTopics(gitRepo);
+            return StreamSupport.stream(topics.getAsJsonArray("items").spliterator(), false)
+                    .map(JsonElement::getAsJsonObject)
+                    .map(item -> item.getAsJsonObject("topic"))
+                    .map(topic -> topic.getAsJsonPrimitive("name").getAsString())
+                    .map(topicService::getOrCreate)
+                    .collect(Collectors.toSet());
+        }
+
+        private Set<Topic> retrieveTopics(GitRepo gitRepo) {
             try {
-                JsonArray array = gitHubRestConnector.getRepositoryTopics(repo.getName());
+                JsonArray array = gitHubRestConnector.getRepositoryTopics(gitRepo.getName());
                 return StreamSupport.stream(array.spliterator(), false)
                         .map(entry -> topicService.getOrCreate(entry.getAsString()))
                         .collect(Collectors.toSet());
