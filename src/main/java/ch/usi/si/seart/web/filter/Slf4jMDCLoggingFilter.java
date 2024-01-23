@@ -32,6 +32,11 @@ public class Slf4jMDCLoggingFilter extends OncePerRequestFilter {
     }
 
     @Override
+    protected boolean isAsyncDispatch(@NotNull HttpServletRequest request) {
+        return false;
+    }
+
+    @Override
     protected boolean shouldNotFilterErrorDispatch() {
         return false;
     }
