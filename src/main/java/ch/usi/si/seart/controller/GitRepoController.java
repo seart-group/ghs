@@ -13,6 +13,7 @@ import ch.usi.si.seart.service.GitRepoService;
 import ch.usi.si.seart.service.LanguageService;
 import ch.usi.si.seart.service.LicenseService;
 import ch.usi.si.seart.service.StatisticsService;
+import ch.usi.si.seart.web.Headers;
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.json.JsonMapper;
@@ -160,8 +161,8 @@ public class GitRepoController {
         resultPage.put("items", dtos);
 
         MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
-        headers.add("X-Link-Search", searchLinkBuilder.getLinks(request, results));
-        headers.add("X-Link-Download", downloadLinkBuilder.getLinks(request));
+        headers.add(Headers.X_LINK_SEARCH, searchLinkBuilder.getLinks(request, results));
+        headers.add(Headers.X_LINK_DOWNLOAD, downloadLinkBuilder.getLinks(request));
 
         return new ResponseEntity<>(resultPage, headers, HttpStatus.OK);
     }
