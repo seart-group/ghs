@@ -1,6 +1,8 @@
 FROM maven:3.9.6-eclipse-temurin-17-alpine AS build
 
 WORKDIR /
+
+COPY .git .git/
 COPY src src/
 COPY pom.xml pom.xml
 
