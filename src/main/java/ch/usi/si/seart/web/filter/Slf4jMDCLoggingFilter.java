@@ -30,4 +30,9 @@ public class Slf4jMDCLoggingFilter extends OncePerRequestFilter {
             MDC.remove(KEY);
         }
     }
+
+    @Override
+    protected boolean shouldNotFilterErrorDispatch() {
+        return false;
+    }
 }
