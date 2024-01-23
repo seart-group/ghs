@@ -5,8 +5,15 @@
 
   <property name="LOG_ROOT" value="logs" />
 
-  <property name="FILE_LOG_PATTERN" value="%d{yyyy-MM-dd HH:mm:ss.SSS} | %m%n%wEx" />
-  <property name="FILE_LOG_PATTERN_THREAD" value="%d{yyyy-MM-dd HH:mm:ss.SSS} | [%t] | %m%n%wEx" />
+  <property name="FILE_LOG_PATTERN"
+            value="%d{yyyy-MM-dd HH:mm:ss.SSS} | %m%n%wEx"
+  />
+  <property name="FILE_LOG_PATTERN_THREAD"
+            value="%d{yyyy-MM-dd HH:mm:ss.SSS} | [%t] | %m%n%wEx"
+  />
+  <property name="FILE_LOG_PATTERN_MDC_THREAD"
+            value="%d{yyyy-MM-dd HH:mm:ss.SSS} | %X{LoggingFilter.UUID:-00000000-0000-0000-0000-000000000000} | [%t] | %m%n%wEx"
+  />
 
   <property name="LOGBACK_ROLLINGPOLICY_FILE_NAME_PATTERN" value="${LOG_FILE}.%d{yyyy-MM-dd}.%i.gz" />
   <property name="LOGBACK_ROLLINGPOLICY_TOTAL_SIZE_CAP" value="5GB" />
@@ -85,7 +92,7 @@
 
   <appender name="FILE-API" class="ch.qos.logback.core.rolling.RollingFileAppender">
     <encoder>
-      <pattern>${FILE_LOG_PATTERN_THREAD}</pattern>
+      <pattern>${FILE_LOG_PATTERN_MDC_THREAD}</pattern>
       <charset>${FILE_LOG_CHARSET}</charset>
     </encoder>
     <file>${LOG_ROOT}/api/api.log</file>

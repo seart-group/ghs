@@ -2,12 +2,10 @@ package ch.usi.si.seart.config;
 
 import ch.usi.si.seart.config.properties.StatisticsProperties;
 import ch.usi.si.seart.util.Ranges;
-import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.web.filter.ForwardedHeaderFilter;
 
 import java.time.Instant;
 import java.time.ZoneOffset;
@@ -48,12 +46,5 @@ public class MainConfig {
         int pageSize = properties.getSuggestionLimit();
         if (pageSize == 0) return Pageable.unpaged();
         return PageRequest.ofSize(pageSize);
-    }
-
-    @Bean
-    public FilterRegistrationBean<ForwardedHeaderFilter> forwardedHeaderFilter() {
-        FilterRegistrationBean<ForwardedHeaderFilter> bean = new FilterRegistrationBean<>();
-        bean.setFilter(new ForwardedHeaderFilter());
-        return bean;
     }
 }
