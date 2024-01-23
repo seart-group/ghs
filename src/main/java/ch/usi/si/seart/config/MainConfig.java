@@ -2,6 +2,7 @@ package ch.usi.si.seart.config;
 
 import ch.usi.si.seart.config.properties.StatisticsProperties;
 import ch.usi.si.seart.util.Ranges;
+import ch.usi.si.seart.web.filter.Slf4jMDCLoggingFilter;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -54,6 +55,13 @@ public class MainConfig {
     public FilterRegistrationBean<ForwardedHeaderFilter> forwardedHeaderFilter() {
         FilterRegistrationBean<ForwardedHeaderFilter> bean = new FilterRegistrationBean<>();
         bean.setFilter(new ForwardedHeaderFilter());
+        return bean;
+    }
+
+    @Bean
+    public FilterRegistrationBean<Slf4jMDCLoggingFilter> slf4jMDCLoggingFilter() {
+        FilterRegistrationBean<Slf4jMDCLoggingFilter> bean = new FilterRegistrationBean<>();
+        bean.setFilter(new Slf4jMDCLoggingFilter());
         return bean;
     }
 }
