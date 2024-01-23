@@ -1,0 +1,9 @@
+{
+  "properties": [
+    {
+      "name": "management.info.spring.enabled",
+      "type": "java.lang.Boolean",
+      "description": "Whether to enable the Spring info contributor."
+    }
+  ]
+}
