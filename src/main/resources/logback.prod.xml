@@ -30,6 +30,18 @@
     </filter>
   </appender>
 
+  <appender name="FILE" class="ch.qos.logback.core.FileAppender">
+    <encoder>
+      <pattern>${FILE_LOG_PATTERN_THREAD}</pattern>
+      <charset>${FILE_LOG_CHARSET}</charset>
+    </encoder>
+    <append>false</append>
+    <file>/tmp/server.log</file>
+    <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+      <level>INFO</level>
+    </filter>
+  </appender>
+
   <appender name="FILE-GITHUB" class="ch.qos.logback.core.rolling.RollingFileAppender">
     <encoder>
       <pattern>${FILE_LOG_PATTERN}</pattern>
@@ -107,6 +119,7 @@
 
   <root level="INFO">
     <appender-ref ref="CONSOLE" />
+    <appender-ref ref="FILE" />
   </root>
   <logger name="ch.usi.si.seart.github" level="TRACE">
     <appender-ref ref="FILE-GITHUB" />
