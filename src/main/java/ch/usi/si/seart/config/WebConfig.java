@@ -7,9 +7,13 @@ import ch.usi.si.seart.converter.SearchParameterDtoToSpecificationConverter;
 import ch.usi.si.seart.converter.StringToContactsConverter;
 import ch.usi.si.seart.converter.StringToGitExceptionConverter;
 import ch.usi.si.seart.converter.StringToLicensesConverter;
+import ch.usi.si.seart.web.filter.Slf4jMDCLoggingFilter;
 import org.jetbrains.annotations.NotNull;
+import org.springframework.boot.web.servlet.FilterRegistrationBean;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.format.FormatterRegistry;
+import org.springframework.web.filter.ForwardedHeaderFilter;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
@@ -37,5 +41,19 @@ public class WebConfig implements WebMvcConfigurer {
         registry.addConverter(new StringToContactsConverter());
         registry.addConverter(new StringToGitExceptionConverter());
         registry.addConverter(new StringToLicensesConverter());
+    }
+
+    @Bean
+    public FilterRegistrationBean<ForwardedHeaderFilter> forwardedHeaderFilter() {
+        FilterRegistrationBean<ForwardedHeaderFilter> bean = new FilterRegistrationBean<>();
+        bean.setFilter(new ForwardedHeaderFilter());
+        return bean;
+    }
+
+    @Bean
+    public FilterRegistrationBean<Slf4jMDCLoggingFilter> slf4jMDCLoggingFilter() {
+        FilterRegistrationBean<Slf4jMDCLoggingFilter> bean = new FilterRegistrationBean<>();
+        bean.setFilter(new Slf4jMDCLoggingFilter());
+        return bean;
     }
 }
