@@ -11,6 +11,7 @@ import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.ResponseEntity;
 
+import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -29,8 +30,15 @@ public class LogFileWebEndpointExtension {
         if (segments.length == 0) return ResponseEntity.ok(delegate.logFile());
         Path path = Paths.get(LOG_ROOT, segments);
         if (Files.notExists(path)) return ResponseEntity.notFound().build();
-        if (Files.isDirectory(path)) return ResponseEntity.badRequest().build();
-        Resource resource = new FileSystemResource(path.toFile());
+        File file = Files.isRegularFile(path) ? path.toFile() : getDirectoryLogFile(path);
+        if (!file.exists()) return ResponseEntity.notFound().build();
+        Resource resource = new FileSystemResource(file);
         return ResponseEntity.ok(resource);
+    }
+
+    private File getDirectoryLogFile(Path path) {
+        String directory = path.getFileName().toString();
+        String file = directory + ".log";
+        return Paths.get(path.toString(), file).toFile();
     }
 }
