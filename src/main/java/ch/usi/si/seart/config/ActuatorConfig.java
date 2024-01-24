@@ -7,12 +7,19 @@ import org.springframework.boot.actuate.autoconfigure.info.InfoContributorAutoCo
 import org.springframework.boot.actuate.autoconfigure.info.InfoContributorFallback;
 import org.springframework.boot.actuate.health.HealthIndicator;
 import org.springframework.boot.actuate.info.InfoContributor;
+import org.springframework.boot.actuate.trace.http.HttpTraceRepository;
+import org.springframework.boot.actuate.trace.http.InMemoryHttpTraceRepository;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
 
 @Configuration
 public class ActuatorConfig {
+
+    @Bean
+    public HttpTraceRepository httpTraceRepository() {
+        return new InMemoryHttpTraceRepository();
+    }
 
     @Bean("gitHubApi")
     public HealthIndicator gitHubApiHealthIndicator() {
