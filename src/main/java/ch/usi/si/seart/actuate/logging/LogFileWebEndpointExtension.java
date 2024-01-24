@@ -3,7 +3,6 @@ package ch.usi.si.seart.actuate.logging;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.actuate.endpoint.annotation.ReadOperation;
 import org.springframework.boot.actuate.endpoint.annotation.Selector;
 import org.springframework.boot.actuate.endpoint.web.annotation.EndpointWebExtension;
@@ -11,16 +10,14 @@ import org.springframework.boot.actuate.logging.LogFileWebEndpoint;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Component;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
-@Component
-@EndpointWebExtension(endpoint = LogFileWebEndpoint.class)
-@AllArgsConstructor(onConstructor_ = @Autowired)
+@AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
+@EndpointWebExtension(endpoint = LogFileWebEndpoint.class)
 public class LogFileWebEndpointExtension {
 
     private static final String LOG_ROOT = "logs";
