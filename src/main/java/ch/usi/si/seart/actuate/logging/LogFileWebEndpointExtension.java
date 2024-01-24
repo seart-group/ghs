@@ -28,8 +28,8 @@ public class LogFileWebEndpointExtension {
     public ResponseEntity<Resource> logFile(@Selector(match = Selector.Match.ALL_REMAINING) String... segments) {
         if (segments.length == 0) return ResponseEntity.ok(delegate.logFile());
         Path path = Paths.get(LOG_ROOT, segments);
-        if (Files.isDirectory(path)) return ResponseEntity.badRequest().build();
         if (Files.notExists(path)) return ResponseEntity.notFound().build();
+        if (Files.isDirectory(path)) return ResponseEntity.badRequest().build();
         Resource resource = new FileSystemResource(path.toFile());
         return ResponseEntity.ok(resource);
     }
