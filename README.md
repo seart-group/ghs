@@ -18,9 +18,9 @@ This project is made of two components:
 | Maven                                    |                 3.9 |
 | MySQL                                    |                 8.3 |
 | Flyway                                   |                10.5 |
-| Git                                      |                2.40 |
+| Git                                      |                2.43 |
 | [curl](https://github.com/curl/curl)     |                 8.5 |
-| [cloc](https://github.com/AlDanial/cloc) |                1.96 |
+| [cloc](https://github.com/AlDanial/cloc) |                1.98 |
 
 ### Database
 
