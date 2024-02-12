@@ -51,7 +51,7 @@ public class Dates {
     public Date fromGitDateString(String date) {
         try {
             Date parsed = FORMAT.parse(date);
-            return parsed.after(MYSQL_MAX) ? MYSQL_MAX : parsed;
+            return parsed.after(MYSQL_MAX) ? null : parsed;
         } catch (ParseException | NullPointerException ex) {
             return null;
         }
