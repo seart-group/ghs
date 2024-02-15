@@ -29,7 +29,7 @@ RUN for file in html/js/*.js; \
     do uglifyjs --compress --mangle --webkit -- "$file" | sponge "$file"; \
     done
 
-FROM nginx:1.25.3-alpine-slim
+FROM nginx:1.25.4-alpine-slim
 LABEL maintainer="Ozren Dabić (dabico@usi.ch)"
 
 COPY --from=build html /usr/share/nginx/html
