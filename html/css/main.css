@@ -237,3 +237,23 @@ div[data-ghs-id] {
 .typeahead > li {
     overflow: hidden!important;
 }
+
+.logo-box {
+    color: var(--bs-light)!important;
+    background-color: var(--bs-navbar-color)!important;
+    padding-left: 0.5rem!important;
+    padding-right: 0.125rem!important;
+    margin-right: 0.125rem!important;
+}
+
+.logo-text {
+    color: var(--bs-navbar-color)!important;
+}
+
+.logo:hover .logo-box {
+    background-color: var(--bs-navbar-hover-color)!important;
+}
+
+.logo:hover .logo-text {
+    color: var(--bs-navbar-hover-color)!important;
+}
