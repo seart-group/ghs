@@ -1,7 +1,6 @@
 package ch.usi.si.seart.controller;
 
 import ch.usi.si.seart.exception.IllegalBoundaryException;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -10,7 +9,6 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 import javax.persistence.EntityNotFoundException;
 import java.util.Map;
 
-@Slf4j
 @ControllerAdvice
 public class ExceptionController extends ResponseEntityExceptionHandler {
 
