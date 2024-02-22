@@ -30,7 +30,7 @@ public class JsonObjectToErrorResponseConverter implements Converter<JsonObject,
     @Override
     @NonNull
     public ErrorResponse convert(@NonNull JsonObject source) {
-        if (source.size() == 0)
+        if (source.isEmpty())
             throw new IllegalArgumentException("The source object is empty");
         Assert.isTrue(source.has("message"), "The source object does not contain a message");
         String message = source.get("message").getAsString();
