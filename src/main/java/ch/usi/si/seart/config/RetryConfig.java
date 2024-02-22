@@ -13,6 +13,8 @@ import org.springframework.retry.backoff.BackOffPolicy;
 import org.springframework.retry.backoff.ExponentialBackOffPolicy;
 import org.springframework.retry.support.RetryTemplate;
 
+import java.time.Duration;
+
 @Configuration
 @EnableRetry
 public class RetryConfig {
@@ -52,7 +54,7 @@ public class RetryConfig {
     @Bean
     public RetryTemplate timeLimitedRetryTemplate(BackOffPolicy backOffPolicy) {
         return RetryTemplate.builder()
-                .withTimeout(7_200_000)
+                .withTimeout(Duration.ofHours(2))
                 .customBackoff(backOffPolicy)
                 .retryOn(Exception.class)
                 .build();
