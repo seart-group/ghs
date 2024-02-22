@@ -26,17 +26,6 @@ public class RetryConfig {
             );
 
             @Override
-            public <T, E extends Throwable> boolean open(RetryContext context, RetryCallback<T, E> callback) {
-                return true;
-            }
-
-            @Override
-            public <T, E extends Throwable> void close(
-                    RetryContext context, RetryCallback<T, E> callback, Throwable throwable
-            ) {
-            }
-
-            @Override
             public <T, E extends Throwable> void onError(
                     RetryContext context, RetryCallback<T, E> callback, Throwable throwable
             ) {
