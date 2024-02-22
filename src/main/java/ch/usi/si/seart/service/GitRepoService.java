@@ -29,13 +29,13 @@ import java.util.stream.Stream;
 public interface GitRepoService {
 
     @Retryable(
-            value = TransientDataAccessException.class,
+            retryFor = TransientDataAccessException.class,
             backoff = @Backoff(delay = 250, multiplier = 2),
             maxAttempts = 5
     )
     void deleteRepoById(Long id);
     @Retryable(
-            value = TransientDataAccessException.class,
+            retryFor = TransientDataAccessException.class,
             backoff = @Backoff(delay = 250, multiplier = 2),
             maxAttempts = 5
     )
@@ -46,7 +46,7 @@ public interface GitRepoService {
     GitRepo getById(Long id);
     GitRepo getByName(String name);
     @Retryable(
-            value = TransientDataAccessException.class,
+            retryFor = TransientDataAccessException.class,
             backoff = @Backoff(delay = 250, multiplier = 2),
             maxAttempts = 5
     )
