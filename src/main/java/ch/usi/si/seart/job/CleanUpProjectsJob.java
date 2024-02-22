@@ -22,7 +22,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.time.Instant;
 import java.util.Date;
+import java.util.Optional;
 
 @Job
 @Slf4j
@@ -59,8 +61,12 @@ public class CleanUpProjectsJob implements Runnable {
         });
         CronTrigger trigger = cleanUpProperties.getCron();
         TriggerContext context = new SimpleTriggerContext();
-        Date date = trigger.nextExecutionTime(context);
-        log.info("Next cleanup scheduled for: {}", date);
+        Instant instant = trigger.nextExecution(context);
+        Optional.ofNullable(instant)
+                .map(Date::from)
+                .ifPresentOrElse(
+                    date -> log.info("Next cleanup scheduled for: {}", date),
+                    () -> log.info("Finished cleanup, no more scheduled runs."));
     }
 
     /*
