@@ -83,6 +83,7 @@
 		<okhttp.version>4.12.0</okhttp.version>
 		<springboot.version>3.2.3</springboot.version>
 		<springbootadmin.version>3.2.2</springbootadmin.version>
+		<springdoc.version>2.3.0</springdoc.version>
 	</properties>
 
 	<dependencyManagement>
@@ -119,6 +120,13 @@
 				<groupId>de.codecentric</groupId>
 				<artifactId>spring-boot-admin-dependencies</artifactId>
 				<version>${springbootadmin.version}</version>
+				<type>pom</type>
+				<scope>import</scope>
+			</dependency>
+			<dependency>
+				<groupId>org.springdoc</groupId>
+				<artifactId>springdoc-openapi</artifactId>
+				<version>${springdoc.version}</version>
 				<type>pom</type>
 				<scope>import</scope>
 			</dependency>
@@ -186,8 +194,15 @@
 		</dependency>
 		<dependency>
 			<groupId>org.springdoc</groupId>
-			<artifactId>springdoc-openapi-ui</artifactId>
-			<version>1.7.0</version>
+			<artifactId>springdoc-openapi-starter-common</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springdoc</groupId>
+			<artifactId>springdoc-openapi-starter-webmvc-api</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springdoc</groupId>
+			<artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>org.projectlombok</groupId>
