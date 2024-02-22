@@ -11,7 +11,7 @@ import org.springframework.data.jpa.repository.support.JpaEntityInformationSuppo
 import org.springframework.data.jpa.repository.support.SimpleJpaRepository;
 import org.springframework.util.Assert;
 
-import javax.persistence.EntityManager;
+import jakarta.persistence.EntityManager;
 import java.util.stream.Stream;
 
 public class ExtendedJpaRepositoryImpl<T, ID>

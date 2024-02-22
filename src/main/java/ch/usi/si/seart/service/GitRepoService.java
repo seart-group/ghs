@@ -22,8 +22,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.persistence.EntityNotFoundException;
-import javax.persistence.Tuple;
+import jakarta.persistence.EntityNotFoundException;
+import jakarta.persistence.Tuple;
 import java.util.stream.Stream;
 
 public interface GitRepoService {
