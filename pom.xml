@@ -81,8 +81,8 @@
 		<guava.version>33.0.0-jre</guava.version>
 		<jackson.version>2.16.1</jackson.version>
 		<okhttp.version>4.12.0</okhttp.version>
-		<springbootadmin.version>2.7.15</springbootadmin.version>
 		<springboot.version>3.2.3</springboot.version>
+		<springbootadmin.version>3.2.2</springbootadmin.version>
 	</properties>
 
 	<dependencyManagement>
