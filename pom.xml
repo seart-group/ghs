@@ -273,11 +273,11 @@
 		</dependency>
 		<dependency>
 			<groupId>ch.usi.si.seart</groupId>
-			<artifactId>jakarta-validation-utils-legacy</artifactId>
+			<artifactId>jakarta-validation-utils</artifactId>
 			<version>0.3.0</version>
 		</dependency>
 		<dependency>
-			<groupId>org.hibernate</groupId>
+			<groupId>org.hibernate.orm</groupId>
 			<artifactId>hibernate-core</artifactId>
 		</dependency>
 		<dependency>
@@ -285,7 +285,7 @@
 			<artifactId>hibernate-validator</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>org.hibernate</groupId>
+			<groupId>org.hibernate.orm</groupId>
 			<artifactId>hibernate-jpamodelgen</artifactId>
 		</dependency>
 		<dependency>
