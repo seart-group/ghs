@@ -30,7 +30,7 @@ public class LoggingFilterFunction implements ExchangeFilterFunction {
                 .doOnSuccess(response -> {
                     long endNs = System.nanoTime();
                     long ms = TimeUnit.NANOSECONDS.toMillis(endNs - startNs);
-                    log.debug("<<< {} ({}ms)", response.rawStatusCode(), ms);
+                    log.debug("<<< {} ({}ms)", response.statusCode().value(), ms);
                     HttpHeaders headers = response.headers().asHttpHeaders();
                     String id = headers.getFirst(GitHubHttpHeaders.X_GITHUB_REQUEST_ID);
                     log.trace("[[[ {} ]]]", id);
