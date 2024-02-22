@@ -11,7 +11,7 @@ import lombok.Setter;
 import lombok.experimental.FieldDefaults;
 import org.hibernate.Hibernate;
 import org.hibernate.annotations.Generated;
-import org.hibernate.annotations.GenerationTime;
+import org.hibernate.generator.EventType;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
@@ -53,19 +53,25 @@ public class GitRepoMetric {
     @JoinColumn(name = "language_id")
     Language language;
 
-    @Generated(value = GenerationTime.ALWAYS)
+    @Generated(event = {
+        EventType.INSERT,
+        EventType.UPDATE
+    })
     @Column(
-            name = "lines",
-            insertable = false,
-            updatable = false
+        name = "lines",
+        insertable = false,
+        updatable = false
     )
     Long lines;
 
-    @Generated(value = GenerationTime.ALWAYS)
+    @Generated(event = {
+        EventType.INSERT,
+        EventType.UPDATE
+    })
     @Column(
-            name = "lines_non_blank",
-            insertable = false,
-            updatable = false
+        name = "lines_non_blank",
+        insertable = false,
+        updatable = false
     )
     Long nonBlankLines;
 
