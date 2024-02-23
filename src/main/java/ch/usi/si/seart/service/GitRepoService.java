@@ -15,6 +15,7 @@ import org.springframework.dao.TransientDataAccessException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.data.repository.query.FluentQuery;
 import org.springframework.data.util.Pair;
 import org.springframework.retry.annotation.Backoff;
 import org.springframework.retry.annotation.Retryable;
@@ -123,7 +124,7 @@ public interface GitRepoService {
 
         @Override
         public Stream<GitRepo> streamBy(Specification<GitRepo> specification) {
-            return gitRepoRepository.streamAll(specification);
+            return gitRepoRepository.findBy(specification, FluentQuery.FetchableFluentQuery::stream);
         }
 
         @Override

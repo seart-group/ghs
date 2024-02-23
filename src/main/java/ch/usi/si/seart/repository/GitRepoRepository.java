@@ -1,7 +1,6 @@
 package ch.usi.si.seart.repository;
 
 import ch.usi.si.seart.model.GitRepo;
-import ch.usi.si.seart.repository.support.JpaStreamExecutor;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Modifying;
@@ -15,8 +14,7 @@ import java.util.stream.Stream;
 
 public interface GitRepoRepository extends
         JpaRepository<GitRepo, Long>,
-        JpaSpecificationExecutor<GitRepo>,
-        JpaStreamExecutor<GitRepo>
+        JpaSpecificationExecutor<GitRepo>
 {
 
     @Modifying
