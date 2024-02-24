@@ -58,6 +58,10 @@ public class GitRepo {
     @JoinColumn(name = "language_id")
     Language mainLanguage;
 
+    @ManyToOne
+    @JoinColumn(name = "license_id")
+    License license;
+
     @NotBlank
     @Column(name = "name", unique = true)
     String name;
@@ -84,10 +88,6 @@ public class GitRepo {
     @PositiveOrZero
     @Column(name = "contributors")
     Long contributors;
-
-    @NullOrNotBlank
-    @Column(name = "license")
-    String license;
 
     @PositiveOrZero
     @Column(name = "watchers")

@@ -5,6 +5,7 @@ import ch.usi.si.seart.model.GitRepo;
 import ch.usi.si.seart.model.GitRepo_;
 import ch.usi.si.seart.model.Label_;
 import ch.usi.si.seart.model.Language_;
+import ch.usi.si.seart.model.License_;
 import ch.usi.si.seart.model.Topic_;
 import ch.usi.si.seart.model.join.GitRepoMetric;
 import ch.usi.si.seart.model.join.GitRepoMetricAggregate;
@@ -166,8 +167,11 @@ public class SearchParameterDtoToSpecificationConverter
 
         private Criteria<GitRepo> getLicenseCriteria(@NotNull Root<GitRepo> root) {
             if (!StringUtils.hasText(license)) return new AlwaysTrueCriteria<>();
-            Path<String> path = root.get(GitRepo_.license);
-            return new KeyValueCriteria<>(path, license, BinaryOperation.EQUAL);
+            Path<String> path = root.join(GitRepo_.license).get(License_.name);
+            return new CriteriaConjunction<>(
+                    new KeyCriteria<>(path, UnaryOperation.IS_NOT_NULL),
+                    new KeyValueCriteria<>(path, license, BinaryOperation.EQUAL)
+            );
         }
 
         private Criteria<GitRepo> getLabelCriteria(@NotNull Root<GitRepo> root) {
@@ -292,8 +296,8 @@ public class SearchParameterDtoToSpecificationConverter
         }
 
         private Criteria<GitRepo> getHasLicenseCriteria(@NotNull Root<GitRepo> root) {
-            if (!hasLicense) return new AlwaysTrueCriteria<>();
-            Path<String> path = root.get(GitRepo_.license);
+            if (StringUtils.hasText(license) && !hasLicense) return new AlwaysTrueCriteria<>();
+            Path<String> path = root.join(GitRepo_.license).get(License_.name);
             return new KeyCriteria<>(path, UnaryOperation.IS_NOT_NULL);
         }
     }

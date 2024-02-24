@@ -8,11 +8,13 @@ import ch.usi.si.seart.github.GitHubRestConnector;
 import ch.usi.si.seart.model.GitRepo;
 import ch.usi.si.seart.model.Label;
 import ch.usi.si.seart.model.Language;
+import ch.usi.si.seart.model.License;
 import ch.usi.si.seart.model.Topic;
 import ch.usi.si.seart.model.join.GitRepoLanguage;
 import ch.usi.si.seart.service.GitRepoService;
 import ch.usi.si.seart.service.LabelService;
 import ch.usi.si.seart.service.LanguageService;
+import ch.usi.si.seart.service.LicenseService;
 import ch.usi.si.seart.service.TopicService;
 import ch.usi.si.seart.stereotype.Job;
 import ch.usi.si.seart.util.Dates;
@@ -34,6 +36,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.dao.NonTransientDataAccessException;
 import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.util.StringUtils;
 
 import java.time.Duration;
 import java.time.Instant;
@@ -45,6 +48,7 @@ import java.util.Deque;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
@@ -59,6 +63,7 @@ public class CrawlProjectsJob implements Runnable {
     GitRepoService gitRepoService;
     TopicService topicService;
     LabelService labelService;
+    LicenseService licenseService;
     LanguageService languageService;
 
     GitHubRestConnector gitHubRestConnector;
@@ -257,12 +262,14 @@ public class CrawlProjectsJob implements Runnable {
                         : null;
                 gitRepo.setHomepage(Strings.emptyToNull(homepage));
 
-                String license = !json.get("license").isJsonNull()
-                        ? json.getAsJsonObject("license")
-                        .getAsJsonPrimitive("name")
-                        .getAsString()
-                        .replace("\"", "")
-                        : null;
+                License license = Optional.ofNullable(json.get("license"))
+                        .filter(Predicate.not(JsonElement::isJsonNull))
+                        .map(JsonElement::getAsJsonObject)
+                        .map(object -> object.getAsJsonPrimitive("name").getAsString())
+                        .map(string -> string.replace("\"", ""))
+                        .filter(StringUtils::hasText)
+                        .map(licenseService::getOrCreate)
+                        .orElse(null);
                 gitRepo.setLicense(license);
 
                 Long forks = json.getAsJsonPrimitive("forks").getAsLong();
