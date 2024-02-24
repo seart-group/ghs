@@ -21,17 +21,20 @@ public class GitRepoToDtoConverter implements Converter<GitRepo, GitRepoDto> {
     public GitRepoDto convert(@NonNull GitRepo source) {
         GitRepoMetricAggregate totalMetrics = source.getTotalMetrics();
         boolean hasMetrics = totalMetrics != null;
+        boolean hasLicense = source.getLicense() != null;
+        boolean hasLanguage = source.getMainLanguage() != null;
 
         return GitRepoDto.builder()
                 .id(source.getId())
                 .name(source.getName())
+                .license(hasLicense ? source.getLicense().getName() : null)
+                .mainLanguage(hasLanguage ? source.getMainLanguage().getName() : null)
                 .isFork(source.getIsFork())
                 .commits(source.getCommits())
                 .branches(source.getBranches())
                 .defaultBranch(source.getDefaultBranch())
                 .releases(source.getReleases())
                 .contributors(source.getContributors())
-                .license(source.getLicense().getName())
                 .watchers(source.getWatchers())
                 .stargazers(source.getStargazers())
                 .forks(source.getForks())
@@ -40,7 +43,6 @@ public class GitRepoToDtoConverter implements Converter<GitRepo, GitRepoDto> {
                 .pushedAt(source.getPushedAt())
                 .updatedAt(source.getUpdatedAt())
                 .homepage(source.getHomepage())
-                .mainLanguage(source.getMainLanguage().getName())
                 .totalIssues(source.getTotalIssues())
                 .openIssues(source.getOpenIssues())
                 .totalPullRequests(source.getTotalPullRequests())
