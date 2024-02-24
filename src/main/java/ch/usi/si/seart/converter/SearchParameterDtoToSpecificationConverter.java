@@ -296,7 +296,7 @@ public class SearchParameterDtoToSpecificationConverter
         }
 
         private Criteria<GitRepo> getHasLicenseCriteria(@NotNull Root<GitRepo> root) {
-            if (StringUtils.hasText(license) && !hasLicense) return new AlwaysTrueCriteria<>();
+            if (StringUtils.hasText(license) || !hasLicense) return new AlwaysTrueCriteria<>();
             Path<String> path = root.join(GitRepo_.license).get(License_.name);
             return new KeyCriteria<>(path, UnaryOperation.IS_NOT_NULL);
         }
