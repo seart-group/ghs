@@ -8,7 +8,7 @@ import ch.usi.si.seart.hateoas.SearchLinkBuilder;
 import ch.usi.si.seart.model.GitRepo;
 import ch.usi.si.seart.model.GitRepo_;
 import ch.usi.si.seart.model.Language;
-import ch.usi.si.seart.model.view.License;
+import ch.usi.si.seart.model.License;
 import ch.usi.si.seart.service.GitRepoService;
 import ch.usi.si.seart.service.LanguageService;
 import ch.usi.si.seart.service.LicenseService;
@@ -328,7 +328,7 @@ public class GitRepoController {
     @Operation(summary = "Retrieve a list of all repository licenses mined across projects.")
     public ResponseEntity<?> getAllLicenses() {
         return ResponseEntity.ok(
-                licenseService.getAll().stream()
+                licenseService.getRanked().stream()
                         .map(License::getName)
                         .toList()
         );
