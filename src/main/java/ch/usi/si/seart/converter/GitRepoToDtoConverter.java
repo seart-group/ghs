@@ -31,7 +31,7 @@ public class GitRepoToDtoConverter implements Converter<GitRepo, GitRepoDto> {
                 .defaultBranch(source.getDefaultBranch())
                 .releases(source.getReleases())
                 .contributors(source.getContributors())
-                .license(source.getLicense())
+                .license(source.getLicense().getName())
                 .watchers(source.getWatchers())
                 .stargazers(source.getStargazers())
                 .forks(source.getForks())
