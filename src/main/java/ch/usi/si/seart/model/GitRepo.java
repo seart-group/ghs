@@ -54,11 +54,11 @@ public class GitRepo {
     @Column(name = "id")
     Long id;
 
-    @ManyToOne(optional = false)
+    @ManyToOne(cascade = CascadeType.DETACH, optional = false)
     @JoinColumn(name = "language_id")
     Language mainLanguage;
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.DETACH)
     @JoinColumn(name = "license_id")
     License license;
 
