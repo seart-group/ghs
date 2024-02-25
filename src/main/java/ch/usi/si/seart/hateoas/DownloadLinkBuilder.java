@@ -6,7 +6,6 @@ import ch.usi.si.seart.web.ExportFormat;
 import lombok.SneakyThrows;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.UriTemplate;
-import org.springframework.stereotype.Component;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.util.UriComponentsBuilder;
 
@@ -17,7 +16,6 @@ import java.net.URI;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-@Component("downloadLinkBuilder")
 public class DownloadLinkBuilder extends LinkBuilder<Void> {
 
     @Override

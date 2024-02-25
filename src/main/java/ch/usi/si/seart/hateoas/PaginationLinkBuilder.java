@@ -8,7 +8,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.hateoas.IanaLinkRelations;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.UriTemplate;
-import org.springframework.stereotype.Component;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.util.UriComponentsBuilder;
 
@@ -19,8 +18,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-@Component("searchLinkBuilder")
-public class SearchLinkBuilder extends LinkBuilder<Page<?>> {
+public class PaginationLinkBuilder extends LinkBuilder<Page<?>> {
 
     @Override
     protected Class<?> getControllerClass() {

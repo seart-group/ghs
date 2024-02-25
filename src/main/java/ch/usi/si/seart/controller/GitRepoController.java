@@ -3,8 +3,7 @@ package ch.usi.si.seart.controller;
 import ch.usi.si.seart.dto.GitRepoCsvDto;
 import ch.usi.si.seart.dto.GitRepoDto;
 import ch.usi.si.seart.dto.SearchParameterDto;
-import ch.usi.si.seart.hateoas.DownloadLinkBuilder;
-import ch.usi.si.seart.hateoas.SearchLinkBuilder;
+import ch.usi.si.seart.hateoas.LinkBuilder;
 import ch.usi.si.seart.model.GitRepo;
 import ch.usi.si.seart.model.GitRepo_;
 import ch.usi.si.seart.model.Language;
@@ -118,8 +117,8 @@ public class GitRepoController {
     @PersistenceContext
     EntityManager entityManager;
 
-    SearchLinkBuilder searchLinkBuilder;
-    DownloadLinkBuilder downloadLinkBuilder;
+    LinkBuilder<Page<?>> searchLinkBuilder;
+    LinkBuilder<Void> downloadLinkBuilder;
 
     @SuppressWarnings("unchecked")
     @GetMapping(value = "/search", produces = MediaType.APPLICATION_JSON_VALUE)
