@@ -19,15 +19,9 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Set;
 
 @Configuration
 public class ExportConfig {
-
-    @Bean
-    public Set<String> exportFormats() {
-        return Set.of("csv", "json", "xml");
-    }
 
     @Bean
     DateFormat exportTimeFormat() {

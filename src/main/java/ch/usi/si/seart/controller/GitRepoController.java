@@ -13,15 +13,14 @@ import ch.usi.si.seart.service.GitRepoService;
 import ch.usi.si.seart.service.LanguageService;
 import ch.usi.si.seart.service.LicenseService;
 import ch.usi.si.seart.service.StatisticsService;
+import ch.usi.si.seart.web.ExportFormat;
 import ch.usi.si.seart.web.Headers;
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.json.JsonMapper;
-import com.fasterxml.jackson.dataformat.csv.CsvFactory;
 import com.fasterxml.jackson.dataformat.csv.CsvGenerator;
 import com.fasterxml.jackson.dataformat.csv.CsvMapper;
 import com.fasterxml.jackson.dataformat.csv.CsvSchema;
-import com.fasterxml.jackson.dataformat.xml.XmlFactory;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import com.fasterxml.jackson.dataformat.xml.ser.ToXmlGenerator;
 import io.swagger.v3.oas.annotations.Operation;
@@ -32,11 +31,11 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AccessLevel;
 import lombok.Cleanup;
 import lombok.RequiredArgsConstructor;
-import lombok.SneakyThrows;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -44,6 +43,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.web.SortDefault;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -56,15 +56,17 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.xml.namespace.QName;
 import java.io.IOException;
-import java.io.PrintWriter;
+import java.io.OutputStream;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -95,8 +97,8 @@ public class GitRepoController {
             GitRepo_.LAST_COMMIT
     );
 
-    @Qualifier("exportFormats")
-    Set<String> exportFormats;
+    @Value("${spring.jpa.properties.hibernate.jdbc.fetch_size}")
+    Long fetchSize;
 
     CsvSchema csvSchema;
 
@@ -113,6 +115,7 @@ public class GitRepoController {
     ConversionService conversionService;
     StatisticsService statisticsService;
 
+    @PersistenceContext
     EntityManager entityManager;
 
     SearchLinkBuilder searchLinkBuilder;
@@ -168,7 +171,6 @@ public class GitRepoController {
     }
 
     @SuppressWarnings("unchecked")
-    @SneakyThrows(IOException.class)
     @Transactional(readOnly = true)
     @GetMapping(value = "/download/{format}")
     @Operation(summary = "Export GitHub repositories matching a set of specified criteria to a file format.")
@@ -177,109 +179,105 @@ public class GitRepoController {
     public void downloadRepos(
             @Parameter(description = "Export file format", in = ParameterIn.PATH, example = "csv")
             @PathVariable("format")
-            String format,
+            ExportFormat format,
             @Parameter(description = "The repository match criteria", in = ParameterIn.QUERY)
             SearchParameterDto searchParameterDto,
             HttpServletResponse response
-    ) {
-        if (!exportFormats.contains(format)) {
-            response.sendError(HttpServletResponse.SC_BAD_REQUEST);
-            return;
-        }
-
-        String contentType = switch (format) {
-            case "json" -> "application/" + format;
-            case "csv", "xml" -> "text/" + format;
-            default -> throw new IllegalStateException("Default portion of this switch should not be reachable!");
-        };
-
-        response.setContentType(contentType);
-        response.setHeader("Content-Disposition", "attachment;filename=results." + format);
-
-        PrintWriter writer = response.getWriter();
-        JsonGenerator generator = switch (format) {
-            case "csv" -> new CsvFactory().createGenerator(writer);
-            case "json" -> new JsonFactory().createGenerator(writer);
-            case "xml" -> new XmlFactory().createGenerator(writer);
-            default -> throw new IllegalStateException("Default portion of this switch should not be reachable!");
-        };
-
+    ) throws IOException {
+        response.setHeader(HttpHeaders.CONTENT_TYPE, format.getMediaType().toString());
+        response.setHeader(HttpHeaders.CONTENT_DISPOSITION, "attachment;filename=results." + format);
         Specification<GitRepo> specification = conversionService.convert(searchParameterDto, Specification.class);
+        JsonFactory factory = conversionService.convert(format, JsonFactory.class);
+        OutputStream outputStream = response.getOutputStream();
+        @Cleanup JsonGenerator jsonGenerator = factory.createGenerator(outputStream);
         @Cleanup Stream<GitRepoDto> results = gitRepoService.streamBy(specification)
                 .map(gitRepo -> {
                     GitRepoDto dto = conversionService.convert(gitRepo, GitRepoDto.class);
                     entityManager.detach(gitRepo);
                     return dto;
                 });
-        Iterable<GitRepoDto> dtos = results::iterator;
-
-        switch (format) {
-            case "csv" -> {
-                generator.setCodec(csvMapper);
-                generator.setSchema(csvSchema);
-                writeResults((CsvGenerator) generator, dtos, searchParameterDto);
-            }
-            case "json" -> {
-                generator.setCodec(jsonMapper);
-                writeResults(generator, dtos, searchParameterDto);
-            }
-            case "xml" -> {
-                generator.setCodec(xmlMapper);
-                writeResults((ToXmlGenerator) generator, dtos, searchParameterDto);
-            }
-            default -> throw new IllegalStateException("Default portion of this switch should not be reachable!");
-        }
-
-        generator.close();
+        configure(jsonGenerator);
+        beforeWriteResults(jsonGenerator, searchParameterDto);
+        writeResults(jsonGenerator, results::iterator);
+        afterWriteResults(jsonGenerator);
     }
 
-    private void writeResults(
-            JsonGenerator generator, Iterable<GitRepoDto> dtos, SearchParameterDto searchParameterDto
-    ) throws IOException {
-        generator.writeStartObject();
-        generator.writeObjectField("parameters", searchParameterDto);
-        generator.writeArrayFieldStart("items");
-        for (GitRepoDto dto : dtos) {
-            generator.writePOJO(dto);
+    private void configure(JsonGenerator jsonGenerator) {
+        if (jsonGenerator instanceof CsvGenerator csvGenerator) {
+            csvGenerator.setCodec(csvMapper);
+            csvGenerator.setSchema(csvSchema);
+            csvGenerator.configure(JsonGenerator.Feature.IGNORE_UNKNOWN, true);
+            csvGenerator.configure(CsvGenerator.Feature.ALWAYS_QUOTE_NUMBERS, true);
+            csvGenerator.configure(CsvGenerator.Feature.ALWAYS_QUOTE_STRINGS, true);
+            csvGenerator.configure(CsvGenerator.Feature.ALWAYS_QUOTE_EMPTY_STRINGS, true);
+        } else if (jsonGenerator instanceof ToXmlGenerator xmlGenerator) {
+            xmlGenerator.setCodec(xmlMapper);
+            xmlGenerator.configure(ToXmlGenerator.Feature.WRITE_XML_1_1, true);
+            xmlGenerator.configure(ToXmlGenerator.Feature.WRITE_XML_DECLARATION, true);
+        } else {
+            jsonGenerator.setCodec(jsonMapper);
         }
-        generator.writeEndArray();
-        generator.writeEndObject();
     }
 
-    private void writeResults(
-            ToXmlGenerator generator, Iterable<GitRepoDto> dtos, SearchParameterDto searchParameterDto
+    private void beforeWriteResults(
+            JsonGenerator jsonGenerator, SearchParameterDto searchParameterDto
     ) throws IOException {
-        generator.configure(ToXmlGenerator.Feature.WRITE_XML_DECLARATION, true);
-        generator.configure(ToXmlGenerator.Feature.WRITE_XML_1_1, true);
-        generator.initGenerator();
-        generator.setNextName(new QName("results"));
-        generator.writeStartObject();
-
-        String attributes = searchParameterDto.toMap().entrySet().stream()
-                .map(entry -> String.format("%s=\"%s\"", entry.getKey(), entry.getValue()))
-                .collect(Collectors.joining(" "));
-        String parameters = String.format("<parameters %s/>", attributes);
-        generator.writeRaw(parameters);
-
-        generator.writeFieldName("items");
-        generator.writeStartObject();
-        for (GitRepoDto dto : dtos) {
-            generator.writePOJOField("item", dto);
+        if (jsonGenerator instanceof CsvGenerator) return;
+        if (jsonGenerator instanceof ToXmlGenerator xmlGenerator) {
+            xmlGenerator.initGenerator();
+            xmlGenerator.setNextName(new QName("results"));
+            xmlGenerator.writeStartObject();
+            String attributes = searchParameterDto.toMap().entrySet().stream()
+                    .map(entry -> String.format("%s=\"%s\"", entry.getKey(), entry.getValue()))
+                    .collect(Collectors.joining(" "));
+            String parameters = String.format("<parameters %s/>", attributes);
+            xmlGenerator.writeRaw(parameters);
+        } else {
+            jsonGenerator.writeStartObject();
+            jsonGenerator.writeObjectField("parameters", searchParameterDto.toMap());
         }
-        generator.writeEndObject();
-
-        generator.writeEndObject();
     }
 
-    private void writeResults(
-            CsvGenerator generator, Iterable<GitRepoDto> dtos, SearchParameterDto searchParameterDto
-    ) throws IOException {
-        generator.configure(JsonGenerator.Feature.IGNORE_UNKNOWN, true);
-        generator.configure(CsvGenerator.Feature.ALWAYS_QUOTE_STRINGS, true);
-        for (GitRepoDto dto : dtos) {
-            GitRepoCsvDto csvDto = conversionService.convert(dto, GitRepoCsvDto.class);
-            generator.writePOJO(csvDto);
+    private void writeResults(JsonGenerator jsonGenerator, Iterable<GitRepoDto> dtos) throws IOException {
+        PersistenceContextInvalidator invalidator = new PersistenceContextInvalidator();
+        if (jsonGenerator instanceof CsvGenerator csvGenerator) {
+            for (GitRepoDto dto : dtos) {
+                GitRepoCsvDto csvDto = conversionService.convert(dto, GitRepoCsvDto.class);
+                csvGenerator.writePOJO(csvDto);
+                invalidator.increment();
+            }
+        } else if (jsonGenerator instanceof ToXmlGenerator xmlGenerator) {
+            xmlGenerator.writeFieldName("items");
+            xmlGenerator.writeStartObject();
+            for (GitRepoDto dto : dtos) {
+                xmlGenerator.writePOJOField("item", dto);
+                invalidator.increment();
+            }
+            xmlGenerator.writeEndObject();
+        } else {
+            jsonGenerator.writeArrayFieldStart("items");
+            for (GitRepoDto dto : dtos) {
+                jsonGenerator.writePOJO(dto);
+                invalidator.increment();
+            }
+            jsonGenerator.writeEndArray();
         }
+    }
+
+    private final class PersistenceContextInvalidator {
+
+        AtomicLong counter = new AtomicLong(0);
+
+        void increment() {
+            long value = counter.incrementAndGet();
+            boolean condition = value % fetchSize == 0;
+            if (condition) entityManager.clear();
+        }
+    }
+
+    private void afterWriteResults(JsonGenerator jsonGenerator) throws IOException {
+        if (jsonGenerator instanceof CsvGenerator) return;
+        jsonGenerator.writeEndObject();
     }
 
     @GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
