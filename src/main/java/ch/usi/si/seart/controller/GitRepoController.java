@@ -150,7 +150,7 @@ public class GitRepoController {
 
         List<GitRepoDto> dtos = List.of(
                 conversionService.convert(
-                        results.getContent().toArray(new GitRepo[0]), GitRepoDto[].class
+                        results.getContent().toArray(GitRepo[]::new), GitRepoDto[].class
                 )
         );
 
