@@ -1,6 +1,7 @@
 package ch.usi.si.seart.dto;
 
 import ch.usi.si.seart.util.Ranges;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -113,71 +114,85 @@ public class SearchParameterDto {
         return parameters;
     }
 
+    @JsonIgnore
     @Schema(hidden = true)
     public Range<Long> getCommits() {
         return Ranges.closed(commitsMin, commitsMax);
     }
 
+    @JsonIgnore
     @Schema(hidden = true)
     public Range<Long> getContributors() {
         return Ranges.closed(contributorsMin, contributorsMax);
     }
 
+    @JsonIgnore
     @Schema(hidden = true)
     public Range<Long> getIssues() {
         return Ranges.closed(issuesMin, issuesMax);
     }
 
+    @JsonIgnore
     @Schema(hidden = true)
     public Range<Long> getPulls() {
         return Ranges.closed(pullsMin, pullsMax);
     }
 
+    @JsonIgnore
     @Schema(hidden = true)
     public Range<Long> getBranches() {
         return Ranges.closed(branchesMin, branchesMax);
     }
 
+    @JsonIgnore
     @Schema(hidden = true)
     public Range<Long> getReleases() {
         return Ranges.closed(releasesMin, releasesMax);
     }
 
+    @JsonIgnore
     @Schema(hidden = true)
     public Range<Long> getStars() {
         return Ranges.closed(starsMin, starsMax);
     }
 
+    @JsonIgnore
     @Schema(hidden = true)
     public Range<Long> getWatchers() {
         return Ranges.closed(watchersMin, watchersMax);
     }
 
+    @JsonIgnore
     @Schema(hidden = true)
     public Range<Long> getForks() {
         return Ranges.closed(forksMin, forksMax);
     }
 
+    @JsonIgnore
     @Schema(hidden = true)
     public Range<Date> getCreated() {
         return Ranges.closed(createdMin, createdMax);
     }
 
+    @JsonIgnore
     @Schema(hidden = true)
     public Range<Date> getCommitted() {
         return Ranges.closed(committedMin, committedMax);
     }
 
+    @JsonIgnore
     @Schema(hidden = true)
     public Range<Long> getCodeLines() {
         return Ranges.closed(codeLinesMin, codeLinesMax);
     }
 
+    @JsonIgnore
     @Schema(hidden = true)
     public Range<Long> getCommentLines() {
         return Ranges.closed(commentLinesMin, commentLinesMax);
     }
 
+    @JsonIgnore
     @Schema(hidden = true)
     public Range<Long> getNonBlankLines() {
         return Ranges.closed(nonBlankLinesMin, nonBlankLinesMax);
