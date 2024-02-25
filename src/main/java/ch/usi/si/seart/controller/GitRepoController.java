@@ -61,7 +61,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.xml.namespace.QName;
 import java.io.IOException;
-import java.io.OutputStream;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -69,6 +68,7 @@ import java.util.Set;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import java.util.zip.GZIPOutputStream;
 
 @SuppressWarnings("ConstantConditions")
 @Slf4j
@@ -184,11 +184,11 @@ public class GitRepoController {
             SearchParameterDto searchParameterDto,
             HttpServletResponse response
     ) throws IOException {
-        response.setHeader(HttpHeaders.CONTENT_TYPE, format.getMediaType().toString());
-        response.setHeader(HttpHeaders.CONTENT_DISPOSITION, "attachment;filename=results." + format);
+        response.setHeader(HttpHeaders.CONTENT_TYPE, "application/gzip");
+        response.setHeader(HttpHeaders.CONTENT_DISPOSITION, "attachment;filename=results." + format + ".gz");
         Specification<GitRepo> specification = conversionService.convert(searchParameterDto, Specification.class);
         JsonFactory factory = conversionService.convert(format, JsonFactory.class);
-        OutputStream outputStream = response.getOutputStream();
+        GZIPOutputStream outputStream = new GZIPOutputStream(response.getOutputStream());
         @Cleanup JsonGenerator jsonGenerator = factory.createGenerator(outputStream);
         @Cleanup Stream<GitRepoDto> results = gitRepoService.streamBy(specification)
                 .map(gitRepo -> {
