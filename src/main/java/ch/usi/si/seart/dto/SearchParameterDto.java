@@ -13,6 +13,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.FieldDefaults;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.util.ObjectUtils;
 
 import java.util.Date;
 import java.util.HashMap;
@@ -26,7 +27,10 @@ import java.util.Map;
 public class SearchParameterDto {
 
     private static final ObjectMapper mapper = new ObjectMapper();
-    
+
+    private static final TypeReference<Map<String, Object>> TYPE_REFERENCE = new TypeReference<>() {
+    };
+
     String name = "";
     Boolean nameEquals = false;
     String language = "";
@@ -77,8 +81,9 @@ public class SearchParameterDto {
     Boolean hasLicense = false;
 
     public Map<String, Object> toMap() {
-        return mapper.convertValue(this, new TypeReference<>() {
-        });
+        Map<String, Object> map = mapper.convertValue(this, TYPE_REFERENCE);
+        map.values().removeIf(ObjectUtils::isEmpty);
+        return map;
     }
 
     public Map<String, Object> toParameterMap() {
