@@ -16,7 +16,6 @@ import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.util.ObjectUtils;
 
 import java.util.Date;
-import java.util.HashMap;
 import java.util.Map;
 
 @Getter
@@ -84,39 +83,6 @@ public class SearchParameterDto {
         Map<String, Object> map = mapper.convertValue(this, TYPE_REFERENCE);
         map.values().removeIf(ObjectUtils::isEmpty);
         return map;
-    }
-
-    public Map<String, Object> toParameterMap() {
-        Map<String, Object> parameters = new HashMap<>();
-
-        parameters.put("name", name);
-        parameters.put("nameEquals", nameEquals);
-        parameters.put("language", language);
-        parameters.put("license", license);
-        parameters.put("label", label);
-        parameters.put("topic", topic);
-        parameters.put("commits", getCommits());
-        parameters.put("contributors", getContributors());
-        parameters.put("issues", getIssues());
-        parameters.put("pulls", getPulls());
-        parameters.put("branches", getBranches());
-        parameters.put("releases", getReleases());
-        parameters.put("stars", getStars());
-        parameters.put("watchers", getWatchers());
-        parameters.put("forks", getForks());
-        parameters.put("codeLines", getCodeLines());
-        parameters.put("commentLines", getCommentLines());
-        parameters.put("nonBlankLines", getNonBlankLines());
-        parameters.put("created", getCreated());
-        parameters.put("committed", getCommitted());
-        parameters.put("excludeForks", excludeForks);
-        parameters.put("onlyForks", onlyForks);
-        parameters.put("hasIssues", hasIssues);
-        parameters.put("hasPulls", hasPulls);
-        parameters.put("hasWiki", hasWiki);
-        parameters.put("hasLicense", hasLicense);
-
-        return parameters;
     }
 
     @JsonIgnore
