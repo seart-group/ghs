@@ -51,7 +51,9 @@ public class JacksonConfig {
                 .addModule(new JavaTimeModule())
                 .defaultDateFormat(exportTimeFormat)
                 .enable(JsonGenerator.Feature.IGNORE_UNKNOWN)
+                .enable(CsvGenerator.Feature.ALWAYS_QUOTE_NUMBERS)
                 .enable(CsvGenerator.Feature.ALWAYS_QUOTE_STRINGS)
+                .enable(CsvGenerator.Feature.ALWAYS_QUOTE_EMPTY_STRINGS)
                 .build();
     }
 
