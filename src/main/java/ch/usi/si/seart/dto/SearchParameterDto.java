@@ -16,7 +16,9 @@ import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.util.ObjectUtils;
 
 import java.util.Date;
+import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Getter
 @Setter
@@ -80,9 +82,16 @@ public class SearchParameterDto {
     Boolean hasLicense = false;
 
     public Map<String, Object> toMap() {
-        Map<String, Object> map = mapper.convertValue(this, TYPE_REFERENCE);
-        map.values().removeIf(ObjectUtils::isEmpty);
-        return map;
+        return mapper.convertValue(this, TYPE_REFERENCE)
+                .entrySet()
+                .stream()
+                .filter(entry -> !ObjectUtils.isEmpty(entry.getValue()))
+                .collect(Collectors.toMap(
+                        Map.Entry::getKey,
+                        Map.Entry::getValue,
+                        (first, second) -> first,
+                        LinkedHashMap::new
+                ));
     }
 
     @JsonIgnore
