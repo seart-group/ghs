@@ -21,7 +21,7 @@ import java.util.Arrays;
 import java.util.List;
 
 @Configuration
-public class ExportConfig {
+public class JacksonConfig {
 
     @Bean
     DateFormat exportTimeFormat() {
