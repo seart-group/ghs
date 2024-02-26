@@ -1,6 +1,5 @@
 package ch.usi.si.seart.config;
 
-import ch.usi.si.seart.converter.ExportFormatToJsonFactoryConverter;
 import ch.usi.si.seart.converter.GitRepoToDtoConverter;
 import ch.usi.si.seart.converter.JsonObjectToGitCommitConverter;
 import ch.usi.si.seart.converter.JsonObjectToGitRepoMetricConverter;
@@ -36,7 +35,6 @@ public class WebConfig implements WebMvcConfigurer {
 
     @Override
     public void addFormatters(@NotNull final FormatterRegistry registry) {
-        registry.addConverter(new ExportFormatToJsonFactoryConverter());
         registry.addConverter(new GitRepoToDtoConverter());
         registry.addConverter(new JsonObjectToGitCommitConverter());
         registry.addConverter(new JsonObjectToGitRepoMetricConverter());
