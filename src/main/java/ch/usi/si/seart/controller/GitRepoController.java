@@ -205,14 +205,8 @@ public class GitRepoController {
         if (jsonGenerator instanceof CsvGenerator csvGenerator) {
             csvGenerator.setCodec(csvMapper);
             csvGenerator.setSchema(csvSchema);
-            csvGenerator.configure(JsonGenerator.Feature.IGNORE_UNKNOWN, true);
-            csvGenerator.configure(CsvGenerator.Feature.ALWAYS_QUOTE_NUMBERS, true);
-            csvGenerator.configure(CsvGenerator.Feature.ALWAYS_QUOTE_STRINGS, true);
-            csvGenerator.configure(CsvGenerator.Feature.ALWAYS_QUOTE_EMPTY_STRINGS, true);
         } else if (jsonGenerator instanceof ToXmlGenerator xmlGenerator) {
             xmlGenerator.setCodec(xmlMapper);
-            xmlGenerator.configure(ToXmlGenerator.Feature.WRITE_XML_1_1, true);
-            xmlGenerator.configure(ToXmlGenerator.Feature.WRITE_XML_DECLARATION, true);
         } else {
             jsonGenerator.setCodec(jsonMapper);
         }
