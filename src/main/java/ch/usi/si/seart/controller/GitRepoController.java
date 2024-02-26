@@ -57,9 +57,11 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.xml.namespace.QName;
+import java.io.BufferedOutputStream;
 import java.io.IOException;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -188,8 +190,10 @@ public class GitRepoController {
         response.setHeader(HttpHeaders.CONTENT_DISPOSITION, "attachment;filename=results." + format + ".gz");
         Specification<GitRepo> specification = conversionService.convert(searchParameterDto, Specification.class);
         JsonFactory factory = conversionService.convert(format, JsonFactory.class);
-        GZIPOutputStream outputStream = new GZIPOutputStream(response.getOutputStream());
-        @Cleanup JsonGenerator jsonGenerator = factory.createGenerator(outputStream);
+        ServletOutputStream servletOutputStream = response.getOutputStream();
+        BufferedOutputStream bufferedOutputStream = new BufferedOutputStream(servletOutputStream);
+        GZIPOutputStream gzipOutputStream = new GZIPOutputStream(bufferedOutputStream);
+        @Cleanup JsonGenerator jsonGenerator = factory.createGenerator(gzipOutputStream);
         @Cleanup Stream<GitRepoDto> results = gitRepoService.streamBy(specification)
                 .map(gitRepo -> {
                     GitRepoDto dto = conversionService.convert(gitRepo, GitRepoDto.class);
