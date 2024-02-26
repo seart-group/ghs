@@ -1,5 +1,9 @@
 package ch.usi.si.seart.hateoas;
 
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.NonNull;
+import lombok.experimental.FieldDefaults;
 import org.springframework.hateoas.UriTemplate;
 import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
 import org.springframework.util.LinkedMultiValueMap;
@@ -14,7 +18,12 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+@AllArgsConstructor(access = AccessLevel.PROTECTED)
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public abstract class LinkBuilder<T> {
+
+    @NonNull
+    Method method;
 
     public String getLinks(HttpServletRequest request) {
         return getLinks(request, null);
@@ -22,17 +31,9 @@ public abstract class LinkBuilder<T> {
 
     public abstract String getLinks(HttpServletRequest request, T argument);
 
-    protected abstract Class<?> getControllerClass();
-
-    protected abstract Method getControllerMethod();
-
     protected UriTemplate getUriTemplate() {
-        return UriTemplate.of(
-                WebMvcLinkBuilder.linkTo(
-                        getControllerClass(),
-                        getControllerMethod()
-                ).toString()
-        );
+        WebMvcLinkBuilder linkBuilder = WebMvcLinkBuilder.linkTo(method);
+        return UriTemplate.of(linkBuilder.toString());
     }
 
     protected MultiValueMap<String, String> extractParameters(HttpServletRequest request) {

@@ -1,13 +1,9 @@
 package ch.usi.si.seart.hateoas;
 
-import ch.usi.si.seart.controller.GitRepoController;
-import ch.usi.si.seart.dto.SearchParameterDto;
-import lombok.SneakyThrows;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.hateoas.IanaLinkRelations;
 import org.springframework.hateoas.Link;
-import org.springframework.hateoas.UriTemplate;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.util.UriComponentsBuilder;
 
@@ -18,29 +14,16 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class PaginationLinkBuilder extends LinkBuilder<Page<?>> {
+public final class PaginationLinkBuilder extends LinkBuilder<Page<?>> {
 
-    @Override
-    protected Class<?> getControllerClass() {
-        return GitRepoController.class;
-    }
-
-    @Override
-    @SneakyThrows(NoSuchMethodException.class)
-    protected Method getControllerMethod() {
-        return getControllerClass().getMethod(
-                "searchRepos",
-                SearchParameterDto.class,
-                Pageable.class,
-                HttpServletRequest.class
-        );
+    public PaginationLinkBuilder(Method method) {
+        super(method);
     }
 
     @Override
     public String getLinks(HttpServletRequest request, Page<?> page) {
         MultiValueMap<String, String> parameters = extractParameters(request);
-        UriTemplate template = getUriTemplate();
-        URI base = template.expand();
+        URI base = getUriTemplate().expand();
         Pageable pageable = page.getPageable();
         int current = pageable.getPageNumber();
         int total = page.getTotalPages();
