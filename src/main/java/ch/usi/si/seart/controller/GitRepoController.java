@@ -3,6 +3,7 @@ package ch.usi.si.seart.controller;
 import ch.usi.si.seart.dto.GitRepoCsvDto;
 import ch.usi.si.seart.dto.GitRepoDto;
 import ch.usi.si.seart.dto.SearchParameterDto;
+import ch.usi.si.seart.function.IOExceptingRunnable;
 import ch.usi.si.seart.hateoas.LinkBuilder;
 import ch.usi.si.seart.model.GitRepo;
 import ch.usi.si.seart.model.GitRepo_;
@@ -232,39 +233,54 @@ public class GitRepoController {
     }
 
     private void writeResults(JsonGenerator jsonGenerator, Iterable<GitRepoDto> dtos) throws IOException {
-        PersistenceContextInvalidator invalidator = new PersistenceContextInvalidator();
+        Runnable flush = IOExceptingRunnable.toUnchecked(jsonGenerator::flush);
+        Runnable clear = entityManager::clear;
+        PeriodicCallback countdown = new PeriodicCallback(flush, clear) {
+
+            @Override
+            boolean condition(long current) {
+                return current % fetchSize == 0;
+            }
+        };
         if (jsonGenerator instanceof CsvGenerator csvGenerator) {
             for (GitRepoDto dto : dtos) {
                 GitRepoCsvDto csvDto = conversionService.convert(dto, GitRepoCsvDto.class);
                 csvGenerator.writePOJO(csvDto);
-                invalidator.increment();
+                countdown.increment();
             }
         } else if (jsonGenerator instanceof ToXmlGenerator xmlGenerator) {
             xmlGenerator.writeFieldName("items");
             xmlGenerator.writeStartObject();
             for (GitRepoDto dto : dtos) {
                 xmlGenerator.writePOJOField("item", dto);
-                invalidator.increment();
+                countdown.increment();
             }
             xmlGenerator.writeEndObject();
         } else {
             jsonGenerator.writeArrayFieldStart("items");
             for (GitRepoDto dto : dtos) {
                 jsonGenerator.writePOJO(dto);
-                invalidator.increment();
+                countdown.increment();
             }
             jsonGenerator.writeEndArray();
         }
     }
 
-    private final class PersistenceContextInvalidator {
+    @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
+    private abstract static class PeriodicCallback {
 
         AtomicLong counter = new AtomicLong(0);
+        Set<Runnable> callbacks;
+
+        PeriodicCallback(Runnable... callbacks) {
+            this.callbacks = Set.of(callbacks);
+        }
+
+        abstract boolean condition(long current);
 
         void increment() {
             long value = counter.incrementAndGet();
-            boolean condition = value % fetchSize == 0;
-            if (condition) entityManager.clear();
+            if (condition(value)) callbacks.forEach(Runnable::run);
         }
     }
 
