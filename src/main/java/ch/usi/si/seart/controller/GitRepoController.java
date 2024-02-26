@@ -3,25 +3,24 @@ package ch.usi.si.seart.controller;
 import ch.usi.si.seart.dto.GitRepoCsvDto;
 import ch.usi.si.seart.dto.GitRepoDto;
 import ch.usi.si.seart.dto.SearchParameterDto;
-import ch.usi.si.seart.hateoas.DownloadLinkBuilder;
-import ch.usi.si.seart.hateoas.SearchLinkBuilder;
+import ch.usi.si.seart.function.IOExceptingRunnable;
+import ch.usi.si.seart.hateoas.LinkBuilder;
 import ch.usi.si.seart.model.GitRepo;
 import ch.usi.si.seart.model.GitRepo_;
 import ch.usi.si.seart.model.Language;
-import ch.usi.si.seart.model.view.License;
+import ch.usi.si.seart.model.License;
 import ch.usi.si.seart.service.GitRepoService;
 import ch.usi.si.seart.service.LanguageService;
 import ch.usi.si.seart.service.LicenseService;
 import ch.usi.si.seart.service.StatisticsService;
+import ch.usi.si.seart.web.ExportFormat;
 import ch.usi.si.seart.web.Headers;
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.json.JsonMapper;
-import com.fasterxml.jackson.dataformat.csv.CsvFactory;
 import com.fasterxml.jackson.dataformat.csv.CsvGenerator;
 import com.fasterxml.jackson.dataformat.csv.CsvMapper;
 import com.fasterxml.jackson.dataformat.csv.CsvSchema;
-import com.fasterxml.jackson.dataformat.xml.XmlFactory;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import com.fasterxml.jackson.dataformat.xml.ser.ToXmlGenerator;
 import io.swagger.v3.oas.annotations.Operation;
@@ -32,11 +31,11 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AccessLevel;
 import lombok.Cleanup;
 import lombok.RequiredArgsConstructor;
-import lombok.SneakyThrows;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -44,6 +43,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.web.SortDefault;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -56,17 +56,21 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+import jakarta.servlet.ServletOutputStream;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import javax.xml.namespace.QName;
+import java.io.BufferedOutputStream;
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import java.util.zip.GZIPOutputStream;
 
 @SuppressWarnings("ConstantConditions")
 @Slf4j
@@ -95,8 +99,8 @@ public class GitRepoController {
             GitRepo_.LAST_COMMIT
     );
 
-    @Qualifier("exportFormats")
-    Set<String> exportFormats;
+    @Value("${spring.jpa.properties.hibernate.jdbc.fetch_size}")
+    Long fetchSize;
 
     CsvSchema csvSchema;
 
@@ -113,10 +117,11 @@ public class GitRepoController {
     ConversionService conversionService;
     StatisticsService statisticsService;
 
+    @PersistenceContext
     EntityManager entityManager;
 
-    SearchLinkBuilder searchLinkBuilder;
-    DownloadLinkBuilder downloadLinkBuilder;
+    LinkBuilder<Page<?>> searchLinkBuilder;
+    LinkBuilder<Void> downloadLinkBuilder;
 
     @SuppressWarnings("unchecked")
     @GetMapping(value = "/search", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -147,7 +152,7 @@ public class GitRepoController {
 
         List<GitRepoDto> dtos = List.of(
                 conversionService.convert(
-                        results.getContent().toArray(new GitRepo[0]), GitRepoDto[].class
+                        results.getContent().toArray(GitRepo[]::new), GitRepoDto[].class
                 )
         );
 
@@ -168,7 +173,6 @@ public class GitRepoController {
     }
 
     @SuppressWarnings("unchecked")
-    @SneakyThrows(IOException.class)
     @Transactional(readOnly = true)
     @GetMapping(value = "/download/{format}")
     @Operation(summary = "Export GitHub repositories matching a set of specified criteria to a file format.")
@@ -177,109 +181,116 @@ public class GitRepoController {
     public void downloadRepos(
             @Parameter(description = "Export file format", in = ParameterIn.PATH, example = "csv")
             @PathVariable("format")
-            String format,
+            ExportFormat format,
             @Parameter(description = "The repository match criteria", in = ParameterIn.QUERY)
             SearchParameterDto searchParameterDto,
             HttpServletResponse response
-    ) {
-        if (!exportFormats.contains(format)) {
-            response.sendError(HttpServletResponse.SC_BAD_REQUEST);
-            return;
-        }
-
-        String contentType = switch (format) {
-            case "json" -> "application/" + format;
-            case "csv", "xml" -> "text/" + format;
-            default -> throw new IllegalStateException("Default portion of this switch should not be reachable!");
-        };
-
-        response.setContentType(contentType);
-        response.setHeader("Content-Disposition", "attachment;filename=results." + format);
-
-        PrintWriter writer = response.getWriter();
-        JsonGenerator generator = switch (format) {
-            case "csv" -> new CsvFactory().createGenerator(writer);
-            case "json" -> new JsonFactory().createGenerator(writer);
-            case "xml" -> new XmlFactory().createGenerator(writer);
-            default -> throw new IllegalStateException("Default portion of this switch should not be reachable!");
-        };
-
+    ) throws IOException {
+        response.setHeader(HttpHeaders.CONTENT_TYPE, "application/gzip");
+        response.setHeader(HttpHeaders.CONTENT_DISPOSITION, "attachment;filename=results." + format + ".gz");
         Specification<GitRepo> specification = conversionService.convert(searchParameterDto, Specification.class);
+        JsonFactory factory = conversionService.convert(format, JsonFactory.class);
+        ServletOutputStream servletOutputStream = response.getOutputStream();
+        BufferedOutputStream bufferedOutputStream = new BufferedOutputStream(servletOutputStream);
+        GZIPOutputStream gzipOutputStream = new GZIPOutputStream(bufferedOutputStream);
+        @Cleanup JsonGenerator jsonGenerator = factory.createGenerator(gzipOutputStream);
         @Cleanup Stream<GitRepoDto> results = gitRepoService.streamBy(specification)
                 .map(gitRepo -> {
                     GitRepoDto dto = conversionService.convert(gitRepo, GitRepoDto.class);
                     entityManager.detach(gitRepo);
                     return dto;
                 });
-        Iterable<GitRepoDto> dtos = results::iterator;
-
-        switch (format) {
-            case "csv" -> {
-                generator.setCodec(csvMapper);
-                generator.setSchema(csvSchema);
-                writeResults((CsvGenerator) generator, dtos, searchParameterDto);
-            }
-            case "json" -> {
-                generator.setCodec(jsonMapper);
-                writeResults(generator, dtos, searchParameterDto);
-            }
-            case "xml" -> {
-                generator.setCodec(xmlMapper);
-                writeResults((ToXmlGenerator) generator, dtos, searchParameterDto);
-            }
-            default -> throw new IllegalStateException("Default portion of this switch should not be reachable!");
-        }
-
-        generator.close();
+        configure(jsonGenerator);
+        beforeWriteResults(jsonGenerator, searchParameterDto);
+        writeResults(jsonGenerator, results::iterator);
+        afterWriteResults(jsonGenerator);
     }
 
-    private void writeResults(
-            JsonGenerator generator, Iterable<GitRepoDto> dtos, SearchParameterDto searchParameterDto
-    ) throws IOException {
-        generator.writeStartObject();
-        generator.writeObjectField("parameters", searchParameterDto);
-        generator.writeArrayFieldStart("items");
-        for (GitRepoDto dto : dtos) {
-            generator.writePOJO(dto);
+    private void configure(JsonGenerator jsonGenerator) {
+        if (jsonGenerator instanceof CsvGenerator csvGenerator) {
+            csvGenerator.setCodec(csvMapper);
+            csvGenerator.setSchema(csvSchema);
+        } else if (jsonGenerator instanceof ToXmlGenerator xmlGenerator) {
+            xmlGenerator.setCodec(xmlMapper);
+        } else {
+            jsonGenerator.setCodec(jsonMapper);
         }
-        generator.writeEndArray();
-        generator.writeEndObject();
     }
 
-    private void writeResults(
-            ToXmlGenerator generator, Iterable<GitRepoDto> dtos, SearchParameterDto searchParameterDto
+    private void beforeWriteResults(
+            JsonGenerator jsonGenerator, SearchParameterDto searchParameterDto
     ) throws IOException {
-        generator.configure(ToXmlGenerator.Feature.WRITE_XML_DECLARATION, true);
-        generator.configure(ToXmlGenerator.Feature.WRITE_XML_1_1, true);
-        generator.initGenerator();
-        generator.setNextName(new QName("results"));
-        generator.writeStartObject();
-
-        String attributes = searchParameterDto.toMap().entrySet().stream()
-                .map(entry -> String.format("%s=\"%s\"", entry.getKey(), entry.getValue()))
-                .collect(Collectors.joining(" "));
-        String parameters = String.format("<parameters %s/>", attributes);
-        generator.writeRaw(parameters);
-
-        generator.writeFieldName("items");
-        generator.writeStartObject();
-        for (GitRepoDto dto : dtos) {
-            generator.writePOJOField("item", dto);
+        if (jsonGenerator instanceof CsvGenerator) return;
+        if (jsonGenerator instanceof ToXmlGenerator xmlGenerator) {
+            xmlGenerator.initGenerator();
+            xmlGenerator.setNextName(new QName("results"));
+            xmlGenerator.writeStartObject();
+            String attributes = searchParameterDto.toMap().entrySet().stream()
+                    .map(entry -> String.format("%s=\"%s\"", entry.getKey(), entry.getValue()))
+                    .collect(Collectors.joining(" "));
+            String parameters = String.format("<parameters %s/>", attributes);
+            xmlGenerator.writeRaw(parameters);
+        } else {
+            jsonGenerator.writeStartObject();
+            jsonGenerator.writeObjectField("parameters", searchParameterDto.toMap());
         }
-        generator.writeEndObject();
-
-        generator.writeEndObject();
     }
 
-    private void writeResults(
-            CsvGenerator generator, Iterable<GitRepoDto> dtos, SearchParameterDto searchParameterDto
-    ) throws IOException {
-        generator.configure(JsonGenerator.Feature.IGNORE_UNKNOWN, true);
-        generator.configure(CsvGenerator.Feature.ALWAYS_QUOTE_STRINGS, true);
-        for (GitRepoDto dto : dtos) {
-            GitRepoCsvDto csvDto = conversionService.convert(dto, GitRepoCsvDto.class);
-            generator.writePOJO(csvDto);
+    private void writeResults(JsonGenerator jsonGenerator, Iterable<GitRepoDto> dtos) throws IOException {
+        Runnable flush = IOExceptingRunnable.toUnchecked(jsonGenerator::flush);
+        Runnable clear = entityManager::clear;
+        PeriodicCallback countdown = new PeriodicCallback(flush, clear) {
+
+            @Override
+            boolean condition(long current) {
+                return current % fetchSize == 0;
+            }
+        };
+        if (jsonGenerator instanceof CsvGenerator csvGenerator) {
+            for (GitRepoDto dto : dtos) {
+                GitRepoCsvDto csvDto = conversionService.convert(dto, GitRepoCsvDto.class);
+                csvGenerator.writePOJO(csvDto);
+                countdown.increment();
+            }
+        } else if (jsonGenerator instanceof ToXmlGenerator xmlGenerator) {
+            xmlGenerator.writeFieldName("items");
+            xmlGenerator.writeStartObject();
+            for (GitRepoDto dto : dtos) {
+                xmlGenerator.writePOJOField("item", dto);
+                countdown.increment();
+            }
+            xmlGenerator.writeEndObject();
+        } else {
+            jsonGenerator.writeArrayFieldStart("items");
+            for (GitRepoDto dto : dtos) {
+                jsonGenerator.writePOJO(dto);
+                countdown.increment();
+            }
+            jsonGenerator.writeEndArray();
         }
+    }
+
+    @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
+    private abstract static class PeriodicCallback {
+
+        AtomicLong counter = new AtomicLong(0);
+        Set<Runnable> callbacks;
+
+        PeriodicCallback(Runnable... callbacks) {
+            this.callbacks = Set.of(callbacks);
+        }
+
+        abstract boolean condition(long current);
+
+        void increment() {
+            long value = counter.incrementAndGet();
+            if (condition(value)) callbacks.forEach(Runnable::run);
+        }
+    }
+
+    private void afterWriteResults(JsonGenerator jsonGenerator) throws IOException {
+        if (jsonGenerator instanceof CsvGenerator) return;
+        jsonGenerator.writeEndObject();
     }
 
     @GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -328,7 +339,7 @@ public class GitRepoController {
     @Operation(summary = "Retrieve a list of all repository licenses mined across projects.")
     public ResponseEntity<?> getAllLicenses() {
         return ResponseEntity.ok(
-                licenseService.getAll().stream()
+                licenseService.getRanked().stream()
                         .map(License::getName)
                         .toList()
         );

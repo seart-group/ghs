@@ -1,6 +1,6 @@
 package ch.usi.si.seart.service;
 
-import ch.usi.si.seart.model.view.License;
+import ch.usi.si.seart.model.License;
 import ch.usi.si.seart.repository.LicenseRepository;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -10,9 +10,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.Collection;
 
-public interface LicenseService {
-
-    Collection<License> getAll();
+public interface LicenseService extends NamedEntityService<License> {
 
     @Service
     @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
@@ -22,7 +20,17 @@ public interface LicenseService {
         LicenseRepository licenseRepository;
 
         @Override
-        public Collection<License> getAll() {
+        public License getOrCreate(String name) {
+            return licenseRepository.findByName(name)
+                    .orElseGet(() -> licenseRepository.save(
+                            License.builder()
+                                    .name(name)
+                                    .build()
+                    ));
+        }
+
+        @Override
+        public Collection<License> getRanked() {
             return licenseRepository.findAll();
         }
     }
