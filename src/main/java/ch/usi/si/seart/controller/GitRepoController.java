@@ -29,8 +29,8 @@ import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.Cleanup;
-import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -76,7 +76,7 @@ import java.util.zip.GZIPOutputStream;
 @Slf4j
 @RestController
 @RequestMapping("/r")
-@RequiredArgsConstructor(onConstructor_ = @Autowired)
+@AllArgsConstructor(onConstructor_ = @Autowired)
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 @Tag(
         name = "git-repo",
