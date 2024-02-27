@@ -35,7 +35,6 @@ import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -98,9 +97,6 @@ public class GitRepoController {
             GitRepo_.CREATED_AT,
             GitRepo_.LAST_COMMIT
     );
-
-    @Value("${spring.jpa.properties.hibernate.jdbc.fetch_size}")
-    Long fetchSize;
 
     CsvSchema csvSchema;
 
@@ -243,7 +239,7 @@ public class GitRepoController {
 
             @Override
             boolean condition(long current) {
-                return current % fetchSize == 0;
+                return current % 500 == 0;
             }
         };
         if (jsonGenerator instanceof CsvGenerator csvGenerator) {
