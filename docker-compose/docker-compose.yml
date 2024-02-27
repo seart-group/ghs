@@ -26,7 +26,7 @@ services:
       - "com.centurylinklabs.watchtower.scope=ghs"
 
   gse-migration:
-    image: flyway/flyway:10.7.2-alpine
+    image: flyway/flyway:10.8.1-alpine
     container_name: gse-migrations
     restart: "no"
     volumes:
