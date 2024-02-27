@@ -52,6 +52,10 @@ public class RootController {
         }
     }
 
+    @GetMapping(value = "favicon.ico")
+    public void favicon() {
+    }
+
     @GetMapping
     @Operation(summary = "Ping the server")
     @ApiResponse(responseCode = "200", description = "OK")
