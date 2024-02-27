@@ -11,7 +11,7 @@
 
 	<groupId>ch.usi.si.seart</groupId>
 	<artifactId>ghs-application</artifactId>
-	<version>1.11.5</version>
+	<version>1.12.0</version>
 	<packaging>jar</packaging>
 
 	<name>GitHub Search</name>
