@@ -1,6 +1,5 @@
 package ch.usi.si.seart.controller;
 
-import ch.usi.si.seart.dto.GitRepoCsvDto;
 import ch.usi.si.seart.dto.GitRepoDto;
 import ch.usi.si.seart.dto.SearchParameterDto;
 import ch.usi.si.seart.function.IOExceptingRunnable;
@@ -15,6 +14,9 @@ import ch.usi.si.seart.service.LicenseService;
 import ch.usi.si.seart.service.StatisticsService;
 import ch.usi.si.seart.web.ExportFormat;
 import ch.usi.si.seart.web.Headers;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonUnwrapped;
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.json.JsonMapper;
@@ -31,6 +33,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Cleanup;
+import lombok.Getter;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -244,8 +247,7 @@ public class GitRepoController {
         };
         if (jsonGenerator instanceof CsvGenerator csvGenerator) {
             for (GitRepoDto dto : dtos) {
-                GitRepoCsvDto csvDto = conversionService.convert(dto, GitRepoCsvDto.class);
-                csvGenerator.writePOJO(csvDto);
+                csvGenerator.writePOJO(new CsvRow(dto));
                 countdown.increment();
             }
         } else if (jsonGenerator instanceof ToXmlGenerator xmlGenerator) {
@@ -263,6 +265,28 @@ public class GitRepoController {
                 countdown.increment();
             }
             jsonGenerator.writeEndArray();
+        }
+    }
+
+    @Getter
+    @AllArgsConstructor(access = AccessLevel.PRIVATE)
+    @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
+    private final class CsvRow {
+
+        @JsonUnwrapped
+        @JsonIgnoreProperties({"metrics", "languages"})
+        GitRepoDto dto;
+
+        @JsonProperty("metrics")
+        public String getMetrics() throws IOException {
+            List<Map<String, Object>> metrics = dto.getMetrics();
+            return metrics.isEmpty() ? null : jsonMapper.writeValueAsString(metrics);
+        }
+
+        @JsonProperty("languages")
+        public String getLanguages() throws IOException {
+            Map<String, Long> languages = dto.getLanguages();
+            return languages.isEmpty() ? null : jsonMapper.writeValueAsString(languages);
         }
     }
 
