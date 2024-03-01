@@ -52,9 +52,9 @@ public class GitRepoDtoToCsvConverter implements Converter<GitRepoDto, GitRepoCs
                 .isDisabled(source.getIsDisabled())
                 .isLocked(source.getIsLocked())
                 .metricsString(csvMapper.valueToTree(source.getMetrics()).toString())
-                .labelsString(csvMapper.valueToTree(source.getLabels()).toString())
+                .labels(source.getLabels())
                 .languagesString(csvMapper.valueToTree(source.getLanguages()).toString())
-                .topicsString(csvMapper.valueToTree(source.getTopics()).toString())
+                .topics(source.getTopics())
                 .build();
     }
 }

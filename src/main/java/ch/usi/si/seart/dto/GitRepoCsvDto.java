@@ -19,13 +19,6 @@ public class GitRepoCsvDto extends GitRepoDto {
     @JsonProperty("metrics")
     String metricsString;
 
-    @JsonProperty("labels")
-    String labelsString;
-
     @JsonProperty("languages")
     String languagesString;
-
-    @JsonProperty("topics")
-    String topicsString;
-
 }
