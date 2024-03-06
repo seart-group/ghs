@@ -4,22 +4,24 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AccessLevel;
-import lombok.SneakyThrows;
 import lombok.experimental.FieldDefaults;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.Banner;
 import org.springframework.boot.info.BuildProperties;
-import org.springframework.core.io.Resource;
+import org.springframework.core.env.Environment;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.nio.charset.StandardCharsets;
+import java.io.PrintStream;
+import java.io.UncheckedIOException;
 import java.time.Instant;
 
+@Slf4j
 @RestController
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 @Tag(
@@ -33,14 +35,25 @@ public class RootController {
     BuildProperties buildProperties;
 
     @Autowired
-    @SneakyThrows(IOException.class)
     public RootController(
-            @Value("${spring.banner.location}") Resource resource,
+            Banner banner,
+            Environment environment,
             BuildProperties buildProperties
     ) {
-        InputStream inputStream = resource.getInputStream();
-        this.banner = new String(inputStream.readAllBytes(), StandardCharsets.UTF_8);
-        this.buildProperties = buildProperties;
+        try (
+            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+            PrintStream printStream = new PrintStream(outputStream)
+        ) {
+            banner.printBanner(environment, null, printStream);
+            this.banner = outputStream.toString();
+            this.buildProperties = buildProperties;
+        } catch (IOException ex) {
+            throw new UncheckedIOException(ex);
+        }
+    }
+
+    @GetMapping(value = "favicon.ico")
+    public void favicon() {
     }
 
     @GetMapping

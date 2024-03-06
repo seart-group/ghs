@@ -54,9 +54,13 @@ public class GitRepo {
     @Column(name = "id")
     Long id;
 
-    @ManyToOne(optional = false)
+    @ManyToOne(cascade = CascadeType.DETACH, optional = false)
     @JoinColumn(name = "language_id")
     Language mainLanguage;
+
+    @ManyToOne(cascade = CascadeType.DETACH)
+    @JoinColumn(name = "license_id")
+    License license;
 
     @NotBlank
     @Column(name = "name", unique = true)
@@ -84,10 +88,6 @@ public class GitRepo {
     @PositiveOrZero
     @Column(name = "contributors")
     Long contributors;
-
-    @NullOrNotBlank
-    @Column(name = "license")
-    String license;
 
     @PositiveOrZero
     @Column(name = "watchers")
@@ -137,7 +137,6 @@ public class GitRepo {
     @Column(name = "open_pull_requests")
     Long openPullRequests;
 
-    @PastOrPresent
     @Column(name = "last_commit")
     Date lastCommit;
 

@@ -1,11 +1,5 @@
 package ch.usi.si.seart.git;
 
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.experimental.FieldDefaults;
-
 import java.util.Date;
 import java.util.Objects;
 
@@ -22,17 +16,9 @@ import java.util.Objects;
  *
  * @author Ozren Dabić
  */
-@Getter
-@AllArgsConstructor
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-@FieldDefaults(level = AccessLevel.PRIVATE)
-@SuppressWarnings("java:S6548")
-public class Commit {
+public record Commit(String sha, Date date) {
 
-    public static final Commit UNKNOWN = new Commit();
-
-    String sha;
-    Date date;
+    public static final Commit UNKNOWN = new Commit(null, null);
 
     @Override
     public String toString() {

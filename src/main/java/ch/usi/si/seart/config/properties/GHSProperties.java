@@ -18,6 +18,15 @@ public class GHSProperties {
     GitHubProperties github;
 
     @NestedConfigurationProperty
+    GitProperties git;
+
+    @NestedConfigurationProperty
+    CLOCProperties cloc;
+
+    @NestedConfigurationProperty
+    ClientURLProperties curl;
+
+    @NestedConfigurationProperty
     CrawlerProperties crawler;
 
     @NestedConfigurationProperty
@@ -31,6 +40,18 @@ public class GHSProperties {
 
     public GitHubProperties getGitHubProperties() {
         return github;
+    }
+
+    public GitProperties getGitProperties() {
+        return git;
+    }
+
+    public CLOCProperties getCLOCProperties() {
+        return cloc;
+    }
+
+    public ClientURLProperties getClientURLProperties() {
+        return curl;
     }
 
     public CrawlerProperties getCrawlerProperties() {

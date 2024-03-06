@@ -1,6 +1,8 @@
 package ch.usi.si.seart.config;
 
 import ch.usi.si.seart.config.properties.GitHubProperties;
+import ch.usi.si.seart.github.GitHubHttpHeaders;
+import ch.usi.si.seart.github.GitHubMediaTypes;
 import ch.usi.si.seart.github.GitHubRestConnector;
 import ch.usi.si.seart.http.interceptor.HeaderAttachmentInterceptor;
 import ch.usi.si.seart.http.interceptor.LoggingInterceptor;
@@ -15,13 +17,13 @@ import org.springframework.http.HttpHeaders;
 import java.util.concurrent.TimeUnit;
 
 @Configuration
-public class HttpClientConfig {
+public class OkHttpClientConfig {
 
     @Bean
     Headers headers(GitHubProperties properties) {
         return Headers.of(
-                HttpHeaders.ACCEPT, "application/vnd.github+json",
-                "X-GitHub-Api-Version", properties.getApiVersion()
+                HttpHeaders.ACCEPT, GitHubMediaTypes.APPLICATION_VND_GITHUB_V3_JSON_VALUE,
+                GitHubHttpHeaders.X_GITHUB_API_VERSION, properties.getApiVersion()
         );
     }
 

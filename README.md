@@ -1,4 +1,4 @@
-# GitHub Search &middot; [![Status](https://badgen.net/https/dabico.npkn.net/ghs-status)](http://seart-ghs.si.usi.ch) [![MIT license](https://img.shields.io/badge/License-MIT-blue.svg)](https://github.com/seart-group/ghs/blob/master/LICENSE) [![Latest Dump](https://img.shields.io/badge/Latest_Dump-16.12.23-blue)](https://www.dropbox.com/scl/fi/833d78twgzdma1hd1r19l/gse.sql.gz?rlkey=qovbf5dozvrdpt40w6gm5ezql&dl=1) [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.4588464.svg)](https://doi.org/10.5281/zenodo.4588464) <!-- markdownlint-disable-line -->
+# GitHub Search &middot; [![Status](https://badgen.net/https/dabico.npkn.net/ghs-status)](http://seart-ghs.si.usi.ch) [![MIT license](https://img.shields.io/badge/License-MIT-blue.svg)](https://github.com/seart-group/ghs/blob/master/LICENSE) [![Latest Dump](https://img.shields.io/badge/Latest_Dump-01.03.24-blue)](https://www.dropbox.com/scl/fi/npdntnekzdpvjr62c3sq3/gse.sql.gz?rlkey=99wm57cqaq38oykd1c0r7rglh&dl=1) [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.4588464.svg)](https://doi.org/10.5281/zenodo.4588464) <!-- markdownlint-disable-line -->
 
 This project is made of two components:
 
@@ -15,12 +15,12 @@ This project is made of two components:
 | Dependency                               | Version Requirement |
 |------------------------------------------|--------------------:|
 | Java                                     |                  17 |
-| Maven                                    |               3.9.3 |
-| MySQL                                    |               8.2.0 |
-| Flyway                                   |              10.4.1 |
-| Git                                      |              2.40.1 |
-| [curl](https://github.com/curl/curl)     |               8.5.0 |
-| [cloc](https://github.com/AlDanial/cloc) |                1.96 |
+| Maven                                    |                 3.9 |
+| MySQL                                    |                 8.3 |
+| Flyway                                   |                10.9 |
+| Git                                      |                2.43 |
+| [curl](https://github.com/curl/curl)     |                 8.5 |
+| [cloc](https://github.com/AlDanial/cloc) |                1.98 |
 
 ### Database
 
@@ -97,25 +97,25 @@ java -Dghs.github.tokens=<your_access_token> -jar target/ghs-application.jar
 
 Here's a list of project-specific arguments supported by the application that you can find in the `application.properties`:
 
-| Variable Name                                 | Type               | Default Value                                                           | Description                                                                                                                                                                                                                                                        |
-|-----------------------------------------------|--------------------|-------------------------------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `ghs.github.tokens`                           | List&lt;String&gt; |                                                                         | List of [GitHub personal access tokens (PATs)](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens) that will be used for mining the GitHub API. Must not contain blank strings.                   |
-| `ghs.github.api-version`                      | String             | 2022-11-28                                                              | [GitHub API version](https://docs.github.com/en/rest/overview/api-versions) used across various operations.                                                                                                                                                        |
-| `ghs.crawler.enabled`                         | Boolean            | true                                                                    | Specifies if the repository crawling job is enabled.                                                                                                                                                                                                               |
-| `ghs.crawler.minimum-stars`                   | int                | 10                                                                      | Inclusive lower bound for the number of stars a project needs to have in order to be picked up by the crawler. Must not be negative.                                                                                                                               |
-| `ghs.crawler.languages`                       | List&lt;String&gt; | See [application.properties](src/main/resources/application.properties) | List of language names that will be targeted during crawling. Must not contain blank strings. To ensure proper operations, the names must match those specified in [linguist](https://github.com/github-linguist/linguist/blob/master/lib/linguist/languages.yml). |
-| `ghs.crawler.start-date`                      | Date               | 2008-01-01T00:00:00Z                                                    | Default crawler start date: the earliest date for repository crawling in the absence of prior crawl jobs. Value format: `yyyy-MM-ddTHH:MM:SSZ`.                                                                                                                    |
-| `ghs.crawler.delay-between-runs`              | Duration           | PT6H                                                                    | Delay between successive crawler runs, expressed as a duration string.                                                                                                                                                                                             |
-| `ghs.analysis.enabled`                        | Boolean            | true                                                                    | Specifies if the analysis job is enabled.                                                                                                                                                                                                                          |
-| `ghs.analysis.delay-between-runs`             | Duration           | PT6H                                                                    | Delay between successive analysis runs, expressed as a duration string.                                                                                                                                                                                            |
-| `ghs.analysis.max-pool-threads`               | int                | 3                                                                       | Maximum amount of live threads dedicated to concurrently analyzing repositories. Must be positive.                                                                                                                                                                 |
-| `ghs.analysis.git.folder-prefix`              | String             | ghs-clone-                                                              | Prefix used for the temporary directories into which analyzed repositories are cloned. Must not be blank.                                                                                                                                                          |
-| `ghs.analysis.git.clone-timeout-duration`     | Duration           | 5m                                                                      | Maximum time allowed for cloning Git repositories.                                                                                                                                                                                                                 |
-| `ghs.analysis.cloc.analysis-timeout-duration` | Duration           | 5m                                                                      | Maximum time allowed for analyzing cloned Git repositories with `cloc`.                                                                                                                                                                                            |
-| `ghs.clean-up.enabled`                        | Boolean            | true                                                                    | Specifies if the job responsible for removing unavailable repositories (clean-up) is enabled.                                                                                                                                                                      |
-| `ghs.clean-up.cron`                           | CronTrigger        | 0 0 0 \* \* 1                                                           | Delay between successive repository clean-up runs, expressed as a [Spring CRON expression](https://spring.io/blog/2020/11/10/new-in-spring-5-3-improved-cron-expressions).                                                                                         |
-| `ghs.clean-up.curl.connect-timeout-duration`  | Duration           | 1m                                                                      | Maximum time allowed for establishing HTTP connections with `curl`.                                                                                                                                                                                                |
-| `ghs.statistics.suggestion-limit`             | int                | 500                                                                     | Maximum number of suggestions available in UI autocompletion. Must not be negative. To disable the limit use 0.                                                                                                                                                    |
+| Variable Name                        | Type               | Default Value                                                           | Description                                                                                                                                                                                                                                                        |
+|--------------------------------------|--------------------|-------------------------------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `ghs.github.tokens`                  | List&lt;String&gt; |                                                                         | List of [GitHub personal access tokens (PATs)](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens) that will be used for mining the GitHub API. Must not contain blank strings.                   |
+| `ghs.github.api-version`             | String             | 2022-11-28                                                              | [GitHub API version](https://docs.github.com/en/rest/overview/api-versions) used across various operations.                                                                                                                                                        |
+| `ghs.git.folder-prefix`              | String             | ghs-clone-                                                              | Prefix used for the temporary directories into which analyzed repositories are cloned. Must not be blank.                                                                                                                                                          |
+| `ghs.git.clone-timeout-duration`     | Duration           | 5m                                                                      | Maximum time allowed for cloning Git repositories.                                                                                                                                                                                                                 |
+| `ghs.cloc.analysis-timeout-duration` | Duration           | 5m                                                                      | Maximum time allowed for analyzing cloned Git repositories with `cloc`.                                                                                                                                                                                            |
+| `ghs.curl.connect-timeout-duration`  | Duration           | 1m                                                                      | Maximum time allowed for establishing HTTP connections with `curl`.                                                                                                                                                                                                |
+| `ghs.crawler.enabled`                | Boolean            | true                                                                    | Specifies if the repository crawling job is enabled.                                                                                                                                                                                                               |
+| `ghs.crawler.minimum-stars`          | int                | 10                                                                      | Inclusive lower bound for the number of stars a project needs to have in order to be picked up by the crawler. Must not be negative.                                                                                                                               |
+| `ghs.crawler.languages`              | List&lt;String&gt; | See [application.properties](src/main/resources/application.properties) | List of language names that will be targeted during crawling. Must not contain blank strings. To ensure proper operations, the names must match those specified in [linguist](https://github.com/github-linguist/linguist/blob/master/lib/linguist/languages.yml). |
+| `ghs.crawler.start-date`             | Date               | 2008-01-01T00:00:00Z                                                    | Default crawler start date: the earliest date for repository crawling in the absence of prior crawl jobs. Value format: `yyyy-MM-ddTHH:MM:SSZ`.                                                                                                                    |
+| `ghs.crawler.delay-between-runs`     | Duration           | PT6H                                                                    | Delay between successive crawler runs, expressed as a duration string.                                                                                                                                                                                             |
+| `ghs.analysis.enabled`               | Boolean            | true                                                                    | Specifies if the analysis job is enabled.                                                                                                                                                                                                                          |
+| `ghs.analysis.delay-between-runs`    | Duration           | PT6H                                                                    | Delay between successive analysis runs, expressed as a duration string.                                                                                                                                                                                            |
+| `ghs.analysis.max-pool-threads`      | int                | 3                                                                       | Maximum amount of live threads dedicated to concurrently analyzing repositories. Must be positive.                                                                                                                                                                 |
+| `ghs.clean-up.enabled`               | Boolean            | true                                                                    | Specifies if the job responsible for removing unavailable repositories (clean-up) is enabled.                                                                                                                                                                      |
+| `ghs.clean-up.cron`                  | CronTrigger        | 0 0 0 \* \* 1                                                           | Delay between successive repository clean-up runs, expressed as a [Spring CRON expression](https://spring.io/blog/2020/11/10/new-in-spring-5-3-improved-cron-expressions).                                                                                         |
+| `ghs.statistics.suggestion-limit`    | int                | 500                                                                     | Maximum number of suggestions available in UI autocompletion. Must not be negative. To disable the limit use 0.                                                                                                                                                    |
 
 ### Web UI
 
@@ -152,7 +152,7 @@ graph RL
     gse-backup --> |service_completed_successfully| gse-migration
     gse-server --> |service_completed_successfully| gse-migration
     gse-website --> |service_healthy| gse-server
-    gse-watchtower --> |service_started| gse-website
+    gse-watchtower --> |service_healthy| gse-website
 ```
 
 Deploying is as simple as, in the [docker-compose](docker-compose) directory, run:
@@ -221,6 +221,24 @@ services:
   gse-backup:
     restart: always
     entrypoint: "/entrypoint"
+```
+
+Finally, configurations for some programs are stored within files that are added to services through bind mounts.
+For instance, the Git configuration file is stored in the [git](docker-compose/git) directory.
+If you want to further customize it in deployment (i.e. specify an alternative user agent),
+you can create your own `.override.gitconfig`, and add the following to the override file:
+
+```yaml
+version: '3.9'
+name: 'gse'
+
+services:
+
+  # other services omitted...
+
+  gse-server:
+    volumes:
+      - ./git/.override.gitconfig:/root/.gitconfig
 ```
 
 ---

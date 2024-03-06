@@ -34,6 +34,10 @@
         <option name="value" value="DEBUG" />
       </param>
       <param>
+        <option name="name" value="logging.level.ch.usi.si.seart" />
+        <option name="value" value="TRACE" />
+      </param>
+      <param>
         <option name="name" value="logging.level.org.flywaydb" />
         <option name="value" value="DEBUG" />
       </param>

@@ -11,7 +11,7 @@ import javax.validation.constraints.NotNull;
 import java.time.Duration;
 
 @Getter
-@ConfigurationProperties(prefix = "ghs.analysis.cloc", ignoreUnknownFields = false)
+@ConfigurationProperties(prefix = "ghs.cloc", ignoreUnknownFields = false)
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 @AllArgsConstructor(onConstructor_ = @ConstructorBinding)
 public class CLOCProperties {

@@ -11,7 +11,7 @@
 
 	<groupId>ch.usi.si.seart</groupId>
 	<artifactId>ghs-application</artifactId>
-	<version>1.8.0</version>
+	<version>1.12.1</version>
 	<packaging>jar</packaging>
 
 	<name>GitHub Search</name>
@@ -315,6 +315,44 @@
 								<licenses>${project.licenses}</licenses>
 								<developers>${project.developers}</developers>
 							</additionalProperties>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>io.github.git-commit-id</groupId>
+				<artifactId>git-commit-id-maven-plugin</artifactId>
+				<version>7.0.0</version>
+				<executions>
+					<execution>
+						<goals>
+							<goal>revision</goal>
+						</goals>
+						<configuration>
+							<commitIdGenerationMode>full</commitIdGenerationMode>
+							<generateGitPropertiesFile>true</generateGitPropertiesFile>
+							<generateGitPropertiesFilename>
+								${project.build.outputDirectory}/git.properties
+							</generateGitPropertiesFilename>
+							<includeOnlyProperties>
+								<includeOnlyProperty>git.branch</includeOnlyProperty>
+								<includeOnlyProperty>git.build.time</includeOnlyProperty>
+								<includeOnlyProperty>git.build.user.email</includeOnlyProperty>
+								<includeOnlyProperty>git.build.user.name</includeOnlyProperty>
+								<includeOnlyProperty>git.build.version</includeOnlyProperty>
+								<includeOnlyProperty>git.commit.author.time</includeOnlyProperty>
+								<includeOnlyProperty>git.commit.committer.time</includeOnlyProperty>
+								<includeOnlyProperty>git.commit.id.abbrev</includeOnlyProperty>
+								<includeOnlyProperty>git.commit.id.full</includeOnlyProperty>
+								<includeOnlyProperty>git.commit.message.short</includeOnlyProperty>
+								<includeOnlyProperty>git.commit.message.full</includeOnlyProperty>
+								<includeOnlyProperty>git.commit.time</includeOnlyProperty>
+								<includeOnlyProperty>git.commit.user.email</includeOnlyProperty>
+								<includeOnlyProperty>git.commit.user.name</includeOnlyProperty>
+								<includeOnlyProperty>git.remote.origin.url</includeOnlyProperty>
+								<includeOnlyProperty>git.tags</includeOnlyProperty>
+								<includeOnlyProperty>git.total.commit.count</includeOnlyProperty>
+							</includeOnlyProperties>
 						</configuration>
 					</execution>
 				</executions>

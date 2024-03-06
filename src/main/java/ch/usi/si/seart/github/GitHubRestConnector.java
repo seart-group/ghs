@@ -4,6 +4,8 @@ import ch.usi.si.seart.config.properties.CrawlerProperties;
 import ch.usi.si.seart.exception.github.GitHubConnectorException;
 import ch.usi.si.seart.exception.github.GitHubRestException;
 import ch.usi.si.seart.git.Commit;
+import ch.usi.si.seart.github.response.ErrorResponse;
+import ch.usi.si.seart.github.response.RestResponse;
 import ch.usi.si.seart.util.Ranges;
 import com.google.common.base.Joiner;
 import com.google.common.collect.ImmutableMap;
@@ -88,6 +90,13 @@ public class GitHubRestConnector extends GitHubConnector<RestResponse> {
                 .url();
 
         return execute(new RestCallback(url)).getJsonObject();
+    }
+
+    public HttpStatus pingRepository(String name) {
+        URL url = Endpoint.REPOSITORY.toURL(name.split("/"));
+        RestCallback callback = new RestCallback(url);
+        RestResponse response = execute(callback);
+        return response.getStatus();
     }
 
     @SuppressWarnings("ConstantConditions")
@@ -250,29 +259,30 @@ public class GitHubRestConnector extends GitHubConnector<RestResponse> {
 
     @SuppressWarnings("ConstantConditions")
     private Long getLastPageNumberFromHeader(URL url) {
-        RestResponse response = execute(new RestCallback(url));
-        if (response.getStatus() == HttpStatus.FORBIDDEN) {
+        RestCallback callback = new RestCallback(url);
+        RestResponse response = execute(callback);
+        return switch (response.getStatus()) {
             /*
-             * Response status code 403, two possibilities:
-             * (1) The rate limit for the current token is exceeded
-             * (2) The request is too expensive for GitHub to compute
-             * (e.g. https://api.github.com/repos/torvalds/linux/contributors)
+             * Error status codes 403, 404, and 451 are non-retryable, causes include:
              *
-             * Since we make use of guards for the former case,
-             * then the latter is always the response cause.
-             * As a result we return null value to denote the metric as unobtainable.
+             * (1) Repository is too large to obtain the metric through the API
+             * (2) Repository is private or does not exist
+             * (3) Repository is unavailable for legal reasons
+             *
+             * As a result we return null to denote the metric as unobtainable.
              */
-            return null;
-        } else {
-            Headers headers = response.getHeaders();
-            String link = headers.get("link");
-            if (link != null) {
-                NavigationLinks links = conversionService.convert(link, NavigationLinks.class);
-                return links.getLastPage();
-            } else {
-                return response.size().map(Integer::longValue).orElse(1L);
+            case FORBIDDEN, NOT_FOUND, UNAVAILABLE_FOR_LEGAL_REASONS -> null;
+            default -> {
+                Headers headers = response.getHeaders();
+                String link = headers.get("link");
+                if (link != null) {
+                    NavigationLinks links = conversionService.convert(link, NavigationLinks.class);
+                    yield links.getLastPage();
+                } else {
+                    yield response.size().map(Integer::longValue).orElse(1L);
+                }
             }
-        }
+        };
     }
 
     @Override
@@ -318,7 +328,7 @@ public class GitHubRestConnector extends GitHubConnector<RestResponse> {
 
         private RestResponse handleServerError(HttpStatus status, JsonObject json) {
             log.error("Server Error: {} [{}]", status.value(), status.getReasonPhrase());
-            RestErrorResponse errorResponse = conversionService.convert(json, RestErrorResponse.class);
+            ErrorResponse errorResponse = conversionService.convert(json, ErrorResponse.class);
             throw new HttpServerErrorException(status, errorResponse.getMessage());
         }
 
@@ -326,7 +336,7 @@ public class GitHubRestConnector extends GitHubConnector<RestResponse> {
         private RestResponse handleClientError(
                 HttpStatus status, Headers headers, JsonObject json
         ) throws InterruptedException {
-            RestErrorResponse errorResponse = conversionService.convert(json, RestErrorResponse.class);
+            ErrorResponse errorResponse = conversionService.convert(json, ErrorResponse.class);
             switch (status) {
                 case UNAUTHORIZED ->
                     /*
@@ -335,20 +345,23 @@ public class GitHubRestConnector extends GitHubConnector<RestResponse> {
                      * because we are checking the Rate Limit API
                      * with the very same unauthorized token.
                      */
-                        gitHubTokenManager.replaceToken();
+                    gitHubTokenManager.replaceToken();
                 case TOO_MANY_REQUESTS -> {
                     log.warn("Too many requests, sleeping for 5 minutes...");
                     TimeUnit.MINUTES.sleep(5);
                 }
                 case FORBIDDEN -> {
                     /*
-                     * Response status code 403, two possibilities:
+                     * Response status code 403, three possibilities:
                      * (1) The rate limit for the current token is exceeded
                      * (2) The request is too expensive for GitHub to compute
                      * (e.g. https://api.github.com/repos/torvalds/linux/contributors)
+                     * (3) The repository is taken down due to a TOS violation
+                     * (e.g. https://api.github.com/repos/mlwrx1978/freenode/releases)
                      */
-                    String header = "X-RateLimit-Remaining";
-                    int remaining = Optional.ofNullable(headers.get(header))
+                    String header = GitHubHttpHeaders.X_RATELIMIT_REMAINING;
+                    String value = headers.get(header);
+                    int remaining = Optional.ofNullable(value)
                             .map(Integer::parseInt)
                             .orElse(-1);
                     if (remaining == -1) {
@@ -359,11 +372,29 @@ public class GitHubRestConnector extends GitHubConnector<RestResponse> {
                         gitHubTokenManager.replaceTokenIfExpired();
                     } else {
                         /*
-                         * Case (2) encountered, so we propagate error upwards
+                         * Case (2) or (3) encountered,
+                         * so we propagate error upwards.
+                         *
                          * @see fetchLastPageNumberFromHeader
                          */
                         return new RestResponse(json, status, headers);
                     }
+                }
+                case NOT_FOUND, UNAVAILABLE_FOR_LEGAL_REASONS -> {
+                    /*
+                     * These are non-retryable errors,
+                     * and as such we propagate them upwards.
+                     *
+                     * In case of 404, there are two possibilities:
+                     * (1) The repository does not exist
+                     * (2) The repository is private
+                     *
+                     * In case of 451, the repository was
+                     * taken down due to a DMCA violation.
+                     *
+                     * @see fetchLastPageNumberFromHeader
+                     */
+                    return new RestResponse(json, status, headers);
                 }
                 default -> {
                     // TODO: 30.07.23 Add any other special logic here

@@ -4,7 +4,7 @@ name: 'gse'
 services:
 
   gse-database:
-    image: mysql:8.2.0
+    image: mysql:8.3.0
     container_name: gse-database
     restart: "always"
     volumes:
@@ -26,7 +26,7 @@ services:
       - "com.centurylinklabs.watchtower.scope=ghs"
 
   gse-migration:
-    image: flyway/flyway:10.4.1-alpine
+    image: flyway/flyway:10.9.0-alpine
     container_name: gse-migrations
     restart: "no"
     volumes:
@@ -35,7 +35,7 @@ services:
       TZ: UTC
       FLYWAY_USER: gseadmin
       FLYWAY_PASSWORD: Lugano2020
-      FLYWAY_URL: jdbc:mysql://gse-database:3306/gse?serverTimezone=UTC&useLegacyDatetimeCode=false&useUnicode=yes&characterEncoding=UTF-8&allowPublicKeyRetrieval=true
+      FLYWAY_URL: jdbc:mysql://gse-database:3306/gse?serverTimezone=UTC&useLegacyDatetimeCode=false&useUnicode=yes&characterEncoding=UTF-8&allowPublicKeyRetrieval=true&permitMysqlScheme=true
       FLYWAY_SCHEMAS: gse
       FLYWAY_DEFAULT_SCHEMA: gse
     command: migrate
@@ -91,8 +91,9 @@ services:
     container_name: gse-server
     volumes:
       - ./logs:/logs
-      - ./git/.dev.gitconfig:/root/.gitconfig
+      - ./git/.gitconfig:/root/.gitconfig
     environment:
+      LOGGING_FILE_PATH: /tmp
       LOGGING_CONFIG: classpath:logback.prod.xml
       SPRING_DATASOURCE_URL: jdbc:mysql://gse-database:3306/gse?serverTimezone=UTC&useLegacyDatetimeCode=false&useUnicode=yes&characterEncoding=UTF-8
       SPRING_FLYWAY_ENABLED: 'false'
@@ -106,9 +107,9 @@ services:
         condition: on-failure
         max_attempts: 5
     healthcheck:
-      test: curl --fail --silent localhost:8080/api || exit 1
-      start_period: 20s
-      interval: 10s
+      test: curl --silent --fail --request GET http://localhost:8080/api/actuator/health | jq --exit-status -n 'inputs | if has("status") then .status=="UP" else false end' > /dev/null || exit 1
+      start_period: 30s
+      interval: 15s
       timeout: 5s
       retries: 5
     depends_on:
@@ -132,6 +133,12 @@ services:
       restart_policy:
         condition: on-failure
         max_attempts: 5
+    healthcheck:
+        test: wget -q -O /dev/null http://localhost:80/nginx || exit 1
+        start_period: 15s
+        interval: 5s
+        timeout: 1s
+        retries: 5
     depends_on:
       gse-server:
         condition: service_healthy
@@ -154,7 +161,7 @@ services:
       WATCHTOWER_INCLUDE_STOPPED: true
     depends_on:
       gse-website:
-        condition: service_started
+        condition: service_healthy
     labels:
       - "com.centurylinklabs.watchtower.scope=ghs"
     networks:

@@ -14,11 +14,16 @@ import org.springframework.lang.NonNull;
 
 public class StringToGitExceptionConverter implements Converter<String, GitException> {
 
+    private static final BlockExtractor REMOTE = new BlockExtractor("remote");
+    private static final BlockExtractor FATAL = new BlockExtractor("fatal");
+    private static final BlockExtractor ERROR = new BlockExtractor("error");
+
     private static final String LOCKED = "is disabled";
     private static final String NOT_FOUND = "not found";
     private static final String EARLY_EOF = "early EOF";
     private static final String LONG_FILE_NAME = "Filename too long";
     private static final String FORBIDDEN = "The requested URL returned error: 403";
+    private static final String DMCA = "Repository unavailable due to DMCA takedown";
     private static final String DISABLED = "Access to this repository has been disabled by GitHub staff";
     private static final String UNRESOLVABLE_HOST = "Could not resolve host: github.com";
     private static final String CHECKOUT_FAILED = "unable to checkout working tree";
@@ -30,18 +35,13 @@ public class StringToGitExceptionConverter implements Converter<String, GitExcep
     @Override
     @NonNull
     public GitException convert(@NonNull String source) {
-        String remote = source.lines()
-                .filter(line -> line.startsWith("remote:"))
-                .findFirst()
-                .map(string -> string.substring(8))
-                .orElse("");
-        String fatal = source.lines()
-                .filter(line -> line.startsWith("fatal:"))
-                .findFirst()
-                .map(string -> string.substring(7))
-                .orElse("");
+        String remote = REMOTE.extract(source);
+        String fatal = FATAL.extract(source);
+        String error = ERROR.extract(source);
         if (fatal.endsWith(NOT_FOUND))
             return new RepositoryNotFoundException(fatal);
+        if (fatal.endsWith(FORBIDDEN) && remote.startsWith(DMCA))
+            return new RepositoryDisabledException(fatal);
         if (fatal.endsWith(FORBIDDEN) && remote.startsWith(DISABLED))
             return new RepositoryDisabledException(fatal);
         if (fatal.endsWith(FORBIDDEN) && remote.contains(LOCKED))
@@ -55,15 +55,27 @@ public class StringToGitExceptionConverter implements Converter<String, GitExcep
             case EARLY_EOF -> new CompressionException(fatal);
             case PROMPTS_DISABLED -> new TerminalPromptsDisabledException(fatal);
             case AUTHENTICATION_REQUIRED -> new InvalidUsernameException(fatal);
-            case CHECKOUT_FAILED -> {
-                String error = source.lines()
-                        .filter(line -> line.startsWith("error:"))
-                        .findAny()
-                        .map(string -> string.substring(7))
-                        .orElse(null);
-                yield new CheckoutException(error);
-            }
+            case CHECKOUT_FAILED -> new CheckoutException(error);
             default -> new GitException(fatal);
         };
+    }
+
+    private record BlockExtractor(String prefix) {
+
+        public String extract(String source) {
+            return source.lines()
+                    .filter(this::filter)
+                    .findFirst()
+                    .map(this::map)
+                    .orElse("");
+        }
+
+        private boolean filter(String line) {
+            return line.startsWith(prefix + ":");
+        }
+
+        private String map(String string) {
+            return string.substring(prefix.length() + 2);
+        }
     }
 }

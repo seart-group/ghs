@@ -1,4 +1,4 @@
-FROM flyway/flyway:10.4.1-alpine
+FROM flyway/flyway:10.9.0-alpine
 LABEL maintainer="Ozren Dabić (dabico@usi.ch)"
 
 COPY ./flyway/sql /flyway/sql

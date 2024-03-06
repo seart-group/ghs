@@ -18,16 +18,9 @@ import java.lang.reflect.Field;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
-import java.util.List;
-import java.util.Set;
 
 @Configuration
-public class ExportConfig {
-
-    @Bean
-    public Set<String> exportFormats() {
-        return Set.of("csv", "json", "xml");
-    }
+public class JacksonConfig {
 
     @Bean
     DateFormat exportTimeFormat() {
@@ -57,7 +50,9 @@ public class ExportConfig {
                 .addModule(new JavaTimeModule())
                 .defaultDateFormat(exportTimeFormat)
                 .enable(JsonGenerator.Feature.IGNORE_UNKNOWN)
+                .enable(CsvGenerator.Feature.ALWAYS_QUOTE_NUMBERS)
                 .enable(CsvGenerator.Feature.ALWAYS_QUOTE_STRINGS)
+                .enable(CsvGenerator.Feature.ALWAYS_QUOTE_EMPTY_STRINGS)
                 .build();
     }
 
@@ -73,16 +68,14 @@ public class ExportConfig {
 
     @Bean
     public CsvSchema csvSchema() {
-        List<String> fields = Arrays.stream(GitRepoDto.class.getDeclaredFields())
+        return Arrays.stream(GitRepoDto.class.getDeclaredFields())
                 .map(Field::getName)
-                .toList();
-
-        CsvSchema.Builder schemaBuilder = CsvSchema.builder();
-        for (String field : fields) {
-            schemaBuilder.addColumn(field);
-        }
-
-        // TODO: Add option for CSV comments
-        return schemaBuilder.build().withHeader();
+                .reduce(
+                        CsvSchema.builder(),
+                        CsvSchema.Builder::addColumn,
+                        (first, second) -> first.addColumns(second::getColumns)
+                )
+                .build()
+                .withHeader();
     }
 }

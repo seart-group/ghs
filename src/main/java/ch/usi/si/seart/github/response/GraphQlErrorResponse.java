@@ -1,4 +1,4 @@
-package ch.usi.si.seart.github;
+package ch.usi.si.seart.github.response;
 
 import graphql.ErrorClassification;
 import graphql.GraphqlErrorException;
@@ -28,7 +28,7 @@ import java.util.stream.Stream;
 @Getter(onMethod_ = @Override)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
-public class GraphQlErrorResponse implements ResponseError {
+public class GraphQlErrorResponse implements ResponseError, ErrorResponse {
 
     String message;
     ErrorClassification errorType;
