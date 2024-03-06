@@ -46,11 +46,11 @@ services:
       - default
 
   gse-backup:
-    image: databack/mysql-backup:latest
+    image: databack/mysql-backup:1.0.0-rc2
     container_name: gse-backup
     restart: "no"
     volumes:
-      - backup:/backup
+      - backup:/home/appuser/backup
       - ./bkpdb/clean_pre.sh:/scripts.d/pre-backup/00_clean_flyway_history.sh
       - ./bkpdb/clean_post.sh:/scripts.d/post-backup/00_clean_old_dumps.sh
     environment:
@@ -61,7 +61,7 @@ services:
       DB_PASS: Lugano2020
       DB_SERVER: gse-database
       DB_DUMP_CRON: "0 0 * * *"
-      DB_DUMP_TARGET: /backup
+      DB_DUMP_TARGET: /home/appuser/backup
       DB_DUMP_DEBUG: true
       DB_DUMP_SAFECHARS: true
       MYSQLDUMP_OPTS: >-
@@ -75,6 +75,7 @@ services:
         --ignore-table=gse.label_ranked
         --ignore-table=gse.topic_ranked
     entrypoint: "true"
+    command: dump
     depends_on:
       gse-migration:
         condition: service_completed_successfully
