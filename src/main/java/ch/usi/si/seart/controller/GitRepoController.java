@@ -340,7 +340,7 @@ public class GitRepoController {
     }
 
     @GetMapping(value = "/labels", produces = MediaType.APPLICATION_JSON_VALUE)
-    @Operation(summary = "Retrieve a list of the 500 most popular issue labels mined across projects.")
+    @Operation(summary = "Retrieve a list of the most popular issue labels mined across projects.")
     public ResponseEntity<?> getAllLabels() {
         return ResponseEntity.ok(statisticsService.getTopRankedLabelNames());
     }
