@@ -241,8 +241,6 @@ services:
       - ./git/.override.gitconfig:/root/.gitconfig
 ```
 
----
-
 ## FAQ
 
 ### How can I request a feature or ask a question?
