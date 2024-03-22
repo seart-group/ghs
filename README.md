@@ -5,8 +5,8 @@ This project is made of two components:
 1. A Spring Boot powered back-end, responsible for:
     1. Continuously crawling GitHub API endpoints for repository information, and storing it in a central database;
     2. Acting as an API for providing access to the stored data.
-2. A Bootstrap-styled and jQuery powered web user interface, serving an accessible front for the API, available at
-   [http://seart-ghs.si.usi.ch](http://seart-ghs.si.usi.ch)
+2. A Bootstrap-styled and jQuery-powered web user interface, serving as an accessible front for the API, available
+   [here](http://seart-ghs.si.usi.ch).
 
 ## Running Locally
 
@@ -73,7 +73,7 @@ gzcat < gse.sql.gz | mysql -u gseadmin -pLugano2020 gse
 
 Before attempting to run the server, you must generate your own GitHub personal access token (PAT).
 GHS relies on the GraphQL API, which is inaccessible without authentication.
-The token must include the `repo` scope, in order for it to access the information present in the GitHub API.
+To access the information provided by the GitHub API, the token must include the `repo` scope.
 
 Once that is done, you can run the server locally using Maven:
 
@@ -205,10 +205,10 @@ services:
 ```
 
 Any of the Spring Boot properties or aforementioned application-specific properties can be overridden.
-Just keep in mind that `ghs.x.y` corresponds to the `GHS_X_Y` service environment setting.
+Just keep in mind, that the `ghs.x.y` property corresponds to the `GHS_X_Y` service environment setting.
 
 Another example is the automated database backup service, which is disabled by default.
-Should you chose to re-enable it, you would have to add the following to the override file:
+Should you choose to re-enable it, you would have to add the following to the override file:
 
 ```yaml
 version: '3.9'
@@ -264,6 +264,6 @@ Please refer to [CONTRIBUTING.md](CONTRIBUTING.md) for more information.
 
 ### How do I extend/modify the existing database schema?
 
-In order to do that, you should be familiar with database migration tools and practices.
+To do that you should be familiar with database migration tools and practices.
 This project in particular uses [Flyway](https://flywaydb.org/) by Redgate.
 However, the general rule for schema manipulation is: create new migrations, and _do not_ edit existing ones.
