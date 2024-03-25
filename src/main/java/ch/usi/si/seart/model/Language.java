@@ -12,6 +12,7 @@ import lombok.experimental.FieldDefaults;
 import org.hibernate.Hibernate;
 import org.hibernate.annotations.Immutable;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -58,11 +59,27 @@ public class Language {
     Set<GitRepoMetric> metrics = new HashSet<>();
 
     @PrimaryKeyJoinColumn
-    @OneToOne(mappedBy = "language")
+    @OneToOne(
+            mappedBy = "language",
+            cascade = {
+                CascadeType.PERSIST,
+                CascadeType.MERGE,
+                CascadeType.REFRESH,
+                CascadeType.DETACH
+            }
+    )
     Statistics statistics;
 
     @PrimaryKeyJoinColumn
-    @OneToOne(mappedBy = "language")
+    @OneToOne(
+            mappedBy = "language",
+            cascade = {
+                CascadeType.PERSIST,
+                CascadeType.MERGE,
+                CascadeType.REFRESH,
+                CascadeType.DETACH
+            }
+    )
     Progress progress;
 
     @Getter
