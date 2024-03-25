@@ -66,6 +66,7 @@ public class Language {
     Progress progress;
 
     @Getter
+    @Builder
     @NoArgsConstructor
     @AllArgsConstructor
     @Entity
@@ -82,11 +83,13 @@ public class Language {
         @JoinColumn(name = "language_id")
         Language language;
 
+        @Builder.Default
         @Column(name = "mined")
-        Long mined;
+        Long mined = 0L;
 
+        @Builder.Default
         @Column(name = "analyzed")
-        Long analyzed;
+        Long analyzed = 0L;
 
         @Override
         public boolean equals(Object o) {
