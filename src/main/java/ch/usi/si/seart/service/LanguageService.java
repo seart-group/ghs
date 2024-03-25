@@ -124,13 +124,18 @@ public interface LanguageService extends NamedEntityService<Language> {
                                 ),
                                 () -> {
                                     log.debug("Initializing progress for {} to default start date...", name);
-                                    languageProgressRepository.save(
-                                            Language.Progress.builder()
-                                                    .id(language.getId())
-                                                    .language(language)
-                                                    .checkpoint(defaultCheckpoint)
-                                                    .build()
-                                    );
+                                    Language.Progress progress = Language.Progress.builder()
+                                            .id(language.getId())
+                                            .language(language)
+                                            .checkpoint(defaultCheckpoint)
+                                            .build();
+                                    Language.Statistics statistics = Language.Statistics.builder()
+                                            .id(language.getId())
+                                            .language(language)
+                                            .build();
+                                    language.setProgress(progress);
+                                    language.setStatistics(statistics);
+                                    languageRepository.save(language);
                                 });
             }
         }
