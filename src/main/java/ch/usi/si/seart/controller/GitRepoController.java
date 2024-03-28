@@ -98,6 +98,7 @@ public class GitRepoController {
             GitRepo_.WATCHERS,
             GitRepo_.FORKS,
             GitRepo_.CREATED_AT,
+            GitRepo_.UPDATED_AT,
             GitRepo_.LAST_COMMIT
     );
 
