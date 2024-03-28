@@ -5,13 +5,10 @@
     const $statistics_analyzed = $("#statistics-analyzed");
     const $statistics_download_btn = $("#statistics-download-btn");
 
-    // https://github.com/nagix/chartjs-plugin-colorschemes/blob/master/src/colorschemes/colorschemes.tableau.js#L45
-    const gray20 = [
-        "#49525e", "#4f5864", "#555f6a", "#5b6570",
-        "#616c77", "#67737c", "#6e7a81", "#758087",
-        "#7c878d", "#848e93", "#8b9598", "#939c9e",
-        "#9ca3a4", "#a4a9ab", "#acb0b1", "#b4b7b7",
-        "#bcbfbe", "#c5c7c6", "#cdcecd", "#d5d5d5"
+    const palette = [
+        "#010d15", "#0d161c", "#151d23", "#1c242a", "#232b32", "#2b333a", "#323b42", "#3a424a", "#424b52",
+        "#4a535a", "#525b63", "#5b646b", "#636c74", "#6c757d", "#757e86", "#7e878f", "#879098", "#9099a2",
+        "#99a2ab", "#a2acb4", "#acb5be", "#b5bfc8", "#bfc9d1", "#c9d2db", "#d2dce5", "#dce6ef", "#e6f0f9"
     ];
 
     const percentage = (numerator, denominator) => (numerator / denominator * 100).toFixed(2);
@@ -120,8 +117,8 @@
                 {
                     data,
                     label: "Mined",
-                    borderColor: gray20,
-                    backgroundColor: gray20.map(color => `${color}bf`),
+                    borderColor: palette,
+                    backgroundColor: palette.map(color => `${color}bf`),
                     barPercentage: 1,
                     parsing: {
                         yAxisKey: "mined",
