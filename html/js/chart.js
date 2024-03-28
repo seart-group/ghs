@@ -1,16 +1,11 @@
-(function (base, $, _, Chart) {
+(function (base, $, _, Chart, chroma) {
     const [ canvas ] = $("#statistics-chart").get();
     const $toast_container = $(".toast-container");
     const $statistics_mined = $("#statistics-mined");
     const $statistics_analyzed = $("#statistics-analyzed");
     const $statistics_download_btn = $("#statistics-download-btn");
 
-    const palette = [
-        "#010d15", "#0d161c", "#151d23", "#1c242a", "#232b32", "#2b333a", "#323b42", "#3a424a", "#424b52",
-        "#4a535a", "#525b63", "#5b646b", "#636c74", "#6c757d", "#757e86", "#7e878f", "#879098", "#9099a2",
-        "#99a2ab", "#a2acb4", "#acb5be", "#b5bfc8", "#bfc9d1", "#c9d2db", "#d2dce5", "#dce6ef", "#e6f0f9"
-    ];
-
+    const palette = chroma.scale(["#0f0f0f", "#f2f2f2"]).mode("lch").colors(27);
     const percentage = (numerator, denominator) => (numerator / denominator * 100).toFixed(2);
 
     Chart.defaults.font.family = "Trebuchet MS";
@@ -131,4 +126,4 @@
             id: "statistics-toast",
             body: "Could not retrieve repository statistics!"
         }));
-}(base, jQuery, _, Chart));
+}(base, jQuery, _, Chart, chroma));
