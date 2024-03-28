@@ -5,7 +5,6 @@
     const $statistics_analyzed = $("#statistics-analyzed");
     const $statistics_download_btn = $("#statistics-download-btn");
 
-    const palette = chroma.scale(["#0f0f0f", "#f2f2f2"]).mode("lch").colors(27);
     const percentage = (numerator, denominator) => (numerator / denominator * 100).toFixed(2);
 
     Chart.defaults.font.family = "Trebuchet MS";
@@ -107,20 +106,23 @@
                 });
             return data;
         })
-        .then(data => ({
-            datasets: [
-                {
-                    data,
-                    label: "Mined",
-                    borderColor: palette,
-                    backgroundColor: palette.map(color => `${color}bf`),
-                    barPercentage: 1,
-                    parsing: {
-                        yAxisKey: "mined",
+        .then(data => {
+            const palette = chroma.scale(["#0f0f0f", "#f2f2f2"]).mode("lch").colors(data.length);
+            return {
+                datasets: [
+                    {
+                        data,
+                        label: "Mined",
+                        borderColor: palette,
+                        backgroundColor: palette.map(color => `${color}bf`),
+                        barPercentage: 1,
+                        parsing: {
+                            yAxisKey: "mined",
+                        },
                     },
-                },
-            ]
-        }))
+                ]
+            };
+        })
         .then(data => new Chart(canvas, { type: "bar", options, data }))
         .catch(() => $toast_container.twbsToast({
             id: "statistics-toast",
