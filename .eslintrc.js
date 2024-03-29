@@ -12,6 +12,7 @@ module.exports = {
         self: 'readonly',
         base: 'readonly',
         Blob: 'readonly',
+        chroma: 'readonly',
         crypto: 'readonly',
         window: 'readonly',
         jQuery: 'readonly',
