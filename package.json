@@ -5,7 +5,7 @@
   "description": "Platform used to crawl, store and present projects from GitHub, as well as any statistics related to them.",
   "source": "html/index.html",
   "scripts": {
-    "lint": "npm-run-all lint-js lint-css lint-html lint-md",
+    "lint": "npm-run-all --parallel lint-*",
     "lint-js": "eslint html/js",
     "lint-css": "stylelint html/css",
     "lint-html": "htmlhint html/*.html",
