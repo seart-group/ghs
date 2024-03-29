@@ -5,6 +5,7 @@
   "description": "Platform used to crawl, store and present projects from GitHub, as well as any statistics related to them.",
   "source": "html/index.html",
   "scripts": {
+    "minify:js": "esbuild html/js/*.js --outdir=dist/js --minify",
     "minify:css": "cleancss html/css/main.css --output dist/css/main.css",
     "minify:html": "html-minifier-terser --collapse-whitespace --remove-comments --minify-js --process-scripts='[\"text/html\",\"text/x-handlebars-template\"]' html/index.html --output dist/index.html",
     "lint": "npm-run-all --parallel lint:*",
@@ -35,6 +36,7 @@
   ],
   "devDependencies": {
     "clean-css-cli": "^5.6.3",
+    "esbuild": "^0.20.2",
     "eslint": "^8.57.0",
     "html-minifier-terser": "^7.2.0",
     "htmlhint": "^1.1.4",
