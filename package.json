@@ -5,6 +5,7 @@
   "description": "Platform used to crawl, store and present projects from GitHub, as well as any statistics related to them.",
   "source": "html/index.html",
   "scripts": {
+    "minify": "npm-run-all --parallel minify:*",
     "minify:js": "esbuild html/js/*.js --outdir=dist/js --minify",
     "minify:css": "cleancss html/css/main.css --output dist/css/main.css",
     "minify:html": "html-minifier-terser --collapse-whitespace --remove-comments --minify-js --process-scripts='[\"text/html\",\"text/x-handlebars-template\"]' html/index.html --output dist/index.html",
