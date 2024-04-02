@@ -20,3 +20,10 @@ RUN apk update --quiet && \
             jq~=1.7.1
 
 ENTRYPOINT ["java", "-jar", "server.jar"]
+
+HEALTHCHECK \
+    --start-period=30s \
+    --interval=60s \
+    --timeout=5s \
+    --retries=5 \
+    CMD curl --silent --fail --request GET http://localhost:8080/api/actuator/health | jq --exit-status -n 'inputs | if has("status") then .status=="UP" else false end' > /dev/null || exit 1
