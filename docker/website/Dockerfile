@@ -7,7 +7,7 @@ COPY package.json      \
 
 RUN npm ci --silent --no-progress && npm run build
 
-FROM nginx:1.25.4
+FROM nginx:1.25.4-alpine-slim
 LABEL maintainer="Ozren Dabić (dabico@usi.ch)"
 
 ENV TZ=UTC
@@ -21,4 +21,4 @@ HEALTHCHECK \
     --interval=60s \
     --timeout=30s \
     --retries=5 \
-    CMD service nginx status || exit 1
+    CMD nc -z 127.0.0.1 80 || exit 1
