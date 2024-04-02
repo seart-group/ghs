@@ -1,4 +1,4 @@
-# GitHub Search &middot; [![Status](https://badgen.net/https/dabico.npkn.net/ghs-status)](http://seart-ghs.si.usi.ch) [![MIT license](https://img.shields.io/badge/License-MIT-blue.svg)](https://github.com/seart-group/ghs/blob/master/LICENSE) [![Latest Dump](https://img.shields.io/badge/Latest_Dump-01.03.24-blue)](https://www.dropbox.com/scl/fi/npdntnekzdpvjr62c3sq3/gse.sql.gz?rlkey=99wm57cqaq38oykd1c0r7rglh&dl=1) [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.4588464.svg)](https://doi.org/10.5281/zenodo.4588464) <!-- markdownlint-disable-line -->
+# GitHub Search &middot; [![Status](https://badgen.net/https/dabico.npkn.net/ghs-status)](http://seart-ghs.si.usi.ch) [![MIT license](https://img.shields.io/badge/License-MIT-blue.svg)](https://github.com/seart-group/ghs/blob/master/LICENSE) [![Latest Dump](https://img.shields.io/badge/Latest_Dump-01.04.24-blue)](https://www.dropbox.com/scl/fi/5eku4c65on1g26rnjzsx1/gse.sql.gz?rlkey=08l0sfvyj29b2wfvzw5vuuay4&dl=1) [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.4588464.svg)](https://doi.org/10.5281/zenodo.4588464) <!-- markdownlint-disable-line -->
 
 This project is made of two components:
 

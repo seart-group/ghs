@@ -3,6 +3,6 @@ LABEL maintainer="Ozren Dabić (dabico@usi.ch)"
 
 WORKDIR /docker-entrypoint-initdb.d
 
-ADD "https://www.dropbox.com/scl/fi/npdntnekzdpvjr62c3sq3/gse.sql.gz?rlkey=99wm57cqaq38oykd1c0r7rglh&dl=1" gse.sql.gz
+ADD "https://www.dropbox.com/scl/fi/5eku4c65on1g26rnjzsx1/gse.sql.gz?rlkey=08l0sfvyj29b2wfvzw5vuuay4&dl=1" gse.sql.gz
 
 RUN chmod 755 gse.sql.gz
