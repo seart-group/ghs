@@ -129,12 +129,6 @@ services:
       restart_policy:
         condition: on-failure
         max_attempts: 5
-    healthcheck:
-        test: wget -q -O /dev/null http://localhost:80/nginx || exit 1
-        start_period: 15s
-        interval: 5s
-        timeout: 1s
-        retries: 5
     depends_on:
       gse-server:
         condition: service_healthy
