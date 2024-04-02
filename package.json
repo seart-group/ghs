@@ -5,11 +5,20 @@
   "description": "Platform used to crawl, store and present projects from GitHub, as well as any statistics related to them.",
   "source": "html/index.html",
   "scripts": {
-    "lint": "npm-run-all --parallel lint-*",
-    "lint-js": "eslint html/js",
-    "lint-css": "stylelint html/css",
-    "lint-html": "htmlhint html/*.html",
-    "lint-md": "markdownlint *.md"
+    "prebuild": "rimraf dist",
+    "build": "npm-run-all --parallel minify:*",
+    "postbuild": "npm-run-all --parallel bundle:*",
+    "bundle:fonts": "copyfiles -f html/fonts/* dist/fonts",
+    "bundle:icons": "copyfiles -f html/icons/* dist/icons",
+    "bundle:manifest": "copyfiles -f html/manifest.json dist",
+    "minify:js": "esbuild html/js/*.js --outdir=dist/js --minify",
+    "minify:css": "cleancss html/css/main.css --output dist/css/main.css",
+    "minify:html": "html-minifier-terser --collapse-whitespace --remove-comments --minify-js --process-scripts='[\"text/html\",\"text/x-handlebars-template\"]' html/index.html --output dist/index.html",
+    "lint": "npm-run-all --parallel lint:*",
+    "lint:js": "eslint html/js",
+    "lint:css": "stylelint html/css",
+    "lint:html": "htmlhint html/*.html",
+    "lint:md": "markdownlint *.md"
   },
   "author": {
     "name": "Ozren Dabić",
@@ -32,11 +41,16 @@
     "MSR"
   ],
   "devDependencies": {
+    "clean-css-cli": "^5.6.3",
+    "copyfiles": "^2.4.1",
+    "esbuild": "^0.20.2",
     "eslint": "^8.57.0",
+    "html-minifier-terser": "^7.2.0",
     "htmlhint": "^1.1.4",
     "markdownlint": "^0.34.0",
     "markdownlint-cli": "^0.39.0",
     "npm-run-all": "^4.1.5",
+    "rimraf": "^5.0.5",
     "stylelint": "^16.3.1",
     "stylelint-config-standard": "^36.0.0"
   }

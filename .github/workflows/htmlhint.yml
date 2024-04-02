@@ -19,4 +19,4 @@ jobs:
       - name: Install Dependencies
         run: npm ci
       - name: Run HTMLHint
-        run: npm run lint-html
+        run: npm run lint:html

@@ -19,4 +19,4 @@ jobs:
       - name: Install Dependencies
         run: npm ci
       - name: Run markdownlint
-        run: npm run lint-md
+        run: npm run lint:md

@@ -19,4 +19,4 @@ jobs:
       - name: Install Dependencies
         run: npm ci
       - name: Run Stylelint
-        run: npm run lint-css
+        run: npm run lint:css
