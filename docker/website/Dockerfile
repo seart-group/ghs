@@ -7,7 +7,7 @@ COPY package.json      \
 
 RUN npm ci --silent --no-progress && npm run build
 
-FROM nginx:1.25.4-alpine-slim
+FROM nginx:1.25.4
 LABEL maintainer="Ozren Dabić (dabico@usi.ch)"
 
 COPY --from=build dist /usr/share/nginx/html
