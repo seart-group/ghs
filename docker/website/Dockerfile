@@ -10,6 +10,8 @@ RUN npm ci --silent --no-progress && npm run build
 FROM nginx:1.25.4
 LABEL maintainer="Ozren Dabić (dabico@usi.ch)"
 
+ENV TZ=UTC
+
 COPY --from=build dist /usr/share/nginx/html
 
 ENTRYPOINT ["nginx", "-g", "daemon off;"]
