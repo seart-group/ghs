@@ -114,13 +114,18 @@ Handlebars.registerHelper("devicon", function (language) {
         case "MATLAB":
         case "OCaml":
         case "PHP":
+        case "PowerShell":
         case "Python":
         case "Ruby":
         case "Rust":
         case "Sass":
+        case "Scala":
+        case "Solidity":
         case "Svelte":
         case "Swift":
         case "TypeScript":
+        case "XML":
+        case "YAML":
             return `devicon-${language.toLowerCase()}-plain`;
         // "Original" mappings
         case "CoffeeScript":
@@ -169,11 +174,16 @@ Handlebars.registerHelper("devicon", function (language) {
             return "devicon-unrealengine-original";
         case "Vue":
             return "devicon-vuejs-plain";
+        case "WebAssembly":
+            return "devicon-wasm-plain";
         // Multi-mappings
         case "Go":
         case "Go Checksums":
         case "Go Module":
             return "devicon-go-plain";
+        case "LLVM":
+        case "LLVM IR":
+            return "devicon-llvm-plain";
         case "Perl":
         case "Perl 6":
             return "devicon-perl-plain"
@@ -183,16 +193,18 @@ Handlebars.registerHelper("devicon", function (language) {
         case "Shell":
         case "ShellSession":
             return "devicon-bash-plain";
+        case "PlantUML":
+            return "devicon-unifiedmodelinglanguage-plain";
         case "Vim Script":
         case "Vim Snippet":
             return "devicon-vim-plain";
-        case "Microsoft Visual Studio Solution":
         case "Visual Basic":
         case "Visual Basic .NET":
         case "Visual Basic 6.0":
+            return "devicon-visualbasic-plain";
+        case "Microsoft Visual Studio Solution":
             return "devicon-visualstudio-plain";
         // No mapping
-        case "Smalltalk":
         default:
             return "";
     }
