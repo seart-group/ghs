@@ -92,7 +92,8 @@
                 .on("click", () => {
                     const header = "\"language\",\"mined\",\"analyzed\",\"coverage\"";
                     const body = data.map(({ x: language, mined, analyzed }) => {
-                        return `"${language}","${mined}","${analyzed}","${(analyzed / mined).toFixed(4)}"`;
+                        const percentage = mined ? analyzed / mined : 0;
+                        return `"${language}","${mined}","${analyzed}","${percentage.toFixed(4)}"`;
                     })
                     .join("\n");
                     const content = `${header}\n${body}\n`;
