@@ -119,17 +119,14 @@ Here's a list of project-specific arguments supported by the application that yo
 
 ### Web UI
 
-The easiest way to start the front-end is through IntelliJ's built-in web server.
-After starting the application back-end right click on `index.html` in the [html](html) directory,
-and select one of the provided launch options from `Open In > Browser`.
-Alternatively, you can self-host the web UI by virtue of tools such as `http-server`:
+The easiest way to launch the front-end is through the provided NPM script:
 
 ```shell
-# install by running: npm install -g http-server
-http-server html -p 3030
+npm run dev
 ```
 
-Regardless of which method you choose for hosting, the back-end CORS restricts you to using either port `3030` or `7030`.
+You can also use the built-in web server of your IDE, or any other web server of your choice.
+Regardless of which method you choose for hosting, the back-end CORS restricts you to using ports `3030` and `7030`.
 
 ## Dockerisation :whale:
 
