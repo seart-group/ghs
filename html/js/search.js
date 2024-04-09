@@ -34,11 +34,11 @@
                 _url.searchParams.append(entry.name, entry.value);
                 return _url;
             }, url);
-    }
+    };
 
     const query = function () {
         return setParameters(new URL(`${base}/r/search`));
-    }
+    };
 
     const download = function (format) {
         if (!formats.includes(format)) {
@@ -74,12 +74,12 @@
         $results_jump_input
             .removeAttr("min")
             .removeAttr("max");
-    }
+    };
 
     const $resetResults = function () {
         $results_count.children().remove();
         $results_list.children().remove();
-    }
+    };
 
     const $setResultsCount = function (count = 0) {
         $results_count.html(`<h1 class="my-3">Results: ${count.toLocaleString()}</h1>`);
@@ -96,10 +96,10 @@
             totalPages: total || 1
         });
         $(".disabled > .page-link").attr("tabindex", -1);
-    }
+    };
 
     const $setDownloadLinks = function (results = 0) {
-        const $group = $(".btn-download-group")
+        const $group = $(".btn-download-group");
         if (!results) {
             const $buttons = $(".btn-download");
             $group.addClass("disabled");
@@ -268,7 +268,7 @@
         $setPageJump(totalPages);
         $toggleSpinner();
         $toggleResults();
-    }
+    };
 
     paginationOptions.onPageClick = async function (_, page) {
         await replacePage(page);
