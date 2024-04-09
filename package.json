@@ -46,6 +46,7 @@
     "copyfiles": "^2.4.1",
     "esbuild": "^0.20.2",
     "eslint": "^9.0.0",
+    "globals": "^15.0.0",
     "html-minifier-terser": "^7.2.0",
     "htmlhint": "^1.1.4",
     "markdownlint": "^0.34.0",
