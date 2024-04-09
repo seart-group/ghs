@@ -15,7 +15,7 @@
     "minify:css": "cleancss html/css/main.css --output dist/css/main.css",
     "minify:html": "html-minifier-terser --collapse-whitespace --remove-comments --minify-js --process-scripts='[\"text/html\",\"text/x-handlebars-template\"]' html/index.html --output dist/index.html",
     "lint": "npm-run-all --parallel lint:*",
-    "lint:js": "eslint html/js",
+    "lint:js": "eslint .",
     "lint:css": "stylelint html/css",
     "lint:html": "htmlhint html/*.html",
     "lint:md": "markdownlint *.md"
