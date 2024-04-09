@@ -5,8 +5,8 @@ Handlebars.registerHelper("startcase", _.startCase);
 Handlebars.registerHelper("bytes", function (value) {
     const k = 1024;
     const decimals = 2;
-    const units = ['B', 'KB', 'MB', 'GB', 'TB', 'PB'];
-    const point = decimals ? '.' : '';
+    const units = ["B", "KB", "MB", "GB", "TB", "PB"];
+    const point = decimals ? "." : "";
     const zeroes = _.repeat("0", decimals);
     if (!value) return `0${point}${zeroes} ${units[0]}`;
     const formatter = new Intl.NumberFormat("en-US", {
@@ -22,7 +22,7 @@ Handlebars.registerHelper("bytes", function (value) {
 
 // Localizes an integer (eg 100000 => '100,000')
 Handlebars.registerHelper("localized", function (value) {
-    return value.toLocaleString('en-US', {
+    return value.toLocaleString("en-US", {
         useGrouping: true,
         minimumFractionDigits: 0
     });
@@ -46,7 +46,7 @@ Handlebars.registerHelper("case", function (_value) {
     const args = Array.prototype.slice.call(arguments);
     const options = args.pop();
     if (this._switch_break_ || args.indexOf(this._switch_value_) === -1) {
-        return '';
+        return "";
     } else {
         if (options.hash.break === true) {
             this._switch_break_ = true;
