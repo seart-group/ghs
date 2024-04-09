@@ -1,2 +1,1 @@
-self.addEventListener('fetch', (_) => {
-});
+self.addEventListener("fetch", (_) => {});
