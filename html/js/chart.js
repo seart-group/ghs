@@ -93,10 +93,9 @@
                     const header = "\"language\",\"mined\",\"analyzed\",\"coverage\"";
                     const body = data.map(({ x: language, mined, analyzed }) => {
                         return `"${language}","${mined}","${analyzed}","${(analyzed / mined).toFixed(4)}"`;
-                    })
-                    .join("\n");
+                    }).join("\n");
                     const content = `${header}\n${body}\n`;
-                    const blob = new Blob([ content ], { type: 'text/csv;charset=utf-8,' });
+                    const blob = new Blob([ content ], { type: "text/csv;charset=utf-8," });
                     const url = URL.createObjectURL(blob);
                     const anchor = document.createElement("a");
                     anchor.setAttribute("href", url);
