@@ -14,7 +14,7 @@ Handlebars.registerHelper("bytes", function (value) {
         maximumFractionDigits: decimals,
         roundingIncrement: 1,
         useGrouping: false
-    })
+    });
     const i = Math.floor(Math.log(value) / Math.log(k));
     const f = formatter.format(value / Math.pow(k, i));
     return `${f} ${units[i]}`;
@@ -186,7 +186,7 @@ Handlebars.registerHelper("devicon", function (language) {
             return "devicon-llvm-plain";
         case "Perl":
         case "Perl 6":
-            return "devicon-perl-plain"
+            return "devicon-perl-plain";
         case "QMake":
         case "Qt Script":
             return "devicon-qt-original";
@@ -235,7 +235,7 @@ Handlebars.registerHelper("octicon", function (key) {
         case "size":
             return "file-code";
         case "created":
-            return "plus"
+            return "plus";
         case "updated":
             return "pencil";
         case "lastPush":
@@ -257,7 +257,7 @@ Handlebars.registerHelper("other-styles", function (key) {
        case "openPullReqs":
            return "text-danger";
        case "blankLines":
-           return "opacity-0"
+           return "opacity-0";
        default: return "";
    }
 });
