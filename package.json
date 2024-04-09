@@ -19,7 +19,8 @@
     "lint:css": "stylelint html/css",
     "lint:html": "htmlhint html/*.html",
     "lint:md": "markdownlint *.md",
-    "dev": "npm run build && http-server dist -a localhost -p 3030 -o -s"
+    "dev": "nodemon -x 'npm run dev:serve' -w html -e html,css,js",
+    "dev:serve": "npm run build && http-server dist -a localhost -p 3030"
   },
   "author": {
     "name": "Ozren Dabić",
