@@ -6,9 +6,11 @@ import ch.usi.si.seart.function.IOExceptingRunnable;
 import ch.usi.si.seart.hateoas.LinkBuilder;
 import ch.usi.si.seart.model.GitRepo;
 import ch.usi.si.seart.model.GitRepo_;
+import ch.usi.si.seart.model.Label;
 import ch.usi.si.seart.model.Language;
 import ch.usi.si.seart.model.License;
 import ch.usi.si.seart.service.GitRepoService;
+import ch.usi.si.seart.service.LabelService;
 import ch.usi.si.seart.service.LanguageService;
 import ch.usi.si.seart.service.LicenseService;
 import ch.usi.si.seart.service.StatisticsService;
@@ -52,9 +54,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
+import org.springframework.util.ObjectUtils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.persistence.EntityManager;
@@ -65,6 +69,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.xml.namespace.QName;
 import java.io.BufferedOutputStream;
 import java.io.IOException;
+import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -113,6 +118,7 @@ public class GitRepoController {
 
     GitRepoService gitRepoService;
     LicenseService licenseService;
+    LabelService labelService;
     LanguageService languageService;
     ConversionService conversionService;
     StatisticsService statisticsService;
@@ -341,9 +347,22 @@ public class GitRepoController {
     }
 
     @GetMapping(value = "/labels", produces = MediaType.APPLICATION_JSON_VALUE)
-    @Operation(summary = "Retrieve a list of the most popular issue labels mined across projects.")
-    public ResponseEntity<?> getAllLabels() {
-        return ResponseEntity.ok(statisticsService.getTopRankedLabelNames());
+    @Operation(summary = "Retrieve a list of matching issue labels mined across projects.")
+    public ResponseEntity<?> getAllLabels(
+            @RequestParam(required = false, defaultValue = "")
+            @Parameter(description = "The search term value", in = ParameterIn.QUERY)
+            String name,
+            @Parameter(description = "The search pagination settings", in = ParameterIn.QUERY)
+            Pageable pageable
+    ) {
+        Collection<Label> labels = ObjectUtils.isEmpty(name)
+                ? labelService.getAll()
+                : labelService.getByNameContains(name, pageable);
+        return ResponseEntity.ok(
+                labels.stream()
+                        .map(Label::getName)
+                        .toList()
+        );
     }
 
     @GetMapping(value = "/languages", produces = MediaType.APPLICATION_JSON_VALUE)

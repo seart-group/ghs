@@ -12,7 +12,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.Collection;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -27,8 +26,6 @@ public interface StatisticsService {
      *         The map entries are sorted in descending fashion by value.
      */
     Map<String, Map<String, Long>> getMainLanguageStats();
-
-    Collection<String> getTopRankedLabelNames();
 
     Collection<String> getTopRankedTopicNames();
 
@@ -58,12 +55,6 @@ public interface StatisticsService {
                             (key1, key2) -> key2,
                             LinkedHashMap::new
                     ));
-        }
-
-        @Override
-        public Collection<String> getTopRankedLabelNames() {
-            // TODO: FIX OR REMOVE
-            return List.of();
         }
 
         @Override
