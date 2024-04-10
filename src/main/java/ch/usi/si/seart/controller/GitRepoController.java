@@ -9,11 +9,13 @@ import ch.usi.si.seart.model.GitRepo_;
 import ch.usi.si.seart.model.Label;
 import ch.usi.si.seart.model.Language;
 import ch.usi.si.seart.model.License;
+import ch.usi.si.seart.model.Topic;
 import ch.usi.si.seart.service.GitRepoService;
 import ch.usi.si.seart.service.LabelService;
 import ch.usi.si.seart.service.LanguageService;
 import ch.usi.si.seart.service.LicenseService;
 import ch.usi.si.seart.service.StatisticsService;
+import ch.usi.si.seart.service.TopicService;
 import ch.usi.si.seart.web.ExportFormat;
 import ch.usi.si.seart.web.Headers;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -119,6 +121,7 @@ public class GitRepoController {
     GitRepoService gitRepoService;
     LicenseService licenseService;
     LabelService labelService;
+    TopicService topicService;
     LanguageService languageService;
     ConversionService conversionService;
     StatisticsService statisticsService;
@@ -394,9 +397,30 @@ public class GitRepoController {
     }
 
     @GetMapping(value = "/topics", produces = MediaType.APPLICATION_JSON_VALUE)
-    @Operation(summary = "Retrieve a list of all repository topics mined across projects.")
-    public ResponseEntity<?> getAllTopics() {
-        return ResponseEntity.ok(statisticsService.getTopRankedTopicNames());
+    @Operation(
+            summary = "Retrieve a list of matching repository topics mined across projects.",
+            description = """
+            Retrieve a list of repository topics that contain a specified substring in their names.
+            Up to 100 matches can be returned, sorted first by the position of the substring in the topic name,
+            and then by the number of times the topic has been used across all repositories.
+            If no substring is specified, the function returns the top 10 most frequently used topics instead.
+            """
+    )
+    public ResponseEntity<?> getAllTopics(
+            @RequestParam(required = false, defaultValue = "")
+            @Parameter(description = "The search term value", in = ParameterIn.QUERY)
+            String name,
+            @Parameter(description = "The search pagination settings", in = ParameterIn.QUERY)
+            Pageable pageable
+    ) {
+        Collection<Topic> topics = ObjectUtils.isEmpty(name)
+                ? topicService.getAll()
+                : topicService.getByNameContains(name, pageable);
+        return ResponseEntity.ok(
+                topics.stream()
+                        .map(Topic::getName)
+                        .toList()
+        );
     }
 
     @GetMapping("/stats")

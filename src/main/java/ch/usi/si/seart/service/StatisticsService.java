@@ -7,9 +7,7 @@ import lombok.experimental.FieldDefaults;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.Collection;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -24,8 +22,6 @@ public interface StatisticsService {
      *         The map entries are sorted in descending fashion by value.
      */
     Map<String, Map<String, Long>> getMainLanguageStats();
-
-    Collection<String> getTopRankedTopicNames();
 
     @Service
     @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
@@ -50,12 +46,6 @@ public interface StatisticsService {
                             (key1, key2) -> key2,
                             LinkedHashMap::new
                     ));
-        }
-
-        @Override
-        public Collection<String> getTopRankedTopicNames() {
-            // TODO: FIX OR REMOVE
-            return List.of();
         }
     }
 }
