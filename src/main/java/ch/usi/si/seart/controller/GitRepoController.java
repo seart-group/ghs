@@ -347,7 +347,15 @@ public class GitRepoController {
     }
 
     @GetMapping(value = "/labels", produces = MediaType.APPLICATION_JSON_VALUE)
-    @Operation(summary = "Retrieve a list of matching issue labels mined across projects.")
+    @Operation(
+            summary = "Retrieve a list of matching issue labels mined across projects.",
+            description = """
+            Retrieve a list of issue labels from repositories that contain a specified substring in their names.
+            Up to 10 matches are returned, sorted first by the position of the substring in the label name,
+            and then by the number of times the label has been used across all repositories.
+            If no substring is specified, the function returns the top 10 most frequently used labels instead.
+            """
+    )
     public ResponseEntity<?> getAllLabels(
             @RequestParam(required = false, defaultValue = "")
             @Parameter(description = "The search term value", in = ParameterIn.QUERY)
