@@ -1,17 +1,15 @@
 package ch.usi.si.seart.service;
 
-import ch.usi.si.seart.model.view.TopicView;
 import ch.usi.si.seart.repository.LanguageStatisticsRepository;
-import ch.usi.si.seart.repository.TopicViewRepository;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.Collection;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -34,10 +32,7 @@ public interface StatisticsService {
     @AllArgsConstructor(onConstructor_ = @Autowired)
     class StatisticsServiceImpl implements StatisticsService {
 
-        TopicViewRepository topicViewRepository;
         LanguageStatisticsRepository languageStatisticsRepository;
-
-        Pageable pageable;
 
         @Override
         public Map<String, Map<String, Long>> getMainLanguageStats() {
@@ -59,9 +54,8 @@ public interface StatisticsService {
 
         @Override
         public Collection<String> getTopRankedTopicNames() {
-            return topicViewRepository.findAll(pageable).stream()
-                    .map(TopicView::getName)
-                    .toList();
+            // TODO: FIX OR REMOVE
+            return List.of();
         }
     }
 }

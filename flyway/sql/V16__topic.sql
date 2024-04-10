@@ -1,3 +1,5 @@
+DROP TABLE IF EXISTS topic_ranked;
+
 CREATE OR REPLACE VIEW count_topic_by_git_repo AS
 SELECT
     topic_id,

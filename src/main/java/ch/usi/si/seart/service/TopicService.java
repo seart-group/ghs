@@ -1,18 +1,16 @@
 package ch.usi.si.seart.service;
 
 import ch.usi.si.seart.model.Topic;
-import ch.usi.si.seart.model.view.TopicView;
 import ch.usi.si.seart.repository.TopicRepository;
-import ch.usi.si.seart.repository.TopicViewRepository;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import javax.validation.constraints.NotNull;
 import java.util.Collection;
+import java.util.List;
 
 public interface TopicService extends NamedEntityService<Topic> {
 
@@ -22,9 +20,6 @@ public interface TopicService extends NamedEntityService<Topic> {
     class TopicServiceImpl implements TopicService {
 
         TopicRepository topicRepository;
-        TopicViewRepository topicViewRepository;
-
-        Pageable pageable;
 
         @Override
         public Topic getOrCreate(@NotNull String name) {
@@ -38,10 +33,8 @@ public interface TopicService extends NamedEntityService<Topic> {
 
         @Override
         public Collection<Topic> getAll() {
-            Collection<String> names = topicViewRepository.findAll(pageable).stream()
-                    .map(TopicView::getName)
-                    .toList();
-            return topicRepository.findAllByNameIn(names);
+            // TODO: FIX OR REMOVE
+            return List.of();
         }
     }
 }
