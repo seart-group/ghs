@@ -4,6 +4,7 @@
   "version": "1.14.3",
   "description": "Platform used to crawl, store and present projects from GitHub, as well as any statistics related to them.",
   "source": "html/index.html",
+  "type": "module",
   "scripts": {
     "prebuild": "rimraf dist",
     "build": "npm-run-all --parallel minify:*",
