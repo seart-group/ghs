@@ -1,8 +1,6 @@
 package ch.usi.si.seart.service;
 
-import ch.usi.si.seart.model.view.LabelView;
 import ch.usi.si.seart.model.view.TopicView;
-import ch.usi.si.seart.repository.LabelViewRepository;
 import ch.usi.si.seart.repository.LanguageStatisticsRepository;
 import ch.usi.si.seart.repository.TopicViewRepository;
 import lombok.AccessLevel;
@@ -14,6 +12,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.Collection;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -38,7 +37,6 @@ public interface StatisticsService {
     @AllArgsConstructor(onConstructor_ = @Autowired)
     class StatisticsServiceImpl implements StatisticsService {
 
-        LabelViewRepository labelViewRepository;
         TopicViewRepository topicViewRepository;
         LanguageStatisticsRepository languageStatisticsRepository;
 
@@ -64,9 +62,8 @@ public interface StatisticsService {
 
         @Override
         public Collection<String> getTopRankedLabelNames() {
-            return labelViewRepository.findAll(pageable).stream()
-                    .map(LabelView::getName)
-                    .toList();
+            // TODO: FIX OR REMOVE
+            return List.of();
         }
 
         @Override

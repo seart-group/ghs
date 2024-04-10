@@ -1,3 +1,5 @@
+DROP TABLE IF EXISTS label_ranked;
+
 CREATE OR REPLACE VIEW count_label_by_git_repo AS
 SELECT
     label_id,
