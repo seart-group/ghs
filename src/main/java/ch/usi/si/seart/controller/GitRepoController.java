@@ -356,7 +356,7 @@ public class GitRepoController {
             Retrieve a list of issue labels from repositories that contain a specified substring in their names.
             Up to 100 matches can be returned, sorted first by the position of the substring in the label name,
             and then by the number of times the label has been used across all repositories.
-            If no substring is specified, the function returns the top 10 most frequently used labels instead.
+            If no substring is specified, the function returns the most frequently used labels instead.
             """
     )
     public ResponseEntity<?> getAllLabels(
@@ -403,7 +403,7 @@ public class GitRepoController {
             Retrieve a list of repository topics that contain a specified substring in their names.
             Up to 100 matches can be returned, sorted first by the position of the substring in the topic name,
             and then by the number of times the topic has been used across all repositories.
-            If no substring is specified, the function returns the top 10 most frequently used topics instead.
+            If no substring is specified, the function returns the most frequently used topics instead.
             """
     )
     public ResponseEntity<?> getAllTopics(
