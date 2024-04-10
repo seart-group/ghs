@@ -46,8 +46,8 @@ public interface LabelService extends NamedEntityService<Label> {
 
         @Override
         public Collection<Label> getAll() {
-            // TODO: Replace hard-coded string with JPA metamodel
-            Pageable pageable = PageRequest.of(0, 20, Sort.Direction.DESC, "count");
+            Sort.Order order = Sort.Order.desc(Label.Statistics_.COUNT);
+            Pageable pageable = PageRequest.of(0, 20, Sort.by(order));
             return labelStatisticsRepository.findAll(pageable).stream()
                     .map(Label.Statistics::getLabel)
                     .toList();
