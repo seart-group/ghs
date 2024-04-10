@@ -124,22 +124,34 @@
                 />
               </div>
               <div class="col-12 col-md-4">
-                <input type="text"
-                       name="language"
-                       id="search-language"
-                       class="form-control mb-3"
-                       placeholder="Language"
-                       aria-label="Repository Language"
-                />
+                <div class="input-group mb-3">
+                  <input type="text"
+                         name="language"
+                         id="search-language"
+                         class="autocomplete form-control"
+                         placeholder="Language"
+                         aria-label="Repository Language"
+                         data-datalist="search-language-list"
+                  />
+                  <datalist id="search-language-list">
+                    <!-- LANGUAGE SEARCH OPTIONS WILL BE INJECTED HERE -->
+                  </datalist>
+                </div>
               </div>
               <div class="col-12 col-md-4">
-                <input type="text"
-                       name="license"
-                       id="search-license"
-                       class="form-control mb-3"
-                       placeholder="License"
-                       aria-label="Repository License"
-                />
+                <div class="input-group mb-3">
+                  <input type="text"
+                         name="license"
+                         id="search-license"
+                         class="autocomplete form-control"
+                         placeholder="License"
+                         aria-label="Repository License"
+                         data-datalist="search-license-list"
+                  />
+                  <datalist id="search-license-list">
+                    <!-- LICENSE SEARCH OPTIONS WILL BE INJECTED HERE -->
+                  </datalist>
+                </div>
               </div>
               <div class="col-12 col-md-4">
                 <input type="text"
@@ -1170,6 +1182,7 @@
     <script src="js/handlebars.js"></script>
     <script src="js/jquery.js"></script>
     <script src="js/general.js"></script>
+    <script src="js/language.js" type="module"></script>
     <script src="js/typeahead.js"></script>
     <script src="js/chart.js"></script>
     <script src="js/search.js"></script>
