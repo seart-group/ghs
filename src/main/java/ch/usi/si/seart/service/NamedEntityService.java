@@ -21,10 +21,7 @@ public interface NamedEntityService<E> {
     E getOrCreate(@NotNull String name);
 
     /**
-     * @return A collection of the entities in a specified order.
-     * The notion of "order" is left to the discretion of the programmer.
-     * For instance one can order by the frequency of occurrence in descending order.
-     * An alternative is to just order alphabetically.
+     * @return A collection of all the entities.
      */
-    Collection<E> getRanked();
+    Collection<E> getAll();
 }

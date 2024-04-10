@@ -350,7 +350,7 @@ public class GitRepoController {
     @Operation(summary = "Retrieve a list of all repository languages mined across projects.")
     public ResponseEntity<?> getAllLanguages() {
         return ResponseEntity.ok(
-                languageService.getRanked().stream()
+                languageService.getAll().stream()
                         .map(Language::getName)
                         .toList()
         );
@@ -360,7 +360,7 @@ public class GitRepoController {
     @Operation(summary = "Retrieve a list of all repository licenses mined across projects.")
     public ResponseEntity<?> getAllLicenses() {
         return ResponseEntity.ok(
-                licenseService.getRanked().stream()
+                licenseService.getAll().stream()
                         .map(License::getName)
                         .toList()
         );

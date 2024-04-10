@@ -37,7 +37,7 @@ public interface TopicService extends NamedEntityService<Topic> {
         }
 
         @Override
-        public Collection<Topic> getRanked() {
+        public Collection<Topic> getAll() {
             Collection<String> names = topicViewRepository.findAll(pageable).stream()
                     .map(TopicView::getName)
                     .toList();

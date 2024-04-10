@@ -30,7 +30,7 @@ public interface LicenseService extends NamedEntityService<License> {
         }
 
         @Override
-        public Collection<License> getRanked() {
+        public Collection<License> getAll() {
             return licenseRepository.findAll();
         }
     }

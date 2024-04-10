@@ -71,7 +71,7 @@ public interface LanguageService extends NamedEntityService<Language> {
         }
 
         @Override
-        public Collection<Language> getRanked() {
+        public Collection<Language> getAll() {
             return languageRepository.findAll(Sort.by("name"));
         }
 

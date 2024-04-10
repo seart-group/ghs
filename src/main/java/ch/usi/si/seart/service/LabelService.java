@@ -32,7 +32,7 @@ public interface LabelService extends NamedEntityService<Label> {
         }
 
         @Override
-        public Collection<Label> getRanked() {
+        public Collection<Label> getAll() {
             // TODO: FIX OR REMOVE
             return List.of();
         }
