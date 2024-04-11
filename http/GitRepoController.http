@@ -1,6 +1,9 @@
 ### GET /r/{id}
 GET http://localhost:8080/api/r/{{repo_id}}
 
+### GET /r/{owner}/{name}
+GET http://localhost:8080/api/r/{{repo_owner}}/{{repo_name}}
+
 ### GET /r/search
 GET http://localhost:8080/api/r/search
 
