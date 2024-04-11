@@ -45,6 +45,7 @@ public interface LanguageRepository extends JpaRepository<Language, Long> {
             countQuery = """
             select count(language)
             from Language language
+            where language.name like concat('%', :seq, '%')
             """
     )
     Page<Language> findAllByNameContainsOrderByBestMatch(@Param("seq") String name, Pageable pageable);
