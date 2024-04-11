@@ -72,7 +72,6 @@ import javax.xml.namespace.QName;
 import java.io.BufferedOutputStream;
 import java.io.IOException;
 import java.util.Collection;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -157,28 +156,14 @@ public class GitRepoController {
         PageRequest pageRequest = PageRequest.of(page, size, sort);
 
         Specification<GitRepo> specification = conversionService.convert(searchParameterDto, Specification.class);
-        Page<GitRepo> results = gitRepoService.getBy(specification, pageRequest);
-
-        List<GitRepoDto> dtos = List.of(
-                conversionService.convert(
-                        results.getContent().toArray(GitRepo[]::new), GitRepoDto[].class
-                )
-        );
-
-        long totalItems = results.getTotalElements();
-        int totalPages = results.getTotalPages();
-
-        Map<String, Object> resultPage = new LinkedHashMap<>();
-        resultPage.put("totalPages", totalPages);
-        resultPage.put("totalItems", totalItems);
-        resultPage.put("page", page + 1);
-        resultPage.put("items", dtos);
+        Page<GitRepoDto> results = gitRepoService.getBy(specification, pageRequest)
+                .map(result -> conversionService.convert(result, GitRepoDto.class));
 
         MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
         headers.add(Headers.X_LINK_SEARCH, searchLinkBuilder.getLinks(request, results));
         headers.add(Headers.X_LINK_DOWNLOAD, downloadLinkBuilder.getLinks(request));
 
-        return new ResponseEntity<>(resultPage, headers, HttpStatus.OK);
+        return new ResponseEntity<>(results, headers, HttpStatus.OK);
     }
 
     @SuppressWarnings("unchecked")
