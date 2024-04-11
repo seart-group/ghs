@@ -50,4 +50,31 @@ public interface LanguageRepository extends JpaRepository<Language, Long> {
             """
     )
     Page<Language> findAllByNameContainsOrderByBestMatch(@Param("seq") String name, Pageable pageable);
+
+    @Query(
+            value = """
+            select language
+            from Language language
+            inner join language.statistics
+            where language.name like concat('%', :seq, '%')
+            order by
+                case
+                    when language.name = :seq then 0
+                    when language.name like concat(:seq, '%') then 1
+                    when language.name like concat('%', :seq) then 3
+                    else 2
+                end,
+                language.statistics.mined desc,
+                language.name
+            """,
+            countQuery = """
+            select count(language)
+            from Language language
+            inner join language.statistics
+            where language.name like concat('%', :seq, '%')
+            """
+    )
+    Page<Language> findAllByNameContainsAndStatisticsMinedOrderByBestMatch(
+            @Param("seq") String name, Pageable pageable
+    );
 }

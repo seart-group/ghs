@@ -4,6 +4,7 @@ import ch.usi.si.seart.config.properties.CrawlerProperties;
 import ch.usi.si.seart.model.Language;
 import ch.usi.si.seart.repository.LanguageProgressRepository;
 import ch.usi.si.seart.repository.LanguageRepository;
+import ch.usi.si.seart.repository.LanguageStatisticsRepository;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -13,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityNotFoundException;
@@ -28,6 +30,8 @@ public interface LanguageService extends NamedEntityService<Language> {
     Collection<Language> getTargetedLanguages();
     Language.Progress getProgress(Language language);
     void updateProgress(Language language, Date checkpoint);
+    Page<Language> getAllMined(Pageable pageable);
+    Page<Language> getMinedByNameContains(String name, Pageable pageable);
 
     @Slf4j
     @Service
@@ -39,6 +43,7 @@ public interface LanguageService extends NamedEntityService<Language> {
 
         LanguageRepository languageRepository;
         LanguageProgressRepository languageProgressRepository;
+        LanguageStatisticsRepository languageStatisticsRepository;
 
         ReadWriteLock readWriteLock = new ReentrantReadWriteLock();
 
@@ -80,6 +85,26 @@ public interface LanguageService extends NamedEntityService<Language> {
         @Override
         public Page<Language> getByNameContains(String name, Pageable pageable) {
             return languageRepository.findAllByNameContainsOrderByBestMatch(
+                    name, PageRequest.of(
+                            pageable.getPageNumber(),
+                            pageable.getPageSize()
+                    )
+            );
+        }
+
+        @Override
+        public Page<Language> getAllMined(Pageable pageable) {
+            return languageStatisticsRepository.findAll(PageRequest.of(
+                    pageable.getPageNumber(),
+                    pageable.getPageSize(),
+                    Sort.Direction.DESC,
+                    Language.Statistics_.MINED
+            )).map(Language.Statistics::getLanguage);
+        }
+
+        @Override
+        public Page<Language> getMinedByNameContains(String name, Pageable pageable) {
+            return languageRepository.findAllByNameContainsAndStatisticsMinedOrderByBestMatch(
                     name, PageRequest.of(
                             pageable.getPageNumber(),
                             pageable.getPageSize()
