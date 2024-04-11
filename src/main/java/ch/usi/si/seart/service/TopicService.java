@@ -21,8 +21,6 @@ import java.util.Collection;
 
 public interface TopicService extends NamedEntityService<Topic> {
 
-    Collection<Topic> getByNameContains(String name, Pageable pageable);
-
     @Service
     @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
     @AllArgsConstructor(onConstructor_ = @Autowired)

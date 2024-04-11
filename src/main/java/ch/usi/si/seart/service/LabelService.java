@@ -21,8 +21,6 @@ import java.util.Collection;
 
 public interface LabelService extends NamedEntityService<Label> {
 
-    Collection<Label> getByNameContains(String name, Pageable pageable);
-
     @Service
     @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
     @AllArgsConstructor(onConstructor_ = @Autowired)

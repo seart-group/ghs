@@ -377,13 +377,26 @@ public class GitRepoController {
     }
 
     @GetMapping(value = "/languages", produces = MediaType.APPLICATION_JSON_VALUE)
-    @Operation(summary = "Retrieve a list of all repository languages mined across projects.")
+    @Operation(
+            summary = "Retrieve a list of matching repository languages mined across projects.",
+            description = """
+            Retrieve a list of repository languages that contain a specified substring in their names.
+            Up to 100 matches can be returned, sorted first by the position of the substring in the language name.
+            If no substring is specified, the function returns all languages in an alphabetical order.
+            """
+    )
     public ResponseEntity<?> getAllLanguages(
+            @RequestParam(required = false, defaultValue = "")
+            @Parameter(description = "The search term value", in = ParameterIn.QUERY)
+            String name,
             @Parameter(description = "The search pagination settings", in = ParameterIn.QUERY)
             Pageable pageable
     ) {
+        Collection<Language> languages = ObjectUtils.isEmpty(name)
+                ? languageService.getAll(pageable)
+                : languageService.getByNameContains(name, pageable);
         return ResponseEntity.ok(
-                languageService.getAll(pageable).stream()
+                languages.stream()
                         .map(Language::getName)
                         .toList()
         );

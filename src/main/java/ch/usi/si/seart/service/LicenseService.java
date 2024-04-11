@@ -20,8 +20,6 @@ import java.util.Collection;
 
 public interface LicenseService extends NamedEntityService<License> {
 
-    Collection<License> getByNameContains(String name, Pageable pageable);
-
     @Service
     @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
     @AllArgsConstructor(onConstructor_ = @Autowired)
