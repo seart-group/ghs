@@ -6,6 +6,7 @@ import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.Collection;
@@ -30,8 +31,8 @@ public interface LicenseService extends NamedEntityService<License> {
         }
 
         @Override
-        public Collection<License> getAll() {
-            return licenseRepository.findAll();
+        public Collection<License> getAll(Pageable pageable) {
+            return licenseRepository.findAll(pageable).getContent();
         }
     }
 }

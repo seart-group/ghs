@@ -10,7 +10,7 @@ import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityNotFoundException;
@@ -71,8 +71,8 @@ public interface LanguageService extends NamedEntityService<Language> {
         }
 
         @Override
-        public Collection<Language> getAll() {
-            return languageRepository.findAll(Sort.by("name"));
+        public Collection<Language> getAll(Pageable pageable) {
+            return languageRepository.findAll(pageable).getContent();
         }
 
         @Override

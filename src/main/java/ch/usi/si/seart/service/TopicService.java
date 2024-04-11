@@ -45,10 +45,14 @@ public interface TopicService extends NamedEntityService<Topic> {
         }
 
         @Override
-        public Collection<Topic> getAll() {
-            Sort.Order order = Sort.Order.desc(Topic.Statistics_.COUNT);
-            Pageable pageable = PageRequest.of(0, 20, Sort.by(order));
-            return topicStatisticsRepository.findAll(pageable).stream()
+        public Collection<Topic> getAll(Pageable pageable) {
+            Pageable adjusted = PageRequest.of(
+                    pageable.getPageNumber(),
+                    pageable.getPageSize(),
+                    Sort.Direction.DESC,
+                    Topic.Statistics_.COUNT
+            );
+            return topicStatisticsRepository.findAll(adjusted).stream()
                     .map(Topic.Statistics::getTopic)
                     .toList();
         }

@@ -1,5 +1,7 @@
 package ch.usi.si.seart.service;
 
+import org.springframework.data.domain.Pageable;
+
 import javax.validation.constraints.NotNull;
 import java.util.Collection;
 
@@ -23,5 +25,5 @@ public interface NamedEntityService<E> {
     /**
      * @return A collection of all the entities.
      */
-    Collection<E> getAll();
+    Collection<E> getAll(Pageable pageable);
 }

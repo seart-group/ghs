@@ -367,7 +367,7 @@ public class GitRepoController {
             Pageable pageable
     ) {
         Collection<Label> labels = ObjectUtils.isEmpty(name)
-                ? labelService.getAll()
+                ? labelService.getAll(pageable)
                 : labelService.getByNameContains(name, pageable);
         return ResponseEntity.ok(
                 labels.stream()
@@ -378,9 +378,12 @@ public class GitRepoController {
 
     @GetMapping(value = "/languages", produces = MediaType.APPLICATION_JSON_VALUE)
     @Operation(summary = "Retrieve a list of all repository languages mined across projects.")
-    public ResponseEntity<?> getAllLanguages() {
+    public ResponseEntity<?> getAllLanguages(
+            @Parameter(description = "The search pagination settings", in = ParameterIn.QUERY)
+            Pageable pageable
+    ) {
         return ResponseEntity.ok(
-                languageService.getAll().stream()
+                languageService.getAll(pageable).stream()
                         .map(Language::getName)
                         .toList()
         );
@@ -388,9 +391,12 @@ public class GitRepoController {
 
     @GetMapping(value = "/licenses", produces = MediaType.APPLICATION_JSON_VALUE)
     @Operation(summary = "Retrieve a list of all repository licenses mined across projects.")
-    public ResponseEntity<?> getAllLicenses() {
+    public ResponseEntity<?> getAllLicenses(
+            @Parameter(description = "The search pagination settings", in = ParameterIn.QUERY)
+            Pageable pageable
+    ) {
         return ResponseEntity.ok(
-                licenseService.getAll().stream()
+                licenseService.getAll(pageable).stream()
                         .map(License::getName)
                         .toList()
         );
@@ -414,7 +420,7 @@ public class GitRepoController {
             Pageable pageable
     ) {
         Collection<Topic> topics = ObjectUtils.isEmpty(name)
-                ? topicService.getAll()
+                ? topicService.getAll(pageable)
                 : topicService.getByNameContains(name, pageable);
         return ResponseEntity.ok(
                 topics.stream()

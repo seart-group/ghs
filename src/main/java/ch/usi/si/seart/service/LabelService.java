@@ -45,10 +45,14 @@ public interface LabelService extends NamedEntityService<Label> {
         }
 
         @Override
-        public Collection<Label> getAll() {
-            Sort.Order order = Sort.Order.desc(Label.Statistics_.COUNT);
-            Pageable pageable = PageRequest.of(0, 20, Sort.by(order));
-            return labelStatisticsRepository.findAll(pageable).stream()
+        public Collection<Label> getAll(Pageable pageable) {
+            Pageable adjusted = PageRequest.of(
+                    pageable.getPageNumber(),
+                    pageable.getPageSize(),
+                    Sort.Direction.DESC,
+                    Label.Statistics_.COUNT
+            );
+            return labelStatisticsRepository.findAll(adjusted).stream()
                     .map(Label.Statistics::getLabel)
                     .toList();
         }
