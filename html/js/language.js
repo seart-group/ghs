@@ -35,7 +35,7 @@ import Autocomplete from "https://cdn.jsdelivr.net/npm/bootstrap5-autocomplete@1
             body: "Could not retrieve language suggestions!",
         })));
 
-    fetch(`${base}/r/licenses`)
+    fetch(`${base}/r/licenses?${ new URLSearchParams({ size: 100 }) }`)
         .then(response => response.json())
         .then(data => {
             const html = data.map(create_option).join("");
