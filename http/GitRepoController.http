@@ -5,7 +5,10 @@ GET http://localhost:8080/api/r/{{repo_id}}
 GET http://localhost:8080/api/r/search
 
 ### GET /r/labels
-GET http://localhost:8080/api/r/labels?name={{label_name}}&page={{label_page}}
+GET http://localhost:8080/api/r/labels?name={{label_name}}&page={{page}}
+
+### GET /r/topics
+GET http://localhost:8080/api/r/topics?name={{topic_name}}&page={{page}}
 
 ### GET /r/languages
 GET http://localhost:8080/api/r/languages
