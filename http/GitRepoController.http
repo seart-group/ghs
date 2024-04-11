@@ -14,7 +14,7 @@ GET http://localhost:8080/api/r/topics?name={{topic_name}}&page={{page}}
 GET http://localhost:8080/api/r/languages
 
 ### GET /r/licenses
-GET http://localhost:8080/api/r/licenses
+GET http://localhost:8080/api/r/licenses?name={{license_name}}&page={{page}}
 
 ### GET /r/stats
 GET http://localhost:8080/api/r/stats
