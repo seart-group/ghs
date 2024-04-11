@@ -390,13 +390,27 @@ public class GitRepoController {
     }
 
     @GetMapping(value = "/licenses", produces = MediaType.APPLICATION_JSON_VALUE)
-    @Operation(summary = "Retrieve a list of all repository licenses mined across projects.")
+    @Operation(
+            summary = "Retrieve a list of matching repository licenses mined across projects.",
+            description = """
+            Retrieve a list of repository licenses that contain a specified substring in their names.
+            Up to 100 matches can be returned, sorted first by the position of the substring in the license name,
+            and then by the number of times the license has been used across all repositories.
+            If no substring is specified, the function returns the most frequently used licenses instead.
+            """
+    )
     public ResponseEntity<?> getAllLicenses(
+            @RequestParam(required = false, defaultValue = "")
+            @Parameter(description = "The search term value", in = ParameterIn.QUERY)
+            String name,
             @Parameter(description = "The search pagination settings", in = ParameterIn.QUERY)
             Pageable pageable
     ) {
+        Collection<License> licenses = ObjectUtils.isEmpty(name)
+                ? licenseService.getAll(pageable)
+                : licenseService.getByNameContains(name, pageable);
         return ResponseEntity.ok(
-                licenseService.getAll(pageable).stream()
+                licenses.stream()
                         .map(License::getName)
                         .toList()
         );
