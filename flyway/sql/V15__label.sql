@@ -1,6 +1,6 @@
 DROP TABLE IF EXISTS label_ranked;
 
-CREATE OR REPLACE VIEW count_label_by_git_repo AS
+CREATE OR REPLACE VIEW count_git_repo_by_label AS
 SELECT
     label_id,
     COUNT(repo_id) AS count
@@ -12,7 +12,7 @@ CREATE TABLE label_statistics (
         PRIMARY KEY,
     count BIGINT NOT NULL
 )
-SELECT * FROM count_label_by_git_repo;
+SELECT * FROM count_git_repo_by_label;
 
 CREATE INDEX count_idx ON label_statistics (count);
 

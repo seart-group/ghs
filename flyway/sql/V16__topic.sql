@@ -1,6 +1,6 @@
 DROP TABLE IF EXISTS topic_ranked;
 
-CREATE OR REPLACE VIEW count_topic_by_git_repo AS
+CREATE OR REPLACE VIEW count_git_repo_by_topic AS
 SELECT
     topic_id,
     COUNT(repo_id) AS count
@@ -12,7 +12,7 @@ CREATE TABLE topic_statistics (
         PRIMARY KEY,
     count BIGINT NOT NULL
 )
-SELECT * FROM count_topic_by_git_repo;
+SELECT * FROM count_git_repo_by_topic;
 
 CREATE INDEX count_idx ON topic_statistics (count);
 
