@@ -18,10 +18,11 @@ public interface LanguageRepository extends JpaRepository<Language, Long> {
 
     @Query(
         """
-        select l from Language l
-        inner join l.progress
-        where l.name in (:names)
-        order by l.progress.checkpoint
+        select language
+        from Language language
+        inner join language.progress
+        where language.name in (:names)
+        order by language.progress.checkpoint
         """
     )
     List<Language> findAllByNameInOrderByProgress(Collection<@NotNull String> names);
