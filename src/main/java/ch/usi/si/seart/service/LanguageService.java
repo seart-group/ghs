@@ -10,14 +10,11 @@ import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import javax.persistence.EntityManager;
 import javax.persistence.EntityNotFoundException;
-import javax.persistence.PersistenceContext;
-import javax.persistence.Tuple;
-import javax.persistence.TypedQuery;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
@@ -41,9 +38,6 @@ public interface LanguageService extends NamedEntityService<Language> {
 
         LanguageRepository languageRepository;
         LanguageProgressRepository languageProgressRepository;
-
-        @PersistenceContext
-        EntityManager entityManager;
 
         ReadWriteLock readWriteLock = new ReentrantReadWriteLock();
 
@@ -82,44 +76,14 @@ public interface LanguageService extends NamedEntityService<Language> {
             return languageRepository.findAll(pageable).getContent();
         }
 
-        /*
-         * This query works fine, but IntelliJ doesn't like it for some reason.
-         * This comment acts as a reminder on why the inspection is suppressed.
-         */
-        @SuppressWarnings("JpaQlInspection")
         @Override
         public Collection<Language> getByNameContains(String name, Pageable pageable) {
-            TypedQuery<Tuple> query = entityManager.createQuery(
-                    """
-                    select language,
-                    case when language.name = :seq then 0
-                         when language.name like concat(:seq, '%') then 1
-                         when language.name like concat('%', :seq) then 3
-                         else 2
-                    end as score
-                    from Language language
-                    left join language.statistics
-                    where language.name like concat('%', :seq, '%')
-                    order by
-                        score,
-                        language.statistics.mined desc nulls last,
-                        language.name
-                    """,
-                    Tuple.class
-            );
-            int limit = pageable.getPageSize();
-            int offset = Math.toIntExact(pageable.getOffset());
-            return query.setParameter("seq", name)
-                    .setFirstResult(offset)
-                    .setMaxResults(limit)
-                    .getResultList()
-                    .stream()
-                    .map(this::convert)
-                    .toList();
-        }
-
-        private Language convert(Tuple tuple) {
-            return tuple.get(0, Language.class);
+            return languageRepository.findAllByNameContainsOrderByBestMatch(
+                    name, PageRequest.of(
+                            pageable.getPageNumber(),
+                            pageable.getPageSize()
+                    )
+            ).getContent();
         }
 
         @Override

@@ -12,10 +12,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import javax.persistence.Tuple;
-import javax.persistence.TypedQuery;
 import javax.validation.constraints.NotNull;
 import java.util.Collection;
 
@@ -28,9 +24,6 @@ public interface LabelService extends NamedEntityService<Label> {
 
         LabelRepository labelRepository;
         LabelStatisticsRepository labelStatisticsRepository;
-
-        @PersistenceContext
-        EntityManager entityManager;
 
         @Override
         public Label getOrCreate(@NotNull String name) {
@@ -55,44 +48,14 @@ public interface LabelService extends NamedEntityService<Label> {
                     .toList();
         }
 
-        /*
-         * This query works fine, but IntelliJ doesn't like it for some reason.
-         * This comment acts as a reminder on why the inspection is suppressed.
-         */
-        @SuppressWarnings("JpaQlInspection")
         @Override
         public Collection<Label> getByNameContains(String name, Pageable pageable) {
-            TypedQuery<Tuple> query = entityManager.createQuery(
-                    """
-                    select label,
-                    case when label.name = :seq then 0
-                         when label.name like concat(:seq, '%') then 1
-                         when label.name like concat('%', :seq) then 3
-                         else 2
-                    end as score
-                    from Label label
-                    inner join label.statistics
-                    where label.name like concat('%', :seq, '%')
-                    order by
-                        score,
-                        label.statistics.count desc,
-                        label.name
-                    """,
-                    Tuple.class
-            );
-            int limit = pageable.getPageSize();
-            int offset = Math.toIntExact(pageable.getOffset());
-            return query.setParameter("seq", name)
-                    .setFirstResult(offset)
-                    .setMaxResults(limit)
-                    .getResultList()
-                    .stream()
-                    .map(this::convert)
-                    .toList();
-        }
-
-        private Label convert(Tuple tuple) {
-            return tuple.get(0, Label.class);
+            return labelRepository.findAllByNameContainsOrderByBestMatch(
+                    name, PageRequest.of(
+                            pageable.getPageNumber(),
+                            pageable.getPageSize()
+                    )
+            ).getContent();
         }
     }
 }

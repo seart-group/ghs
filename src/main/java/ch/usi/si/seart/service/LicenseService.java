@@ -12,10 +12,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import javax.persistence.Tuple;
-import javax.persistence.TypedQuery;
 import java.util.Collection;
 
 public interface LicenseService extends NamedEntityService<License> {
@@ -27,9 +23,6 @@ public interface LicenseService extends NamedEntityService<License> {
 
         LicenseRepository licenseRepository;
         LicenseStatisticsRepository licenseStatisticsRepository;
-
-        @PersistenceContext
-        EntityManager entityManager;
 
         @Override
         public License getOrCreate(String name) {
@@ -54,44 +47,14 @@ public interface LicenseService extends NamedEntityService<License> {
                     .toList();
         }
 
-        /*
-         * This query works fine, but IntelliJ doesn't like it for some reason.
-         * This comment acts as a reminder on why the inspection is suppressed.
-         */
-        @SuppressWarnings("JpaQlInspection")
         @Override
         public Collection<License> getByNameContains(String name, Pageable pageable) {
-            TypedQuery<Tuple> query = entityManager.createQuery(
-                    """
-                    select license,
-                    case when license.name = :seq then 0
-                         when license.name like concat(:seq, '%') then 1
-                         when license.name like concat('%', :seq) then 3
-                         else 2
-                    end as score
-                    from License license
-                    inner join license.statistics
-                    where license.name like concat('%', :seq, '%')
-                    order by
-                        score,
-                        license.statistics.count desc,
-                        license.name
-                    """,
-                    Tuple.class
-            );
-            int limit = pageable.getPageSize();
-            int offset = Math.toIntExact(pageable.getOffset());
-            return query.setParameter("seq", name)
-                    .setFirstResult(offset)
-                    .setMaxResults(limit)
-                    .getResultList()
-                    .stream()
-                    .map(this::convert)
-                    .toList();
-        }
-
-        private License convert(Tuple tuple) {
-            return tuple.get(0, License.class);
+            return licenseRepository.findAllByNameContainsOrderByBestMatch(
+                    name, PageRequest.of(
+                            pageable.getPageNumber(),
+                            pageable.getPageSize()
+                    )
+            ).getContent();
         }
     }
 }
