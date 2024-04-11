@@ -7,13 +7,13 @@ import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import javax.validation.constraints.NotNull;
-import java.util.Collection;
 
 public interface TopicService extends NamedEntityService<Topic> {
 
@@ -36,26 +36,25 @@ public interface TopicService extends NamedEntityService<Topic> {
         }
 
         @Override
-        public Collection<Topic> getAll(Pageable pageable) {
-            Pageable adjusted = PageRequest.of(
-                    pageable.getPageNumber(),
-                    pageable.getPageSize(),
-                    Sort.Direction.DESC,
-                    Topic.Statistics_.COUNT
-            );
-            return topicStatisticsRepository.findAll(adjusted).stream()
-                    .map(Topic.Statistics::getTopic)
-                    .toList();
+        public Page<Topic> getAll(Pageable pageable) {
+            return topicStatisticsRepository.findAll(
+                    PageRequest.of(
+                            pageable.getPageNumber(),
+                            pageable.getPageSize(),
+                            Sort.Direction.DESC,
+                            Topic.Statistics_.COUNT
+                    )
+            ).map(Topic.Statistics::getTopic);
         }
 
         @Override
-        public Collection<Topic> getByNameContains(String name, Pageable pageable) {
+        public Page<Topic> getByNameContains(String name, Pageable pageable) {
             return topicRepository.findAllByNameContainsOrderByBestMatch(
                     name, PageRequest.of(
                             pageable.getPageNumber(),
                             pageable.getPageSize()
                     )
-            ).getContent();
+            );
         }
     }
 }

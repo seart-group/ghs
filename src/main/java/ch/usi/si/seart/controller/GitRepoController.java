@@ -71,7 +71,6 @@ import javax.servlet.http.HttpServletResponse;
 import javax.xml.namespace.QName;
 import java.io.BufferedOutputStream;
 import java.io.IOException;
-import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -351,14 +350,10 @@ public class GitRepoController {
             @Parameter(description = "The search pagination settings", in = ParameterIn.QUERY)
             Pageable pageable
     ) {
-        Collection<Label> labels = ObjectUtils.isEmpty(name)
+        Page<Label> labels = ObjectUtils.isEmpty(name)
                 ? labelService.getAll(pageable)
                 : labelService.getByNameContains(name, pageable);
-        return ResponseEntity.ok(
-                labels.stream()
-                        .map(Label::getName)
-                        .toList()
-        );
+        return ResponseEntity.ok(labels.map(Label::getName));
     }
 
     @GetMapping(value = "/languages", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -377,14 +372,10 @@ public class GitRepoController {
             @Parameter(description = "The search pagination settings", in = ParameterIn.QUERY)
             Pageable pageable
     ) {
-        Collection<Language> languages = ObjectUtils.isEmpty(name)
+        Page<Language> languages = ObjectUtils.isEmpty(name)
                 ? languageService.getAll(pageable)
                 : languageService.getByNameContains(name, pageable);
-        return ResponseEntity.ok(
-                languages.stream()
-                        .map(Language::getName)
-                        .toList()
-        );
+        return ResponseEntity.ok(languages.map(Language::getName));
     }
 
     @GetMapping(value = "/licenses", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -404,14 +395,10 @@ public class GitRepoController {
             @Parameter(description = "The search pagination settings", in = ParameterIn.QUERY)
             Pageable pageable
     ) {
-        Collection<License> licenses = ObjectUtils.isEmpty(name)
+        Page<License> page = ObjectUtils.isEmpty(name)
                 ? licenseService.getAll(pageable)
                 : licenseService.getByNameContains(name, pageable);
-        return ResponseEntity.ok(
-                licenses.stream()
-                        .map(License::getName)
-                        .toList()
-        );
+        return ResponseEntity.ok(page.map(License::getName));
     }
 
     @GetMapping(value = "/topics", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -431,14 +418,10 @@ public class GitRepoController {
             @Parameter(description = "The search pagination settings", in = ParameterIn.QUERY)
             Pageable pageable
     ) {
-        Collection<Topic> topics = ObjectUtils.isEmpty(name)
+        Page<Topic> page = ObjectUtils.isEmpty(name)
                 ? topicService.getAll(pageable)
                 : topicService.getByNameContains(name, pageable);
-        return ResponseEntity.ok(
-                topics.stream()
-                        .map(Topic::getName)
-                        .toList()
-        );
+        return ResponseEntity.ok(page.map(Topic::getName));
     }
 
     @GetMapping("/stats")

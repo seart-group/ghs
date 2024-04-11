@@ -10,6 +10,7 @@ import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -72,18 +73,18 @@ public interface LanguageService extends NamedEntityService<Language> {
         }
 
         @Override
-        public Collection<Language> getAll(Pageable pageable) {
-            return languageRepository.findAll(pageable).getContent();
+        public Page<Language> getAll(Pageable pageable) {
+            return languageRepository.findAll(pageable);
         }
 
         @Override
-        public Collection<Language> getByNameContains(String name, Pageable pageable) {
+        public Page<Language> getByNameContains(String name, Pageable pageable) {
             return languageRepository.findAllByNameContainsOrderByBestMatch(
                     name, PageRequest.of(
                             pageable.getPageNumber(),
                             pageable.getPageSize()
                     )
-            ).getContent();
+            );
         }
 
         @Override
