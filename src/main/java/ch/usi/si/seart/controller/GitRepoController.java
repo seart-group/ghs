@@ -40,6 +40,7 @@ import lombok.Cleanup;
 import lombok.Getter;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
+import org.springdoc.api.annotations.ParameterObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.core.convert.ConversionService;
@@ -138,7 +139,7 @@ public class GitRepoController {
     public ResponseEntity<?> searchRepos(
             @Parameter(description = "The repository match criteria", in = ParameterIn.QUERY)
             SearchParameterDto searchParameterDto,
-            @Parameter(description = "The search pagination settings", in = ParameterIn.QUERY)
+            @ParameterObject
             @SortDefault(sort = GitRepo_.NAME)
             Pageable pageable,
             HttpServletRequest request
@@ -347,7 +348,7 @@ public class GitRepoController {
             @RequestParam(required = false, defaultValue = "")
             @Parameter(description = "The search term value", in = ParameterIn.QUERY)
             String name,
-            @Parameter(description = "The search pagination settings", in = ParameterIn.QUERY)
+            @ParameterObject
             Pageable pageable
     ) {
         Page<Label> labels = ObjectUtils.isEmpty(name)
@@ -369,7 +370,7 @@ public class GitRepoController {
             @RequestParam(required = false, defaultValue = "")
             @Parameter(description = "The search term value", in = ParameterIn.QUERY)
             String name,
-            @Parameter(description = "The search pagination settings", in = ParameterIn.QUERY)
+            @ParameterObject
             Pageable pageable
     ) {
         Page<Language> languages = ObjectUtils.isEmpty(name)
@@ -392,7 +393,7 @@ public class GitRepoController {
             @RequestParam(required = false, defaultValue = "")
             @Parameter(description = "The search term value", in = ParameterIn.QUERY)
             String name,
-            @Parameter(description = "The search pagination settings", in = ParameterIn.QUERY)
+            @ParameterObject
             Pageable pageable
     ) {
         Page<License> page = ObjectUtils.isEmpty(name)
@@ -415,7 +416,7 @@ public class GitRepoController {
             @RequestParam(required = false, defaultValue = "")
             @Parameter(description = "The search term value", in = ParameterIn.QUERY)
             String name,
-            @Parameter(description = "The search pagination settings", in = ParameterIn.QUERY)
+            @ParameterObject
             Pageable pageable
     ) {
         Page<Topic> page = ObjectUtils.isEmpty(name)

@@ -11,6 +11,7 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
+import org.springdoc.api.annotations.ParameterObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -42,7 +43,7 @@ public class LanguageController {
             @RequestParam(required = false, defaultValue = "")
             @Parameter(description = "The search term value", in = ParameterIn.QUERY)
             String name,
-            @Parameter(description = "The search pagination settings", in = ParameterIn.QUERY)
+            @ParameterObject
             Pageable pageable
     ) {
         Page<Language> page = ObjectUtils.isEmpty(name)
