@@ -12,6 +12,7 @@ import lombok.experimental.FieldDefaults;
 import org.hibernate.Hibernate;
 import org.hibernate.annotations.Immutable;
 
+import javax.annotation.Generated;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -23,6 +24,8 @@ import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.PrimaryKeyJoinColumn;
 import javax.persistence.Table;
+import javax.persistence.metamodel.SingularAttribute;
+import javax.persistence.metamodel.StaticMetamodel;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.PastOrPresent;
@@ -120,6 +123,21 @@ public class Language {
         public int hashCode() {
             return Objects.hashCode(getId());
         }
+    }
+
+    @Generated(value = "org.hibernate.jpamodelgen.JPAMetaModelEntityProcessor")
+    @StaticMetamodel(Statistics.class)
+    public abstract class Statistics_ {
+
+        public static volatile SingularAttribute<Statistics, Long> id;
+        public static volatile SingularAttribute<Statistics, Long> mined;
+        public static volatile SingularAttribute<Statistics, Long> analyzed;
+        public static volatile SingularAttribute<Statistics, Language> language;
+
+        public static final String ID = "id";
+        public static final String MINED = "mined";
+        public static final String ANALYZED = "analyzed";
+        public static final String LANGUAGE = "language";
     }
 
     @Getter

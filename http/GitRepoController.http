@@ -1,17 +1,23 @@
 ### GET /r/{id}
 GET http://localhost:8080/api/r/{{repo_id}}
 
+### GET /r/{owner}/{name}
+GET http://localhost:8080/api/r/{{repo_owner}}/{{repo_name}}
+
 ### GET /r/search
 GET http://localhost:8080/api/r/search
 
 ### GET /r/labels
-GET http://localhost:8080/api/r/labels
+GET http://localhost:8080/api/r/labels?name={{label_name}}&page={{page}}
+
+### GET /r/topics
+GET http://localhost:8080/api/r/topics?name={{topic_name}}&page={{page}}
 
 ### GET /r/languages
-GET http://localhost:8080/api/r/languages
+GET http://localhost:8080/api/r/languages?name={{language_name}}&page={{page}}
 
 ### GET /r/licenses
-GET http://localhost:8080/api/r/licenses
+GET http://localhost:8080/api/r/licenses?name={{license_name}}&page={{page}}
 
 ### GET /r/stats
 GET http://localhost:8080/api/r/stats

@@ -1,11 +1,8 @@
 package ch.usi.si.seart.config;
 
-import ch.usi.si.seart.config.properties.StatisticsProperties;
 import ch.usi.si.seart.util.Ranges;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 
 import java.time.Instant;
 import java.time.ZoneOffset;
@@ -39,12 +36,5 @@ public class MainConfig {
             Instant truncated = instant.truncatedTo(ChronoUnit.SECONDS);
             return formatter.format(truncated);
         });
-    }
-
-    @Bean
-    public Pageable suggestionLimitPageable(StatisticsProperties properties) {
-        int pageSize = properties.getSuggestionLimit();
-        if (pageSize == 0) return Pageable.unpaged();
-        return PageRequest.ofSize(pageSize);
     }
 }

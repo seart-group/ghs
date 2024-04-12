@@ -124,40 +124,80 @@
                 />
               </div>
               <div class="col-12 col-md-4">
-                <input type="text"
-                       name="language"
-                       id="search-language"
-                       class="form-control mb-3"
-                       placeholder="Language"
-                       aria-label="Repository Language"
-                />
+                <div class="input-group mb-3">
+                  <input type="text"
+                         name="language"
+                         id="search-language"
+                         class="autocomplete form-control"
+                         placeholder="Language"
+                         aria-label="Repository Language"
+                         data-endpoint="/l"
+                  />
+                  <div id="search-language-spinner"
+                       class="position-absolute top-50 end-0 translate-middle-y p-2 opacity-75 z-10 d-none"
+                  >
+                    <div class="spinner-border spinner-border-sm text-secondary" role="status">
+                      <span class="visually-hidden">Loading...</span>
+                    </div>
+                  </div>
+                </div>
               </div>
               <div class="col-12 col-md-4">
-                <input type="text"
-                       name="license"
-                       id="search-license"
-                       class="form-control mb-3"
-                       placeholder="License"
-                       aria-label="Repository License"
-                />
+                <div class="input-group mb-3">
+                  <input type="text"
+                         name="license"
+                         id="search-license"
+                         class="autocomplete form-control"
+                         placeholder="License"
+                         aria-label="Repository License"
+                         data-endpoint="/r/licenses"
+                  />
+                  <div id="search-license-spinner"
+                       class="position-absolute top-50 end-0 translate-middle-y p-2 opacity-75 z-10 d-none"
+                  >
+                    <div class="spinner-border spinner-border-sm text-secondary" role="status">
+                      <span class="visually-hidden">Loading...</span>
+                    </div>
+                  </div>
+                </div>
               </div>
               <div class="col-12 col-md-4">
-                <input type="text"
-                       name="topic"
-                       id="search-topic"
-                       class="form-control mb-3"
-                       placeholder="Has topic"
-                       aria-label="Repository Topic"
-                />
+                <div class="input-group mb-3">
+                  <input type="text"
+                         name="topic"
+                         id="search-topic"
+                         class="autocomplete form-control"
+                         placeholder="Has topic"
+                         aria-label="Repository Topic"
+                         data-endpoint="/r/topics"
+                  />
+                  <div id="search-topic-spinner"
+                       class="position-absolute top-50 end-0 translate-middle-y p-2 opacity-75 z-10 d-none"
+                  >
+                    <div class="spinner-border spinner-border-sm text-secondary" role="status">
+                      <span class="visually-hidden">Loading...</span>
+                    </div>
+                  </div>
+                </div>
               </div>
               <div class="col-12 col-md-4">
-                <input type="text"
-                       name="label"
-                       id="search-label"
-                       class="form-control mb-3"
-                       placeholder="Uses Label"
-                       aria-label="Repository Label"
-                />
+                <div class="input-group mb-3">
+                  <input type="text"
+                         name="label"
+                         id="search-label"
+                         class="autocomplete form-control"
+                         placeholder="Uses Label"
+                         aria-label="Repository Label"
+                         data-endpoint="/r/labels"
+                  />
+                  <div id="search-label-spinner"
+                       class="position-absolute top-50 end-0 translate-middle-y p-2 opacity-75 z-10 d-none"
+                  >
+                    <div class="spinner-border spinner-border-sm text-secondary" role="status">
+                      <span class="visually-hidden">Loading...</span>
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
@@ -1157,7 +1197,6 @@
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js" integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.min.js" integrity="sha384-1H217gwSVyLSIfaLxHbE7dRb3v4mYCKbpQvzx0cegeju1MVsGrX5xXxAvs/HgeFs" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.min.js" integrity="sha384-0pUGZvbkm6XF6gxjEnlmuGrJXVbNuzT9qBBavbLwCsOGabYfZo0T0to5eqruptLy" crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap-3-typeahead@4.0.2/bootstrap3-typeahead.min.js" integrity="sha384-EEbPKCLAcxVCiXCi8k9bdeuayzAxVSmBzP/wLpmpd0LVW+Lvh2mjS1W02kdYm5z1" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/twbs-pagination@1.4.2/jquery.twbsPagination.min.js" integrity="sha384-AzpIEA+V2ntWh1KXh0Nz69l/mYOfBMOiw6lbuvWaVKYfuEooT5t5k/qyU0W0B7uk" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.2/dist/chart.umd.min.js" integrity="sha384-e6cc9LaIG7xZ3XD5B+jtr1NhTWPQGQdRCh6xiZ+ZFUtWCpg4ycv3Sh+SkZoopvUY" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/chroma-js@2.4.2/chroma.min.js" integrity="sha384-VRhlkYEqoAXsWzoORIQL0gHdX0BvQoQG89GxEj7I4xlffttgMvoMsQr7E/IWGK9T" crossorigin="anonymous"></script>
@@ -1170,7 +1209,7 @@
     <script src="js/handlebars.js"></script>
     <script src="js/jquery.js"></script>
     <script src="js/general.js"></script>
-    <script src="js/typeahead.js"></script>
+    <script src="js/autocomplete.js" type="module"></script>
     <script src="js/chart.js"></script>
     <script src="js/search.js"></script>
   </body>
