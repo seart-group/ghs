@@ -2,10 +2,12 @@ DROP TABLE IF EXISTS label_ranked;
 
 CREATE OR REPLACE VIEW count_git_repo_by_label AS
 SELECT
-    label_id,
+    label.id AS label_id,
     COUNT(repo_id) AS count
-FROM git_repo_label
-GROUP BY label_id;
+FROM label
+LEFT JOIN git_repo_label
+    ON git_repo_label.label_id = label.id
+GROUP BY label.id;
 
 CREATE TABLE label_statistics (
     label_id BIGINT NOT NULL

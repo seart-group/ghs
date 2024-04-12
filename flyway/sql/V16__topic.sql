@@ -2,10 +2,12 @@ DROP TABLE IF EXISTS topic_ranked;
 
 CREATE OR REPLACE VIEW count_git_repo_by_topic AS
 SELECT
-    topic_id,
+    topic.id AS topic_id,
     COUNT(repo_id) AS count
-FROM git_repo_topic
-GROUP BY topic_id;
+FROM topic
+LEFT JOIN git_repo_topic
+    ON topic.id = git_repo_topic.topic_id
+GROUP BY topic.id;
 
 CREATE TABLE topic_statistics (
     topic_id BIGINT NOT NULL
