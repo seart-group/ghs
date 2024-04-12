@@ -264,3 +264,7 @@ div[data-ghs-id] {
 .logo:hover .logo-text {
     color: var(--bs-navbar-hover-color)!important;
 }
+
+.z-10 {
+    z-index: 10!important;
+}
