@@ -35,13 +35,20 @@
   "license": "MIT",
   "homepage": "https://seart-ghs.si.usi.ch",
   "keywords": [
-    "website",
-    "search engine",
     "github",
-    "repository",
-    "crawler",
-    "platform",
-    "MSR"
+    "sampling",
+    "search",
+    "search engine",
+    "search platform",
+    "statistics",
+    "open source",
+    "open source projects",
+    "mining software repositories",
+    "dataset generation",
+    "csv generation",
+    "json generation",
+    "xml generation",
+    "open source code analysis"
   ],
   "devDependencies": {
     "@eslint/js": "^9.0.0",
