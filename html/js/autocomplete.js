@@ -8,7 +8,7 @@ import Autocomplete from "https://cdn.jsdelivr.net/npm/bootstrap5-autocomplete@1
     const $search_license_list = $("#search-license-list");
     const config = {
         notFoundMessage: "No suggestions available...",
-        highlightClass: "bg-transparent text-current p-0",
+        highlightClass: "bg-transparent text-current text-decoration-underline p-0",
         activeClasses: [ "bg-secondary", "text-white" ],
         suggestionsThreshold: 0,
         maximumItems: 10,
