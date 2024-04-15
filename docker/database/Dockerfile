@@ -7,7 +7,7 @@ RUN microdnf update --best \
                     --refresh \
                     --nodocs \
                     --noplugins && \
-    microdnf install -y logrotate && \
+    microdnf install -y logrotate-3.14.0 && \
     microdnf clean all
 
 # https://mariadb.com/kb/en/rotating-logs-on-unix-and-linux
