@@ -2,7 +2,7 @@
 event-scheduler=on
 default-time-zone="+00:00"
 group-concat-max-len=10000
-log-bin-trust-function-creators=1
+log-bin-trust-function-creators=on
 general-log=on
 general-log-file=/var/log/mysql/mysql.log
 log-error=/var/log/mysql/mysql_error.log
