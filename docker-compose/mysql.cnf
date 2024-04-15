@@ -18,5 +18,3 @@ triggers
 routines
 single-transaction
 max-allowed-packet=1G
-ignore-table=gse.label_ranked
-ignore-table=gse.topic_ranked
