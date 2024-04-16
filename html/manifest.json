@@ -22,7 +22,7 @@
   "start_url": "/",
   "display": "minimal-ui",
   "background_color": "#FFFFFF",
-  "theme_color": "#323232",
+  "theme_color": "#F8F9FA",
   "dir": "ltr",
   "orientation": "any",
   "icons": [
