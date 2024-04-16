@@ -20,6 +20,8 @@
   ],
   "start_url": "/",
   "display": "minimal-ui",
+  "background_color": "#FFFFFF",
+  "theme_color": "#323232",
   "icons": [
     {
       "src": "icons/60.png",
