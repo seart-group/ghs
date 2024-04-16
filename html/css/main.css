@@ -93,6 +93,7 @@ input::-webkit-calendar-picker-indicator {
 }
 
 .btn-override {
+    height: var(--ghs-input-height)!important;
     color: var(--bs-secondary)!important;
     background-color: var(--bs-gray-200)!important;
     border-top: none!important;
