@@ -11,6 +11,7 @@
     "postbuild": "npm-run-all --parallel bundle:*",
     "bundle:fonts": "copyfiles -f html/fonts/* dist/fonts",
     "bundle:icons": "copyfiles -f html/icons/* dist/icons",
+    "bundle:splash": "copyfiles -f html/splash/* dist/splash",
     "bundle:manifest": "copyfiles -f html/manifest.json dist",
     "minify:js": "esbuild html/js/*.js --outdir=dist/js --minify",
     "minify:css": "cleancss html/css/main.css --output dist/css/main.css",
