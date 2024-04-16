@@ -93,10 +93,6 @@ input::-webkit-calendar-picker-indicator {
 }
 
 .btn-override {
-    display: flex!important;
-    justify-content: space-between!important;
-    align-items: center!important;
-    gap: 0.25rem!important;
     height: var(--ghs-input-height)!important;
     color: var(--bs-secondary)!important;
     background-color: var(--bs-gray-200)!important;
@@ -162,6 +158,13 @@ input::-webkit-calendar-picker-indicator {
 
 .dropdown-toggle::after {
     display: none!important;
+}
+
+.dropdown-toggle.btn-override {
+    display: flex!important;
+    justify-content: space-between!important;
+    align-items: center!important;
+    gap: 0.25rem!important;
 }
 
 .dropdown-item.active,
