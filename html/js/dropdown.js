@@ -36,4 +36,16 @@
         $search_sort_direction_dropdown_toggle.html(`${html} ${chevron}`);
         $search_sort.attr("value", `${column},${direction}`);
     });
+
+    const set_dropdown_width = function () {
+        $(".dropdown-menu").each(function () {
+            const $menu = $(this);
+            const $trigger = $menu.prevAll("[data-bs-toggle]");
+            const width = $trigger.outerWidth();
+            if (width) $menu.css("width", width);
+        });
+    };
+
+    $(window).on("load", set_dropdown_width);
+    $(window).on("resize", set_dropdown_width);
 })(base, jQuery);
