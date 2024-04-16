@@ -170,6 +170,7 @@ input::-webkit-calendar-picker-indicator {
 }
 
 .dropdown-toggle.btn-override {
+    overflow: hidden!important;
     display: flex!important;
     justify-content: space-between!important;
     align-items: center!important;
