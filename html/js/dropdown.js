@@ -1,6 +1,4 @@
 (function (base, $) {
-    const chevron = `<i class="bi bi-chevron-down"></i>`;
-
     const $search_name_dropdown_toggle = $("#search-name-dropdown-toggle");
     const $search_name_dropdown_items = $("#search-name-dropdown-items > * > .dropdown-item");
     const $search_name_equals = $("#search-name-equals");
@@ -15,7 +13,7 @@
         const $item = $(this);
         const html = $item.html();
         const value = $item.val();
-        $search_name_dropdown_toggle.html(`${html} ${chevron}`);
+        $search_name_dropdown_toggle.find("span").html(html);
         $search_name_equals.attr("value", value);
     });
 
@@ -24,7 +22,7 @@
         const html = $item.html();
         const column = $item.val();
         const [ _, direction ] = $search_sort.val().split(",");
-        $search_sort_column_dropdown_toggle.html(`${html} ${chevron}`);
+        $search_sort_column_dropdown_toggle.find("span").html(html);
         $search_sort.attr("value", `${column},${direction}`);
     });
 
@@ -33,7 +31,7 @@
         const html = $item.html();
         const direction = $item.val();
         const [ column, _ ] = $search_sort.val().split(",");
-        $search_sort_direction_dropdown_toggle.html(`${html} ${chevron}`);
+        $search_sort_direction_dropdown_toggle.find("span").html(html);
         $search_sort.attr("value", `${column},${direction}`);
     });
 
