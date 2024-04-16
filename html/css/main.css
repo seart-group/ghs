@@ -1,7 +1,8 @@
 :root {
-    --ghs-autocomplete-menu-height: 340px;
+    --ghs-autocomplete-menu-items: 10;
+    --ghs-autocomplete-menu-height: calc(32px * var(--ghs-autocomplete-menu-items) + 2rem);
     --ghs-dropdown-menu-items: 5;
-    --ghs-dropdown-menu-height: calc(32px * var(--ghs-dropdown-menu-items) + 0.5rem);
+    --ghs-dropdown-menu-height: calc(32px * var(--ghs-dropdown-menu-items) + 1.125rem);
     --ghs-bottom-border: var(--bs-border-width) var(--bs-border-style) var(--bs-gray);
     --ghs-box-shadow: 0 0 0 0.2rem rgba(var(--bs-secondary-rgb), 0.25);
     --ghs-disabled-opacity: 0.6;
