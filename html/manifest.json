@@ -1,6 +1,7 @@
 {
   "name": "SEART GitHub Search",
   "short_name": "GHS",
+  "description": "Platform used to crawl, store and present projects from GitHub, as well as any statistics related to them.",
   "start_url": "/",
   "display": "minimal-ui",
   "icons": [
