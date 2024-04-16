@@ -71,5 +71,9 @@
       "type": "image/png",
       "sizes": "192x192"
     }
-  ]
+  ],
+  "screenshots": [],
+  "launch_handler": {
+    "client_mode": "auto"
+  }
 }
