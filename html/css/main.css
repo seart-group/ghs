@@ -112,6 +112,10 @@ input::-webkit-calendar-picker-indicator {
     background-color: var(--bs-secondary)!important;
 }
 
+.form-check {
+    margin-bottom: 0!important;
+}
+
 .form-check > * {
     cursor: pointer!important;
 }
