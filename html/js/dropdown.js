@@ -12,26 +12,26 @@
     const $search_sort = $("#search-sort");
 
     $search_name_dropdown_items.on("click", function () {
-        const target = $(this);
-        const html = target.html();
-        const value = target.val();
+        const $item = $(this);
+        const html = $item.html();
+        const value = $item.val();
         $search_name_dropdown_toggle.html(`${html} ${chevron}`);
         $search_name_equals.attr("value", value);
     });
 
     $search_sort_column_dropdown_items.on("click", function () {
-        const target = $(this);
-        const html = target.html();
-        const column = target.val();
+        const $item = $(this);
+        const html = $item.html();
+        const column = $item.val();
         const [ _, direction ] = $search_sort.val().split(",");
         $search_sort_column_dropdown_toggle.html(`${html} ${chevron}`);
         $search_sort.attr("value", `${column},${direction}`);
     });
 
     $search_sort_direction_dropdown_items.on("click", function () {
-        const target = $(this);
-        const html = target.html();
-        const direction = target.val();
+        const $item = $(this);
+        const html = $item.html();
+        const direction = $item.val();
         const [ column, _ ] = $search_sort.val().split(",");
         $search_sort_direction_dropdown_toggle.html(`${html} ${chevron}`);
         $search_sort.attr("value", `${column},${direction}`);
