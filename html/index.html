@@ -107,8 +107,8 @@
                    class="nav-link"
                    tabindex="-1"
                 >
-                  <i class="devicon-github-original d-none d-md-inline"></i>
-                  <span class="d-md-none">GitHub</span>
+                  <i class="devicon-github-original d-none d-sm-inline"></i>
+                  <span class="d-sm-none">GitHub</span>
                 </a>
               </li>
             </ul>
@@ -674,6 +674,70 @@
             <div class="row">
               <div class="col">
                 <h5 class="my-3">Additional Filters</h5>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col">
+                <h6>Sorting</h6>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-12 col-md-6">
+                <button type="button"
+                        id="search-sort-column-dropdown-toggle"
+                        class="btn btn-secondary btn-override dropdown-toggle mb-3 w-100"
+                        data-bs-toggle="dropdown"
+                        aria-expanded="false"
+                >
+                  Name
+                  <i class="bi bi-chevron-down"></i>
+                </button>
+                <ul id="search-sort-column-dropdown-items"
+                    class="dropdown-menu dropdown-menu-end dropdown-menu-scrollable"
+                >
+                  <li><button type="button" class="dropdown-item" value="name">Name</button></li>
+                  <li><button type="button" class="dropdown-item" value="commits">Commits</button></li>
+                  <li><button type="button" class="dropdown-item" value="contributors">Contributors</button></li>
+                  <li><button type="button" class="dropdown-item" value="totalIssues">Issues</button></li>
+                  <li><button type="button" class="dropdown-item" value="totalPullRequests">Pull Requests</button></li>
+                  <li><button type="button" class="dropdown-item" value="branches">Branches</button></li>
+                  <li><button type="button" class="dropdown-item" value="releases">Releases</button></li>
+                  <li><button type="button" class="dropdown-item" value="stargazers">Stars</button></li>
+                  <li><button type="button" class="dropdown-item" value="watchers">Watchers</button></li>
+                  <li><button type="button" class="dropdown-item" value="forks">Forks</button></li>
+                  <li><button type="button" class="dropdown-item" value="createdAt">Created</button></li>
+                  <li><button type="button" class="dropdown-item" value="updatedAt">Updated</button></li>
+                  <li><button type="button" class="dropdown-item" value="lastCommit">Commited</button></li>
+                </ul>
+              </div>
+              <div class="col-12 col-md-6">
+                <button type="button"
+                        id="search-sort-direction-dropdown-toggle"
+                        class="btn btn-secondary btn-override dropdown-toggle mb-3 w-100"
+                        data-bs-toggle="dropdown"
+                        aria-expanded="false"
+                >
+                  Ascending
+                  <i class="bi bi-chevron-down"></i>
+                </button>
+                <ul id="search-sort-direction-dropdown-items"
+                    class="dropdown-menu dropdown-menu-end"
+                >
+                  <li><button type="button" class="dropdown-item" value="asc">Ascending</button></li>
+                  <li><button type="button" class="dropdown-item" value="desc">Descending</button></li>
+                </ul>
+              </div>
+              <input type="text"
+                     id="search-sort"
+                     name="sort"
+                     aria-label="Sort"
+                     class="d-none"
+                     value="name,asc"
+              />
+            </div>
+            <div class="row">
+              <div class="col">
+                <h6>Repository Characteristics</h6>
               </div>
             </div>
             <div class="row">

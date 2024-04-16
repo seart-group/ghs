@@ -1,5 +1,7 @@
 :root {
     --ghs-autocomplete-menu-height: 340px;
+    --ghs-dropdown-menu-items: 5;
+    --ghs-dropdown-menu-height: calc(32px * var(--ghs-dropdown-menu-items) + 0.5rem);
     --ghs-bottom-border: var(--bs-border-width) var(--bs-border-style) var(--bs-gray);
     --ghs-box-shadow: 0 0 0 0.2rem rgba(var(--bs-secondary-rgb), 0.25);
     --ghs-disabled-opacity: 0.6;
@@ -154,6 +156,12 @@ input::-webkit-calendar-picker-indicator {
 .dropdown-menu.autocomplete-menu {
     max-height: var(--ghs-autocomplete-menu-height)!important;
     padding: var(--bs-dropdown-padding-y) 0!important;
+}
+
+.dropdown-menu.dropdown-menu-scrollable {
+    height: auto!important;
+    max-height: var(--ghs-dropdown-menu-height)!important;
+    overflow-x: hidden!important;
 }
 
 .dropdown-toggle::after {
