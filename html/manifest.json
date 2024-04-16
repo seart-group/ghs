@@ -2,6 +2,22 @@
   "name": "SEART GitHub Search",
   "short_name": "GHS",
   "description": "Platform used to crawl, store and present projects from GitHub, as well as any statistics related to them.",
+  "categories": [
+    "github",
+    "sampling",
+    "search",
+    "search engine",
+    "search platform",
+    "statistics",
+    "open source",
+    "open source projects",
+    "mining software repositories",
+    "dataset generation",
+    "csv generation",
+    "json generation",
+    "xml generation",
+    "open source code analysis"
+  ],
   "start_url": "/",
   "display": "minimal-ui",
   "icons": [
