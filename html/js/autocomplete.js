@@ -1,4 +1,4 @@
-import Autocomplete from "https://cdn.jsdelivr.net/npm/bootstrap5-autocomplete@1.1.25/autocomplete.min.js";
+import Autocomplete from "https://cdn.jsdelivr.net/npm/bootstrap5-autocomplete@1.1.26/autocomplete.min.js";
 
 (function (base, $, Autocomplete) {
     const default_config = {
@@ -28,6 +28,17 @@ import Autocomplete from "https://cdn.jsdelivr.net/npm/bootstrap5-autocomplete@1
             size: 10,
         },
         onServerResponse: get_response_items,
+        onServerError: (err, _signal, instance) => {
+            const $input = $(instance.getInput());
+            const width = $input.outerWidth();
+            const $dropdown = $input.next(".dropdown-menu");
+            if (width) $dropdown.css("width", width);
+            const span = document.createElement("span");
+            const $span = $(span).addClass("dropdown-item").addClass("disabled").text("Suggestions not available...");
+            const li = document.createElement("li");
+            const $li = $(li).attr("role", "presentation").append($span);
+            $dropdown.empty().append($li).toggleClass("show");
+        },
         onBeforeFetch: toggle_spinner,
         onAfterFetch: toggle_spinner,
     };
