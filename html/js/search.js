@@ -16,6 +16,12 @@
         _element,
         download_modal = new Modal(_element)
     ] = $("#download-modal").get();
+    const $toast_container = $(".toast-container");
+    const toastOptions = {
+        id: "search-toast",
+        title: "Error",
+        body: "Could not retrieve search results!",
+    };
     const formats = [ "csv", "xml", "json" ];
     const paginationOptions = {
         visiblePages: 5,
@@ -240,34 +246,42 @@
     };
 
     $search.on("submit", async function (event) {
-        event.preventDefault();
-        $toggleSearch();
-        $toggleSpinner();
-        const response = await search();
-        const { totalItems, totalPages, items } = await response.json();
-        $setResultsCount(totalItems);
-        $setDownloadLinks(totalItems);
-        $renderItems(items);
-        $createPagination(1, totalPages);
-        $setPageJump(totalPages);
-        $toggleSpinner();
-        $toggleResults();
+        try {
+            event.preventDefault();
+            $toggleSearch();
+            $toggleSpinner();
+            const response = await search();
+            const { totalItems, totalPages, items } = await response.json();
+            $setResultsCount(totalItems);
+            $setDownloadLinks(totalItems);
+            $renderItems(items);
+            $createPagination(1, totalPages);
+            $setPageJump(totalPages);
+            $toggleSpinner();
+            $toggleResults();
+        } catch (_err) {
+            $toast_container.twbsToast(toastOptions);
+        }
     });
 
     const replacePage = async function (page = 1) {
-        $toggleResults();
-        $toggleSpinner();
-        $destroyPagination();
-        $resetResults();
-        $resetJumpForms();
-        const response = await search(page - 1);
-        const { totalItems, totalPages, items } = await response.json();
-        $setResultsCount(totalItems);
-        $renderItems(items);
-        $createPagination(page, totalPages);
-        $setPageJump(totalPages);
-        $toggleSpinner();
-        $toggleResults();
+        try {
+            $toggleResults();
+            $toggleSpinner();
+            $destroyPagination();
+            $resetResults();
+            $resetJumpForms();
+            const response = await search(page - 1);
+            const { totalItems, totalPages, items } = await response.json();
+            $setResultsCount(totalItems);
+            $renderItems(items);
+            $createPagination(page, totalPages);
+            $setPageJump(totalPages);
+            $toggleSpinner();
+            $toggleResults();
+        } catch (_err) {
+            $toast_container.twbsToast(toastOptions);
+        }
     };
 
     paginationOptions.onPageClick = async function (_, page) {
