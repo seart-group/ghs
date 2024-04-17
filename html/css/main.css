@@ -1,5 +1,8 @@
 :root {
-    --ghs-autocomplete-menu-height: 340px;
+    --ghs-autocomplete-menu-items: 10;
+    --ghs-autocomplete-menu-height: calc(32px * var(--ghs-autocomplete-menu-items) + 2rem);
+    --ghs-dropdown-menu-items: 5;
+    --ghs-dropdown-menu-height: calc(32px * var(--ghs-dropdown-menu-items) + 1.125rem);
     --ghs-bottom-border: var(--bs-border-width) var(--bs-border-style) var(--bs-gray);
     --ghs-box-shadow: 0 0 0 0.2rem rgba(var(--bs-secondary-rgb), 0.25);
     --ghs-disabled-opacity: 0.6;
@@ -93,6 +96,7 @@ input::-webkit-calendar-picker-indicator {
 }
 
 .btn-override {
+    height: var(--ghs-input-height)!important;
     color: var(--bs-secondary)!important;
     background-color: var(--bs-gray-200)!important;
     border-top: none!important;
@@ -110,6 +114,10 @@ input::-webkit-calendar-picker-indicator {
 {
     color: var(--bs-white)!important;
     background-color: var(--bs-secondary)!important;
+}
+
+.form-check {
+    margin-bottom: 0!important;
 }
 
 .form-check > * {
@@ -151,8 +159,22 @@ input::-webkit-calendar-picker-indicator {
     padding: var(--bs-dropdown-padding-y) 0!important;
 }
 
+.dropdown-menu.dropdown-menu-scrollable {
+    height: auto!important;
+    max-height: var(--ghs-dropdown-menu-height)!important;
+    overflow-x: hidden!important;
+}
+
 .dropdown-toggle::after {
     display: none!important;
+}
+
+.dropdown-toggle.btn-override {
+    overflow: hidden!important;
+    display: flex!important;
+    justify-content: space-between!important;
+    align-items: center!important;
+    gap: 0.25rem!important;
 }
 
 .dropdown-item.active,
