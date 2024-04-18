@@ -7,6 +7,12 @@ server {
     index index.html index.htm;
     sub_filter_once off;
     sub_filter_types application/javascript;
-    sub_filter "http://localhost:8080" "http://localhost:48001";
+    sub_filter "http://localhost:8080" "${BASE_URL}";
   }
+}
+
+server {
+  listen 8000;
+  server_name localhost;
+  stub_status on;
 }

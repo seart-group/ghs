@@ -14,7 +14,10 @@ ENV TZ=UTC
 
 COPY --from=build dist /usr/share/nginx/html
 
-ENTRYPOINT ["nginx", "-g", "daemon off;"]
+ENTRYPOINT ["/docker-entrypoint.sh"]
+CMD ["nginx", "-g", "daemon off;"]
+
+EXPOSE 80 8000
 
 HEALTHCHECK \
     --start-period=10s \
