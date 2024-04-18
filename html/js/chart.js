@@ -11,7 +11,7 @@
 
     const options = {
         animation: {
-            duration: 0
+            duration: 0,
         },
         responsive: true,
         layout: {
@@ -37,7 +37,7 @@
                 ticks: {
                     callback: function (label, _idx, _labels) {
                         return `${label / 1000}k`;
-                    }
+                    },
                 },
                 title: {
                     display: true,
@@ -50,8 +50,8 @@
         },
         elements: {
             bar: {
-                borderWidth: 1
-            }
+                borderWidth: 1,
+            },
         },
         plugins: {
             legend: {
@@ -70,7 +70,7 @@
                     },
                 },
             },
-        }
+        },
     };
 
     fetch(`${base}/r/stats`)
