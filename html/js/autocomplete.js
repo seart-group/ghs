@@ -1,8 +1,9 @@
 import Autocomplete from "https://cdn.jsdelivr.net/npm/bootstrap5-autocomplete@1.1.26/autocomplete.min.js";
 
 (function (base, $, Autocomplete) {
+    const not_found_message = "No suggestions available...";
     const default_config = {
-        notFoundMessage: "No suggestions available...",
+        notFoundMessage: not_found_message,
         highlightClass: "bg-transparent text-current text-decoration-underline p-0",
         activeClasses: [ "bg-secondary", "text-white" ],
         suggestionsThreshold: 0,
@@ -34,7 +35,7 @@ import Autocomplete from "https://cdn.jsdelivr.net/npm/bootstrap5-autocomplete@1
             const $dropdown = $input.next(".dropdown-menu");
             if (width) $dropdown.css("width", width);
             const span = document.createElement("span");
-            const $span = $(span).addClass("dropdown-item").addClass("disabled").text("Suggestions not available...");
+            const $span = $(span).addClass("dropdown-item").text(not_found_message);
             const li = document.createElement("li");
             const $li = $(li).attr("role", "presentation").append($span);
             $dropdown.empty().append($li).toggleClass("show");
