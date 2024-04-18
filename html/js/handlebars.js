@@ -129,10 +129,12 @@ Handlebars.registerHelper("devicon", function (language) {
         return `devicon-${language.toLowerCase()}-plain`;
         // "Original" mappings
     case "CoffeeScript":
+    case "LaTeX":
     case "Markdown":
     case "Nginx":
     case "R":
     case "Stylus":
+    case "TeX":
     case "Zig":
         return `devicon-${language.toLowerCase()}-original`;
         // Indirect mappings
