@@ -106,6 +106,7 @@ services:
     depends_on:
       gse-migration:
         condition: service_completed_successfully
+    stop_grace_period: 1m
     labels:
       - "com.centurylinklabs.watchtower.scope=ghs"
     networks:
