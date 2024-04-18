@@ -17,6 +17,8 @@ COPY --from=build dist /usr/share/nginx/html
 ENTRYPOINT ["/docker-entrypoint.sh"]
 CMD ["nginx", "-g", "daemon off;"]
 
+EXPOSE 80 8000
+
 HEALTHCHECK \
     --start-period=10s \
     --interval=60s \

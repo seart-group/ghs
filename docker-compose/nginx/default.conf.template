@@ -10,3 +10,9 @@ server {
     sub_filter "http://localhost:8080" "${BASE_URL}";
   }
 }
+
+server {
+  listen 8000;
+  server_name localhost;
+  stub_status on;
+}
