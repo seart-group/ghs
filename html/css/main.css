@@ -91,6 +91,14 @@ input::-webkit-calendar-picker-indicator {
     cursor: not-allowed!important;
 }
 
+.btn-close {
+    border-radius: 0!important;
+}
+
+.btn-close:focus {
+    box-shadow: var(--ghs-box-shadow)!important;
+}
+
 .btn-collapse[aria-expanded="false"]::before {
     content: "Show More";
 }
