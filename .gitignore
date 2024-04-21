@@ -297,9 +297,8 @@ Temporary Items
 
 ### Docker Compose
 # General
-*.prod.yml
-*.override.yml
-*.prod.conf
+*.prod.*
+*.override.*
 .*.sh
 
 # Database dumps
