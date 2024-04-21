@@ -10,6 +10,10 @@ RUN microdnf update --best \
     microdnf install -y logrotate-3.14.0 && \
     microdnf clean all
 
+RUN mkdir -p /var/log/mysql && \
+    chown mysql:mysql /var/log/mysql && \
+    chmod 750 /var/log/mysql
+
 # https://mariadb.com/kb/en/rotating-logs-on-unix-and-linux
 COPY <<-EOF /etc/logrotate.d/mysql
 /var/log/mysql/* {
@@ -44,4 +48,5 @@ WORKDIR /docker-entrypoint-initdb.d
 
 ADD "https://www.dropbox.com/scl/fi/5eku4c65on1g26rnjzsx1/gse.sql.gz?rlkey=08l0sfvyj29b2wfvzw5vuuay4&dl=1" gse.sql.gz
 
-RUN chmod 755 gse.sql.gz
+RUN chown mysql:mysql gse.sql.gz && \
+    chmod 755 gse.sql.gz
