@@ -84,7 +84,9 @@
             const coverage = `${percentage(total.analyzed, total.mined)}%`;
             $statistics_mined.replaceWith(`<span id="statistics-mined">${total.mined.toLocaleString()}</span>`);
             $statistics_analyzed.replaceWith(`<span id="statistics-analyzed">${coverage}</span>`);
-            return Object.entries(json).map(([key, value]) => ({ x: key, ...value }));
+            return Object.entries(json)
+                .map(([key, value]) => ({ x: key, ...value }))
+                .filter(({ mined }) => mined > 0);
         })
         .then(data => {
             $statistics_download_btn.removeClass("d-none")
