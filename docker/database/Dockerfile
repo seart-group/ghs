@@ -38,7 +38,7 @@ COPY <<-EOF /etc/logrotate.d/mysql
         sharedscripts
         postrotate
         if test -x /usr/bin/mysqladmin && /usr/bin/mysqladmin ping &>/dev/null
-                then /usr/bin/mysqladmin --defaults-file=/etc/mysql/conf.d/mysql.cnf flush-logs
+                then /usr/bin/mysqladmin flush-logs
         fi
         endscript
 }
