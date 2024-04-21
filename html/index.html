@@ -946,10 +946,15 @@
           </div>
           <div class="modal-body">
             <div class="position-relative mb-3">
-              <div class="position-absolute z-1 top-0 end-0">
-                <button type="button" id="statistics-download-btn" class="btn btn-light m-4 d-none" disabled>
-                  <i class="bi bi-download"></i>
-                </button>
+              <div class="position-absolute z-1 m-4 top-0 end-0">
+                <div class="btn-group">
+                  <button type="button" id="statistics-png-btn" class="btn btn-light d-none" disabled>
+                    <i class="bi bi-image-fill"></i>
+                  </button>
+                  <button type="button" id="statistics-csv-btn" class="btn btn-light d-none" disabled>
+                    <i class="bi bi-download"></i>
+                  </button>
+                </div>
               </div>
               <canvas id="statistics-chart" class="chart position-relative"></canvas>
             </div>

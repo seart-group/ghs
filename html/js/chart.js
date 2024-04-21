@@ -3,7 +3,8 @@
     const $toast_container = $(".toast-container");
     const $statistics_mined = $("#statistics-mined");
     const $statistics_analyzed = $("#statistics-analyzed");
-    const $statistics_download_btn = $("#statistics-download-btn");
+    const $statistics_csv_btn = $("#statistics-csv-btn");
+    const $statistics_png_btn = $("#statistics-png-btn");
 
     const percentage = (numerator, denominator) => (numerator / denominator * 100).toFixed(2);
 
@@ -89,7 +90,7 @@
                 .filter(({ mined }) => mined > 0);
         })
         .then(data => {
-            $statistics_download_btn.removeClass("d-none")
+            $statistics_csv_btn.removeClass("d-none")
                 .prop("disabled", false)
                 .on("click", () => {
                     const header = "\"language\",\"mined\",\"analyzed\",\"coverage\"";
@@ -126,6 +127,18 @@
             };
         })
         .then(data => new Chart(canvas, { type: "bar", options, data }))
+        .then(chart => {
+            $statistics_png_btn.removeClass("d-none")
+                .prop("disabled", false)
+                .on("click", () => {
+                    const url = chart.toBase64Image();
+                    const anchor = document.createElement("a");
+                    anchor.setAttribute("href", url);
+                    anchor.setAttribute("download", "statistics.png");
+                    anchor.click();
+                    anchor.remove();
+                });
+        })
         .catch(() => $toast_container.twbsToast({
             id: "statistics-toast",
             body: "Could not retrieve repository statistics!"
