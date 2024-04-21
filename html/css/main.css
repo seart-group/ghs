@@ -43,6 +43,10 @@ a[target="_blank"] {
     cursor: alias!important;
 }
 
+canvas {
+    cursor: crosshair!important;
+}
+
 input[type="text"],
 input[type="number"],
 input[type="date"]
