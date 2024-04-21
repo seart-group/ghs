@@ -266,6 +266,10 @@ input::-webkit-calendar-picker-indicator {
 .modal-content {
     border-radius: 0!important;
 }
+.nav-link:focus-visible {
+    box-shadow: var(--ghs-box-shadow)!important;
+}
+
 
 div[data-ghs-id] {
     background-color: var(--bs-gray-200)!important;
