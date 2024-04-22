@@ -256,6 +256,19 @@ input::-webkit-calendar-picker-indicator {
     border-collapse: separate!important;
 }
 
+.table-centered td:not(:first-child),
+.table-centered th:not(:first-child) {
+    text-align: center!important;
+}
+
+.table-header-divider th {
+    border-bottom:
+            var(--bs-border-width)
+            var(--bs-border-style)
+            var(--bs-border-color)
+    !important;
+}
+
 .text-current {
     color: currentcolor!important;
 }
@@ -276,10 +289,23 @@ input::-webkit-calendar-picker-indicator {
 .modal-content {
     border-radius: 0!important;
 }
+
+.nav-tabs {
+    --bs-nav-tabs-border-radius: 0!important;
+    --bs-nav-tabs-link-hover-border-color: transparent!important;
+}
+
 .nav-link:focus-visible {
     box-shadow: var(--ghs-box-shadow)!important;
 }
 
+.nav-tabs .nav-link:not(.active) {
+    color: rgba(var(--bs-emphasis-color-rgb), 0.65)!important;
+}
+
+.nav-tabs .nav-link:hover:not(.active) {
+    color: rgba(var(--bs-emphasis-color-rgb), 0.8)!important;
+}
 
 div[data-ghs-id] {
     background-color: var(--bs-gray-200)!important;

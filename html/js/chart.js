@@ -1,10 +1,13 @@
-(function (base, $, _, Chart, chroma) {
+(function (base, $, _, Handlebars, Chart, chroma) {
     const [ canvas ] = $("#statistics-chart").get();
     const $toast_container = $(".toast-container");
     const $statistics_mined = $("#statistics-mined");
     const $statistics_analyzed = $("#statistics-analyzed");
     const $statistics_csv_btn = $("#statistics-csv-btn");
     const $statistics_png_btn = $("#statistics-png-btn");
+    const $table_body = $("#statistics-table > tbody");
+    const $table_rows_template = $("#template-table-rows").html();
+    const $table_rows_content = Handlebars.compile($table_rows_template);
 
     const percentage = (numerator, denominator) => (numerator / denominator * 100).toFixed(2);
 
@@ -90,6 +93,11 @@
                 .filter(({ mined }) => mined > 0);
         })
         .then(data => {
+            const transformed = data.map(({x: language, mined, analyzed}) => ({language, mined, analyzed}));
+            $table_body.html($table_rows_content(transformed));
+            return data;
+        })
+        .then(data => {
             $statistics_csv_btn.removeClass("d-none")
                 .prop("disabled", false)
                 .on("click", () => {
@@ -143,4 +151,4 @@
             id: "statistics-toast",
             body: "Could not retrieve repository statistics!"
         }));
-}(base, jQuery, _, Chart, chroma));
+}(base, jQuery, _, Handlebars, Chart, chroma));

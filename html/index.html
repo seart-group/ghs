@@ -945,18 +945,90 @@
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
           <div class="modal-body">
-            <div class="position-relative mb-3">
-              <div class="position-absolute z-1 m-4 top-0 end-0">
-                <div class="btn-group">
-                  <button type="button" id="statistics-png-btn" class="btn btn-light d-none" disabled>
-                    <i class="bi bi-image-fill"></i>
-                  </button>
-                  <button type="button" id="statistics-csv-btn" class="btn btn-light d-none" disabled>
-                    <i class="bi bi-download"></i>
-                  </button>
+            <ul id="statistics-tab" role="tablist" class="nav nav-tabs">
+              <li role="presentation" class="nav-item">
+                <button id="statistics-chart-tab"
+                        role="tab"
+                        type="button"
+                        class="nav-link active"
+                        data-bs-toggle="tab"
+                        data-bs-target="#statistics-chart-pane"
+                        aria-controls="statistics-chart-pane"
+                        aria-selected="true"
+                >
+                  Chart
+                </button>
+              </li>
+              <li role="presentation" class="nav-item">
+                <button id="statistics-table-tab"
+                        role="tab"
+                        type="button"
+                        class="nav-link"
+                        data-bs-toggle="tab"
+                        data-bs-target="#statistics-table-pane"
+                        aria-controls="statistics-table-pane"
+                        aria-selected="false"
+                >
+                  Table
+                </button>
+              </li>
+              <li role="presentation" class="nav-item ms-auto">
+                <button id="statistics-csv-btn"
+                        type="button"
+                        class="btn rounded-0 d-none"
+                        aria-label="Download CSV"
+                        disabled
+                >
+                  <i class="bi bi-file-earmark-spreadsheet-fill"></i>
+                </button>
+              </li>
+              <li role="presentation" class="nav-item">
+                <button id="statistics-png-btn"
+                        type="button"
+                        class="btn rounded-0 d-none"
+                        aria-label="Download PNG"
+                        disabled
+                >
+                  <i class="bi bi-file-earmark-image-fill"></i>
+                </button>
+              </li>
+            </ul>
+            <div id="statistics-panes"
+                 class="tab-content border border-top-0 mb-3 overflow-y-auto"
+                 style="max-height: 401px!important;"
+            >
+              <div id="statistics-chart-pane"
+                   class="tab-pane fade show active"
+                   role="tabpanel"
+                   aria-labelledby="statistics-chart-tab"
+              >
+                <canvas id="statistics-chart" class="chart position-relative"></canvas>
+                <div role="alert" class="alert alert-warning d-md-none rounded-0 mx-3">
+                  The chart may not display optimally on mobile devices.
+                  For an enhanced viewing experience, please use a device with a larger screen.
                 </div>
               </div>
-              <canvas id="statistics-chart" class="chart position-relative"></canvas>
+              <div id="statistics-table-pane"
+                   class="tab-pane fade"
+                   role="tabpanel"
+                   aria-labelledby="statistics-table-tab"
+              >
+                <table id="statistics-table"
+                       class="table table-striped table-borderless table-centered"
+                       aria-label="Language Statistics"
+                >
+                  <thead class="sticky-top table-header-divider">
+                    <tr>
+                      <th scope="col">Language</th>
+                      <th scope="col">Mined</th>
+                      <th scope="col">Analyzed</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <!-- TABLE CONTENTS WILL BE INJECTED HERE -->
+                  </tbody>
+                </table>
+              </div>
             </div>
             <div class="d-flex justify-content-between justify-content-md-around text-center mb-3">
               <h2 class="fs-6 mb-0 placeholder-glow">
@@ -1125,6 +1197,15 @@
           <button type="button" data-bs-dismiss="toast" class="btn-close me-2 m-auto" aria-label="Close"></button>
         </div>
       </div>
+    </script>
+    <script id="template-table-rows" type="text/x-handlebars-template">
+      {{#each this}}
+      <tr>
+        <td>{{ language }}</td>
+        <td>{{localized mined}}</td>
+        <td>{{localized analyzed}}</td>
+      </tr>
+      {{/each}}
     </script>
     <script id="template-results-repo" type="text/x-handlebars-template">
       <div data-ghs-id="{{id}}" class="row border border-secondary border-top-0 border-start-0 border-end-0 mx-2 mb-3">
