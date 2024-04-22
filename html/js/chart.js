@@ -1,5 +1,6 @@
 (function (base, $, _, Handlebars, Chart, chroma) {
-    const [ canvas ] = $("#statistics-chart").get();
+    const $statistics_chart = $("#statistics-chart");
+    const $statistics_chart_spinner = $("#statistics-chart-spinner");
     const $toast_container = $(".toast-container");
     const $statistics_mined = $("#statistics-mined");
     const $statistics_analyzed = $("#statistics-analyzed");
@@ -8,6 +9,7 @@
     const $table_body = $("#statistics-table > tbody");
     const $table_rows_template = $("#template-table-rows").html();
     const $table_rows_content = Handlebars.compile($table_rows_template);
+    const [ canvas ] = $statistics_chart.get();
 
     const percentage = (numerator, denominator) => (numerator / denominator * 100).toFixed(2);
 
@@ -137,7 +139,11 @@
                 ]
             };
         })
-        .then(data => new Chart(canvas, { type: "bar", options, data }))
+        .then(data => {
+            $statistics_chart_spinner.addClass("d-none");
+            $statistics_chart.removeClass("d-none");
+            return new Chart(canvas, { type: "bar", options, data });
+        })
         .then(chart => {
             $statistics_png_btn.removeClass("d-none")
                 .prop("disabled", false)
