@@ -43,6 +43,10 @@ a[target="_blank"] {
     cursor: alias!important;
 }
 
+canvas {
+    cursor: crosshair!important;
+}
+
 input[type="text"],
 input[type="number"],
 input[type="date"]
@@ -85,6 +89,18 @@ input::-webkit-calendar-picker-indicator {
 .disabled
 {
     cursor: not-allowed!important;
+}
+
+.btn:focus {
+    box-shadow: var(--ghs-box-shadow)!important;
+}
+
+.btn-close {
+    border-radius: 0!important;
+}
+
+.btn-close:focus {
+    box-shadow: var(--ghs-box-shadow)!important;
 }
 
 .btn-collapse[aria-expanded="false"]::before {
@@ -234,6 +250,25 @@ input::-webkit-calendar-picker-indicator {
     height: var(--ghs-spinner-size)!important;
 }
 
+.table {
+    margin: 0!important;
+    border-spacing: 0!important;
+    border-collapse: separate!important;
+}
+
+.table-header-divider th {
+    border-bottom:
+            var(--bs-border-width)
+            var(--bs-border-style)
+            var(--bs-border-color)
+    !important;
+}
+
+.table-centered td:not(:first-child),
+.table-centered th:not(:first-child) {
+    text-align: center!important;
+}
+
 .text-current {
     color: currentcolor!important;
 }
@@ -253,6 +288,23 @@ input::-webkit-calendar-picker-indicator {
 
 .modal-content {
     border-radius: 0!important;
+}
+
+.nav-tabs {
+    --bs-nav-tabs-border-radius: 0!important;
+    --bs-nav-tabs-link-hover-border-color: transparent!important;
+}
+
+.nav-link:focus-visible {
+    box-shadow: var(--ghs-box-shadow)!important;
+}
+
+.nav-tabs .nav-link:not(.active) {
+    color: rgba(var(--bs-emphasis-color-rgb), 0.65)!important;
+}
+
+.nav-tabs .nav-link:hover:not(.active) {
+    color: rgba(var(--bs-emphasis-color-rgb), 0.8)!important;
 }
 
 div[data-ghs-id] {

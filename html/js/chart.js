@@ -1,9 +1,15 @@
-(function (base, $, _, Chart, chroma) {
-    const [ canvas ] = $("#statistics-chart").get();
+(function (base, $, _, Handlebars, Chart, chroma) {
+    const $statistics_chart = $("#statistics-chart");
+    const $statistics_chart_spinner = $("#statistics-chart-spinner");
     const $toast_container = $(".toast-container");
     const $statistics_mined = $("#statistics-mined");
     const $statistics_analyzed = $("#statistics-analyzed");
-    const $statistics_download_btn = $("#statistics-download-btn");
+    const $statistics_csv_btn = $("#statistics-csv-btn");
+    const $statistics_png_btn = $("#statistics-png-btn");
+    const $table_body = $("#statistics-table > tbody");
+    const $table_rows_template = $("#template-table-rows").html();
+    const $table_rows_content = Handlebars.compile($table_rows_template);
+    const [ canvas ] = $statistics_chart.get();
 
     const percentage = (numerator, denominator) => (numerator / denominator * 100).toFixed(2);
 
@@ -16,7 +22,10 @@
         responsive: true,
         layout: {
             padding: {
-                right: 10,
+                top: 20,
+                left: 10,
+                bottom: 10,
+                right: 20,
             },
         },
         scales: {
@@ -84,10 +93,17 @@
             const coverage = `${percentage(total.analyzed, total.mined)}%`;
             $statistics_mined.replaceWith(`<span id="statistics-mined">${total.mined.toLocaleString()}</span>`);
             $statistics_analyzed.replaceWith(`<span id="statistics-analyzed">${coverage}</span>`);
-            return Object.entries(json).map(([key, value]) => ({ x: key, ...value }));
+            return Object.entries(json)
+                .map(([key, value]) => ({ x: key, ...value }))
+                .filter(({ mined }) => mined > 0);
         })
         .then(data => {
-            $statistics_download_btn.removeClass("d-none")
+            const transformed = data.map(({x: language, mined, analyzed}) => ({language, mined, analyzed}));
+            $table_body.html($table_rows_content(transformed));
+            return data;
+        })
+        .then(data => {
+            $statistics_csv_btn.removeClass("d-none")
                 .prop("disabled", false)
                 .on("click", () => {
                     const header = "\"language\",\"mined\",\"analyzed\",\"coverage\"";
@@ -123,9 +139,25 @@
                 ]
             };
         })
-        .then(data => new Chart(canvas, { type: "bar", options, data }))
+        .then(data => {
+            $statistics_chart_spinner.addClass("d-none");
+            $statistics_chart.removeClass("d-none");
+            return new Chart(canvas, { type: "bar", options, data });
+        })
+        .then(chart => {
+            $statistics_png_btn.removeClass("d-none")
+                .prop("disabled", false)
+                .on("click", () => {
+                    const url = chart.toBase64Image();
+                    const anchor = document.createElement("a");
+                    anchor.setAttribute("href", url);
+                    anchor.setAttribute("download", "statistics.png");
+                    anchor.click();
+                    anchor.remove();
+                });
+        })
         .catch(() => $toast_container.twbsToast({
             id: "statistics-toast",
             body: "Could not retrieve repository statistics!"
         }));
-}(base, jQuery, _, Chart, chroma));
+}(base, jQuery, _, Handlebars, Chart, chroma));
