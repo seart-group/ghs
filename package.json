@@ -1,7 +1,7 @@
 {
   "name": "ghs",
   "private": true,
-  "version": "1.15.1",
+  "version": "1.16.0",
   "description": "Platform used to crawl, store and present projects from GitHub, as well as any statistics related to them.",
   "source": "html/index.html",
   "type": "module",
