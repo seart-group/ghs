@@ -116,6 +116,7 @@ Handlebars.registerHelper("devicon", function (language) {
     case "PHP":
     case "PowerShell":
     case "Python":
+    case "R":
     case "Ruby":
     case "Rust":
     case "Sass":
@@ -132,7 +133,6 @@ Handlebars.registerHelper("devicon", function (language) {
     case "LaTeX":
     case "Markdown":
     case "Nginx":
-    case "R":
     case "Stylus":
     case "TeX":
     case "Zig":
