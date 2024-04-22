@@ -20,7 +20,10 @@
         responsive: true,
         layout: {
             padding: {
-                right: 10,
+                top: 20,
+                left: 10,
+                bottom: 10,
+                right: 20,
             },
         },
         scales: {
