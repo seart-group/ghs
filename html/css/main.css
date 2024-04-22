@@ -256,17 +256,17 @@ input::-webkit-calendar-picker-indicator {
     border-collapse: separate!important;
 }
 
-.table-centered td:not(:first-child),
-.table-centered th:not(:first-child) {
-    text-align: center!important;
-}
-
 .table-header-divider th {
     border-bottom:
             var(--bs-border-width)
             var(--bs-border-style)
             var(--bs-border-color)
     !important;
+}
+
+.table-centered td:not(:first-child),
+.table-centered th:not(:first-child) {
+    text-align: center!important;
 }
 
 .text-current {
