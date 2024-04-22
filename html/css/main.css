@@ -250,6 +250,12 @@ input::-webkit-calendar-picker-indicator {
     height: var(--ghs-spinner-size)!important;
 }
 
+.table {
+    margin: 0!important;
+    border-spacing: 0!important;
+    border-collapse: separate!important;
+}
+
 .text-current {
     color: currentcolor!important;
 }
