@@ -91,6 +91,10 @@ input::-webkit-calendar-picker-indicator {
     cursor: not-allowed!important;
 }
 
+.btn:focus {
+    box-shadow: var(--ghs-box-shadow)!important;
+}
+
 .btn-close {
     border-radius: 0!important;
 }
