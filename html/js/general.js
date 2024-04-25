@@ -2,8 +2,8 @@
     const $search_only_forks = $("#search-only-forks");
     const $search_exclude_forks = $("#search-exclude-forks");
 
-    const $citation_copy_btn = $("#citation-copy-btn");
-    const $citation_copy_target = $("#citation-copy-target");
+    const $publication_copy_btn = $("#publication-copy-btn");
+    const $publication_copy_target = $("#publication-copy-target");
 
     const today = new Date(new Date().setUTCHours(0, 0, 0, 0));
 
@@ -46,11 +46,11 @@
         }
     });
 
-    $citation_copy_btn.on("click", function () {
+    $publication_copy_btn.on("click", function () {
         const target = $(this);
         const icon = target.html();
         const [ element ] = target.get();
-        const data = $citation_copy_target.html();
+        const data = $publication_copy_target.html();
         clipboard.writeText(data)
             .then(() => {
                 target.attr("data-bs-original-title", "Copied!");
