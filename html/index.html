@@ -85,10 +85,10 @@
                 <a href="#"
                    class="nav-link"
                    data-bs-toggle="modal"
-                   data-bs-target="#citation-modal"
+                   data-bs-target="#publication-modal"
                    tabindex="-1"
                 >
-                  <span>Citation</span>
+                  <span>Publication</span>
                 </a>
               </li>
               <li class="nav-item">
@@ -1058,20 +1058,31 @@
         </div>
       </div>
     </div>
-    <div class="modal fade" id="citation-modal" tabindex="-1" aria-labelledby="citation-modal-label" aria-hidden="true">
+    <div class="modal fade" id="publication-modal" tabindex="-1" aria-labelledby="publication-modal-label" aria-hidden="true">
       <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered modal-lg modal-fullscreen-sm-down">
         <div class="modal-content">
           <div class="modal-header">
-            <h1 class="modal-title fs-5" id="citation-modal-label">How To Cite This Work</h1>
+            <h1 class="modal-title fs-5" id="publication-modal-label">Publication Details &amp; Citation</h1>
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
           <div class="modal-body">
-            <h2 class="fs-6">BibTeX Citation:</h2>
+            <p>
+              In 2021, our work was published in the proceedings of the 18th IEEE/ACM International Conference on Mining
+              Software Repositories. The paper itself is accessible through <a
+                    href="https://arxiv.org/abs/2103.04682"
+                    class="link-secondary"
+                    target="_blank"
+              >arXiv</a>. Since its publication, it has accrued over 100 citations. You can see which works have cited ours on <a
+                    href="https://scholar.google.com/scholar?cites=16481865317758439613,18296788087249224113"
+                    class="link-secondary"
+                    target="_blank"
+              >Google Scholar</a>. If you use our tool or data in your research, please consider citing our work:
+            </p>
             <div class="position-relative">
               <div class="position-absolute z-1 top-0 end-0">
                 <button type="button"
-                        id="citation-copy-btn"
-                        class="btn border-0 link-secondary"
+                        id="publication-copy-btn"
+                        class="btn border-0 rounded-0 link-secondary"
                         data-bs-original-title="Copy to clipboard..."
                         data-bs-toggle="tooltip"
                         data-bs-placement="top"
@@ -1080,7 +1091,7 @@
                 </button>
               </div>
               <pre>
-<code id="citation-copy-target" class="text-muted position-relative">@inproceedings{Dabic:msr2021data,
+<code id="publication-copy-target" class="text-muted position-relative">@inproceedings{Dabic:msr2021data,
   author    = {Ozren Dabic and Emad Aghajani and Gabriele Bavota},
   title     = {Sampling Projects in GitHub for {MSR} Studies},
   booktitle = {18th {IEEE/ACM} International Conference on Mining Software Repositories,
@@ -1090,9 +1101,6 @@
   year      = {2021}
 }</code></pre>
             </div>
-            <a href="https://arxiv.org/pdf/2103.04682.pdf" class="link-secondary" target="_blank">
-              Link to the paper PDF
-            </a>
           </div>
         </div>
       </div>
