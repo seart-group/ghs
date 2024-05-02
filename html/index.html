@@ -1002,7 +1002,10 @@
                    role="tabpanel"
                    aria-labelledby="statistics-chart-tab"
               >
-                <canvas id="statistics-chart" class="chart position-relative d-none"></canvas>
+                <canvas id="statistics-chart"
+                        class="chart position-relative d-none"
+                        aria-describedby="statistics-table"
+                ></canvas>
                 <div id="statistics-chart-spinner" class="d-flex justify-content-center">
                   <div class="spinner-border spinner-lg text-secondary m-5" role="status">
                     <span class="visually-hidden">Loading...</span>
