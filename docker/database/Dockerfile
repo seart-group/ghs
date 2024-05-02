@@ -46,7 +46,7 @@ EOF
 
 WORKDIR /docker-entrypoint-initdb.d
 
-ADD "https://www.dropbox.com/scl/fi/5eku4c65on1g26rnjzsx1/gse.sql.gz?rlkey=08l0sfvyj29b2wfvzw5vuuay4&dl=1" gse.sql.gz
+ADD "https://www.dropbox.com/scl/fi/8l8w2et56kz1w0e1o3n7e/gse.sql.gz?rlkey=pu267yxp8496s6notn1rlmy1k&st=52lox7f1&dl=1" gse.sql.gz
 
 RUN chown mysql:mysql gse.sql.gz && \
     chmod 755 gse.sql.gz
