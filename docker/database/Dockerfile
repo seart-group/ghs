@@ -16,7 +16,7 @@ RUN mkdir -p /var/log/mysql && \
 
 # https://mariadb.com/kb/en/rotating-logs-on-unix-and-linux
 COPY <<-EOF /etc/logrotate.d/mysql
-/var/log/mysql/* {
+/var/log/mysql/*.log {
         # Permissions
         su mysql mysql
         create 660 mysql mysql
