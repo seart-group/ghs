@@ -82,7 +82,7 @@
 		<jackson.version>2.17.1</jackson.version>
 		<okhttp.version>4.12.0</okhttp.version>
 		<springboot.version>2.7.18</springboot.version>
-		<springbootadmin.version>2.7.15</springbootadmin.version>
+		<springbootadmin.version>2.7.16</springbootadmin.version>
 	</properties>
 
 	<dependencyManagement>
