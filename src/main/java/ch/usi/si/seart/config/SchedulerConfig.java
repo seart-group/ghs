@@ -1,6 +1,5 @@
 package ch.usi.si.seart.config;
 
-import com.zaxxer.hikari.HikariDataSource;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,6 +12,10 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import org.springframework.util.ErrorHandler;
 
+import javax.sql.DataSource;
+import java.io.Closeable;
+import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.time.Clock;
 
 @Configuration
@@ -31,7 +34,7 @@ public class SchedulerConfig {
     }
 
     @Bean
-    public ErrorHandler errorHandler(HikariDataSource hikariDataSource, ApplicationContext applicationContext) {
+    public ErrorHandler errorHandler(DataSource dataSource, ApplicationContext applicationContext) {
         return new ErrorHandler() {
 
             private final Logger log = LoggerFactory.getLogger(
@@ -63,10 +66,14 @@ public class SchedulerConfig {
             }
 
             private void shutdown() {
-                log.error("Commencing shutdown...");
-                hikariDataSource.close();
-                int code = SpringApplication.exit(applicationContext, () -> 1);
-                System.exit(code);
+                try {
+                    log.error("Commencing shutdown...");
+                    if (dataSource instanceof Closeable closeable) closeable.close();
+                    int code = SpringApplication.exit(applicationContext, () -> 1);
+                    System.exit(code);
+                } catch (IOException ex) {
+                    throw new UncheckedIOException(ex);
+                }
             }
         };
     }
