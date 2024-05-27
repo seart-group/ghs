@@ -9,7 +9,6 @@ services:
     restart: "always"
     volumes:
       - data:/var/lib/mysql
-      - ./logs/database:/var/log/mysql
       - ./mysql.cnf:/etc/mysql/conf.d/mysql.cnf
     environment:
       MYSQL_ALLOW_EMPTY_PASSWORD: yes
