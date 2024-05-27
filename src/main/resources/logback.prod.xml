@@ -102,6 +102,21 @@
     </rollingPolicy>
   </appender>
 
+  <appender name="FILE-DATABASE"  class="ch.qos.logback.core.rolling.RollingFileAppender">
+    <encoder>
+      <pattern>${FILE_LOG_PATTERN_THREAD}</pattern>
+      <charset>${FILE_LOG_CHARSET}</charset>
+    </encoder>
+    <file>${LOG_ROOT}/database/database.log</file>
+    <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+      <fileNamePattern>${LOG_ROOT}/database/database_%d{yyyy-MM-dd}_%i.log.gz</fileNamePattern>
+      <totalSizeCap>${LOGBACK_ROLLINGPOLICY_TOTAL_SIZE_CAP}</totalSizeCap>
+      <maxFileSize>${LOGBACK_ROLLINGPOLICY_MAX_FILE_SIZE}</maxFileSize>
+      <maxHistory>${LOGBACK_ROLLINGPOLICY_MAX_HISTORY}</maxHistory>
+      <cleanHistoryOnStart>false</cleanHistoryOnStart>
+    </rollingPolicy>
+  </appender>
+
   <appender name="FILE-API" class="ch.qos.logback.core.rolling.RollingFileAppender">
     <encoder>
       <pattern>${FILE_LOG_PATTERN_MDC_THREAD}</pattern>
@@ -132,6 +147,9 @@
   </logger>
   <logger name="ch.usi.si.seart.job.CodeAnalysisJob" level="TRACE">
     <appender-ref ref="FILE-ANALYSIS" />
+  </logger>
+  <logger name="net.ttddyy.dsproxy.listener" level="DEBUG">
+    <appender-ref ref="FILE-DATABASE" />
   </logger>
   <logger name="org.springframework.web.servlet.DispatcherServlet" level="DEBUG">
     <appender-ref ref="FILE-API" />
