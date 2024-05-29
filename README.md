@@ -16,7 +16,7 @@ This project is made of two components:
 |------------------------------------------|--------------------:|
 | Java                                     |                  17 |
 | Maven                                    |                 3.9 |
-| MySQL                                    |                 8.4 |
+| MySQL                                    |                 8.3 |
 | Flyway                                   |               10.13 |
 | Git                                      |                2.43 |
 | [curl](https://github.com/curl/curl)     |                 8.5 |
