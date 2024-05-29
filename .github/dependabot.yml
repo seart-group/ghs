@@ -30,20 +30,24 @@ updates:
     target-branch: master
     labels:
       - dependencies
-  - package-ecosystem: docker
-    directory: /docker/database
-    schedule:
-      interval: daily
-    target-branch: master
-    labels:
-      - dependencies
-  - package-ecosystem: docker
-    directory: /docker/migration
-    schedule:
-      interval: daily
-    target-branch: master
-    labels:
-      - dependencies
+#
+# FIXME: These require more robust upgrades
+#
+#  - package-ecosystem: docker
+#    directory: /docker/database
+#    schedule:
+#      interval: daily
+#    target-branch: master
+#    labels:
+#      - dependencies
+#  - package-ecosystem: docker
+#    directory: /docker/migration
+#    schedule:
+#      interval: daily
+#    target-branch: master
+#    labels:
+#      - dependencies
+#
   - package-ecosystem: docker
     directory: /docker/server
     schedule:
