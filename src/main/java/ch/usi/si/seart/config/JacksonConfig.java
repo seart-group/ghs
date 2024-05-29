@@ -1,6 +1,7 @@
 package ch.usi.si.seart.config;
 
 import ch.usi.si.seart.dto.GitRepoDto;
+import ch.usi.si.seart.jackson.PaginationModule;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.json.JsonMapper;
@@ -32,6 +33,7 @@ public class JacksonConfig {
     public ObjectMapper objectMapper(DateFormat exportTimeFormat) {
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.registerModule(new JavaTimeModule());
+        objectMapper.registerModule(new PaginationModule());
         objectMapper.setDateFormat(exportTimeFormat);
         return objectMapper;
     }
@@ -39,7 +41,10 @@ public class JacksonConfig {
     @Bean
     public JsonMapper jsonMapper(DateFormat exportTimeFormat) {
         return JsonMapper.builder()
-                .addModule(new JavaTimeModule())
+                .addModules(
+                        new JavaTimeModule(),
+                        new PaginationModule()
+                )
                 .defaultDateFormat(exportTimeFormat)
                 .build();
     }
@@ -47,7 +52,10 @@ public class JacksonConfig {
     @Bean
     public CsvMapper csvMapper(DateFormat exportTimeFormat) {
         return CsvMapper.builder()
-                .addModule(new JavaTimeModule())
+                .addModules(
+                        new JavaTimeModule(),
+                        new PaginationModule()
+                )
                 .defaultDateFormat(exportTimeFormat)
                 .enable(JsonGenerator.Feature.IGNORE_UNKNOWN)
                 .enable(CsvGenerator.Feature.ALWAYS_QUOTE_NUMBERS)
@@ -59,7 +67,10 @@ public class JacksonConfig {
     @Bean
     public XmlMapper xmlMapper(DateFormat exportTimeFormat) {
         return XmlMapper.builder()
-                .addModule(new JavaTimeModule())
+                .addModules(
+                        new JavaTimeModule(),
+                        new PaginationModule()
+                )
                 .defaultDateFormat(exportTimeFormat)
                 .enable(ToXmlGenerator.Feature.WRITE_XML_DECLARATION)
                 .enable(ToXmlGenerator.Feature.WRITE_XML_1_1)

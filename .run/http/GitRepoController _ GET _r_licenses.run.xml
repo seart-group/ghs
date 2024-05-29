@@ -1,0 +1,5 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="GitRepoController | GET /r/licenses" type="HttpClient.HttpRequestRunConfigurationType" factoryName="HTTP Request" nameIsGenerated="true" path="$PROJECT_DIR$/http/GitRepoController.http" index="6" requestIdentifier="GET /r/licenses" runType="Run single request">
+    <method v="2" />
+  </configuration>
+</component>

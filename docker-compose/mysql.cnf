@@ -2,7 +2,7 @@
 event-scheduler=on
 default-time-zone="+00:00"
 group-concat-max-len=10000
-log-bin-trust-function-creators=1
+log-bin-trust-function-creators=on
 
 [mysqldump]
 quick
@@ -11,5 +11,3 @@ triggers
 routines
 single-transaction
 max-allowed-packet=1G
-ignore-table=gse.label_ranked
-ignore-table=gse.topic_ranked

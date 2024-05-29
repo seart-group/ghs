@@ -6,12 +6,16 @@ import ch.usi.si.seart.function.IOExceptingRunnable;
 import ch.usi.si.seart.hateoas.LinkBuilder;
 import ch.usi.si.seart.model.GitRepo;
 import ch.usi.si.seart.model.GitRepo_;
+import ch.usi.si.seart.model.Label;
 import ch.usi.si.seart.model.Language;
 import ch.usi.si.seart.model.License;
+import ch.usi.si.seart.model.Topic;
 import ch.usi.si.seart.service.GitRepoService;
+import ch.usi.si.seart.service.LabelService;
 import ch.usi.si.seart.service.LanguageService;
 import ch.usi.si.seart.service.LicenseService;
 import ch.usi.si.seart.service.StatisticsService;
+import ch.usi.si.seart.service.TopicService;
 import ch.usi.si.seart.web.ExportFormat;
 import ch.usi.si.seart.web.Headers;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -36,6 +40,7 @@ import lombok.Cleanup;
 import lombok.Getter;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
+import org.springdoc.api.annotations.ParameterObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.core.convert.ConversionService;
@@ -52,9 +57,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
+import org.springframework.util.ObjectUtils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.persistence.EntityManager;
@@ -65,7 +72,6 @@ import javax.servlet.http.HttpServletResponse;
 import javax.xml.namespace.QName;
 import java.io.BufferedOutputStream;
 import java.io.IOException;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -98,6 +104,7 @@ public class GitRepoController {
             GitRepo_.WATCHERS,
             GitRepo_.FORKS,
             GitRepo_.CREATED_AT,
+            GitRepo_.UPDATED_AT,
             GitRepo_.LAST_COMMIT
     );
 
@@ -112,6 +119,8 @@ public class GitRepoController {
 
     GitRepoService gitRepoService;
     LicenseService licenseService;
+    LabelService labelService;
+    TopicService topicService;
     LanguageService languageService;
     ConversionService conversionService;
     StatisticsService statisticsService;
@@ -130,7 +139,7 @@ public class GitRepoController {
     public ResponseEntity<?> searchRepos(
             @Parameter(description = "The repository match criteria", in = ParameterIn.QUERY)
             SearchParameterDto searchParameterDto,
-            @Parameter(description = "The search pagination settings", in = ParameterIn.QUERY)
+            @ParameterObject
             @SortDefault(sort = GitRepo_.NAME)
             Pageable pageable,
             HttpServletRequest request
@@ -147,28 +156,14 @@ public class GitRepoController {
         PageRequest pageRequest = PageRequest.of(page, size, sort);
 
         Specification<GitRepo> specification = conversionService.convert(searchParameterDto, Specification.class);
-        Page<GitRepo> results = gitRepoService.getBy(specification, pageRequest);
-
-        List<GitRepoDto> dtos = List.of(
-                conversionService.convert(
-                        results.getContent().toArray(GitRepo[]::new), GitRepoDto[].class
-                )
-        );
-
-        long totalItems = results.getTotalElements();
-        int totalPages = results.getTotalPages();
-
-        Map<String, Object> resultPage = new LinkedHashMap<>();
-        resultPage.put("totalPages", totalPages);
-        resultPage.put("totalItems", totalItems);
-        resultPage.put("page", page + 1);
-        resultPage.put("items", dtos);
+        Page<GitRepoDto> results = gitRepoService.getBy(specification, pageRequest)
+                .map(result -> conversionService.convert(result, GitRepoDto.class));
 
         MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
         headers.add(Headers.X_LINK_SEARCH, searchLinkBuilder.getLinks(request, results));
         headers.add(Headers.X_LINK_DOWNLOAD, downloadLinkBuilder.getLinks(request));
 
-        return new ResponseEntity<>(resultPage, headers, HttpStatus.OK);
+        return new ResponseEntity<>(results, headers, HttpStatus.OK);
     }
 
     @SuppressWarnings("unchecked")
@@ -340,35 +335,94 @@ public class GitRepoController {
     }
 
     @GetMapping(value = "/labels", produces = MediaType.APPLICATION_JSON_VALUE)
-    @Operation(summary = "Retrieve a list of the 500 most popular issue labels mined across projects.")
-    public ResponseEntity<?> getAllLabels() {
-        return ResponseEntity.ok(statisticsService.getTopRankedLabelNames());
+    @Operation(
+            summary = "Retrieve a list of matching issue labels mined across projects.",
+            description = """
+            Retrieve a list of issue labels from repositories that contain a specified substring in their names.
+            Up to 100 matches can be returned, sorted first by the position of the substring in the label name,
+            and then by the number of times the label has been used across all repositories.
+            If no substring is specified, the function returns the most frequently used labels instead.
+            """
+    )
+    public ResponseEntity<?> getAllLabels(
+            @RequestParam(required = false, defaultValue = "")
+            @Parameter(description = "The search term value", in = ParameterIn.QUERY)
+            String name,
+            @ParameterObject
+            Pageable pageable
+    ) {
+        Page<Label> labels = ObjectUtils.isEmpty(name)
+                ? labelService.getAll(pageable)
+                : labelService.getByNameContains(name, pageable);
+        return ResponseEntity.ok(labels.map(Label::getName));
     }
 
     @GetMapping(value = "/languages", produces = MediaType.APPLICATION_JSON_VALUE)
-    @Operation(summary = "Retrieve a list of all repository languages mined across projects.")
-    public ResponseEntity<?> getAllLanguages() {
-        return ResponseEntity.ok(
-                languageService.getRanked().stream()
-                        .map(Language::getName)
-                        .toList()
-        );
+    @Operation(
+            summary = "Retrieve a list of matching repository languages mined across projects.",
+            description = """
+            Retrieve a list of repository languages that contain a specified substring in their names.
+            Up to 100 matches can be returned, sorted first by the position of the substring in the language name.
+            If no substring is specified, the function returns all languages in an alphabetical order.
+            """
+    )
+    public ResponseEntity<?> getAllLanguages(
+            @RequestParam(required = false, defaultValue = "")
+            @Parameter(description = "The search term value", in = ParameterIn.QUERY)
+            String name,
+            @ParameterObject
+            Pageable pageable
+    ) {
+        Page<Language> languages = ObjectUtils.isEmpty(name)
+                ? languageService.getAll(pageable)
+                : languageService.getByNameContains(name, pageable);
+        return ResponseEntity.ok(languages.map(Language::getName));
     }
 
     @GetMapping(value = "/licenses", produces = MediaType.APPLICATION_JSON_VALUE)
-    @Operation(summary = "Retrieve a list of all repository licenses mined across projects.")
-    public ResponseEntity<?> getAllLicenses() {
-        return ResponseEntity.ok(
-                licenseService.getRanked().stream()
-                        .map(License::getName)
-                        .toList()
-        );
+    @Operation(
+            summary = "Retrieve a list of matching repository licenses mined across projects.",
+            description = """
+            Retrieve a list of repository licenses that contain a specified substring in their names.
+            Up to 100 matches can be returned, sorted first by the position of the substring in the license name,
+            and then by the number of times the license has been used across all repositories.
+            If no substring is specified, the function returns the most frequently used licenses instead.
+            """
+    )
+    public ResponseEntity<?> getAllLicenses(
+            @RequestParam(required = false, defaultValue = "")
+            @Parameter(description = "The search term value", in = ParameterIn.QUERY)
+            String name,
+            @ParameterObject
+            Pageable pageable
+    ) {
+        Page<License> page = ObjectUtils.isEmpty(name)
+                ? licenseService.getAll(pageable)
+                : licenseService.getByNameContains(name, pageable);
+        return ResponseEntity.ok(page.map(License::getName));
     }
 
     @GetMapping(value = "/topics", produces = MediaType.APPLICATION_JSON_VALUE)
-    @Operation(summary = "Retrieve a list of all repository topics mined across projects.")
-    public ResponseEntity<?> getAllTopics() {
-        return ResponseEntity.ok(statisticsService.getTopRankedTopicNames());
+    @Operation(
+            summary = "Retrieve a list of matching repository topics mined across projects.",
+            description = """
+            Retrieve a list of repository topics that contain a specified substring in their names.
+            Up to 100 matches can be returned, sorted first by the position of the substring in the topic name,
+            and then by the number of times the topic has been used across all repositories.
+            If no substring is specified, the function returns the most frequently used topics instead.
+            """
+    )
+    public ResponseEntity<?> getAllTopics(
+            @RequestParam(required = false, defaultValue = "")
+            @Parameter(description = "The search term value", in = ParameterIn.QUERY)
+            String name,
+            @ParameterObject
+            Pageable pageable
+    ) {
+        Page<Topic> page = ObjectUtils.isEmpty(name)
+                ? topicService.getAll(pageable)
+                : topicService.getByNameContains(name, pageable);
+        return ResponseEntity.ok(page.map(Topic::getName));
     }
 
     @GetMapping("/stats")

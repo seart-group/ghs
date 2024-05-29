@@ -33,34 +33,48 @@ public interface GitRepoRepository extends
 
     @Query(
         """
-        select r.id as id, r.name as name from GitRepo r
-        where DATEDIFF(CURRENT_TIMESTAMP(), r.lastPinged) > 35
-        order by r.lastPinged, RAND()
+        select
+            gitRepo.id as id,
+            gitRepo.name as name
+        from GitRepo gitRepo
+        where DATEDIFF(CURRENT_TIMESTAMP(), gitRepo.lastPinged) > 35
+        order by gitRepo.lastPinged, RAND()
         """
     ) // FIXME: 04.08.23 DATEDIFF is vendor-specific
     Stream<Tuple> streamIdentifiersWithOutdatedLastPinged();
 
     @Query(
         """
-        select r.id as id, r.name as name from GitRepo r
-        where r.lastAnalyzed is null or r.lastAnalyzed < r.lastCommit
-        order by r.lastAnalyzed, RAND()
+        select
+            gitRepo.id as id,
+            gitRepo.name as name
+        from GitRepo gitRepo
+        where
+            gitRepo.lastAnalyzed is null
+        or
+            gitRepo.lastAnalyzed < gitRepo.lastCommit
+        order by gitRepo.lastAnalyzed, RAND()
         """
     )
     Stream<Tuple> streamIdentifiersWithOutdatedCodeMetrics();
 
     @Query(
         """
-        select COUNT(r) from GitRepo r
-        where DATEDIFF(CURRENT_TIMESTAMP(), r.lastPinged) > 35
+        select COUNT(gitRepo)
+        from GitRepo gitRepo
+        where DATEDIFF(CURRENT_TIMESTAMP(), gitRepo.lastPinged) > 35
         """
     ) // FIXME: 04.08.23 DATEDIFF is vendor-specific
     Long countWithOutdatedLastPinged();
 
     @Query(
         """
-        select COUNT(r) from GitRepo r
-        where r.lastAnalyzed is null or r.lastAnalyzed < r.lastCommit
+        select COUNT(gitRepo)
+        from GitRepo gitRepo
+        where
+            gitRepo.lastAnalyzed is null
+        or
+            gitRepo.lastAnalyzed < gitRepo.lastCommit
         """
     )
     Long countWithOutdatedCodeMetrics();

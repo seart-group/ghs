@@ -16,7 +16,7 @@ jobs:
     steps:
       - id: dependabot-metadata
         name: Fetch Dependabot metadata
-        uses: dependabot/fetch-metadata@v1
+        uses: dependabot/fetch-metadata@v2
       - name: Enable auto-merge for Dependabot PRs
         run: gh pr merge --auto --merge "$PR_URL"
       - name: Approve patch and minor version updates

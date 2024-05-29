@@ -1,18 +1,19 @@
 package ch.usi.si.seart.service;
 
 import ch.usi.si.seart.model.Label;
-import ch.usi.si.seart.model.view.LabelView;
 import ch.usi.si.seart.repository.LabelRepository;
-import ch.usi.si.seart.repository.LabelViewRepository;
+import ch.usi.si.seart.repository.LabelStatisticsRepository;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import javax.validation.constraints.NotNull;
-import java.util.Collection;
 
 public interface LabelService extends NamedEntityService<Label> {
 
@@ -22,9 +23,7 @@ public interface LabelService extends NamedEntityService<Label> {
     class LabelServiceImpl implements LabelService {
 
         LabelRepository labelRepository;
-        LabelViewRepository labelViewRepository;
-
-        Pageable pageable;
+        LabelStatisticsRepository labelStatisticsRepository;
 
         @Override
         public Label getOrCreate(@NotNull String name) {
@@ -37,11 +36,25 @@ public interface LabelService extends NamedEntityService<Label> {
         }
 
         @Override
-        public Collection<Label> getRanked() {
-            Collection<String> names = labelViewRepository.findAll(pageable).stream()
-                    .map(LabelView::getName)
-                    .toList();
-            return labelRepository.findAllByNameIn(names);
+        public Page<Label> getAll(Pageable pageable) {
+            return labelStatisticsRepository.findAll(
+                    PageRequest.of(
+                            pageable.getPageNumber(),
+                            pageable.getPageSize(),
+                            Sort.Direction.DESC,
+                            Label.Statistics_.COUNT
+                    )
+            ).map(Label.Statistics::getLabel);
+        }
+
+        @Override
+        public Page<Label> getByNameContains(String name, Pageable pageable) {
+            return labelRepository.findAllByNameContainsOrderByBestMatch(
+                    name, PageRequest.of(
+                            pageable.getPageNumber(),
+                            pageable.getPageSize()
+                    )
+            );
         }
     }
 }

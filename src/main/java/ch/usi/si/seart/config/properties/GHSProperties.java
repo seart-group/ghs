@@ -35,9 +35,6 @@ public class GHSProperties {
     @NestedConfigurationProperty
     CleanUpProperties cleanUp;
 
-    @NestedConfigurationProperty
-    StatisticsProperties statistics;
-
     public GitHubProperties getGitHubProperties() {
         return github;
     }
@@ -64,9 +61,5 @@ public class GHSProperties {
 
     public CleanUpProperties getCleanUpProperties() {
         return cleanUp;
-    }
-
-    public StatisticsProperties getStatisticsProperties() {
-        return statistics;
     }
 }

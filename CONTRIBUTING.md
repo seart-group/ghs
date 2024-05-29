@@ -19,10 +19,10 @@ Before you start, please take a moment to read and understand the following guid
 ## Pull Request Process
 
 Ensure your PR description explains the purpose of your changes and provides context.
-Be sure to reference related issues by using [linking keywords](https://docs.github.com/en/issues/tracking-your-work-with-issues/linking-a-pull-request-to-an-issue).
-Ensure your PR includes only relevant changes.
+Reference related issues through [linking keywords](https://docs.github.com/en/issues/tracking-your-work-with-issues/linking-a-pull-request-to-an-issue).
+Your PR should include only relevant changes.
 Large changes should be broken into smaller, manageable PRs.
-Be prepared to make adjustments based on feedback received both by the automated actions, as well reviewers.
+Be prepared to make adjustments based on feedback received by the automated actions and reviewers.
 
 ## Style Guide
 

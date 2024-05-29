@@ -72,7 +72,7 @@ public class GitHubRestConnector extends GitHubConnector<RestResponse> {
     @SuppressWarnings("ConstantConditions")
     public JsonObject searchRepositories(String language, Range<Date> dateRange, Integer page) {
         Map<String, String> query = ImmutableMap.<String, String>builder()
-                .put("language", URLEncoder.encode(language, StandardCharsets.UTF_8))
+                .put("language", URLEncoder.encode("\"" + language + "\"", StandardCharsets.UTF_8))
                 .put("pushed", dateRangePrinter.print(dateRange))
                 .put("stars", String.format(">=%d", minimumStars))
                 .put("fork", "true")

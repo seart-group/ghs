@@ -16,6 +16,12 @@
         _element,
         download_modal = new Modal(_element)
     ] = $("#download-modal").get();
+    const $toast_container = $(".toast-container");
+    const toastOptions = {
+        id: "search-toast",
+        title: "Error",
+        body: "Could not retrieve search results!",
+    };
     const formats = [ "csv", "xml", "json" ];
     const paginationOptions = {
         visiblePages: 5,
@@ -34,11 +40,11 @@
                 _url.searchParams.append(entry.name, entry.value);
                 return _url;
             }, url);
-    }
+    };
 
     const query = function () {
         return setParameters(new URL(`${base}/r/search`));
-    }
+    };
 
     const download = function (format) {
         if (!formats.includes(format)) {
@@ -74,12 +80,12 @@
         $results_jump_input
             .removeAttr("min")
             .removeAttr("max");
-    }
+    };
 
     const $resetResults = function () {
         $results_count.children().remove();
         $results_list.children().remove();
-    }
+    };
 
     const $setResultsCount = function (count = 0) {
         $results_count.html(`<h1 class="my-3">Results: ${count.toLocaleString()}</h1>`);
@@ -96,10 +102,10 @@
             totalPages: total || 1
         });
         $(".disabled > .page-link").attr("tabindex", -1);
-    }
+    };
 
     const $setDownloadLinks = function (results = 0) {
-        const $group = $(".btn-download-group")
+        const $group = $(".btn-download-group");
         if (!results) {
             const $buttons = $(".btn-download");
             $group.addClass("disabled");
@@ -240,35 +246,43 @@
     };
 
     $search.on("submit", async function (event) {
-        event.preventDefault();
-        $toggleSearch();
-        $toggleSpinner();
-        const response = await search();
-        const { totalItems, totalPages, items } = await response.json();
-        $setResultsCount(totalItems);
-        $setDownloadLinks(totalItems);
-        $renderItems(items);
-        $createPagination(1, totalPages);
-        $setPageJump(totalPages);
-        $toggleSpinner();
-        $toggleResults();
+        try {
+            event.preventDefault();
+            $toggleSearch();
+            $toggleSpinner();
+            const response = await search();
+            const { totalItems, totalPages, items } = await response.json();
+            $setResultsCount(totalItems);
+            $setDownloadLinks(totalItems);
+            $renderItems(items);
+            $createPagination(1, totalPages);
+            $setPageJump(totalPages);
+            $toggleSpinner();
+            $toggleResults();
+        } catch (_err) {
+            $toast_container.twbsToast(toastOptions);
+        }
     });
 
     const replacePage = async function (page = 1) {
-        $toggleResults();
-        $toggleSpinner();
-        $destroyPagination();
-        $resetResults();
-        $resetJumpForms();
-        const response = await search(page - 1);
-        const { totalItems, totalPages, items } = await response.json();
-        $setResultsCount(totalItems);
-        $renderItems(items);
-        $createPagination(page, totalPages);
-        $setPageJump(totalPages);
-        $toggleSpinner();
-        $toggleResults();
-    }
+        try {
+            $toggleResults();
+            $toggleSpinner();
+            $destroyPagination();
+            $resetResults();
+            $resetJumpForms();
+            const response = await search(page - 1);
+            const { totalItems, totalPages, items } = await response.json();
+            $setResultsCount(totalItems);
+            $renderItems(items);
+            $createPagination(page, totalPages);
+            $setPageJump(totalPages);
+            $toggleSpinner();
+            $toggleResults();
+        } catch (_err) {
+            $toast_container.twbsToast(toastOptions);
+        }
+    };
 
     paginationOptions.onPageClick = async function (_, page) {
         await replacePage(page);

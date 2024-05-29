@@ -1,5 +1,6 @@
 package ch.usi.si.seart.controller;
 
+import io.swagger.v3.oas.annotations.Hidden;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -52,6 +53,7 @@ public class RootController {
         }
     }
 
+    @Hidden
     @GetMapping(value = "favicon.ico")
     public void favicon() {
     }

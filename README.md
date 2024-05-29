@@ -1,12 +1,12 @@
-# GitHub Search &middot; [![Status](https://badgen.net/https/dabico.npkn.net/ghs-status)](http://seart-ghs.si.usi.ch) [![MIT license](https://img.shields.io/badge/License-MIT-blue.svg)](https://github.com/seart-group/ghs/blob/master/LICENSE) [![Latest Dump](https://img.shields.io/badge/Latest_Dump-01.03.24-blue)](https://www.dropbox.com/scl/fi/npdntnekzdpvjr62c3sq3/gse.sql.gz?rlkey=99wm57cqaq38oykd1c0r7rglh&dl=1) [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.4588464.svg)](https://doi.org/10.5281/zenodo.4588464) <!-- markdownlint-disable-line -->
+# GitHub Search &middot; [![Status](https://badgen.net/https/dabico.npkn.net/ghs-status)](http://seart-ghs.si.usi.ch) [![MIT license](https://img.shields.io/badge/License-MIT-blue.svg)](https://github.com/seart-group/ghs/blob/master/LICENSE) [![Latest Dump](https://img.shields.io/badge/Latest_Dump-01.05.24-blue)](https://www.dropbox.com/scl/fi/8l8w2et56kz1w0e1o3n7e/gse.sql.gz?rlkey=pu267yxp8496s6notn1rlmy1k&st=52lox7f1&dl=1) [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.4588464.svg)](https://doi.org/10.5281/zenodo.4588464) <!-- markdownlint-disable-line -->
 
 This project is made of two components:
 
 1. A Spring Boot powered back-end, responsible for:
     1. Continuously crawling GitHub API endpoints for repository information, and storing it in a central database;
     2. Acting as an API for providing access to the stored data.
-2. A Bootstrap-styled and jQuery powered web user interface, serving an accessible front for the API, available at
-   [http://seart-ghs.si.usi.ch](http://seart-ghs.si.usi.ch)
+2. A Bootstrap-styled and jQuery-powered web user interface, serving as an accessible front for the API, available
+   [here](http://seart-ghs.si.usi.ch).
 
 ## Running Locally
 
@@ -17,7 +17,7 @@ This project is made of two components:
 | Java                                     |                  17 |
 | Maven                                    |                 3.9 |
 | MySQL                                    |                 8.3 |
-| Flyway                                   |                10.9 |
+| Flyway                                   |               10.13 |
 | Git                                      |                2.43 |
 | [curl](https://github.com/curl/curl)     |                 8.5 |
 | [cloc](https://github.com/AlDanial/cloc) |                1.98 |
@@ -73,7 +73,7 @@ gzcat < gse.sql.gz | mysql -u gseadmin -pLugano2020 gse
 
 Before attempting to run the server, you must generate your own GitHub personal access token (PAT).
 GHS relies on the GraphQL API, which is inaccessible without authentication.
-The token must include the `repo` scope, in order for it to access the information present in the GitHub API.
+To access the information provided by the GitHub API, the token must include the `repo` scope.
 
 Once that is done, you can run the server locally using Maven:
 
@@ -109,27 +109,22 @@ Here's a list of project-specific arguments supported by the application that yo
 | `ghs.crawler.minimum-stars`          | int                | 10                                                                      | Inclusive lower bound for the number of stars a project needs to have in order to be picked up by the crawler. Must not be negative.                                                                                                                               |
 | `ghs.crawler.languages`              | List&lt;String&gt; | See [application.properties](src/main/resources/application.properties) | List of language names that will be targeted during crawling. Must not contain blank strings. To ensure proper operations, the names must match those specified in [linguist](https://github.com/github-linguist/linguist/blob/master/lib/linguist/languages.yml). |
 | `ghs.crawler.start-date`             | Date               | 2008-01-01T00:00:00Z                                                    | Default crawler start date: the earliest date for repository crawling in the absence of prior crawl jobs. Value format: `yyyy-MM-ddTHH:MM:SSZ`.                                                                                                                    |
-| `ghs.crawler.delay-between-runs`     | Duration           | PT6H                                                                    | Delay between successive crawler runs, expressed as a duration string.                                                                                                                                                                                             |
 | `ghs.analysis.enabled`               | Boolean            | true                                                                    | Specifies if the analysis job is enabled.                                                                                                                                                                                                                          |
 | `ghs.analysis.delay-between-runs`    | Duration           | PT6H                                                                    | Delay between successive analysis runs, expressed as a duration string.                                                                                                                                                                                            |
 | `ghs.analysis.max-pool-threads`      | int                | 3                                                                       | Maximum amount of live threads dedicated to concurrently analyzing repositories. Must be positive.                                                                                                                                                                 |
 | `ghs.clean-up.enabled`               | Boolean            | true                                                                    | Specifies if the job responsible for removing unavailable repositories (clean-up) is enabled.                                                                                                                                                                      |
 | `ghs.clean-up.cron`                  | CronTrigger        | 0 0 0 \* \* 1                                                           | Delay between successive repository clean-up runs, expressed as a [Spring CRON expression](https://spring.io/blog/2020/11/10/new-in-spring-5-3-improved-cron-expressions).                                                                                         |
-| `ghs.statistics.suggestion-limit`    | int                | 500                                                                     | Maximum number of suggestions available in UI autocompletion. Must not be negative. To disable the limit use 0.                                                                                                                                                    |
 
 ### Web UI
 
-The easiest way to start the front-end is through IntelliJ's built-in web server.
-After starting the application back-end right click on `index.html` in the [html](html) directory,
-and select one of the provided launch options from `Open In > Browser`.
-Alternatively, you can self-host the web UI by virtue of tools such as `http-server`:
+The easiest way to launch the front-end is through the provided NPM script:
 
 ```shell
-# install by running: npm install -g http-server
-http-server html -p 3030
+npm run dev
 ```
 
-Regardless of which method you choose for hosting, the back-end CORS restricts you to using either port `3030` or `7030`.
+You can also use the built-in web server of your IDE, or any other web server of your choice.
+Regardless of which method you choose for hosting, the back-end CORS restricts you to using ports `3030` and `7030`.
 
 ## Dockerisation :whale:
 
@@ -205,10 +200,10 @@ services:
 ```
 
 Any of the Spring Boot properties or aforementioned application-specific properties can be overridden.
-Just keep in mind that `ghs.x.y` corresponds to the `GHS_X_Y` service environment setting.
+Just keep in mind, that the `ghs.x.y` property corresponds to the `GHS_X_Y` service environment setting.
 
 Another example is the automated database backup service, which is disabled by default.
-Should you chose to re-enable it, you would have to add the following to the override file:
+Should you choose to re-enable it, you would have to add the following to the override file:
 
 ```yaml
 version: '3.9'
@@ -241,8 +236,6 @@ services:
       - ./git/.override.gitconfig:/root/.gitconfig
 ```
 
----
-
 ## FAQ
 
 ### How can I request a feature or ask a question?
@@ -264,6 +257,6 @@ Please refer to [CONTRIBUTING.md](CONTRIBUTING.md) for more information.
 
 ### How do I extend/modify the existing database schema?
 
-In order to do that, you should be familiar with database migration tools and practices.
+To do that you should be familiar with database migration tools and practices.
 This project in particular uses [Flyway](https://flywaydb.org/) by Redgate.
 However, the general rule for schema manipulation is: create new migrations, and _do not_ edit existing ones.

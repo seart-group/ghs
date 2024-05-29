@@ -1,18 +1,15 @@
-(function (base, $, _, Chart) {
-    const [ canvas ] = $("#statistics-chart").get();
+(function (base, $, _, Handlebars, Chart, chroma) {
+    const $statistics_chart = $("#statistics-chart");
+    const $statistics_chart_spinner = $("#statistics-chart-spinner");
     const $toast_container = $(".toast-container");
     const $statistics_mined = $("#statistics-mined");
     const $statistics_analyzed = $("#statistics-analyzed");
-    const $statistics_download_btn = $("#statistics-download-btn");
-
-    // https://github.com/nagix/chartjs-plugin-colorschemes/blob/master/src/colorschemes/colorschemes.tableau.js#L45
-    const gray20 = [
-        "#49525e", "#4f5864", "#555f6a", "#5b6570",
-        "#616c77", "#67737c", "#6e7a81", "#758087",
-        "#7c878d", "#848e93", "#8b9598", "#939c9e",
-        "#9ca3a4", "#a4a9ab", "#acb0b1", "#b4b7b7",
-        "#bcbfbe", "#c5c7c6", "#cdcecd", "#d5d5d5"
-    ];
+    const $statistics_csv_btn = $("#statistics-csv-btn");
+    const $statistics_png_btn = $("#statistics-png-btn");
+    const $table_body = $("#statistics-table > tbody");
+    const $table_rows_template = $("#template-table-rows").html();
+    const $table_rows_content = Handlebars.compile($table_rows_template);
+    const [ canvas ] = $statistics_chart.get();
 
     const percentage = (numerator, denominator) => (numerator / denominator * 100).toFixed(2);
 
@@ -20,12 +17,15 @@
 
     const options = {
         animation: {
-            duration: 0
+            duration: 0,
         },
         responsive: true,
         layout: {
             padding: {
-                right: 10,
+                top: 20,
+                left: 10,
+                bottom: 10,
+                right: 20,
             },
         },
         scales: {
@@ -46,7 +46,7 @@
                 ticks: {
                     callback: function (label, _idx, _labels) {
                         return `${label / 1000}k`;
-                    }
+                    },
                 },
                 title: {
                     display: true,
@@ -59,8 +59,8 @@
         },
         elements: {
             bar: {
-                borderWidth: 1
-            }
+                borderWidth: 1,
+            },
         },
         plugins: {
             legend: {
@@ -79,7 +79,7 @@
                     },
                 },
             },
-        }
+        },
     };
 
     fetch(`${base}/r/stats`)
@@ -93,19 +93,26 @@
             const coverage = `${percentage(total.analyzed, total.mined)}%`;
             $statistics_mined.replaceWith(`<span id="statistics-mined">${total.mined.toLocaleString()}</span>`);
             $statistics_analyzed.replaceWith(`<span id="statistics-analyzed">${coverage}</span>`);
-            return Object.entries(json).map(([key, value]) => ({ x: key, ...value }));
+            return Object.entries(json)
+                .map(([key, value]) => ({ x: key, ...value }))
+                .filter(({ mined }) => mined > 0);
         })
         .then(data => {
-            $statistics_download_btn.removeClass("d-none")
+            const transformed = data.map(({x: language, mined, analyzed}) => ({language, mined, analyzed}));
+            $table_body.html($table_rows_content(transformed));
+            return data;
+        })
+        .then(data => {
+            $statistics_csv_btn.removeClass("d-none")
                 .prop("disabled", false)
                 .on("click", () => {
                     const header = "\"language\",\"mined\",\"analyzed\",\"coverage\"";
                     const body = data.map(({ x: language, mined, analyzed }) => {
-                        return `"${language}","${mined}","${analyzed}","${(analyzed / mined).toFixed(4)}"`;
-                    })
-                    .join("\n");
+                        const percentage = mined ? analyzed / mined : 0;
+                        return `"${language}","${mined}","${analyzed}","${percentage.toFixed(4)}"`;
+                    }).join("\n");
                     const content = `${header}\n${body}\n`;
-                    const blob = new Blob([ content ], { type: 'text/csv;charset=utf-8,' });
+                    const blob = new Blob([ content ], { type: "text/csv;charset=utf-8," });
                     const url = URL.createObjectURL(blob);
                     const anchor = document.createElement("a");
                     anchor.setAttribute("href", url);
@@ -115,23 +122,42 @@
                 });
             return data;
         })
-        .then(data => ({
-            datasets: [
-                {
-                    data,
-                    label: "Mined",
-                    borderColor: gray20,
-                    backgroundColor: gray20.map(color => `${color}bf`),
-                    barPercentage: 1,
-                    parsing: {
-                        yAxisKey: "mined",
+        .then(data => {
+            const palette = chroma.scale(["#0f0f0f", "#f2f2f2"]).mode("lch").colors(data.length);
+            return {
+                datasets: [
+                    {
+                        data,
+                        label: "Mined",
+                        borderColor: palette,
+                        backgroundColor: palette.map(color => `${color}bf`),
+                        barPercentage: 1,
+                        parsing: {
+                            yAxisKey: "mined",
+                        },
                     },
-                },
-            ]
-        }))
-        .then(data => new Chart(canvas, { type: "bar", options, data }))
+                ]
+            };
+        })
+        .then(data => {
+            $statistics_chart_spinner.addClass("d-none");
+            $statistics_chart.removeClass("d-none");
+            return new Chart(canvas, { type: "bar", options, data });
+        })
+        .then(chart => {
+            $statistics_png_btn.removeClass("d-none")
+                .prop("disabled", false)
+                .on("click", () => {
+                    const url = chart.toBase64Image();
+                    const anchor = document.createElement("a");
+                    anchor.setAttribute("href", url);
+                    anchor.setAttribute("download", "statistics.png");
+                    anchor.click();
+                    anchor.remove();
+                });
+        })
         .catch(() => $toast_container.twbsToast({
             id: "statistics-toast",
             body: "Could not retrieve repository statistics!"
         }));
-}(base, jQuery, _, Chart));
+}(base, jQuery, _, Handlebars, Chart, chroma));

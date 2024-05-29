@@ -1,18 +1,19 @@
 package ch.usi.si.seart.service;
 
 import ch.usi.si.seart.model.Topic;
-import ch.usi.si.seart.model.view.TopicView;
 import ch.usi.si.seart.repository.TopicRepository;
-import ch.usi.si.seart.repository.TopicViewRepository;
+import ch.usi.si.seart.repository.TopicStatisticsRepository;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import javax.validation.constraints.NotNull;
-import java.util.Collection;
 
 public interface TopicService extends NamedEntityService<Topic> {
 
@@ -22,9 +23,7 @@ public interface TopicService extends NamedEntityService<Topic> {
     class TopicServiceImpl implements TopicService {
 
         TopicRepository topicRepository;
-        TopicViewRepository topicViewRepository;
-
-        Pageable pageable;
+        TopicStatisticsRepository topicStatisticsRepository;
 
         @Override
         public Topic getOrCreate(@NotNull String name) {
@@ -37,11 +36,25 @@ public interface TopicService extends NamedEntityService<Topic> {
         }
 
         @Override
-        public Collection<Topic> getRanked() {
-            Collection<String> names = topicViewRepository.findAll(pageable).stream()
-                    .map(TopicView::getName)
-                    .toList();
-            return topicRepository.findAllByNameIn(names);
+        public Page<Topic> getAll(Pageable pageable) {
+            return topicStatisticsRepository.findAll(
+                    PageRequest.of(
+                            pageable.getPageNumber(),
+                            pageable.getPageSize(),
+                            Sort.Direction.DESC,
+                            Topic.Statistics_.COUNT
+                    )
+            ).map(Topic.Statistics::getTopic);
+        }
+
+        @Override
+        public Page<Topic> getByNameContains(String name, Pageable pageable) {
+            return topicRepository.findAllByNameContainsOrderByBestMatch(
+                    name, PageRequest.of(
+                            pageable.getPageNumber(),
+                            pageable.getPageSize()
+                    )
+            );
         }
     }
 }
