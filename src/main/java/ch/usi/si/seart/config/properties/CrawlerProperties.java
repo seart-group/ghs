@@ -8,8 +8,10 @@ import org.springframework.boot.context.properties.ConstructorBinding;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.PastOrPresent;
 import javax.validation.constraints.PositiveOrZero;
+import java.time.Duration;
 import java.util.Date;
 import java.util.List;
 
@@ -28,17 +30,22 @@ public class CrawlerProperties {
     @PastOrPresent
     Date startDate;
 
+    @NotNull
+    Duration delayBetweenRuns;
+
     @ConstructorBinding
     public CrawlerProperties(
             Boolean enabled,
             int minimumStars,
             List<String> languages,
             @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss'Z'")
-            Date startDate
+            Date startDate,
+            Duration delayBetweenRuns
     ) {
         this.enabled = enabled;
         this.minimumStars = minimumStars;
         this.languages = languages;
         this.startDate = startDate;
+        this.delayBetweenRuns = delayBetweenRuns;
     }
 }
