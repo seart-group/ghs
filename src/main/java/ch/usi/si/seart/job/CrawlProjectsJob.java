@@ -1,5 +1,6 @@
 package ch.usi.si.seart.job;
 
+import ch.usi.si.seart.config.properties.CrawlerProperties;
 import ch.usi.si.seart.exception.MetadataCrawlingException;
 import ch.usi.si.seart.exception.UnsplittableRangeException;
 import ch.usi.si.seart.github.GitHubGraphQlConnector;
@@ -47,7 +48,6 @@ import java.util.Deque;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
-import java.util.concurrent.TimeUnit;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
@@ -69,10 +69,12 @@ public class CrawlProjectsJob implements Runnable {
     GitHubRestConnector gitHubRestConnector;
     GitHubGraphQlConnector gitHubGraphQlConnector;
 
+    CrawlerProperties crawlerProperties;
+
     Ranges.Printer<Date> rangePrinter;
     Ranges.Splitter<Date> rangeSplitter;
 
-    @Scheduled(fixedDelay = 1, timeUnit = TimeUnit.SECONDS)
+    @Scheduled(fixedDelayString = "${ghs.crawler.delay-between-runs}")
     public void run() {
         log.info("Initializing language queue...");
         Collection<Language> languages = languageService.getTargetedLanguages();
@@ -84,6 +86,9 @@ public class CrawlProjectsJob implements Runnable {
             Language.Progress progress = languageService.getProgress(language);
             new LanguageCrawler(language, progress).run();
         }
+        Duration delay = crawlerProperties.getDelayBetweenRuns();
+        Instant instant = Instant.now().plus(delay);
+        log.info("Next crawl scheduled for: {}", Date.from(instant));
     }
 
     @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
