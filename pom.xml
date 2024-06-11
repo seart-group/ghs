@@ -11,7 +11,7 @@
 
 	<groupId>ch.usi.si.seart</groupId>
 	<artifactId>ghs-application</artifactId>
-	<version>1.16.3</version>
+	<version>1.16.5</version>
 	<packaging>jar</packaging>
 
 	<name>GitHub Search</name>
@@ -77,7 +77,7 @@
 		<java.release>17</java.release>
 		<java.version>1.${java.release}</java.version>
 		<mysql.version>8.3.0</mysql.version>
-		<guava.version>33.2.0-jre</guava.version>
+		<guava.version>33.2.1-jre</guava.version>
 		<jackson.version>2.17.1</jackson.version>
 		<okhttp.version>4.12.0</okhttp.version>
 		<springboot.version>2.7.18</springboot.version>
@@ -321,7 +321,7 @@
 			<plugin>
 				<groupId>io.github.git-commit-id</groupId>
 				<artifactId>git-commit-id-maven-plugin</artifactId>
-				<version>8.0.2</version>
+				<version>9.0.0</version>
 				<executions>
 					<execution>
 						<goals>
