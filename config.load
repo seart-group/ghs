@@ -1,0 +1,7 @@
+LOAD DATABASE
+FROM mysql://gseadmin:Lugano2020@localhost:3306/gse
+INTO postgresql://ghsadmin:Lugano2024@localhost:5432/ghs
+WITH
+    include drop,
+    prefetch rows = 1000
+    alter schema 'gse' RENAME TO 'public';
