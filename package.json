@@ -57,7 +57,7 @@
     "copyfiles": "^2.4.1",
     "esbuild": "^0.21.5",
     "eslint": "^9.5.0",
-    "globals": "^15.4.0",
+    "globals": "^15.5.0",
     "html-minifier-terser": "^7.2.0",
     "htmlhint": "^1.1.4",
     "http-server": "^14.1.1",
