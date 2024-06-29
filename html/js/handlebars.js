@@ -1,6 +1,9 @@
 H.registerHelpers(Handlebars);
 
-Handlebars.registerHelper("startcase", _.startCase);
+Handlebars.registerHelper("startcase", function (value) {
+    const result = value.replace(/([A-Z])/g, " $1");
+    return result.charAt(0).toUpperCase() + result.slice(1);
+});
 
 Handlebars.registerHelper("bytes", function (value) {
     const k = 1024;
