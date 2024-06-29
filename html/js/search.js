@@ -182,7 +182,7 @@
             topics,
         }) {
         const total = Object.values(languages).reduce((acc, value) => acc + value, 0);
-        const normalized = _.mapValues(languages, (value) => value / total * 100);
+        const pairs = Object.entries(languages).map(([ key, value ]) => [ key, value / total * 100 ]);
 
         const selectedLanguage = $search_language.val();
         const languageMetrics = metrics.find((metric) => metric.language === selectedLanguage);
@@ -230,7 +230,7 @@
                 blankLines: languageMetrics?.blankLines,
             },
             labels: labels,
-            languages: normalized,
+            languages: Object.fromEntries(pairs),
             topics: topics
         };
         const html = $results_content(context);
