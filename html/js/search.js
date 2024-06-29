@@ -181,7 +181,7 @@
             languages,
             topics,
         }) {
-        const total = _.sum(Object.values(languages));
+        const total = Object.values(languages).reduce((acc, value) => acc + value, 0);
         const normalized = _.mapValues(languages, (value) => value / total * 100);
 
         const selectedLanguage = $search_language.val();
