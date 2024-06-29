@@ -75,13 +75,14 @@ Handlebars.registerHelper("date", function (value) {
 Handlebars.registerHelper("between", function (item, options) {
     const min = options.hash.min || Number.MIN_SAFE_INTEGER;
     const max = options.hash.max || Number.MAX_SAFE_INTEGER;
+    const inRange = (num, a, b = 0) => (Math.min(a, b) <= num && num < Math.max(a, b));
     switch (typeof item) {
     case "number":
-        return _.inRange(item, min, max);
+        return inRange(item, min, max);
     case "string":
-        return _.inRange(item.length, min, max);
+        return inRange(item.length, min, max);
     case "object":
-        return _.inRange(Object.keys(item).length, min, max);
+        return inRange(Object.keys(item).length, min, max);
     default:
         return false;
     }
