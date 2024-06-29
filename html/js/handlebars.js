@@ -1,13 +1,16 @@
 H.registerHelpers(Handlebars);
 
-Handlebars.registerHelper("startcase", _.startCase);
+Handlebars.registerHelper("startcase", function (value) {
+    const result = value.replace(/([A-Z])/g, " $1");
+    return result.charAt(0).toUpperCase() + result.slice(1);
+});
 
 Handlebars.registerHelper("bytes", function (value) {
     const k = 1024;
     const decimals = 2;
     const units = ["B", "KB", "MB", "GB", "TB", "PB"];
     const point = decimals ? "." : "";
-    const zeroes = _.repeat("0", decimals);
+    const zeroes = "0".repeat(decimals);
     if (!value) return `0${point}${zeroes} ${units[0]}`;
     const formatter = new Intl.NumberFormat("en-US", {
         minimumFractionDigits: 0,
@@ -75,13 +78,14 @@ Handlebars.registerHelper("date", function (value) {
 Handlebars.registerHelper("between", function (item, options) {
     const min = options.hash.min || Number.MIN_SAFE_INTEGER;
     const max = options.hash.max || Number.MAX_SAFE_INTEGER;
+    const inRange = (num, a, b = 0) => (Math.min(a, b) <= num && num < Math.max(a, b));
     switch (typeof item) {
     case "number":
-        return _.inRange(item, min, max);
+        return inRange(item, min, max);
     case "string":
-        return _.inRange(item.length, min, max);
+        return inRange(item.length, min, max);
     case "object":
-        return _.inRange(Object.keys(item).length, min, max);
+        return inRange(Object.keys(item).length, min, max);
     default:
         return false;
     }

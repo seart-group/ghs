@@ -1,4 +1,4 @@
-(function (base, $, _, Handlebars, Chart, chroma) {
+(function (base, $, Handlebars, Chart, chroma) {
     const $statistics_chart = $("#statistics-chart");
     const $statistics_chart_spinner = $("#statistics-chart-spinner");
     const $toast_container = $(".toast-container");
@@ -160,4 +160,4 @@
             id: "statistics-toast",
             body: "Could not retrieve repository statistics!"
         }));
-}(base, jQuery, _, Handlebars, Chart, chroma));
+}(base, jQuery, Handlebars, Chart, chroma));

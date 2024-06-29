@@ -1,4 +1,4 @@
-(function (base, $, _, Handlebars, Modal) {
+(function (base, $, Handlebars, Modal) {
     const $back = $(".btn-back");
     const $search = $("#search");
     const $search_language = $("#search-language");
@@ -181,8 +181,8 @@
             languages,
             topics,
         }) {
-        const total = _.sum(Object.values(languages));
-        const normalized = _.mapValues(languages, (value) => value / total * 100);
+        const total = Object.values(languages).reduce((acc, value) => acc + value, 0);
+        const pairs = Object.entries(languages).map(([ key, value ]) => [ key, value / total * 100 ]);
 
         const selectedLanguage = $search_language.val();
         const languageMetrics = metrics.find((metric) => metric.language === selectedLanguage);
@@ -230,7 +230,7 @@
                 blankLines: languageMetrics?.blankLines,
             },
             labels: labels,
-            languages: normalized,
+            languages: Object.fromEntries(pairs),
             topics: topics
         };
         const html = $results_content(context);
@@ -301,4 +301,4 @@
         $toggleResults();
         $toggleSearch();
     });
-})(base, jQuery, _, Handlebars, bootstrap.Modal);
+})(base, jQuery, Handlebars, bootstrap.Modal);
