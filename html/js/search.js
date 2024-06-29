@@ -1,4 +1,4 @@
-(function (base, $, _, Handlebars, Modal) {
+(function (base, $, Handlebars, Modal) {
     const $back = $(".btn-back");
     const $search = $("#search");
     const $search_language = $("#search-language");
@@ -301,4 +301,4 @@
         $toggleResults();
         $toggleSearch();
     });
-})(base, jQuery, _, Handlebars, bootstrap.Modal);
+})(base, jQuery, Handlebars, bootstrap.Modal);
