@@ -7,7 +7,7 @@ Handlebars.registerHelper("bytes", function (value) {
     const decimals = 2;
     const units = ["B", "KB", "MB", "GB", "TB", "PB"];
     const point = decimals ? "." : "";
-    const zeroes = _.repeat("0", decimals);
+    const zeroes = "0".repeat(decimals);
     if (!value) return `0${point}${zeroes} ${units[0]}`;
     const formatter = new Intl.NumberFormat("en-US", {
         minimumFractionDigits: 0,
