@@ -19,7 +19,7 @@
             storage.setItem(key, today.toISOString());
         }
 
-        $("body").tooltip({
+        $("body").removeAttr("inert").tooltip({
             selector: "[data-bs-toggle='tooltip']"
         });
     });
