@@ -1,21 +1,21 @@
-name: 'Discover vulnerabilities with CodeQL'
+name: "Discover vulnerabilities with CodeQL"
 on:
   push:
-    branches: [ 'master' ]
+    branches: ["master"]
     paths:
-      - '**/*.java'
-      - '**/*.js'
+      - "**/*.java"
+      - "**/*.js"
   pull_request:
-    branches: [ 'master' ]
+    branches: ["master"]
     paths:
-      - '**/*.java'
-      - '**/*.js'
+      - "**/*.java"
+      - "**/*.js"
   schedule:
-    - cron: '0 0 * * 1'
+    - cron: "0 0 * * 1"
 
 jobs:
   analyze:
-    runs-on: 'ubuntu-latest'
+    runs-on: "ubuntu-latest"
     permissions:
       actions: read
       contents: read
@@ -23,7 +23,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        language: [ 'java', 'javascript' ]
+        language: ["java", "javascript"]
     steps:
       - name: Setup Maven
         uses: s4u/setup-maven-action@v1.14.0
@@ -36,4 +36,4 @@ jobs:
       - name: Perform CodeQL analysis
         uses: github/codeql-action/analyze@v3
         with:
-          category: '/language:${{matrix.language}}'
+          category: "/language:${{matrix.language}}"
