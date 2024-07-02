@@ -10,8 +10,8 @@
     $(document).ready(function () {
         const key = "alert.advertisement.last-shown";
         const url = "https://seart-dh.si.usi.ch/";
-        const lastShown = new Date(storage.getItem(key));
-        const days = Math.ceil((today - lastShown) / (1000 * 60 * 60 * 24));
+        const last_shown = new Date(storage.getItem(key));
+        const days = Math.ceil((today - last_shown) / (1000 * 60 * 60 * 24));
         if (days > 30) {
             $("header").twbsAlert({
                 body: `
