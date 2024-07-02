@@ -7,5 +7,13 @@
   "arrowParens": "always",
   "trailingComma": "all",
   "bracketSpacing": true,
-  "semi": true
+  "semi": true,
+  "overrides": [
+    {
+      "files": "*.json",
+      "options": {
+        "tabWidth": 2
+      }
+    }
+  ]
 }
