@@ -35,9 +35,9 @@ make sure the following requirements are met:
 
 2. The event scheduler is turned `ON`. You can verify this via:
 
-   ```sql
-   SELECT @@global.event_scheduler;
-   ```
+    ```sql
+    SELECT @@global.event_scheduler;
+    ```
 
 3. The binary logging during the creation of stored functions is set to `1`. You can verify this via:
 
