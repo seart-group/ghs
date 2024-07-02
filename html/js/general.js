@@ -19,9 +19,9 @@
             storage.setItem(key, today.toISOString());
         }
 
-        $("body").removeAttr("inert").tooltip({
-            selector: "[data-bs-toggle='tooltip']"
-        });
+        $("body").removeAttr("inert")
+            .removeClass("modal-open")
+            .tooltip({ selector: "[data-bs-toggle='tooltip']" });
     });
 
     $("#search input[type='date']").attr({
