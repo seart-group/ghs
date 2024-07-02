@@ -21,6 +21,7 @@
 
         $("body").removeAttr("inert")
             .removeClass("modal-open")
+            .removeClass("overflow-hidden")
             .tooltip({ selector: "[data-bs-toggle='tooltip']" });
     });
 
