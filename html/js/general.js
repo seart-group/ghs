@@ -16,12 +16,13 @@
             $("header").twbsAlert({
                 body: `
                 If you're interested not only in sampling projects, but also in downloading their code,
-                check out our <a href="${url}" target="_blank" class="alert-link link-secondary">other platform</a>.`
+                check out our <a href="${url}" target="_blank" class="alert-link link-secondary">other platform</a>.`,
             });
             storage.setItem(key, today.toISOString());
         }
 
-        $("body").removeAttr("inert")
+        $("body")
+            .removeAttr("inert")
             .removeClass("modal-open")
             .removeClass("overflow-hidden")
             .tooltip({ selector: "[data-bs-toggle='tooltip']" });
@@ -52,19 +53,18 @@
     $publication_copy_btn.on("click", function () {
         const target = $(this);
         const icon = target.html();
-        const [ element ] = target.get();
+        const [element] = target.get();
         const data = $publication_copy_target.html();
-        clipboard.writeText(data)
-            .then(() => {
-                target.attr("data-bs-original-title", "Copied!");
-                target.html(`<i class="bi bi-check-lg"></i>`);
-                const tooltip = Tooltip.getInstance(element);
-                tooltip.show();
-                target.attr("data-bs-original-title", "Copy to clipboard...");
-                setTimeout(() => {
-                    tooltip.hide();
-                    target.html(icon);
-                }, 2500);
-            });
+        clipboard.writeText(data).then(() => {
+            target.attr("data-bs-original-title", "Copied!");
+            target.html(`<i class="bi bi-check-lg"></i>`);
+            const tooltip = Tooltip.getInstance(element);
+            tooltip.show();
+            target.attr("data-bs-original-title", "Copy to clipboard...");
+            setTimeout(() => {
+                tooltip.hide();
+                target.html(icon);
+            }, 2500);
+        });
     });
-}(jQuery, localStorage, navigator.clipboard, bootstrap.Tooltip));
+})(jQuery, localStorage, navigator.clipboard, bootstrap.Tooltip);
