@@ -5,7 +5,7 @@ import Autocomplete from "https://cdn.jsdelivr.net/npm/bootstrap5-autocomplete@1
     const default_config = {
         notFoundMessage: not_found_message,
         highlightClass: "bg-transparent text-current text-decoration-underline p-0",
-        activeClasses: [ "bg-secondary", "text-white" ],
+        activeClasses: ["bg-secondary", "text-white"],
         suggestionsThreshold: 0,
         maximumItems: 10,
         autoselectFirst: false,
@@ -13,8 +13,8 @@ import Autocomplete from "https://cdn.jsdelivr.net/npm/bootstrap5-autocomplete@1
         fullWidth: true,
     };
 
-    const get_response_items = response => response.json().then(({ items }) => items);
-    const toggle_spinner = instance => {
+    const get_response_items = (response) => response.json().then(({ items }) => items);
+    const toggle_spinner = (instance) => {
         const input = instance.getInput();
         $(`#${input.id}-spinner`).toggleClass("d-none");
     };
@@ -49,7 +49,7 @@ import Autocomplete from "https://cdn.jsdelivr.net/npm/bootstrap5-autocomplete@1
         new Autocomplete(element, {
             server: base + endpoint,
             ...default_config,
-            ...server_config
+            ...server_config,
         });
     });
 })(base, jQuery, Autocomplete);

@@ -1,7 +1,7 @@
-name: 'Create new release'
+name: "Create new release"
 on:
   push:
-    tags: [ 'v*' ]
+    tags: ["v*"]
 
 jobs:
   release:
@@ -29,4 +29,4 @@ jobs:
       - name: Create release
         uses: ncipollo/release-action@v1
         with:
-          body: '**Full Changelog**: https://github.com/${{ github.repository }}/compare/${{ steps.tag-previous.outputs.result }}...${{ steps.tag-current.outputs.result }}'
+          body: "**Full Changelog**: https://github.com/${{ github.repository }}/compare/${{ steps.tag-previous.outputs.result }}...${{ steps.tag-current.outputs.result }}"

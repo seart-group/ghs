@@ -1,6 +1,6 @@
 {
-    "extends": "stylelint-config-standard",
-    "rules": {
-        "color-function-notation": "legacy"
-    }
+  "extends": ["stylelint-config-standard", "stylelint-prettier/recommended"],
+  "rules": {
+    "color-function-notation": "legacy"
+  }
 }

@@ -21,7 +21,7 @@
         const $item = $(this);
         const html = $item.html();
         const column = $item.val();
-        const [ _, direction ] = $search_sort.val().split(",");
+        const [_, direction] = $search_sort.val().split(",");
         $search_sort_column_dropdown_toggle.find("span").html(html);
         $search_sort.attr("value", `${column},${direction}`);
     });
@@ -30,7 +30,7 @@
         const $item = $(this);
         const html = $item.html();
         const direction = $item.val();
-        const [ column, _ ] = $search_sort.val().split(",");
+        const [column, _] = $search_sort.val().split(",");
         $search_sort_direction_dropdown_toggle.find("span").html(html);
         $search_sort.attr("value", `${column},${direction}`);
     });

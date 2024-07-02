@@ -35,9 +35,9 @@ make sure the following requirements are met:
 
 2. The event scheduler is turned `ON`. You can verify this via:
 
-   ```sql
-   SELECT @@global.event_scheduler;
-   ```
+    ```sql
+    SELECT @@global.event_scheduler;
+    ```
 
 3. The binary logging during the creation of stored functions is set to `1`. You can verify this via:
 
@@ -165,13 +165,12 @@ override the compose deployment to employ a custom database image that includes 
 `docker-compose.override.yml` file with the following contents:
 
 ```yaml
-version: '3.9'
-name: 'gse'
+version: "3.9"
+name: "gse"
 
 services:
-
-  gse-database:
-     image: seart/ghs-database:latest
+    gse-database:
+        image: seart/ghs-database:latest
 ```
 
 The above image will include the freshest database dump, at most 15 days behind the actual platform data.
@@ -187,17 +186,16 @@ The database data itself is kept in the `gse-data` volume, while detailed back-e
 instance specifying your own PAT for the crawler:
 
 ```yaml
-version: '3.9'
-name: 'gse'
+version: "3.9"
+name: "gse"
 
 services:
+    # other services omitted...
 
-  # other services omitted...
-
-  gse-server:
-    environment:
-      GHS_GITHUB_TOKENS: 'A single or comma-separated list of token(s)'
-      GHS_CRAWLER_ENABLED: 'true'
+    gse-server:
+        environment:
+            GHS_GITHUB_TOKENS: "A single or comma-separated list of token(s)"
+            GHS_CRAWLER_ENABLED: "true"
 ```
 
 Any of the Spring Boot properties or aforementioned application-specific properties can be overridden.
@@ -207,16 +205,15 @@ Another example is the automated database backup service, which is disabled by d
 Should you choose to re-enable it, you would have to add the following to the override file:
 
 ```yaml
-version: '3.9'
-name: 'gse'
+version: "3.9"
+name: "gse"
 
 services:
+    # other services omitted...
 
-  # other services omitted...
-
-  gse-backup:
-    restart: always
-    entrypoint: "/init"
+    gse-backup:
+        restart: always
+        entrypoint: "/init"
 ```
 
 Finally, configurations for some programs are stored within files that are added to services through bind mounts.
@@ -225,16 +222,15 @@ If you want to further customize it in deployment (i.e. specify an alternative u
 you can create your own `.override.gitconfig`, and add the following to the override file:
 
 ```yaml
-version: '3.9'
-name: 'gse'
+version: "3.9"
+name: "gse"
 
 services:
+    # other services omitted...
 
-  # other services omitted...
-
-  gse-server:
-    volumes:
-      - ./git/.override.gitconfig:/root/.gitconfig
+    gse-server:
+        volumes:
+            - ./git/.override.gitconfig:/root/.gitconfig
 ```
 
 ## FAQ
