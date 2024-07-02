@@ -21,9 +21,10 @@
             storage.setItem(key, today.toISOString());
         }
 
-        $("body").tooltip({
-            selector: "[data-bs-toggle='tooltip']"
-        });
+        $("body").removeAttr("inert")
+            .removeClass("modal-open")
+            .removeClass("overflow-hidden")
+            .tooltip({ selector: "[data-bs-toggle='tooltip']" });
     });
 
     $("#search input[type='date']").attr({

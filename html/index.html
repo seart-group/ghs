@@ -51,8 +51,26 @@
     <link rel="icon" href="icons/favicon.ico">
     <link rel="apple-touch-icon" href="icons/180.png">
     <link rel="manifest" href="manifest.json">
+    <noscript>
+      <div class="modal show d-block bg-black bg-opacity-50" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="noscript-modal-label" aria-modal="true" role="dialog">
+        <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered modal-md modal-fullscreen-sm-down">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h1 class="modal-title fs-5" id="noscript-modal-label">JavaScript is Disabled</h1>
+            </div>
+            <div class="modal-body">
+              <p class="mb-0">
+                JavaScript is currently disabled in your browser.
+                GitHub Search relies on it to function correctly.
+                In order to continue, please enable JavaScript and reload the page.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </noscript>
   </head>
-  <body class="min-vh-100 mw-100 d-flex flex-column justify-content-between">
+  <body inert class="min-vh-100 mw-100 d-flex flex-column justify-content-between modal-open overflow-hidden">
     <header class="mb-3">
       <nav aria-label="navbar" class="navbar navbar-expand-sm bg-light">
         <div class="container-fluid">
