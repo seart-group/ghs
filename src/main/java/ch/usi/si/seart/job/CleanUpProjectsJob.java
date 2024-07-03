@@ -9,7 +9,6 @@ import ch.usi.si.seart.service.GitRepoService;
 import ch.usi.si.seart.stereotype.Job;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
-import lombok.SneakyThrows;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -69,11 +68,10 @@ public class CleanUpProjectsJob implements Runnable {
      * but in my tests SSH would trigger prompts which kill the command.
      * Prompts should remain disabled otherwise GitHub asks credentials for private repos.
      */
-    @SneakyThrows(MalformedURLException.class)
     private boolean checkIfRepoExists(String name) {
-        URL url = new URL(String.format("https://github.com/%s", name));
         try {
-            // try with git first and if that fails try with cURL
+            /* Try with git first and if that fails try with cURL */
+            URL url = new URL(String.format("https://github.com/%s", name));
             return gitConnector.ping(url) || curlConnector.ping(url);
         } catch (GitException | ClientURLException ex) {
             /*
@@ -84,6 +82,9 @@ public class CleanUpProjectsJob implements Runnable {
              */
             log.error("An exception has occurred during cleanup!", ex);
             return true;
+        } catch (MalformedURLException ex) {
+            /* Should never happen, since we control the URL. */
+            throw new IllegalStateException(ex);
         }
     }
 }
