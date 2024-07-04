@@ -1,10 +1,8 @@
 package ch.usi.si.seart.job;
 
 import ch.usi.si.seart.config.properties.CleanUpProperties;
-import ch.usi.si.seart.exception.ClientURLException;
 import ch.usi.si.seart.exception.git.GitException;
 import ch.usi.si.seart.git.GitConnector;
-import ch.usi.si.seart.http.ClientURLConnector;
 import ch.usi.si.seart.service.GitRepoService;
 import ch.usi.si.seart.stereotype.Job;
 import lombok.AccessLevel;
@@ -18,6 +16,9 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.scheduling.support.CronTrigger;
 import org.springframework.scheduling.support.SimpleTriggerContext;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.RestClientException;
+import org.springframework.web.client.RestTemplate;
 
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -33,7 +34,8 @@ public class CleanUpProjectsJob implements Runnable {
     CleanUpProperties cleanUpProperties;
 
     GitConnector gitConnector;
-    ClientURLConnector curlConnector;
+
+    RestTemplate restTemplate;
 
     GitRepoService gitRepoService;
 
@@ -70,10 +72,10 @@ public class CleanUpProjectsJob implements Runnable {
      */
     private boolean checkIfRepoExists(String name) {
         try {
-            /* Try with git first and if that fails try with cURL */
+            /* Try with git first and if that fails try with REST requests */
             URL url = new URL(String.format("https://github.com/%s", name));
-            return gitConnector.ping(url) || curlConnector.ping(url);
-        } catch (GitException | ClientURLException ex) {
+            return gitConnector.ping(url) || checkWithRestTemplate(url.toString());
+        } catch (GitException | RestClientException ex) {
             /*
              * It's safer to keep projects which we fail to check,
              * rather than removing them from the database.
@@ -85,6 +87,15 @@ public class CleanUpProjectsJob implements Runnable {
         } catch (MalformedURLException ex) {
             /* Should never happen, since we control the URL. */
             throw new IllegalStateException(ex);
+        }
+    }
+
+    private boolean checkWithRestTemplate(String url) {
+        try {
+            restTemplate.getForEntity(url, String.class);
+            return true;
+        } catch (HttpClientErrorException.NotFound ex) {
+            return false;
         }
     }
 }
