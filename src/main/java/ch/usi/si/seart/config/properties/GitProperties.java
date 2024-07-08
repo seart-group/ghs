@@ -17,6 +17,10 @@ import java.time.Duration;
 @AllArgsConstructor(onConstructor_ = @ConstructorBinding)
 public class GitProperties {
 
+    String username;
+
+    String password;
+
     @NotBlank
     String folderPrefix;
 
