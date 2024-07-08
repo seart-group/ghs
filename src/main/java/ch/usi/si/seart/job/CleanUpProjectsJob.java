@@ -50,7 +50,7 @@ public class CleanUpProjectsJob implements Runnable {
         gitRepoService.streamCleanupCandidates().forEach(pair -> {
             Long id = pair.getFirst();
             String name = pair.getSecond();
-            boolean exists = checkIfRepoExists(name);
+            boolean exists = checkIfExists(name);
             if (!exists) {
                 log.info("Deleting:  {} [{}]", name, id);
                 gitRepoService.deleteRepoById(id);
@@ -64,17 +64,10 @@ public class CleanUpProjectsJob implements Runnable {
         log.info("Next cleanup scheduled for: {}", date);
     }
 
-    /*
-     * Check if a repo at given url is publicly available.
-     * Technically the same code should also work for an SSH URL,
-     * but in my tests SSH would trigger prompts which kill the command.
-     * Prompts should remain disabled otherwise GitHub asks credentials for private repos.
-     */
-    private boolean checkIfRepoExists(String name) {
+    private boolean checkIfExists(String name) {
         try {
-            /* Try with git first and if that fails try with REST requests */
-            String url = String.format("https://github.com/%s", name);
-            return checkWithGitLsRemote(url) || checkWithRestTemplate(url);
+            String url = String.format("https://github.com/%s.git", name);
+            return checkWithGit(url) || checkWithHTTP(url);
         } catch (GitAPIException | RestClientException ex) {
             /*
              * It's safer to keep projects which we fail to check,
@@ -87,7 +80,7 @@ public class CleanUpProjectsJob implements Runnable {
         }
     }
 
-    private boolean checkWithGitLsRemote(String url) throws GitAPIException {
+    private boolean checkWithGit(String url) throws GitAPIException {
         try {
             lsRemoteCommandFactory.getObject().setRemote(url).call();
             return true;
@@ -96,7 +89,7 @@ public class CleanUpProjectsJob implements Runnable {
         }
     }
 
-    private boolean checkWithRestTemplate(String url) {
+    private boolean checkWithHTTP(String url) {
         try {
             restTemplate.getForEntity(url, String.class);
             return true;
