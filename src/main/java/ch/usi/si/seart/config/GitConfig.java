@@ -1,6 +1,7 @@
 package ch.usi.si.seart.config;
 
 import ch.usi.si.seart.config.properties.GitProperties;
+import org.eclipse.jgit.api.CloneCommand;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.LsRemoteCommand;
 import org.eclipse.jgit.transport.CredentialsProvider;
@@ -35,6 +36,21 @@ public class GitConfig {
         LsRemoteCommand command = Git.lsRemoteRepository();
         credentialsProviders.ifAvailable(command::setCredentialsProvider);
         Optional.ofNullable(gitProperties.getLsRemoteTimeoutDuration())
+                .map(Duration::toSeconds)
+                .map(Math::toIntExact)
+                .filter(timeout -> timeout > 0)
+                .ifPresent(command::setTimeout);
+        return command;
+    }
+
+    @Bean
+    @Scope(scopeName = ConfigurableBeanFactory.SCOPE_PROTOTYPE)
+    public CloneCommand cloneCommand(
+            GitProperties gitProperties, ObjectProvider<CredentialsProvider> credentialsProviders
+    ) {
+        CloneCommand command = Git.cloneRepository();
+        credentialsProviders.ifAvailable(command::setCredentialsProvider);
+        Optional.ofNullable(gitProperties.getCloneTimeoutDuration())
                 .map(Duration::toSeconds)
                 .map(Math::toIntExact)
                 .filter(timeout -> timeout > 0)
