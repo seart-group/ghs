@@ -1,14 +1,16 @@
 package ch.usi.si.seart.job;
 
 import ch.usi.si.seart.config.properties.CleanUpProperties;
-import ch.usi.si.seart.exception.git.GitException;
-import ch.usi.si.seart.git.GitConnector;
 import ch.usi.si.seart.service.GitRepoService;
 import ch.usi.si.seart.stereotype.Job;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
+import org.eclipse.jgit.api.LsRemoteCommand;
+import org.eclipse.jgit.api.errors.GitAPIException;
+import org.eclipse.jgit.api.errors.TransportException;
+import org.springframework.beans.factory.ObjectFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.scheduling.TriggerContext;
@@ -20,8 +22,6 @@ import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.Date;
 
 @Job
@@ -33,7 +33,7 @@ public class CleanUpProjectsJob implements Runnable {
 
     CleanUpProperties cleanUpProperties;
 
-    GitConnector gitConnector;
+    ObjectFactory<LsRemoteCommand> lsRemoteCommandFactory;
 
     RestTemplate restTemplate;
 
@@ -73,9 +73,9 @@ public class CleanUpProjectsJob implements Runnable {
     private boolean checkIfRepoExists(String name) {
         try {
             /* Try with git first and if that fails try with REST requests */
-            URL url = new URL(String.format("https://github.com/%s", name));
-            return gitConnector.ping(url) || checkWithRestTemplate(url.toString());
-        } catch (GitException | RestClientException ex) {
+            String url = String.format("https://github.com/%s", name);
+            return checkWithGitLsRemote(url) || checkWithRestTemplate(url);
+        } catch (GitAPIException | RestClientException ex) {
             /*
              * It's safer to keep projects which we fail to check,
              * rather than removing them from the database.
@@ -84,9 +84,15 @@ public class CleanUpProjectsJob implements Runnable {
              */
             log.error("An exception has occurred during cleanup!", ex);
             return true;
-        } catch (MalformedURLException ex) {
-            /* Should never happen, since we control the URL. */
-            throw new IllegalStateException(ex);
+        }
+    }
+
+    private boolean checkWithGitLsRemote(String url) throws GitAPIException {
+        try {
+            lsRemoteCommandFactory.getObject().setRemote(url).call();
+            return true;
+        } catch (TransportException ex) {
+            return false;
         }
     }
 
