@@ -9,8 +9,6 @@ import ch.usi.si.seart.stereotype.Connector;
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.SystemUtils;
-import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.convert.ConversionService;
 
@@ -27,7 +25,7 @@ import java.util.concurrent.TimeoutException;
 @Slf4j
 @Connector(command = "git")
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
-public class GitConnector implements InitializingBean {
+public class GitConnector {
 
     String folderPrefix;
 
@@ -94,17 +92,6 @@ public class GitConnector implements InitializingBean {
             throw new RemoteReferenceDisplayException("Timed out for: " + url, ex);
         } catch (TerminalExecutionException ex) {
             throw new RemoteReferenceDisplayException("Failed for: " + url, ex);
-        }
-    }
-
-    @Override
-    public void afterPropertiesSet() throws Exception {
-        try {
-            Path workdir = SystemUtils.getJavaIoTmpDir().toPath();
-            new ExternalProcess(workdir, "rm", "-rf", folderPrefix + "*").execute().ifFailedThrow();
-            log.info("Successfully cleaned up repository folder");
-        } catch (TerminalExecutionException ex) {
-            log.warn("Failed to clean up cloned repositories from previous runs", ex);
         }
     }
 }

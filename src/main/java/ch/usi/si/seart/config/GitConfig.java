@@ -1,20 +1,30 @@
 package ch.usi.si.seart.config;
 
 import ch.usi.si.seart.config.properties.GitProperties;
+import lombok.Cleanup;
+import org.apache.commons.lang3.SystemUtils;
 import org.eclipse.jgit.api.CloneCommand;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.LsRemoteCommand;
 import org.eclipse.jgit.transport.CredentialsProvider;
 import org.eclipse.jgit.transport.UsernamePasswordCredentialsProvider;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Scope;
+import org.springframework.util.FileSystemUtils;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.time.Duration;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 @Configuration
 public class GitConfig {
@@ -56,5 +66,35 @@ public class GitConfig {
                 .filter(timeout -> timeout > 0)
                 .ifPresent(command::setTimeout);
         return command;
+    }
+
+    @Bean
+    InitializingBean localCloneCleanupInitializingBean(GitProperties gitProperties) {
+        return new InitializingBean() {
+
+            private final Logger log = LoggerFactory.getLogger(
+                    GitConfig.class.getCanonicalName() + "$LocalCloneCleanupInitializingBean"
+            );
+
+            @Override
+            public void afterPropertiesSet() throws Exception {
+                String prefix = gitProperties.getFolderPrefix();
+                Path workdir = SystemUtils.getJavaIoTmpDir().toPath();
+                @Cleanup Stream<Path> paths = Files.list(workdir);
+                paths.filter(Files::isDirectory)
+                        .filter(path -> path.getFileName().toString().startsWith(prefix))
+                        .forEach(this::deleteRecursively);
+                log.info("Successfully cleaned up leftover local clones.");
+            }
+
+            private void deleteRecursively(Path path) {
+                try {
+                    FileSystemUtils.deleteRecursively(path);
+                    log.debug("Cleaning up leftover directory: {}", path);
+                } catch (IOException ex) {
+                    log.error("Failed to clean up directory: {}", path, ex);
+                }
+            }
+        };
     }
 }
