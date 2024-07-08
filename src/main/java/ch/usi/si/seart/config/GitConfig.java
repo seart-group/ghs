@@ -78,13 +78,14 @@ public class GitConfig {
 
             @Override
             public void afterPropertiesSet() throws Exception {
+                log.info("Cleaning up leftover local clones...");
                 String prefix = gitProperties.getFolderPrefix();
                 Path workdir = SystemUtils.getJavaIoTmpDir().toPath();
                 @Cleanup Stream<Path> paths = Files.list(workdir);
                 paths.filter(Files::isDirectory)
                         .filter(path -> path.getFileName().toString().startsWith(prefix))
                         .forEach(this::deleteRecursively);
-                log.info("Successfully cleaned up leftover local clones.");
+                log.info("Finished cleaning up leftover local clones.");
             }
 
             private void deleteRecursively(Path path) {
