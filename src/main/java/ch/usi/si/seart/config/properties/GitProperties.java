@@ -21,5 +21,8 @@ public class GitProperties {
     String folderPrefix;
 
     @NotNull
+    Duration lsRemoteTimeoutDuration;
+
+    @NotNull
     Duration cloneTimeoutDuration;
 }
