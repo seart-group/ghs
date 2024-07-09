@@ -19,6 +19,7 @@ import org.springframework.scheduling.support.CronTrigger;
 import org.springframework.scheduling.support.SimpleTriggerContext;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.HttpStatusCodeException;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
@@ -68,6 +69,9 @@ public class CleanUpProjectsJob implements Runnable {
         try {
             String url = String.format("https://github.com/%s.git", name);
             return checkWithGit(url) || checkWithHTTP(url);
+        } catch (HttpStatusCodeException ex) {
+            log.error("An exception has occurred during cleanup! [{}]", ex.getStatusCode());
+            return true;
         } catch (GitAPIException | RestClientException ex) {
             /*
              * It's safer to keep projects which we fail to check,
