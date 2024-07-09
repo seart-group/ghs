@@ -8,6 +8,7 @@ import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.LsRemoteCommand;
 import org.eclipse.jgit.transport.CredentialsProvider;
 import org.eclipse.jgit.transport.UsernamePasswordCredentialsProvider;
+import org.eclipse.jgit.util.SystemReader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
@@ -28,6 +29,11 @@ import java.util.stream.Stream;
 
 @Configuration
 public class GitConfig {
+
+    @Bean
+    SystemReader systemReader() {
+        return SystemReader.getInstance();
+    }
 
     @Bean
     @ConditionalOnExpression("not '${ghs.git.username}'.blank and not '${ghs.git.password}'.blank")
