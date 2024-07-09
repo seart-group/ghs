@@ -70,28 +70,4 @@ public class GitConnector {
             throw new RemoteReferenceDisplayException("Failed for: " + url, ex);
         }
     }
-
-    /**
-     * Checks the reachability of a remote repository.
-     *
-     * @param url the URL corresponding to the git repository.
-     * @return true if the repository is public and reachable, false otherwise.
-     * @throws GitException if an error occurs while executing the underlying command.
-     */
-    public boolean ping(URL url) throws GitException {
-        try {
-            String[] command = {"git", "ls-remote", url.toString(), "--exit-code"};
-            ExternalProcess process = new ExternalProcess(command);
-            log.trace("Pinging:   {}", url);
-            ExternalProcess.Result result = process.execute();
-            return result.succeeded();
-        } catch (InterruptedException ex) {
-            Thread.currentThread().interrupt();
-            throw new RemoteReferenceDisplayException("Cancelled for: " + url, ex);
-        } catch (TimeoutException ex) {
-            throw new RemoteReferenceDisplayException("Timed out for: " + url, ex);
-        } catch (TerminalExecutionException ex) {
-            throw new RemoteReferenceDisplayException("Failed for: " + url, ex);
-        }
-    }
 }
