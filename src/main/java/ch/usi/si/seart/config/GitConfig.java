@@ -1,6 +1,7 @@
 package ch.usi.si.seart.config;
 
 import ch.usi.si.seart.config.properties.GitProperties;
+import ch.usi.si.seart.git.ProxySystemReader;
 import lombok.Cleanup;
 import org.apache.commons.lang3.SystemUtils;
 import org.eclipse.jgit.api.CloneCommand;
@@ -20,7 +21,9 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Scope;
 import org.springframework.util.FileSystemUtils;
 
+import java.io.File;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.Duration;
@@ -31,8 +34,14 @@ import java.util.stream.Stream;
 public class GitConfig {
 
     @Bean
-    SystemReader systemReader() {
-        return SystemReader.getInstance();
+    SystemReader systemReader() throws IOException {
+        SystemReader original = SystemReader.getInstance();
+        File tmp = SystemUtils.getJavaIoTmpDir();
+        File file = new File(tmp, ".ghs-gitconfig");
+        new PrintWriter(file).close();
+        SystemReader proxy = new ProxySystemReader(file, original);
+        SystemReader.setInstance(proxy);
+        return proxy;
     }
 
     @Bean
