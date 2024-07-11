@@ -2,6 +2,7 @@ package ch.usi.si.seart.config;
 
 import ch.usi.si.seart.config.properties.GitProperties;
 import ch.usi.si.seart.git.ProxySystemReader;
+import ch.usi.si.seart.io.TemporaryDirectory;
 import lombok.Cleanup;
 import org.apache.commons.lang3.SystemUtils;
 import org.eclipse.jgit.api.CloneCommand;
@@ -81,6 +82,13 @@ public class GitConfig {
                 .filter(timeout -> timeout > 0)
                 .ifPresent(command::setTimeout);
         return command;
+    }
+
+    @Bean
+    @Scope(scopeName = ConfigurableBeanFactory.SCOPE_PROTOTYPE)
+    public TemporaryDirectory temporaryDirectory(GitProperties gitProperties) throws IOException {
+        String prefix = gitProperties.getFolderPrefix();
+        return new TemporaryDirectory(prefix);
     }
 
     @Bean
