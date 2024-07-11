@@ -8,6 +8,8 @@ import org.apache.commons.lang3.SystemUtils;
 import org.eclipse.jgit.api.CloneCommand;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.LsRemoteCommand;
+import org.eclipse.jgit.errors.ConfigInvalidException;
+import org.eclipse.jgit.lib.StoredConfig;
 import org.eclipse.jgit.transport.CredentialsProvider;
 import org.eclipse.jgit.transport.UsernamePasswordCredentialsProvider;
 import org.eclipse.jgit.util.SystemReader;
@@ -20,7 +22,9 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Scope;
+import org.springframework.util.Assert;
 import org.springframework.util.FileSystemUtils;
+import org.springframework.util.ObjectUtils;
 
 import java.io.File;
 import java.io.IOException;
@@ -28,6 +32,7 @@ import java.io.PrintWriter;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.Duration;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Stream;
 
@@ -117,6 +122,42 @@ public class GitConfig {
                     log.debug("Cleaning up leftover directory: {}", path);
                 } catch (IOException ex) {
                     log.error("Failed to clean up directory: {}", path, ex);
+                }
+            }
+        };
+    }
+
+    @Bean
+    InitializingBean gitConfigurationInitializingBean(SystemReader systemReader, GitProperties properties) {
+        return new InitializingBean() {
+
+            private final Logger log = LoggerFactory.getLogger(
+                    GitConfig.class.getCanonicalName() + "$GitConfigurationInitializingBean"
+            );
+
+            @Override
+            public void afterPropertiesSet() {
+                try {
+                    if (ObjectUtils.isEmpty(properties.getConfig())) return;
+                    StoredConfig config = systemReader.getUserConfig();
+                    afterPropertiesSet(config);
+                } catch (ConfigInvalidException | IOException ex) {
+                    log.error("Failed to read user configuration", ex);
+                }
+            }
+
+            private void afterPropertiesSet(StoredConfig config) {
+                try {
+                    for (Map.Entry<String, String> configuration : properties.getConfig().entrySet()) {
+                        String key = configuration.getKey();
+                        String value = configuration.getValue();
+                        String[] segments = key.split("\\.");
+                        Assert.isTrue(segments.length == 2, "Invalid key: " + key);
+                        config.setString(segments[0], null, segments[1], value);
+                    }
+                    config.save();
+                } catch (IOException ex) {
+                    log.error("Failed to save user configuration", ex);
                 }
             }
         };
