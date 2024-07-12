@@ -224,23 +224,6 @@ services:
         entrypoint: "/init"
 ```
 
-Finally, configurations for some programs are stored within files that are added to services through bind mounts.
-For instance, the Git configuration file is stored in the [git](docker-compose/git) directory.
-If you want to further customize it in deployment (i.e. specify an alternative user agent),
-you can create your own `.override.gitconfig`, and add the following to the override file:
-
-```yaml
-version: "3.9"
-name: "gse"
-
-services:
-    # other services omitted...
-
-    gse-server:
-        volumes:
-            - ./git/.override.gitconfig:/root/.gitconfig
-```
-
 ## FAQ
 
 ### How can I request a feature or ask a question?

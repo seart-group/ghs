@@ -86,7 +86,6 @@ services:
     container_name: gse-server
     volumes:
       - ./logs:/logs
-      - ./git/.gitconfig:/root/.gitconfig
     environment:
       LOGGING_FILE_PATH: /tmp
       LOGGING_CONFIG: classpath:logback.prod.xml
