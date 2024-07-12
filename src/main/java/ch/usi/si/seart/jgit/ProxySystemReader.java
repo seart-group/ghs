@@ -1,4 +1,4 @@
-package ch.usi.si.seart.git;
+package ch.usi.si.seart.jgit;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;

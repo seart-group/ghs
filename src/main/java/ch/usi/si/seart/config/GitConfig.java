@@ -1,8 +1,8 @@
 package ch.usi.si.seart.config;
 
 import ch.usi.si.seart.config.properties.GitProperties;
-import ch.usi.si.seart.git.ProxySystemReader;
 import ch.usi.si.seart.io.TemporaryDirectory;
+import ch.usi.si.seart.jgit.ProxySystemReader;
 import lombok.Cleanup;
 import org.apache.commons.lang3.SystemUtils;
 import org.eclipse.jgit.api.CloneCommand;
