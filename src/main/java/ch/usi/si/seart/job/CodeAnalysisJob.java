@@ -113,7 +113,7 @@ public class CodeAnalysisJob implements Runnable {
             TemporaryDirectory temporaryDirectory = temporaryDirectoryFactory.getObject();
             Git ignored = cloneCommandFactory.getObject()
                 .setURI(uri)
-                .setDirectory(temporaryDirectory.path().toFile())
+                .setDirectory(temporaryDirectory.file())
                 .setDepth(1)
                 .call()
         ) {
