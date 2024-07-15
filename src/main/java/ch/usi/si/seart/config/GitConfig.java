@@ -98,10 +98,11 @@ public class GitConfig {
 
     @Bean
     InitializingBean localCloneCleanupInitializingBean(GitProperties gitProperties) {
-        return new InitializingBean() {
+
+        class LocalCloneCleanupInitializingBean implements InitializingBean {
 
             private static final Logger log = LoggerFactory.getLogger(
-                    GitConfig.class.getCanonicalName() + "$LocalCloneCleanupInitializingBean"
+                    GitConfig.class.getCanonicalName() + "$" + LocalCloneCleanupInitializingBean.class.getSimpleName()
             );
 
             @Override
@@ -124,15 +125,18 @@ public class GitConfig {
                     log.error("Failed to clean up directory: {}", path, ex);
                 }
             }
-        };
+        }
+
+        return new LocalCloneCleanupInitializingBean();
     }
 
     @Bean
     InitializingBean gitConfigurationInitializingBean(SystemReader systemReader, GitProperties properties) {
-        return new InitializingBean() {
+
+        class GitConfigurationInitializingBean implements InitializingBean {
 
             private static final Logger log = LoggerFactory.getLogger(
-                    GitConfig.class.getCanonicalName() + "$GitConfigurationInitializingBean"
+                    GitConfig.class.getCanonicalName() + "$" + GitConfigurationInitializingBean.class.getSimpleName()
             );
 
             @Override
@@ -160,6 +164,8 @@ public class GitConfig {
                     log.error("Failed to save user configuration", ex);
                 }
             }
-        };
+        }
+
+        return new GitConfigurationInitializingBean();
     }
 }
