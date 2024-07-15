@@ -3,14 +3,8 @@ package ch.usi.si.seart.job;
 import ch.usi.si.seart.cloc.CLOCConnector;
 import ch.usi.si.seart.config.properties.AnalysisProperties;
 import ch.usi.si.seart.exception.StaticCodeAnalysisException;
-import ch.usi.si.seart.exception.git.GitException;
-import ch.usi.si.seart.exception.git.RepositoryDisabledException;
-import ch.usi.si.seart.exception.git.RepositoryLockedException;
-import ch.usi.si.seart.exception.git.RepositoryNotFoundException;
-import ch.usi.si.seart.exception.git.config.InvalidUsernameException;
-import ch.usi.si.seart.git.GitConnector;
-import ch.usi.si.seart.git.LocalRepositoryClone;
 import ch.usi.si.seart.github.GitHubRestConnector;
+import ch.usi.si.seart.io.TemporaryDirectory;
 import ch.usi.si.seart.model.GitRepo;
 import ch.usi.si.seart.model.Language;
 import ch.usi.si.seart.model.join.GitRepoMetric;
@@ -21,22 +15,27 @@ import ch.usi.si.seart.util.Optionals;
 import com.google.gson.JsonObject;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
-import lombok.SneakyThrows;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
+import org.eclipse.jgit.api.CloneCommand;
+import org.eclipse.jgit.api.Git;
+import org.eclipse.jgit.api.errors.GitAPIException;
+import org.eclipse.jgit.api.errors.JGitInternalException;
+import org.eclipse.jgit.api.errors.TransportException;
 import org.jetbrains.annotations.NotNull;
+import org.springframework.beans.factory.ObjectFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.ApplicationContext;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.data.util.Pair;
+import org.springframework.http.HttpStatus;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.net.MalformedURLException;
-import java.net.URL;
+import java.io.IOException;
 import java.nio.file.Path;
 import java.time.Duration;
 import java.time.Instant;
@@ -55,7 +54,9 @@ public class CodeAnalysisJob implements Runnable {
 
     AnalysisProperties analysisProperties;
 
-    GitConnector gitConnector;
+    ObjectFactory<CloneCommand> cloneCommandFactory;
+    ObjectFactory<TemporaryDirectory> temporaryDirectoryFactory;
+
     GitHubRestConnector gitHubRestConnector;
     CLOCConnector clocConnector;
 
@@ -103,15 +104,21 @@ public class CodeAnalysisJob implements Runnable {
         );
     }
 
-    @SneakyThrows(MalformedURLException.class)
-    @SuppressWarnings("ConstantConditions")
+    @SuppressWarnings("DataFlowIssue")
     private void gatherCodeMetricsFor(@NotNull GitRepo gitRepo) {
         Long id = gitRepo.getId();
         String name = gitRepo.getName();
-        URL url = new URL("https://github.com/" + name + ".git");
-        try (LocalRepositoryClone localRepository = gitConnector.clone(url)) {
+        String uri = String.format("https://github.com/%s.git", name);
+        try (
+            TemporaryDirectory temporaryDirectory = temporaryDirectoryFactory.getObject();
+            Git ignored = cloneCommandFactory.getObject()
+                .setURI(uri)
+                .setDirectory(temporaryDirectory.file())
+                .setDepth(1)
+                .call()
+        ) {
             log.debug("Analyzing: {} [{}]", name, id);
-            Path path = localRepository.path();
+            Path path = temporaryDirectory.path();
             JsonObject json = clocConnector.analyze(path);
             json.remove("header");
             json.remove("SUM");
@@ -134,19 +141,23 @@ public class CodeAnalysisJob implements Runnable {
             gitRepo.setMetrics(metrics);
             gitRepo.setLastAnalyzed();
             gitRepoService.createOrUpdate(gitRepo);
-        } catch (RepositoryLockedException ignored) {
-            lock(gitRepo);
-        } catch (RepositoryDisabledException ignored) {
-            disable(gitRepo);
-        } catch (RepositoryNotFoundException ignored) {
-            delete(gitRepo);
-        } catch (InvalidUsernameException ex) {
-            switch (gitHubRestConnector.pingRepository(name)) {
+        } catch (TransportException ex) {
+            HttpStatus status = gitHubRestConnector.pingRepository(name);
+            switch (status) {
+                case OK -> {
+                    String message = ex.getMessage();
+                    boolean unauthorized = message.endsWith("not authorized");
+                    if (unauthorized) lock(gitRepo);
+                    else noop(gitRepo, ex);
+                }
                 case NOT_FOUND -> delete(gitRepo);
                 case FORBIDDEN, UNAVAILABLE_FOR_LEGAL_REASONS -> disable(gitRepo);
                 default -> noop(gitRepo, ex);
             }
-        } catch (StaticCodeAnalysisException | GitException ex) {
+        } catch (JGitInternalException ex) {
+            Throwable cause = ex.getCause();
+            noop(gitRepo, cause != null ? cause : ex);
+        } catch (IOException | GitAPIException | StaticCodeAnalysisException ex) {
             noop(gitRepo, ex);
         }
     }
@@ -170,7 +181,7 @@ public class CodeAnalysisJob implements Runnable {
         gitRepoService.createOrUpdate(gitRepo);
     }
 
-    private void noop(GitRepo gitRepo, Exception ex) {
+    private void noop(GitRepo gitRepo, Throwable ex) {
         log.error("Failed:    {} [{}] ({})", gitRepo.getName(), gitRepo.getId(), ex.getClass().getSimpleName());
         log.debug("", ex);
     }

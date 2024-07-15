@@ -3,7 +3,6 @@ package ch.usi.si.seart.github;
 import ch.usi.si.seart.config.properties.CrawlerProperties;
 import ch.usi.si.seart.exception.github.GitHubConnectorException;
 import ch.usi.si.seart.exception.github.GitHubRestException;
-import ch.usi.si.seart.git.Commit;
 import ch.usi.si.seart.github.response.ErrorResponse;
 import ch.usi.si.seart.github.response.RestResponse;
 import ch.usi.si.seart.util.Ranges;
@@ -167,91 +166,11 @@ public class GitHubRestConnector extends GitHubConnector<RestResponse> {
     }
 
     @SuppressWarnings("ConstantConditions")
-    public Commit getRepositoryLastCommit(String name) {
-        URL url = HttpUrl.get(Endpoint.REPOSITORY_COMMITS.toURL(name.split("/")))
-                .newBuilder()
-                .addQueryParameter("page", "1")
-                .addQueryParameter("per_page", "1")
-                .build()
-                .url();
-        JsonArray commits = execute(new RestCallback(url)).getJsonArray();
-        try {
-            JsonObject latest = commits.get(0).getAsJsonObject();
-            return conversionService.convert(latest, Commit.class);
-        } catch (IndexOutOfBoundsException ignored) {
-            /*
-             * It might be possible for a repository to have no commits.
-             * However, such repositories should never appear in the search,
-             * because we target repositories written in a specific language!
-             * Still, better safe than sorry...
-             */
-            return Commit.UNKNOWN;
-        }
-    }
-
-    @SuppressWarnings("ConstantConditions")
-    public Long countRepositoryCommits(String name) {
-        URL url = HttpUrl.get(Endpoint.REPOSITORY_COMMITS.toURL(name.split("/")))
-                .newBuilder()
-                .addQueryParameter("page", "1")
-                .addQueryParameter("per_page", "1")
-                .build()
-                .url();
-        return getLastPageNumberFromHeader(url);
-    }
-
-    @SuppressWarnings("ConstantConditions")
-    public Long countRepositoryBranches(String name) {
-        URL url = HttpUrl.get(Endpoint.REPOSITORY_BRANCHES.toURL(name.split("/")))
-                .newBuilder()
-                .addQueryParameter("page", "1")
-                .addQueryParameter("per_page", "1")
-                .build()
-                .url();
-        return getLastPageNumberFromHeader(url);
-    }
-
-    @SuppressWarnings("ConstantConditions")
-    public Long countRepositoryReleases(String name) {
-        URL url = HttpUrl.get(Endpoint.REPOSITORY_RELEASES.toURL(name.split("/")))
-                .newBuilder()
-                .addQueryParameter("page", "1")
-                .addQueryParameter("per_page", "1")
-                .build()
-                .url();
-        return getLastPageNumberFromHeader(url);
-    }
-
-    @SuppressWarnings("ConstantConditions")
     public Long countRepositoryContributors(String name) {
         URL url = HttpUrl.get(Endpoint.REPOSITORY_CONTRIBUTORS.toURL(name.split("/")))
                 .newBuilder()
                 .addQueryParameter("page", "1")
                 .addQueryParameter("per_page", "1")
-                .build()
-                .url();
-        return getLastPageNumberFromHeader(url);
-    }
-
-    @SuppressWarnings("ConstantConditions")
-    public Long countRepositoryOpenPullRequests(String name) {
-        URL url = HttpUrl.get(Endpoint.REPOSITORY_PULLS.toURL(name.split("/")))
-                .newBuilder()
-                .addQueryParameter("page", "1")
-                .addQueryParameter("per_page", "1")
-                .addQueryParameter("state", "open")
-                .build()
-                .url();
-        return getLastPageNumberFromHeader(url);
-    }
-
-    @SuppressWarnings("ConstantConditions")
-    public Long countRepositoryTotalPullRequests(String name) {
-        URL url = HttpUrl.get(Endpoint.REPOSITORY_PULLS.toURL(name.split("/")))
-                .newBuilder()
-                .addQueryParameter("page", "1")
-                .addQueryParameter("per_page", "1")
-                .addQueryParameter("state", "all")
                 .build()
                 .url();
         return getLastPageNumberFromHeader(url);

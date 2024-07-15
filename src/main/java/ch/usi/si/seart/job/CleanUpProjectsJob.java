@@ -1,17 +1,16 @@
 package ch.usi.si.seart.job;
 
 import ch.usi.si.seart.config.properties.CleanUpProperties;
-import ch.usi.si.seart.exception.ClientURLException;
-import ch.usi.si.seart.exception.git.GitException;
-import ch.usi.si.seart.git.GitConnector;
-import ch.usi.si.seart.http.ClientURLConnector;
 import ch.usi.si.seart.service.GitRepoService;
 import ch.usi.si.seart.stereotype.Job;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
-import lombok.SneakyThrows;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
+import org.eclipse.jgit.api.LsRemoteCommand;
+import org.eclipse.jgit.api.errors.GitAPIException;
+import org.eclipse.jgit.api.errors.TransportException;
+import org.springframework.beans.factory.ObjectFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.scheduling.TriggerContext;
@@ -19,9 +18,11 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.scheduling.support.CronTrigger;
 import org.springframework.scheduling.support.SimpleTriggerContext;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.HttpStatusCodeException;
+import org.springframework.web.client.RestClientException;
+import org.springframework.web.client.RestTemplate;
 
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.Date;
 
 @Job
@@ -33,8 +34,9 @@ public class CleanUpProjectsJob implements Runnable {
 
     CleanUpProperties cleanUpProperties;
 
-    GitConnector gitConnector;
-    ClientURLConnector curlConnector;
+    ObjectFactory<LsRemoteCommand> lsRemoteCommandFactory;
+
+    RestTemplate restTemplate;
 
     GitRepoService gitRepoService;
 
@@ -49,7 +51,7 @@ public class CleanUpProjectsJob implements Runnable {
         gitRepoService.streamCleanupCandidates().forEach(pair -> {
             Long id = pair.getFirst();
             String name = pair.getSecond();
-            boolean exists = checkIfRepoExists(name);
+            boolean exists = checkIfExists(name);
             if (!exists) {
                 log.info("Deleting:  {} [{}]", name, id);
                 gitRepoService.deleteRepoById(id);
@@ -63,19 +65,14 @@ public class CleanUpProjectsJob implements Runnable {
         log.info("Next cleanup scheduled for: {}", date);
     }
 
-    /*
-     * Check if a repo at given url is publicly available.
-     * Technically the same code should also work for an SSH URL,
-     * but in my tests SSH would trigger prompts which kill the command.
-     * Prompts should remain disabled otherwise GitHub asks credentials for private repos.
-     */
-    @SneakyThrows(MalformedURLException.class)
-    private boolean checkIfRepoExists(String name) {
-        URL url = new URL(String.format("https://github.com/%s", name));
+    private boolean checkIfExists(String name) {
         try {
-            // try with git first and if that fails try with cURL
-            return gitConnector.ping(url) || curlConnector.ping(url);
-        } catch (GitException | ClientURLException ex) {
+            String url = String.format("https://github.com/%s.git", name);
+            return checkWithGit(url) || checkWithHTTP(url);
+        } catch (HttpStatusCodeException ex) {
+            log.error("An exception has occurred during cleanup! [{}]", ex.getStatusCode());
+            return true;
+        } catch (GitAPIException | RestClientException ex) {
             /*
              * It's safer to keep projects which we fail to check,
              * rather than removing them from the database.
@@ -84,6 +81,24 @@ public class CleanUpProjectsJob implements Runnable {
              */
             log.error("An exception has occurred during cleanup!", ex);
             return true;
+        }
+    }
+
+    private boolean checkWithGit(String url) throws GitAPIException {
+        try {
+            lsRemoteCommandFactory.getObject().setRemote(url).call();
+            return true;
+        } catch (TransportException ex) {
+            return false;
+        }
+    }
+
+    private boolean checkWithHTTP(String url) {
+        try {
+            restTemplate.getForEntity(url, String.class);
+            return true;
+        } catch (HttpClientErrorException.NotFound ex) {
+            return false;
         }
     }
 }

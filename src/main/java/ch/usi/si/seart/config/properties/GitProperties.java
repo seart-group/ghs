@@ -10,6 +10,7 @@ import org.springframework.boot.context.properties.ConstructorBinding;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.time.Duration;
+import java.util.Map;
 
 @Getter
 @ConfigurationProperties(prefix = "ghs.git", ignoreUnknownFields = false)
@@ -17,9 +18,18 @@ import java.time.Duration;
 @AllArgsConstructor(onConstructor_ = @ConstructorBinding)
 public class GitProperties {
 
+    String username;
+
+    String password;
+
     @NotBlank
     String folderPrefix;
 
     @NotNull
+    Duration lsRemoteTimeoutDuration;
+
+    @NotNull
     Duration cloneTimeoutDuration;
+
+    Map<String, String> config;
 }
