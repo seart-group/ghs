@@ -21,7 +21,7 @@ public class RetryConfig {
     public RetryListener retryListener() {
         return new RetryListener() {
 
-            private final Logger log = LoggerFactory.getLogger(
+            private static final Logger log = LoggerFactory.getLogger(
                     RetryConfig.class.getCanonicalName() + "$" + RetryListener.class.getSimpleName()
             );
 

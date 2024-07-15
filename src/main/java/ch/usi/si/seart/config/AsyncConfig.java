@@ -33,7 +33,7 @@ public class AsyncConfig {
     public AsyncUncaughtExceptionHandler asyncUncaughtExceptionHandler() {
         return new AsyncUncaughtExceptionHandler() {
 
-            private final Logger log = LoggerFactory.getLogger(
+            private static final Logger log = LoggerFactory.getLogger(
                     AsyncConfig.class.getCanonicalName() + "$" + AsyncUncaughtExceptionHandler.class.getSimpleName()
             );
 

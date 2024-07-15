@@ -37,7 +37,7 @@ public class SchedulerConfig {
     public ErrorHandler errorHandler(DataSource dataSource, ApplicationContext applicationContext) {
         return new ErrorHandler() {
 
-            private final Logger log = LoggerFactory.getLogger(
+            private static final Logger log = LoggerFactory.getLogger(
                     SchedulerConfig.class.getCanonicalName() + "$" + ErrorHandler.class.getSimpleName()
             );
 

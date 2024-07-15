@@ -100,7 +100,7 @@ public class GitConfig {
     InitializingBean localCloneCleanupInitializingBean(GitProperties gitProperties) {
         return new InitializingBean() {
 
-            private final Logger log = LoggerFactory.getLogger(
+            private static final Logger log = LoggerFactory.getLogger(
                     GitConfig.class.getCanonicalName() + "$LocalCloneCleanupInitializingBean"
             );
 
@@ -131,7 +131,7 @@ public class GitConfig {
     InitializingBean gitConfigurationInitializingBean(SystemReader systemReader, GitProperties properties) {
         return new InitializingBean() {
 
-            private final Logger log = LoggerFactory.getLogger(
+            private static final Logger log = LoggerFactory.getLogger(
                     GitConfig.class.getCanonicalName() + "$GitConfigurationInitializingBean"
             );
 
