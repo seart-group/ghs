@@ -1,8 +1,8 @@
 package ch.usi.si.seart.job;
 
-import ch.usi.si.seart.cloc.CLOCConnector;
+import ch.usi.si.seart.cloc.CLOCCommand;
+import ch.usi.si.seart.cloc.CLOCException;
 import ch.usi.si.seart.config.properties.AnalysisProperties;
-import ch.usi.si.seart.exception.StaticCodeAnalysisException;
 import ch.usi.si.seart.github.GitHubRestConnector;
 import ch.usi.si.seart.io.TemporaryDirectory;
 import ch.usi.si.seart.model.GitRepo;
@@ -12,7 +12,7 @@ import ch.usi.si.seart.service.GitRepoService;
 import ch.usi.si.seart.service.LanguageService;
 import ch.usi.si.seart.stereotype.Job;
 import ch.usi.si.seart.util.Optionals;
-import com.google.gson.JsonObject;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -56,9 +56,9 @@ public class CodeAnalysisJob implements Runnable {
 
     ObjectFactory<CloneCommand> cloneCommandFactory;
     ObjectFactory<TemporaryDirectory> temporaryDirectoryFactory;
+    ObjectFactory<CLOCCommand.Builder> clocCommandFactory;
 
     GitHubRestConnector gitHubRestConnector;
-    CLOCConnector clocConnector;
 
     ConversionService conversionService;
     GitRepoService gitRepoService;
@@ -119,15 +119,16 @@ public class CodeAnalysisJob implements Runnable {
         ) {
             log.debug("Analyzing: {} [{}]", name, id);
             Path path = temporaryDirectory.path();
-            JsonObject json = clocConnector.analyze(path);
-            json.remove("header");
-            json.remove("SUM");
-            Set<GitRepoMetric> metrics = json.entrySet().stream()
+            ObjectNode result = clocCommandFactory.getObject()
+                .targeting(path)
+                .countByLanguage();
+            result.remove("header");
+            result.remove("SUM");
+            Set<GitRepoMetric> metrics = result.properties().stream()
                     .map(entry -> {
                         Language language = languageService.getOrCreate(entry.getKey());
                         GitRepoMetric.Key key = new GitRepoMetric.Key(id, language.getId());
-                        JsonObject inner = entry.getValue().getAsJsonObject();
-                        GitRepoMetric metric = conversionService.convert(inner, GitRepoMetric.class);
+                        GitRepoMetric metric = conversionService.convert(entry.getValue(), GitRepoMetric.class);
                         metric.setKey(key);
                         metric.setRepo(gitRepo);
                         metric.setLanguage(language);
@@ -157,7 +158,7 @@ public class CodeAnalysisJob implements Runnable {
         } catch (JGitInternalException ex) {
             Throwable cause = ex.getCause();
             noop(gitRepo, cause != null ? cause : ex);
-        } catch (IOException | GitAPIException | StaticCodeAnalysisException ex) {
+        } catch (IOException | GitAPIException | CLOCException ex) {
             noop(gitRepo, ex);
         }
     }
