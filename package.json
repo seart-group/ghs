@@ -79,6 +79,6 @@
     "rimraf": "^6.0.1",
     "stylelint": "^16.7.0",
     "stylelint-config-standard": "^36.0.1",
-    "stylelint-prettier": "^5.0.1"
+    "stylelint-prettier": "^5.0.2"
   }
 }
