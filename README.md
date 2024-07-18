@@ -12,14 +12,14 @@ This project is made of two components:
 
 ### Prerequisites
 
-| Dependency                               | Version Requirement |
-|------------------------------------------|--------------------:|
-| Java                                     |                  17 |
-| Maven                                    |                 3.9 |
-| MySQL                                    |                 8.3 |
-| Flyway                                   |               10.13 |
-| [cloc](https://github.com/AlDanial/cloc) |                1.98 |
-| Git[^1]                                  |                2.43 |
+| Dependency                                   | Version Requirement |
+|----------------------------------------------|--------------------:|
+| Java                                         |                  17 |
+| Maven                                        |                 3.9 |
+| MySQL                                        |                 8.3 |
+| Flyway                                       |               10.13 |
+| [cloc](https://github.com/AlDanial/cloc)[^1] |                2.00 |
+| Git[^1]                                      |                2.43 |
 
 [^1]: Only required in versions prior to 1.7.0
 
