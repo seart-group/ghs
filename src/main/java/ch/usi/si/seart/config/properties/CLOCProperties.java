@@ -21,5 +21,5 @@ public class CLOCProperties {
     DataSize maxFileSize;
 
     @NotNull
-    Duration analysisTimeoutDuration;
+    Duration timeoutDuration;
 }

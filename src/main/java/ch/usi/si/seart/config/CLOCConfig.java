@@ -25,7 +25,7 @@ public class CLOCConfig {
     public CLOCCommand.Builder clocCommandBuilder(CLOCProperties properties) {
         DataSize size = properties.getMaxFileSize();
         int megabytes = Math.toIntExact(size.toMegabytes());
-        Duration duration = properties.getAnalysisTimeoutDuration();
+        Duration duration = properties.getTimeoutDuration();
         int seconds = Math.toIntExact(duration.getSeconds());
         return CLOCCommand.create()
                 .withMaxFileSize(megabytes)
