@@ -1,6 +1,6 @@
 package ch.usi.si.seart.config;
 
-import ch.usi.si.seart.cloc.CLOCCommand;
+import ch.usi.si.seart.cloc.CLOC;
 import ch.usi.si.seart.config.properties.CLOCProperties;
 import com.fasterxml.jackson.databind.json.JsonMapper;
 import org.springframework.beans.factory.InitializingBean;
@@ -17,18 +17,18 @@ public class CLOCConfig {
 
     @Bean
     InitializingBean clocInitializingBean(JsonMapper jsonMapper) {
-        return () -> CLOCCommand.setOutputMapper(jsonMapper);
+        return () -> CLOC.setOutputMapper(jsonMapper);
     }
 
     @Bean
     @Scope(scopeName = ConfigurableBeanFactory.SCOPE_PROTOTYPE)
-    public CLOCCommand.Builder clocCommandBuilder(CLOCProperties properties) {
-        DataSize size = properties.getMaxFileSize();
+    public CLOC.Builder clocCommandBuilder(CLOCProperties clocProperties) {
+        DataSize size = clocProperties.getMaxFileSize();
         int megabytes = Math.toIntExact(size.toMegabytes());
-        Duration duration = properties.getTimeoutDuration();
+        Duration duration = clocProperties.getTimeoutDuration();
         int seconds = Math.toIntExact(duration.getSeconds());
-        return CLOCCommand.create()
-                .withMaxFileSize(megabytes)
-                .withTimeout(seconds);
+        return CLOC.command()
+                .maxFileSize(megabytes)
+                .timeout(seconds);
     }
 }

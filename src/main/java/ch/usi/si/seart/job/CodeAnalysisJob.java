@@ -1,6 +1,6 @@
 package ch.usi.si.seart.job;
 
-import ch.usi.si.seart.cloc.CLOCCommand;
+import ch.usi.si.seart.cloc.CLOC;
 import ch.usi.si.seart.cloc.CLOCException;
 import ch.usi.si.seart.config.properties.AnalysisProperties;
 import ch.usi.si.seart.github.GitHubRestConnector;
@@ -56,7 +56,7 @@ public class CodeAnalysisJob implements Runnable {
 
     ObjectFactory<CloneCommand> cloneCommandFactory;
     ObjectFactory<TemporaryDirectory> temporaryDirectoryFactory;
-    ObjectFactory<CLOCCommand.Builder> clocCommandFactory;
+    ObjectFactory<CLOC.Builder> clocCommandFactory;
 
     GitHubRestConnector gitHubRestConnector;
 
@@ -120,8 +120,8 @@ public class CodeAnalysisJob implements Runnable {
             log.debug("Analyzing: {} [{}]", name, id);
             Path path = temporaryDirectory.path();
             ObjectNode result = clocCommandFactory.getObject()
-                .targeting(path)
-                .countByLanguage();
+                .target(path)
+                .linesByLanguage();
             result.remove("header");
             result.remove("SUM");
             Set<GitRepoMetric> metrics = result.properties().stream()
