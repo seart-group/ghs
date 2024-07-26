@@ -264,7 +264,7 @@
         <dependency>
             <groupId>ch.usi.si.seart</groupId>
             <artifactId>jcloc</artifactId>
-            <version>PREVIEW-SNAPSHOT</version>
+            <version>0.1.0-SNAPSHOT</version>
         </dependency>
 		<dependency>
 			<groupId>org.hibernate</groupId>
