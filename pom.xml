@@ -260,6 +260,11 @@
 			<artifactId>jakarta-validation-utils-legacy</artifactId>
 			<version>0.4.0</version>
 		</dependency>
+        <dependency>
+            <groupId>ch.usi.si.seart</groupId>
+            <artifactId>jcloc</artifactId>
+            <version>0.1.0</version>
+        </dependency>
 		<dependency>
 			<groupId>org.hibernate</groupId>
 			<artifactId>hibernate-core</artifactId>

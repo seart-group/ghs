@@ -14,7 +14,6 @@ COPY --from=build /target/ghs-application-*.jar /server.jar
 RUN apk update --quiet && \
     apk add --no-cache \
             --quiet \
-            cloc~=1.98 \
             curl~=8.5.0 \
             git~=2.43.4 \
             jq~=1.7.1

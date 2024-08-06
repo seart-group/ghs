@@ -12,14 +12,14 @@ This project is made of two components:
 
 ### Prerequisites
 
-| Dependency                               | Version Requirement |
-|------------------------------------------|--------------------:|
-| Java                                     |                  17 |
-| Maven                                    |                 3.9 |
-| MySQL                                    |                 8.3 |
-| Flyway                                   |               10.13 |
-| [cloc](https://github.com/AlDanial/cloc) |                1.98 |
-| Git[^1]                                  |                2.43 |
+| Dependency                                   | Version Requirement |
+|----------------------------------------------|--------------------:|
+| Java                                         |                  17 |
+| Maven                                        |                 3.9 |
+| MySQL                                        |                 8.3 |
+| Flyway                                       |               10.13 |
+| [cloc](https://github.com/AlDanial/cloc)[^1] |                2.00 |
+| Git[^1]                                      |                2.43 |
 
 [^1]: Only required in versions prior to 1.7.0
 
@@ -108,7 +108,8 @@ Here's a list of project-specific arguments supported by the application that yo
 | `ghs.git.folder-prefix`              | String                   | ghs-clone-                                                              | Prefix used for the temporary directories into which analyzed repositories are cloned. Must not be blank.                                                                                                                                                          |
 | `ghs.git.ls-remote-timeout-duration` | Duration                 | 1m                                                                      | Maximum time allowed for listing remotes of Git repositories.                                                                                                                                                                                                      |
 | `ghs.git.clone-timeout-duration`     | Duration                 | 5m                                                                      | Maximum time allowed for cloning Git repositories.                                                                                                                                                                                                                 |
-| `ghs.cloc.analysis-timeout-duration` | Duration                 | 5m                                                                      | Maximum time allowed for analyzing cloned Git repositories with `cloc`.                                                                                                                                                                                            |
+| `ghs.cloc.max-file-size`             | DataSize                 | 25MB                                                                    | Maximum file size threshold for analysis with `cloc`.                                                                                                                                                                                                              |
+| `ghs.cloc.timeout-duration`          | Duration                 | 5m                                                                      | Maximum time allowed for a `cloc` command to execute.                                                                                                                                                                                                              |
 | `ghs.crawler.enabled`                | Boolean                  | true                                                                    | Specifies if the repository crawling job is enabled.                                                                                                                                                                                                               |
 | `ghs.crawler.minimum-stars`          | int                      | 10                                                                      | Inclusive lower bound for the number of stars a project needs to have in order to be picked up by the crawler. Must not be negative.                                                                                                                               |
 | `ghs.crawler.languages`              | List&lt;String&gt;       | See [application.properties](src/main/resources/application.properties) | List of language names that will be targeted during crawling. Must not contain blank strings. To ensure proper operations, the names must match those specified in [linguist](https://github.com/github-linguist/linguist/blob/master/lib/linguist/languages.yml). |
