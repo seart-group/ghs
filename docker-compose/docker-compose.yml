@@ -45,7 +45,7 @@ services:
       - default
 
   gse-backup:
-    image: databack/mysql-backup:1.0.0-rc2
+    image: databack/mysql-backup:1.0.0-rc5
     container_name: gse-backup
     restart: "no"
     volumes:
