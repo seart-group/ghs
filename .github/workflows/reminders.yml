@@ -1,19 +1,19 @@
-name: 'Remind maintainers to update the database dumps'
+name: "Remind maintainers to update the database dumps"
 on:
   schedule:
-    - cron: '0 9 1 * *'
+    - cron: "0 9 1 * *"
 
 jobs:
   remind:
-    runs-on: 'ubuntu-latest'
+    runs-on: "ubuntu-latest"
     permissions:
       issues: write
     steps:
       - name: Create Reminder
         uses: imjohnbo/issue-bot@v3
         with:
-          assignees: 'dabico'
-          labels: 'dumps'
+          assignees: "dabico"
+          labels: "dumps"
           title: Update database dump
           body: |-
             ### Checklist
@@ -23,7 +23,7 @@ jobs:
             - [ ] Update [README](https://github.com/seart-group/ghs/blob/master/README.md) links
             - [ ] Update [custom database image](https://github.com/seart-group/ghs/blob/master/docker/database/Dockerfile)
             - [ ] Remove oldest dump from [Dropbox](https://www.dropbox.com/login)
-            
+
             [Previous Issue](https://github.com/seart-group/ghs/issues/{{ previousIssueNumber }})
           pinned: false
           close-previous: true

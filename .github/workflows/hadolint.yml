@@ -1,8 +1,8 @@
-name: 'Check Dockerfiles with hadolint'
+name: "Check Dockerfiles with hadolint"
 on:
   pull_request:
     paths:
-      - '**/Dockerfile'
+      - "**/Dockerfile"
 
 jobs:
   hadolint:

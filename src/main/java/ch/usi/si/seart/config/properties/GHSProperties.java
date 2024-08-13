@@ -24,9 +24,6 @@ public class GHSProperties {
     CLOCProperties cloc;
 
     @NestedConfigurationProperty
-    ClientURLProperties curl;
-
-    @NestedConfigurationProperty
     CrawlerProperties crawler;
 
     @NestedConfigurationProperty
@@ -45,10 +42,6 @@ public class GHSProperties {
 
     public CLOCProperties getCLOCProperties() {
         return cloc;
-    }
-
-    public ClientURLProperties getClientURLProperties() {
-        return curl;
     }
 
     public CrawlerProperties getCrawlerProperties() {

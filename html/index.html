@@ -45,14 +45,32 @@
     <link rel="apple-touch-startup-image" href="splash/1136-640.jpg" media="(device-width: 320px) and (device-height: 568px) and (-webkit-device-pixel-ratio: 2) and (orientation: landscape)">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" integrity="sha384-XGjxtQfXaH2tnPFa9x+ruJTuLE3Aa6LhHSWRr1XeTyhezb4abCG4ccI5AkVDxqC+" crossorigin="anonymous">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/octicons-css@19.8.0/octicons.min.css" integrity="sha384-x+vO64hvE2Rm8i93EEQX1huAwYmkc+vzcb27ayfl6o5wzs6GMVXeaPBrKGwHYOoa" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/octicons-css@19.11.0/octicons.min.css" integrity="sha384-wHIxpwDCWSAZM6DNftLTuWLn7j3MXfwoAn1AAbJ/FQW7hH6q/HPeBsFX6CQo0YsV" crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/devicon@2.16.0/devicon.min.css" integrity="sha384-DjehTlU5SubGD1zUGe78SkwLgw+q2y9DXnmy3EaDbXA9nvFMPW3LP5verNrWr9rW" crossorigin="anonymous">
     <link rel="stylesheet" href="css/main.css">
     <link rel="icon" href="icons/favicon.ico">
     <link rel="apple-touch-icon" href="icons/180.png">
     <link rel="manifest" href="manifest.json">
+    <noscript>
+      <div class="modal show d-block bg-black bg-opacity-50" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="noscript-modal-label" aria-modal="true" role="dialog">
+        <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered modal-md modal-fullscreen-sm-down">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h1 class="modal-title fs-5" id="noscript-modal-label">JavaScript is Disabled</h1>
+            </div>
+            <div class="modal-body">
+              <p class="mb-0">
+                JavaScript is currently disabled in your browser.
+                GitHub Search relies on it to function correctly.
+                In order to continue, please enable JavaScript and reload the page.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </noscript>
   </head>
-  <body class="min-vh-100 mw-100 d-flex flex-column justify-content-between">
+  <body inert class="min-vh-100 mw-100 d-flex flex-column justify-content-between modal-open overflow-hidden">
     <header class="mb-3">
       <nav aria-label="navbar" class="navbar navbar-expand-sm bg-light">
         <div class="container-fluid">
@@ -1403,12 +1421,11 @@
         </div>
       </div>
     </script>
-    <script src="https://cdn.jsdelivr.net/npm/lodash@4.17.21/lodash.min.js" integrity="sha384-H6KKS1H1WwuERMSm+54dYLzjg0fKqRK5ZRyASdbrI/lwrCc6bXEmtGYr5SwvP1pZ" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js" integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.min.js" integrity="sha384-1H217gwSVyLSIfaLxHbE7dRb3v4mYCKbpQvzx0cegeju1MVsGrX5xXxAvs/HgeFs" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.min.js" integrity="sha384-0pUGZvbkm6XF6gxjEnlmuGrJXVbNuzT9qBBavbLwCsOGabYfZo0T0to5eqruptLy" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/twbs-pagination@1.4.2/jquery.twbsPagination.min.js" integrity="sha384-AzpIEA+V2ntWh1KXh0Nz69l/mYOfBMOiw6lbuvWaVKYfuEooT5t5k/qyU0W0B7uk" crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.2/dist/chart.umd.min.js" integrity="sha384-e6cc9LaIG7xZ3XD5B+jtr1NhTWPQGQdRCh6xiZ+ZFUtWCpg4ycv3Sh+SkZoopvUY" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js" integrity="sha384-JUh163oCRItcbPme8pYnROHQMC6fNKTBWtRG3I3I0erJkzNgL7uxKlNwcrcFKeqF" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/chroma-js@2.4.2/chroma.min.js" integrity="sha384-VRhlkYEqoAXsWzoORIQL0gHdX0BvQoQG89GxEj7I4xlffttgMvoMsQr7E/IWGK9T" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/handlebars@4.7.8/dist/handlebars.min.js" integrity="sha384-/7IOPDPk7kcWe970wNJpeApuC/EzCQwonLz5G/s//R5Jji9QWBcbfASHI0G1nh2p" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/just-handlebars-helpers@1.0.19/dist/h.min.js" integrity="sha384-RqSUk94F6/91JrGD35T27ahIFGQ+tdqaM6fwX+dYRqsRr9aL4vuhAXGfHALP7Xcn" crossorigin="anonymous"></script>

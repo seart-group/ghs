@@ -1,4 +1,4 @@
-name: 'Prepare and create new tag'
+name: "Prepare and create new tag"
 on:
   workflow_dispatch:
     inputs:
@@ -16,16 +16,16 @@ jobs:
       - name: Validate inputs
         run: echo "${{ github.event.inputs.version }}" | grep -E "^[0-9]+\.[0-9]+\.[0-9]+$"
       - name: Setup Maven
-        uses: s4u/setup-maven-action@v1.13.0
+        uses: s4u/setup-maven-action@v1.14.0
         with:
           checkout-token: ${{ secrets.API_TOKEN }}
           checkout-persist-credentials: true
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: '18'
-          cache: 'npm'
-          cache-dependency-path: 'package-lock.json'
+          node-version: "18"
+          cache: "npm"
+          cache-dependency-path: "package-lock.json"
       - name: Import GPG key
         uses: crazy-max/ghaction-import-gpg@v6
         with:
@@ -41,9 +41,9 @@ jobs:
         uses: EndBug/add-and-commit@v9
         with:
           add: '[ "pom.xml", "package.json", "package-lock.json" ]'
-          commit: '-S'
-          author_name: 'seart-bot'
-          author_email: 'seartusi@gmail.com'
-          message: 'New release: ${{ github.event.inputs.version }}'
-          tag: 'v${{ github.event.inputs.version }} --force'
-          tag_push: '--force'
+          commit: "-S"
+          author_name: "seart-bot"
+          author_email: "seartusi@gmail.com"
+          message: "New release: ${{ github.event.inputs.version }}"
+          tag: "v${{ github.event.inputs.version }} --force"
+          tag_push: "--force"

@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.convert.converter.Converter;
+import org.springframework.hateoas.IanaLinkRelations;
 import org.springframework.stereotype.Component;
 
 import java.net.URL;
@@ -33,10 +34,10 @@ public class StringToNavigationLinksConverter implements Converter<String, Navig
             String value = matcher.group(1);
             URL url = stringToUrlConverter.convert(value);
             switch (key) {
-                case "first" -> builder.first(url);
-                case "prev" -> builder.previous(url);
-                case "next" -> builder.next(url);
-                case "last" -> builder.last(url);
+                case IanaLinkRelations.FIRST_VALUE -> builder.first(url);
+                case IanaLinkRelations.PREV_VALUE -> builder.previous(url);
+                case IanaLinkRelations.NEXT_VALUE -> builder.next(url);
+                case IanaLinkRelations.LAST_VALUE -> builder.last(url);
                 default -> {
                 }
             }

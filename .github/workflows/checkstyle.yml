@@ -1,20 +1,20 @@
-name: 'Check Java files with CheckStyle'
+name: "Check Java files with CheckStyle"
 on:
   pull_request:
     paths:
-      - '**/*.java'
+      - "**/*.java"
 
 jobs:
   checkstyle:
     runs-on: ubuntu-latest
     steps:
       - name: Setup Maven
-        uses: s4u/setup-maven-action@v1.13.0
+        uses: s4u/setup-maven-action@v1.14.0
       - name: Run CheckStyle
         uses: nikitasavinov/checkstyle-action@master
         with:
           level: error
           fail_on_error: true
-          workdir: './src'
-          checkstyle_config: './checkstyle.xml'
+          workdir: "./src"
+          checkstyle_config: "./checkstyle.xml"
           github_token: ${{ secrets.API_TOKEN }}

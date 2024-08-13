@@ -6,7 +6,7 @@ COPY pom.xml /pom.xml
 
 RUN mvn -e --no-transfer-progress clean package -am -DskipTests
 
-FROM eclipse-temurin:17.0.11_9-jre-alpine
+FROM eclipse-temurin:17.0.12_7-jre-alpine
 LABEL maintainer="Ozren Dabić (dabico@usi.ch)"
 
 COPY --from=build /target/ghs-application-*.jar /server.jar
@@ -14,10 +14,10 @@ COPY --from=build /target/ghs-application-*.jar /server.jar
 RUN apk update --quiet && \
     apk add --no-cache \
             --quiet \
-            cloc~=1.98 \
-            curl~=8.5.0 \
-            git~=2.43.4 \
-            jq~=1.7.1
+            curl~=8.9.0 \
+            git~=2.45.2 \
+            jq~=1.7.1 \
+            perl~=5.38.2
 
 ENTRYPOINT ["java", "-jar", "server.jar"]
 

@@ -9,19 +9,23 @@
 
     $(document).ready(function () {
         const key = "alert.advertisement.last-shown";
-        const url = "https://seart-dl4se.si.usi.ch/";
-        const lastShown = new Date(storage.getItem(key));
-        const days = Math.ceil((today - lastShown) / (1000 * 60 * 60 * 24));
+        const url = "https://seart-dh.si.usi.ch/";
+        const last_shown = new Date(storage.getItem(key));
+        const days = Math.ceil((today - last_shown) / (1000 * 60 * 60 * 24));
         if (days > 30) {
             $("header").twbsAlert({
-                body: `If you're interested not only in sampling projects, but also in downloading their code, check out our <a href="${url}" target="_blank" class="alert-link">other platform</a>.`
+                body: `
+                If you're interested not only in sampling projects, but also in downloading their code,
+                check out our <a href="${url}" target="_blank" class="alert-link link-secondary">other platform</a>.`,
             });
             storage.setItem(key, today.toISOString());
         }
 
-        $("body").tooltip({
-            selector: "[data-bs-toggle='tooltip']"
-        });
+        $("body")
+            .removeAttr("inert")
+            .removeClass("modal-open")
+            .removeClass("overflow-hidden")
+            .tooltip({ selector: "[data-bs-toggle='tooltip']" });
     });
 
     $("#search input[type='date']").attr({
@@ -49,19 +53,18 @@
     $publication_copy_btn.on("click", function () {
         const target = $(this);
         const icon = target.html();
-        const [ element ] = target.get();
+        const [element] = target.get();
         const data = $publication_copy_target.html();
-        clipboard.writeText(data)
-            .then(() => {
-                target.attr("data-bs-original-title", "Copied!");
-                target.html(`<i class="bi bi-check-lg"></i>`);
-                const tooltip = Tooltip.getInstance(element);
-                tooltip.show();
-                target.attr("data-bs-original-title", "Copy to clipboard...");
-                setTimeout(() => {
-                    tooltip.hide();
-                    target.html(icon);
-                }, 2500);
-            });
+        clipboard.writeText(data).then(() => {
+            target.attr("data-bs-original-title", "Copied!");
+            target.html(`<i class="bi bi-check-lg"></i>`);
+            const tooltip = Tooltip.getInstance(element);
+            tooltip.show();
+            target.attr("data-bs-original-title", "Copy to clipboard...");
+            setTimeout(() => {
+                tooltip.hide();
+                target.html(icon);
+            }, 2500);
+        });
     });
-}(jQuery, localStorage, navigator.clipboard, bootstrap.Tooltip));
+})(jQuery, localStorage, navigator.clipboard, bootstrap.Tooltip);

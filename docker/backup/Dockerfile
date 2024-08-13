@@ -1,4 +1,4 @@
-FROM databack/mysql-backup:1.0.0-rc2
+FROM databack/mysql-backup:1.0.0-rc5
 LABEL maintainer="Ozren Dabić (dabico@usi.ch)"
 
 USER root

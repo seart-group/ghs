@@ -1,8 +1,8 @@
-name: 'Check CSS files with Stylelint'
+name: "Check CSS files with Stylelint"
 on:
   pull_request:
     paths:
-      - '**/*.css'
+      - "**/*.css"
 
 jobs:
   stylelint:
@@ -13,9 +13,9 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: '18'
-          cache: 'npm'
-          cache-dependency-path: 'package-lock.json'
+          node-version: "18"
+          cache: "npm"
+          cache-dependency-path: "package-lock.json"
       - name: Install Dependencies
         run: npm ci
       - name: Run Stylelint
