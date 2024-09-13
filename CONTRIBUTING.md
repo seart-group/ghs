@@ -3,7 +3,7 @@
 Thank you for your interest in contributing to GitHub Search!
 We appreciate your efforts to make this project better.
 
-Before you start, please take a moment to read and understand the following guidelines.
+Before you start, take a moment to read and understand the following guidelines.
 
 ## Getting Started
 
