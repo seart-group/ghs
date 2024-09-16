@@ -5,8 +5,8 @@ This project is made of two components:
 1. A Spring Boot powered back-end, responsible for:
     1. Continuously crawling GitHub API endpoints for repository information, and storing it in a central database;
     2. Acting as an API for providing access to the stored data.
-2. A Bootstrap-styled and jQuery-powered web user interface, serving as an accessible front for the API, available
-   [here](http://seart-ghs.si.usi.ch).
+2. A Bootstrap-styled and jQuery-powered [web user interface](http://seart-ghs.si.usi.ch), serving as an accessible
+    front for the API.
 
 ## Running Locally
 
@@ -59,10 +59,10 @@ make sure the following requirements are met:
     GRANT ALL ON gse.* TO 'gseadmin'@'%';
     ```
 
-If you prefer to begin with an empty database, there's nothing more for you to do.
+If you prefer to begin with an empty database, there is nothing more for you to do.
 The required tables will be generated through Flyway migrations during the initial startup of the server.
-However, if you'd like your local database to be pre-populated with the data we've collected,
-you can utilize the compressed SQL dump we offer. We host this dump, along with the four previous iterations,
+However, if you would like your local database to be pre-populated with the data we've collected,
+you can use the compressed SQL dump we offer. We host this dump, along with the four previous iterations,
 on [Dropbox](https://www.dropbox.com/scl/fo/lqvp1mhsg0ezp2sgs0xdk/h?rlkey=j9joij3iqpy1zl5h061vdnlj6).
 After choosing and downloading a database dump, you can import the data by executing:
 
@@ -72,8 +72,8 @@ gzcat < gse.sql.gz | mysql -u gseadmin -pLugano2020 gse
 
 ### Server
 
-Before attempting to run the server, you must generate your own GitHub personal access token (PAT).
-GHS relies on the GraphQL API, which is inaccessible without authentication.
+Before attempting to run the server, you should generate your own GitHub personal access token (PAT).
+The crawler relies on the GraphQL API, which is inaccessible without authentication.
 To access the information provided by the GitHub API, the token must include the `repo` scope.
 
 Once that is done, you can run the server locally using Maven:
@@ -96,7 +96,7 @@ ln target/ghs-application-*.jar target/ghs-application.jar
 java -Dghs.github.tokens=<your_access_token> -jar target/ghs-application.jar
 ```
 
-Here's a list of project-specific arguments supported by the application that you can find in the `application.properties`:
+Here is a list of project-specific arguments supported by the application that you can find in the `application.properties`:
 
 | Variable Name                        | Type                     | Default Value                                                           | Description                                                                                                                                                                                                                                                        |
 |--------------------------------------|--------------------------|-------------------------------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
@@ -168,12 +168,12 @@ Deploying is as simple as, in the [docker-compose](docker-compose) directory, ru
 docker-compose -f docker-compose.yml up -d
 ```
 
-It's important to note that the database setup steps explained in the preceding section are unnecessary when running
-with Docker. This is because the environment properties passed to the service will automatically establish the MySQL
-user and database during the initial startup. However, this convenience does not extend to the database data, as the
-default deployment generates an empty database. If you wish to utilize existing data from the dumps, you'll need to
-override the compose deployment to employ a custom database image that includes the dump. To do this, create your
-`docker-compose.override.yml` file with the following contents:
+It is important to note that the database setup steps explained in the preceding section aren't necessary when running
+with Docker. This is because the environment properties passed to the service will automatically create the MySQL
+user and database during the initial startup. However, this convenience doesn't extend to the database data, as the
+default deployment generates an empty database. If you wish to use existing data from the dumps, you will need to
+override the `docker-compose` deployment to employ a custom database image that includes the dump. To achieve this,
+create your `docker-compose.override.yml` file with the following contents:
 
 ```yaml
 version: "3.9"
@@ -186,15 +186,15 @@ services:
 
 The above image will include the freshest database dump, at most 15 days behind the actual platform data.
 For a more specific database version, refer to the [Docker Hub page](https://hub.docker.com/r/seart/ghs-database/tags).
-Just remember to specify the override file during deployment:
+Remember to specify the override file during deployment:
 
 ```shell
 docker-compose -f docker-compose.yml -f docker-compose.override.yml up -d
 ```
 
-The database data itself is kept in the `gse-data` volume, while detailed back-end logs are kept in a local mount called
-[logs](docker-compose/logs). You can also use this override file to change the configurations of other services, for
-instance specifying your own PAT for the crawler:
+The database data itself is kept in the `gse-data` volume, while detailed back-end logs are kept in a local mount called [logs](docker-compose/logs).
+You can also use this override file to change the configurations of other services.
+For example, specifying your own PAT for the crawler:
 
 ```yaml
 version: "3.9"
@@ -210,10 +210,10 @@ services:
 ```
 
 Any of the Spring Boot properties or aforementioned application-specific properties can be overridden.
-Just keep in mind, that the `ghs.x.y` property corresponds to the `GHS_X_Y` service environment setting.
+Keep in mind that a property such as `ghs.x.y` corresponds to the `GHS_X_Y` service environment setting.
 
 Another example is the automated database backup service, which is disabled by default.
-Should you choose to re-enable it, you would have to add the following to the override file:
+If you would like to re-enable it, you would have to add the following to the override file:
 
 ```yaml
 version: "3.9"
@@ -233,21 +233,21 @@ services:
 
 If you have ideas for a feature you would like to see implemented or if you have any questions, we encourage you to
 create a new [discussion](https://github.com/seart-group/ghs/discussions/). By initiating a discussion, you can engage
-with the community and our team, and we'll respond promptly to address your queries or consider your feature requests.
+with the community and our team, and we will respond promptly to address your queries or consider your feature requests.
 
 ### How can I report a bug?
 
-To report any issues or bugs you encounter, please create a [new issue](https://github.com/seart-group/ghs/issues/).
+To report any issues or bugs you encounter, create a [new issue](https://github.com/seart-group/ghs/issues/).
 Providing detailed information about the problem you're facing will help us understand and address it more effectively.
-Rest assured, we are committed to promptly reviewing and responding to the issues you raise, working collaboratively
+Rest assured, we're committed to promptly reviewing and responding to the issues you raise, working collaboratively
 to resolve any bugs and improve the overall user experience.
 
 ### How do I contribute to the project?
 
-Please refer to [CONTRIBUTING.md](CONTRIBUTING.md) for more information.
+Refer to [CONTRIBUTING.md](CONTRIBUTING.md) for more information.
 
 ### How do I extend/modify the existing database schema?
 
-To do that you should be familiar with database migration tools and practices.
-This project in particular uses [Flyway](https://flywaydb.org/) by Redgate.
-However, the general rule for schema manipulation is: create new migrations, and _do not_ edit existing ones.
+To do that, you should be familiar with database migration tools and practices.
+This project uses [Flyway](https://flywaydb.org/) by Redgate.
+The general rule for schema manipulation is: create new migrations, and _refrain from editing existing ones_.
