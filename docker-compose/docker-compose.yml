@@ -49,7 +49,7 @@ services:
     container_name: gse-backup
     restart: "no"
     volumes:
-      - backup:/home/appuser/backup
+      - backup:/home/appuser
     environment:
       TZ: UTC
       RETENTION: 1w
@@ -59,7 +59,7 @@ services:
       DB_PASS: Lugano2020
       DB_SERVER: gse-database
       DB_DUMP_CRON: "0 0 * * *"
-      DB_DUMP_TARGET: /home/appuser/backup
+      DB_DUMP_TARGET: /home/appuser
       DB_DUMP_DEBUG: true
       DB_DUMP_SAFECHARS: true
       MYSQLDUMP_OPTS: >-
