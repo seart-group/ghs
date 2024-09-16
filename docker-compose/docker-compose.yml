@@ -53,6 +53,7 @@ services:
       - ./bkpdb/clean_post.sh:/scripts.d/post-backup/00_clean_old_dumps.sh
     environment:
       TZ: UTC
+      RETENTION: 1w
       DB_NAMES: gse
       DB_PORT: 3306
       DB_USER: gseadmin
