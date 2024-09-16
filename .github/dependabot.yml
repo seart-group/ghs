@@ -30,13 +30,13 @@ updates:
     target-branch: master
     labels:
       - dependencies
-   - package-ecosystem: docker
-     directory: /docker/database
-     schedule:
-       interval: daily
-     target-branch: master
-     labels:
-       - dependencies
+  - package-ecosystem: docker
+    directory: /docker/database
+    schedule:
+      interval: daily
+    target-branch: master
+    labels:
+      - dependencies
   #
   # FIXME: This one requires more robust upgrades
   #
