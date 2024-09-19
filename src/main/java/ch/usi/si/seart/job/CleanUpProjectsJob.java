@@ -74,9 +74,9 @@ public class CleanUpProjectsJob implements Runnable {
             return true;
         } catch (GitAPIException | RestClientException ex) {
             /*
-             * It's safer to keep projects which we fail to check,
+             * It is safer to keep projects which we fail to check,
              * rather than removing them from the database.
-             * Let's say there is a bug with our implementation,
+             * Let us say there is a bug with our implementation,
              * do we prefer to lose stored entries one by one?
              */
             log.error("An exception has occurred during cleanup!", ex);
