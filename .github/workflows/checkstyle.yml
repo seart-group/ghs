@@ -9,7 +9,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Setup Maven
-        uses: s4u/setup-maven-action@v1.14.0
+        uses: s4u/setup-maven-action@v1.15.0
       - name: Run CheckStyle
         uses: nikitasavinov/checkstyle-action@master
         with:
