@@ -45,36 +45,40 @@ services:
       - default
 
   gse-backup:
-    image: tiredofit/db-backup:4.1.0
+    image: databack/mysql-backup:1.0.0-rc5
     container_name: gse-backup
     restart: "no"
     volumes:
-      - backup:/backup
-      - ./logs/backup:/logs
+      - backup:/home/appuser
     environment:
       TZ: UTC
-      TIMEZONE: Etc/UTC
-      DB01_TYPE: mysql
-      DB01_HOST: gse-database
-      DB01_PORT: 3306
-      DB01_NAME: gse
-      DB01_USER: gseadmin
-      DB01_PASS: Lugano2020
-      DEFAULT_BACKUP_BEGIN: "0000"
-      DEFAULT_CLEANUP_TIME: "10080"
-      DEFAULT_CHECKSUM: SHA1
-      DEFAULT_COMPRESSION: GZ
-      DEFAULT_CREATE_LATEST_SYMLINK: FALSE
-      DEBUG_MODE: TRUE
-      CONTAINER_ENABLE_MONITORING: FALSE
+      RETENTION: 1w
+      DB_NAMES: gse
+      DB_PORT: 3306
+      DB_USER: gseadmin
+      DB_PASS: Lugano2020
+      DB_SERVER: gse-database
+      DB_DUMP_CRON: "0 0 * * *"
+      DB_DUMP_TARGET: /home/appuser
+      DB_DUMP_DEBUG: true
+      DB_DUMP_SAFECHARS: true
+      MYSQLDUMP_OPTS: >-
+        --quick
+        --compact
+        --events
+        --triggers
+        --routines
+        --single-transaction
+        --max-allowed-packet=1G
+        --ignore-table=gse.label_ranked
+        --ignore-table=gse.topic_ranked
     entrypoint: "true"
+    command: dump
     depends_on:
       gse-migration:
         condition: service_completed_successfully
     labels:
       - "com.centurylinklabs.watchtower.scope=ghs"
-    links:
-      - gse-database
     networks:
       - default
 
