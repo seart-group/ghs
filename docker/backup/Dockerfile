@@ -1,4 +1,4 @@
-FROM tiredofit/db-backup:4.1.9
+FROM tiredofit/db-backup:4.1.10
 LABEL maintainer="Ozren Dabić (dabico@usi.ch)"
 
 RUN apk update --quiet && \
