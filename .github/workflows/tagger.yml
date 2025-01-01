@@ -16,7 +16,7 @@ jobs:
       - name: Validate inputs
         run: echo "${{ github.event.inputs.version }}" | grep -E "^[0-9]+\.[0-9]+\.[0-9]+$"
       - name: Setup Maven
-        uses: s4u/setup-maven-action@v1.17.0
+        uses: s4u/setup-maven-action@v1.18.0
         with:
           checkout-token: ${{ secrets.API_TOKEN }}
           checkout-persist-credentials: true
