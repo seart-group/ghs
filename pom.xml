@@ -258,7 +258,7 @@
 		<dependency>
 			<groupId>ch.usi.si.seart</groupId>
 			<artifactId>jakarta-validation-utils-legacy</artifactId>
-			<version>0.4.0</version>
+			<version>0.5.0</version>
 		</dependency>
         <dependency>
             <groupId>ch.usi.si.seart</groupId>
