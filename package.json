@@ -63,7 +63,7 @@
     "clean-css-cli": "^5.6.3",
     "copyfiles": "^2.4.1",
     "esbuild": "^0.25.4",
-    "eslint": "^9.26.0",
+    "eslint": "^9.27.0",
     "eslint-config-prettier": "^10.1.5",
     "eslint-plugin-prettier": "^5.4.0",
     "globals": "^16.1.0",
