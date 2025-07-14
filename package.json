@@ -59,7 +59,7 @@
     "open source code analysis"
   ],
   "devDependencies": {
-    "@eslint/js": "^9.30.1",
+    "@eslint/js": "^9.31.0",
     "clean-css-cli": "^5.6.3",
     "copyfiles": "^2.4.1",
     "esbuild": "^0.25.6",
