@@ -1,4 +1,4 @@
-FROM mysql:8.3.0
+FROM mysql:9.0.0
 LABEL maintainer="Ozren Dabić (dabico@usi.ch)"
 
 WORKDIR /docker-entrypoint-initdb.d
