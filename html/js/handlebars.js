@@ -6,9 +6,9 @@ Handlebars.registerHelper("startcase", function (value) {
 });
 
 Handlebars.registerHelper("bytes", function (value) {
-    const k = 1024;
+    const k = 1000;
     const decimals = 2;
-    const units = ["B", "KB", "MB", "GB", "TB", "PB"];
+    const units = ["kB", "MB", "GB", "TB", "PB", "EB", "ZB"];
     const point = decimals ? "." : "";
     const zeroes = "0".repeat(decimals);
     if (!value) return `0${point}${zeroes} ${units[0]}`;
