@@ -6,7 +6,7 @@ COPY pom.xml /pom.xml
 
 RUN mvn -e --no-transfer-progress clean package -am -DskipTests
 
-FROM eclipse-temurin:17.0.16_8-jre-alpine
+FROM eclipse-temurin:25_36-jre-alpine
 LABEL maintainer="Ozren Dabić (dabico@usi.ch)"
 
 COPY --from=build /target/ghs-application-*.jar /server.jar
