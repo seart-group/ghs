@@ -26,7 +26,7 @@ jobs:
         language: ["java", "javascript"]
     steps:
       - name: Setup Maven
-        uses: s4u/setup-maven-action@v1.18.0
+        uses: s4u/setup-maven-action@v1.19.0
       - name: Initialize CodeQL
         uses: github/codeql-action/init@v3
         with:
