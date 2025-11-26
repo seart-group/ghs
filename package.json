@@ -68,7 +68,7 @@
     "eslint-plugin-prettier": "^5.5.4",
     "globals": "^16.5.0",
     "html-minifier-terser": "^7.2.0",
-    "htmlhint": "^1.7.1",
+    "htmlhint": "^1.8.0",
     "http-server": "^14.1.1",
     "husky": "^9.1.7",
     "markdownlint": "^0.39.0",
