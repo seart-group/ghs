@@ -7,7 +7,7 @@ COPY package.json      \
 
 RUN npm ci --silent --no-progress && npm run build
 
-FROM nginx:1.29.3-alpine-slim
+FROM nginx:1.29.4-alpine-slim
 LABEL maintainer="Ozren Dabić (dabico@usi.ch)"
 
 ENV TZ=UTC
