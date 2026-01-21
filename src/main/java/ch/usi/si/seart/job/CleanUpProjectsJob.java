@@ -1,6 +1,8 @@
 package ch.usi.si.seart.job;
 
 import ch.usi.si.seart.config.properties.CleanUpProperties;
+import ch.usi.si.seart.exception.github.GitHubRestException;
+import ch.usi.si.seart.github.GitHubRestConnector;
 import ch.usi.si.seart.service.GitRepoService;
 import ch.usi.si.seart.stereotype.Job;
 import lombok.AccessLevel;
@@ -13,15 +15,13 @@ import org.eclipse.jgit.api.errors.TransportException;
 import org.springframework.beans.factory.ObjectFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.http.HttpStatus;
 import org.springframework.scheduling.TriggerContext;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.scheduling.support.CronTrigger;
 import org.springframework.scheduling.support.SimpleTriggerContext;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpStatusCodeException;
-import org.springframework.web.client.RestClientException;
-import org.springframework.web.client.RestTemplate;
 
 import java.util.Date;
 
@@ -36,7 +36,7 @@ public class CleanUpProjectsJob implements Runnable {
 
     ObjectFactory<LsRemoteCommand> lsRemoteCommandFactory;
 
-    RestTemplate restTemplate;
+    GitHubRestConnector gitHubRestConnector;
 
     GitRepoService gitRepoService;
 
@@ -67,16 +67,15 @@ public class CleanUpProjectsJob implements Runnable {
 
     private boolean checkIfExists(String name) {
         try {
-            String url = String.format("https://github.com/%s.git", name);
-            return checkWithGit(url) || checkWithHTTP(url);
+            return checkWithGit(name) || checkWithHTTP(name);
         } catch (HttpStatusCodeException ex) {
             log.error("An exception has occurred during cleanup! [{}]", ex.getStatusCode());
             return true;
-        } catch (GitAPIException | RestClientException ex) {
+        } catch (GitAPIException | GitHubRestException ex) {
             /*
-             * It's safer to keep projects which we fail to check,
+             * It is safer to keep projects which we fail to check,
              * rather than removing them from the database.
-             * Let's say there is a bug with our implementation,
+             * Let us say there is a bug with our implementation,
              * do we prefer to lose stored entries one by one?
              */
             log.error("An exception has occurred during cleanup!", ex);
@@ -84,8 +83,9 @@ public class CleanUpProjectsJob implements Runnable {
         }
     }
 
-    private boolean checkWithGit(String url) throws GitAPIException {
+    private boolean checkWithGit(String name) throws GitAPIException {
         try {
+            String url = String.format("https://github.com/%s.git", name);
             lsRemoteCommandFactory.getObject().setRemote(url).call();
             return true;
         } catch (TransportException ex) {
@@ -93,12 +93,8 @@ public class CleanUpProjectsJob implements Runnable {
         }
     }
 
-    private boolean checkWithHTTP(String url) {
-        try {
-            restTemplate.getForEntity(url, String.class);
-            return true;
-        } catch (HttpClientErrorException.NotFound ex) {
-            return false;
-        }
+    private boolean checkWithHTTP(String name) {
+        HttpStatus status = gitHubRestConnector.pingRepository(name);
+        return status != HttpStatus.NOT_FOUND;
     }
 }
